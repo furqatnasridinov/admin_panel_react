@@ -1,5 +1,4 @@
-import Sidebar from "../../components/sidebar";
-import "../../index.css"
+import Sidebar from "../../components/sidebar/sidebar.jsx"
 import MainBody from "./views/main_body";
 import MainHeader from "./views/main_header";
 
@@ -10,6 +9,7 @@ function MainPage() {
             <Sidebar />
 
             <div className="flex flex-col flex-1 pl-[10px] gap-[10px]">
+
 
                 <MainHeader />
 
