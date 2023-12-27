@@ -1,6 +1,6 @@
 import React from 'react'
-import locationIcon from "../../../assets/svg/location.svg"
-import threeDotsIcon from "../../../assets/svg/three_dots.svg"
+import Gym from '../components/gym'
+
 
 const MainBody = () => {
     return (
@@ -22,55 +22,14 @@ const MainBody = () => {
 
             {/* LIST BUILDER */}
 
-            <div className="h-[60px] w-[screen] bg-bg-color rounded-[16px] py-[16px] px-[32px] flex flex-row items-center justify-between">
-
-                <div className="flex flex-row items-center pr-[164px] justify-between w-full">
-
-                    <div className=" flex flex-row items-center">
-
-                        <div className="p-[5px] rounded-[6px] ">
-                            <img src={locationIcon} alt="" />
-                        </div>
-                        <div className="text-[14px] font-normal">И-Талия</div>
-
-                    </div>
-
-                    <div className="text-[14px] font-normal pl-[30px]">378</div>
-                    <div className="text-[14px] font-normal pl-[40px]">62</div>
-                    <div className="text-[14px] font-normal ">14</div>
-                </div>
-
-                <div className="w-[24px] h-[24px]">
-                    <img src={threeDotsIcon} alt="" />
-                </div>
-
-            </div>
-
+            <Gym gymName = "И-Талия" activitiesForMonth= "378" activitiesForWeek = "62" activitiesForDay = "14" ></Gym>
             <div className="mt-[16px]"></div>
+            <Gym gymName = "GymBo" activitiesForMonth= "212" activitiesForWeek = "32" activitiesForDay = "7" ></Gym>
+           
 
-            <div className="h-[60px] w-[screen] bg-bg-color rounded-[16px] py-[16px] px-[32px] flex flex-row items-center justify-between">
+            
 
-                <div className="flex flex-row items-center pr-[164px] justify-between w-full">
-
-                    <div className=" flex flex-row items-center">
-
-                        <div className="p-[5px] rounded-[6px] ">
-                            <img src={locationIcon} alt="" />
-                        </div>
-                        <div className="text-[14px] font-normal">GymBo</div>
-
-                    </div>
-
-                    <div className="text-[14px] font-normal pl-[30px]">212</div>
-                    <div className="text-[14px] font-normal pl-[40px]">32</div>
-                    <div className="text-[14px] font-normal ">7</div>
-                </div>
-
-                <div className="w-[24px] h-[24px]">
-                    <img src={threeDotsIcon} alt="" />
-                </div>
-
-            </div>
+            
 
         </div>
     )

@@ -27,7 +27,7 @@ const Sidebar = () => {
                 <div className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}>
 
                     {/* Название ИП */}
-                    <button onClick={handleClick} className="mt-[16px]  py-[10px] px-[16px] flex flex-row gap-[10px] items-center mx-[16px]">
+                    <button className="mt-[16px]  py-[10px] px-[16px] flex flex-row gap-[10px] items-center mx-[16px]">
 
                         <div className="p-[5px] rounded-[6px] ">
                             <img src={locationIcon} alt="" />
@@ -81,6 +81,10 @@ const Sidebar = () => {
                                 <hr />
                             </div>
 
+                            <div className="absolute left-56 bottom-[170px] transition-width duration-300 ease-in-out">
+                                <button onClick={handleClick}> <img src={sidebarOpenedLogo} alt="" /></button>
+                            </div>
+
                             <div className="sidebar_section">
 
                                 <div className="bg-bg-color p-[5px] rounded-[6px] ">
@@ -111,7 +115,7 @@ const Sidebar = () => {
                 <div className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}>
 
                     {/* Название ИП */}
-                    <button onClick={handleClick} className="mt-[16px]  py-[10px] px-[16px] flex flex-row gap-[10px] items-center mx-[16px]">
+                    <button className="mt-[16px]  py-[10px] px-[16px] flex flex-row gap-[10px] items-center mx-[16px]">
 
                         <div className="p-[5px] rounded-[6px] ">
                             <img src={locationIcon} alt="" />
@@ -160,8 +164,13 @@ const Sidebar = () => {
                         {/* Две нижние блоки */}
 
                         <div className="flex flex-col">
+
                             <div className=" mb-[37px] px-[16px] opacity-50">
                                 <hr />
+                            </div>
+
+                            <div  className="absolute left-[90px] bottom-[165px] transition-width duration-300 ease-in-out">
+                                <button onClick={handleClick}> <img src={sidebarClosedLogo} alt="" /></button>
                             </div>
 
                             <div className="sidebar_section_closed">
@@ -178,7 +187,6 @@ const Sidebar = () => {
                                 <div className="bg-bg-color p-[5px] rounded-[6px] ">
                                     <img src={settingsLogo} alt="" />
                                 </div>
-
 
                             </div>
 
