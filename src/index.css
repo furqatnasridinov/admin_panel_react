@@ -11,37 +11,7 @@
     font-variant-numeric: lining-nums proportional-nums;
 }
 
-.shadowed_button {
-    box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.15), 0px 15px 18px -15px #6D96D4;
-    border-radius: 8px;
-    border-width: 1px;
-    border-color: rgba(89, 154, 254, 1);
-    --tw-text-opacity: 1;
-    color: rgb(255 255 255 / var(--tw-text-opacity));
-    background-color: rgba(119, 170, 249, 1);
-}
 
-.shadowed_button:hover {
-    background-color: rgba(89, 154, 254, 1);
-}
 
-.sidebar_section {
-    margin-top: 16px;
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: center;
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    margin-left: 16px;
-    margin-right: 16px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    transition: border-color 0.3s ease;
-}
 
-.sidebar_section:hover {
-    border: 1px solid rgba(89, 154, 254, 1);
-}
+

@@ -1,15 +1,10 @@
-import Sidebar from "../../components/sidebar";
-import "../../index.css"
 import MainBody from "./views/main_body";
 import MainHeader from "./views/main_header";
 
 function MainPage() {
     return (
-        <div className="flex flex-row bg-bg-color p-[10px]">
+        <div className="flex flex-col flex-1 pl-[10px] gap-[10px] h-[97vh] ">
 
-            <Sidebar />
-
-            <div className="flex flex-col flex-1 pl-[10px] gap-[10px]">
 
                 <MainHeader />
 
@@ -17,8 +12,6 @@ function MainPage() {
 
 
             </div>
-
-        </div>
     );
 }
 
