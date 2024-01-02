@@ -7,7 +7,9 @@ import settingsLogo from "../../assets/svg/settings.svg"
 import questionLogo from "../../assets/svg/question.svg"
 import sidebarOpenedLogo from "../../assets/svg/sidebar_opened.svg"
 import sidebarClosedLogo from "../../assets/svg/sidebar_closed.svg"
+import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const Sidebar = () => {
     const [isSidebarOpened, openCloseSearchBar] = useState(true);
@@ -27,7 +29,7 @@ const Sidebar = () => {
                 <div className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}>
 
                     {/* Название ИП */}
-                    <button className="mt-[16px]  py-[10px] px-[16px] flex flex-row gap-[10px] items-center mx-[16px]">
+                    <button className="sidebar_header">
 
                         <div className="p-[5px] rounded-[6px] ">
                             <img src={locationIcon} alt="" />
@@ -45,32 +47,33 @@ const Sidebar = () => {
                         {/* Первые три элемена */}
                         <div className="flex flex-col">
 
-                            <div className="sidebar_section">
+                            <NavLink to = "/" className={({ isActive }) => isActive ? "sidebar_section active_sidebar_section" : "sidebar_section"}
+>
 
                                 <div className="  bg-bg-color p-[5px] rounded-[6px] ">
                                     <img src={statsLogo} alt="" />
                                 </div>
-                                <div className="text-[14px] font-normal">Статистика</div>
+                                <div>Статистика</div>
 
-                            </div>
+                            </NavLink>
 
-                            <div className="sidebar_section">
+                            <NavLink to= "/mainPage" className={({ isActive }) => isActive ? "sidebar_section active_sidebar_section" : "sidebar_section"}>
 
                                 <div className="bg-bg-color p-[5px] rounded-[6px] ">
                                     <img src={locationIcon} alt="" />
                                 </div>
-                                <div className="text-[14px] font-normal">Мои заведения</div>
+                                <div>Мои заведения</div>
 
-                            </div>
+                            </NavLink>
 
-                            <div className="sidebar_section">
+                            <NavLink to= "/schedulePage" className={({ isActive }) => isActive ? "sidebar_section active_sidebar_section" : "sidebar_section"}>
 
                                 <div className="bg-bg-color p-[5px] rounded-[6px] ">
                                     <img src={calendarLogo} alt="" />
                                 </div>
-                                <div className="text-[14px] font-normal">Расписание</div>
+                                <div>Расписание</div>
 
-                            </div>
+                            </NavLink>
                         </div>
 
                         {/* Две нижние блоки */}
@@ -85,23 +88,23 @@ const Sidebar = () => {
                                 <button onClick={handleClick}> <img src={sidebarOpenedLogo} alt="" /></button>
                             </div>
 
-                            <div className="sidebar_section">
+                            <NavLink to= "/help" className={({ isActive }) => isActive ? "sidebar_section active_sidebar_section" : "sidebar_section"}>
 
                                 <div className="bg-bg-color p-[5px] rounded-[6px] ">
                                     <img src={questionLogo} alt="" />
                                 </div>
-                                <div className="text-[14px] font-normal">Помощь</div>
+                                <div >Помощь</div>
 
-                            </div>
+                            </NavLink>
 
-                            <div className="sidebar_section">
+                            <NavLink to= '/settingsPage' className={({ isActive }) => isActive ? "sidebar_section active_sidebar_section" : "sidebar_section"}>
 
                                 <div className="bg-bg-color p-[5px] rounded-[6px] ">
                                     <img src={settingsLogo} alt="" />
                                 </div>
-                                <div className="text-[14px] font-normal">Настройки</div>
+                                <div>Настройки</div>
 
-                            </div>
+                            </NavLink>
 
                         </div>
 
@@ -115,7 +118,7 @@ const Sidebar = () => {
                 <div className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}>
 
                     {/* Название ИП */}
-                    <button className="mt-[16px]  py-[10px] px-[16px] flex flex-row gap-[10px] items-center mx-[16px]">
+                    <button className="sidebar_header">
 
                         <div className="p-[5px] rounded-[6px] ">
                             <img src={locationIcon} alt="" />
@@ -133,32 +136,32 @@ const Sidebar = () => {
                         {/* Первые три элемена */}
                         <div className="flex flex-col">
 
-                            <div className="sidebar_section_closed">
+                            <NavLink to = "/" className={({ isActive }) => isActive ? "sidebar_section_closed active_sidebar_section" : "sidebar_section_closed"}>
 
                                 <div className="  bg-bg-color p-[5px] rounded-[6px] ">
                                     <img src={statsLogo} alt="" />
                                 </div>
 
 
-                            </div>
+                            </NavLink>
 
-                            <div className="sidebar_section_closed">
+                            <NavLink to = "/mainPage" className={({ isActive }) => isActive ? "sidebar_section_closed active_sidebar_section" : "sidebar_section_closed"}>
 
                                 <div className="bg-bg-color p-[5px] rounded-[6px] ">
                                     <img src={locationIcon} alt="" />
                                 </div>
 
 
-                            </div>
+                            </NavLink>
 
-                            <div className="sidebar_section_closed">
+                            <NavLink to = "/schedulePage" className={({ isActive }) => isActive ? "sidebar_section_closed active_sidebar_section" : "sidebar_section_closed"}>
 
                                 <div className="bg-bg-color p-[5px] rounded-[6px] ">
                                     <img src={calendarLogo} alt="" />
                                 </div>
 
 
-                            </div>
+                            </NavLink>
                         </div>
 
                         {/* Две нижние блоки */}
@@ -173,22 +176,22 @@ const Sidebar = () => {
                                 <button onClick={handleClick}> <img src={sidebarClosedLogo} alt="" /></button>
                             </div>
 
-                            <div className="sidebar_section_closed">
+                            <NavLink to = "/help" className={({ isActive }) => isActive ? "sidebar_section_closed active_sidebar_section" : "sidebar_section_closed"}>
 
                                 <div className="bg-bg-color p-[5px] rounded-[6px] ">
                                     <img src={questionLogo} alt="" />
                                 </div>
 
 
-                            </div>
+                            </NavLink>
 
-                            <div className="sidebar_section_closed">
+                            <NavLink to = "/settingsPage" className={({ isActive }) => isActive ? "sidebar_section_closed active_sidebar_section" : "sidebar_section_closed"}>
 
                                 <div className="bg-bg-color p-[5px] rounded-[6px] ">
                                     <img src={settingsLogo} alt="" />
                                 </div>
 
-                            </div>
+                            </NavLink>
 
                         </div>
 
