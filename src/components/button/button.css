@@ -19,4 +19,5 @@ p{
 
 .custom_button:hover {
     background-color: rgba(89, 154, 254, 1);
+    box-shadow: none;
 }

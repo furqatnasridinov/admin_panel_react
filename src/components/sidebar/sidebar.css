@@ -1,75 +1,76 @@
-
 .sidebar_section {
-    margin-top: 16px;
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: center;
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    margin-left: 16px;
-    margin-right: 16px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    transition: border-color 0.3s ease;
-    font-size: 14px;
-    font-weight: 400;
+  margin-top: 16px;
+  margin-left: 16px;
+  margin-right: 16px; 
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: border-color 0.3s ease;
+  font-size: 14px;
+  font-weight: 400;
 }
 
 .sidebar_section_closed {
-    margin-top: 16px;
-    margin-left: 16px;
-    margin-right: 16px;
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    display: flex;
-    align-items: center;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    transition: border-color 0.3s ease;
+  margin-top: 16px;
+  margin-left: 16px;
+  margin-right: 16px; 
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: border-color 0.3s ease;
 }
 
-
 .sidebar_section:hover {
-    border: 1px solid rgba(89, 154, 254, 1);
+  border: 1px solid rgba(89, 154, 254, 1);
 }
 
 .sidebar_section_closed:hover {
-    border: 1px solid rgba(89, 154, 254, 1);
+  border: 1px solid rgba(89, 154, 254, 1);
 }
 
 .sidebar_opened {
-    width: 225px;
-    transition: width 0.3s ease;
+  width: 225px;
+  transition: width 0.3s ease;
 }
 
 .sidebar_closed {
-    width: 92px;
-    transition: width 0.3s ease;
+  width: 100px;
+  transition: width 0.3s ease;
 }
+
 .active_sidebar_section {
-    background-color: rgba(245, 249, 255, 1)
-  }
+  background-color: rgba(245, 249, 255, 1);
+}
 
 .sidebar_header {
-    margin-top: 16px;
-    margin-left: 16px;
-    margin-right: 16px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 16px;
-    padding-right: 16px;
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: center;
-    border-radius: 8px
+  margin-top: 16px;
+  margin-left: 16px;
+  margin-right: 16px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 16px;
+  padding-right: 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
 }
 
-.sidebar_header:hover{
-    background-color: rgba(245, 249, 255, 1)
+.sidebar_header:hover {
+  background-color: rgba(245, 249, 255, 1);
 }

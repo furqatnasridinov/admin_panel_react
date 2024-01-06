@@ -1,0 +1,60 @@
+.container {
+    background-color: #F5F9FF;
+    height: 52px;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.photo_background {
+    width: 32px; 
+    height: 32px; 
+    padding: 2px; /* Add some padding inside the div to see blue color around image*/
+    background-color: #77AAF9;
+    border-radius: 50%; 
+    display: flex; /* Center the child img */
+    justify-content: center; /* Center the child img */
+    align-items: center; /* Center the child img */
+}
+
+.photo_background img {
+    width: 100%; /* Make the image fill the div */
+    height: 100%; /* Make the image fill the div */
+    border-radius: 50%; /* Make the image round */
+}
+
+.name_and_job{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+}
+
+.name{
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
+    font-size: 14px;
+    color: #252525 ;
+    font-weight: 400;
+    margin: 0;
+    line-height: 1;
+}
+
+.you {
+    font-size: 14px;
+    font-weight: 400;
+    color: #B0B0B0;
+}
+
+.job{
+    font-size: 13px;
+    color: #252525 ;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1;
+}

@@ -1,0 +1,28 @@
+.events{
+    /* background-color: red; */
+    height: 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.events:hover{
+    background-color: #F5F9FF;
+}
+
+.icon_container{
+    width: 24px;
+    height: 24px;
+    background-color: #F5F9FF;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.event_text{
+    font-size: 14px;
+    font-weight: 400;
+}
