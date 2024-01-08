@@ -6,6 +6,7 @@ import StatisticksPage from './pages/statisticks_page/statisticks_page';
 import SchedulesPage from './pages/schedules_page/schedules_page';
 import Help from './pages/help/help';
 import SettingsPage from './pages/settings_page/settings_page';
+import GymDetails from './pages/gym_detailes/gym_detailes';
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
             <Route path='/schedulePage' element = {<SchedulesPage />}> </Route>
             <Route path='/help' element = {<Help />}> </Route>
             <Route path='/settingsPage' element = {<SettingsPage />}> </Route>
-
+            <Route path="/gymDetails/:gymId" element={<GymDetails />} />
           </Routes>
 
         </div>

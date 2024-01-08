@@ -1,0 +1,18 @@
+.slash {
+  margin-left: 10px;
+  margin-right: 10px;
+  color: #b0b0b0;
+}
+
+.gym_name_container {
+  height: 40px;
+  padding-left: 16px;
+  padding-right: 16px; 
+  border-radius: 8px;
+  border: 1px solid #77aaf9;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}

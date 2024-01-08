@@ -22,6 +22,7 @@ const MainBody = () => {
         {gyms.map((gym) => (
           <Gym
             key={gym.id}
+            id = {gym.id}
             gymName={gym.gymName}
             activitiesForMonth={gym.activitiesForMonth}
             activitiesForWeek={gym.activitiesForWeek}

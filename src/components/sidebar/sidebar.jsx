@@ -9,11 +9,12 @@ import sidebarOpenedLogo from "../../assets/svg/sidebar_opened.svg";
 import sidebarClosedLogo from "../../assets/svg/sidebar_closed.svg";
 import MenuCompany from "../menu_company/menu_company";
 import { NavLink } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const Sidebar = () => {
   const [isSidebarOpened, openCloseSearchBar] = useState(true);
   const [isMenuCompanyShown, showMenuCompany] = useState(false);
+  //const [isTextVisible, showText] = useState(false);
   const sidebarHeaderRef = useRef();
 
   const handleClick = () => {
@@ -29,9 +30,22 @@ const Sidebar = () => {
     }
   };
 
+  /*   useEffect(() => {
+    let timer;
+    if (isSidebarOpened) {
+      timer = setTimeout(() => {
+        console.log("useEffect showText true");
+        showText(true);
+      }, 300);
+    } else {
+      showText(false);
+      console.log("useEffect showText false ");
+    }
+    return () => clearTimeout(timer);
+  }, [isSidebarOpened]); */
+
   // This function will be passed to MenuCompany to close it
   const closeMenuCompany = () => showMenuCompany(false);
-
   const sidebarWidth = isSidebarOpened ? "sidebar_opened" : "sidebar_closed";
 
   return isSidebarOpened ? (
@@ -156,10 +170,12 @@ const Sidebar = () => {
       className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}
     >
       {/* Название ИП */}
-      <button onClick={handleClickMenuCompany} 
-      ref={sidebarHeaderRef}
-      style={{ backgroundColor: isMenuCompanyShown ? "#F5F9FF" : "white" }}
-      className="sidebar_header">
+      <button
+        onClick={handleClickMenuCompany}
+        ref={sidebarHeaderRef}
+        style={{ backgroundColor: isMenuCompanyShown ? "#F5F9FF" : "white" }}
+        className="sidebar_header"
+      >
         <div className="p-[5px] rounded-[6px] ">
           <img src={locationIcon} alt="" />
         </div>
@@ -172,7 +188,7 @@ const Sidebar = () => {
       )}
 
       <div className="mt-[18px] px-[16px] opacity-50">
-      {!isMenuCompanyShown && <hr />}
+        {!isMenuCompanyShown && <hr />}
       </div>
 
       <div className="flex flex-col justify-between flex-grow">

@@ -74,3 +74,12 @@
 .sidebar_header:hover {
   background-color: rgba(245, 249, 255, 1);
 }
+
+.text-delayed {
+  opacity: 0;
+  transition: opacity 0.3s ease 0.3s; /* Adjust the delay to match your sidebar animation */
+}
+
+.text-visible {
+  opacity: 1;
+}
