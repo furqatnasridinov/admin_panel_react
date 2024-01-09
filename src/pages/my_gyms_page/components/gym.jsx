@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 function Gym(props) {
   return (
-    <Link to={`/gymDetails/${props.id}`}>
+    <Link to={`/myGymsPage/gymDetails/${props.id}`}>
       <div className="h-[60px] w-[screen] bg-bg-color rounded-[16px] py-[16px] px-[32px] flex flex-row items-center  mb-[16px]">
         <div className="flex flex-row items-center  w-full">
           <div className=" flex flex-row items-center  w-[250px]">

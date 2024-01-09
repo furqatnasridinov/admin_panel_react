@@ -6,6 +6,8 @@
 
 .gym_name_container {
   height: 40px;
+  width: 120px;
+  transition: width 0.5s ease;
   padding-left: 16px;
   padding-right: 16px; 
   border-radius: 8px;
@@ -14,5 +16,30 @@
   justify-content: center;
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  justify-content: space-between;
+}
+
+.gym_name_container_opened {
+  width: 208px;
+  height: 40px;
+  transition: width 0.5s ease;
+  padding-left: 16px;
+  padding-right: 16px; 
+  border-radius: 8px;
+  border: 1px solid #77aaf9;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  
+}
+
+.rotate-icon {
+  transform: rotate(-180deg);
+  transition: transform 0.5s ease;
+}
+
+.arrow-icon {
+  transition: transform 0.5s ease;
 }

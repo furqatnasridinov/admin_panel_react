@@ -2,7 +2,7 @@ import React from "react";
 import Gym from "../components/gym";
 import { gyms } from "../../../dummy_data/dymmy_data";
 
-const MainBody = () => {
+const MyGymsBody = () => {
   return (
     <div className="px-[30px] pt-[34px] bg-white rounded-[16px] flex flex-col flex-1 h-full">
       {/* Top section */}
@@ -34,4 +34,4 @@ const MainBody = () => {
   );
 };
 
-export default MainBody;
+export default MyGymsBody;

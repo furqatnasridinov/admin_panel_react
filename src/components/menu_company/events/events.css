@@ -12,15 +12,6 @@
     background-color: #F5F9FF;
 }
 
-.icon_container{
-    width: 24px;
-    height: 24px;
-    background-color: #F5F9FF;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
 .event_text{
     font-size: 14px;

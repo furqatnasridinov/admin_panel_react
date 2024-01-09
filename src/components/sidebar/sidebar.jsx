@@ -93,7 +93,7 @@ const Sidebar = () => {
           </NavLink>
 
           <NavLink
-            to="/mainPage"
+            to="/myGymsPage"
             className={({ isActive }) =>
               isActive
                 ? "sidebar_section active_sidebar_section"
@@ -208,7 +208,7 @@ const Sidebar = () => {
           </NavLink>
 
           <NavLink
-            to="/mainPage"
+            to="/myGymsPage"
             className={({ isActive }) =>
               isActive
                 ? "sidebar_section_closed active_sidebar_section"

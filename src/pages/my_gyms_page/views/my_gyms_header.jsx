@@ -1,7 +1,7 @@
 import React from 'react'
 import CustomButton from '../../../components/button/button'
 
-const MainHeader = () => {
+const MyGymsHeader = () => {
     return (
         <div className="pl-[35px] pr-[19px] py-[18px] bg-white flex justify-between items-center rounded-[16px] ">
 
@@ -13,4 +13,4 @@ const MainHeader = () => {
     )
 }
 
-export default MainHeader
+export default MyGymsHeader
