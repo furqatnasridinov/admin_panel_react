@@ -128,7 +128,7 @@ const Sidebar = () => {
             <hr />
           </div>
 
-          <div className="absolute left-56 bottom-[170px] transition-width duration-300 ease-in-out">
+          <div className="absolute left-56 bottom-[175px] transition-width duration-300 ease-in-out">
             <button onClick={handleClick}>
               {" "}
               <img src={sidebarOpenedLogo} alt="" />
@@ -241,7 +241,7 @@ const Sidebar = () => {
             <hr />
           </div>
 
-          <div className="absolute left-[100px] bottom-[170px] transition-width duration-300 ease-in-out">
+          <div className="absolute left-[100px] bottom-[175px] transition-width duration-300 ease-in-out">
             <button onClick={handleClick}>
               {" "}
               <img src={sidebarClosedLogo} alt="" />

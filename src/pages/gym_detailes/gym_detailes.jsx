@@ -16,7 +16,6 @@ export default function GymDetails() {
       <GymDetailesHeader />
       <GymDetailesBodyFirstContainer />
       <GymDetailesBodySecondContainer />
-
     </div>
   );
 }
