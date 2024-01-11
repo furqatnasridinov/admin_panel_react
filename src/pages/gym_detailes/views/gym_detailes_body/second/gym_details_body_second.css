@@ -99,5 +99,16 @@
   width: 70px;
   height: 70px;
   border-radius: 8px;
-  background-color: #252525;
+}
+
+.activity_each_photo_editting {
+  position: relative;
+  width: 70px;
+  height: 70px;
+}
+
+.activity_each_photo_editting img.delete-icon {
+  position: absolute;
+  left: 53px;
+  bottom: -20px;
 }

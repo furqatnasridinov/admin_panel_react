@@ -9,12 +9,14 @@ import TextAndTextButton from "../../../components/text_and_textbutton";
 import { useState, useRef, useEffect } from "react";
 import { EditableTextfield } from "../first/gym_detailes_body_first";
 import doneSvg from "../../../../../assets/svg/done.svg";
+import deleteSvg from "../../../../../assets/svg/delete.svg";
 
 export default function GymDetailesBodySecondContainer() {
   const [activeChip, setActiveChip] = useState("");
   const [isDescribtionEdittingEnabled, setDescribtionEditting] =
     useState(false);
   const [isFeaturesEdittingEnabled, setFeaturesEditting] = useState(false);
+  const [isEdittingPhotosEnabled, setPhotosEditting] = useState(false);
   const [describtion, setDescribtion] = useState(
     "Смешанные единоборства в нашем зале представляют собой смесь изразных видов единоборств. Освоить все виды могут не только лишь все, мало кто может это делать."
   );
@@ -83,7 +85,7 @@ export default function GymDetailesBodySecondContainer() {
                 />
                 <EditableTextfield
                   value={describtion}
-                  handleChange={handleChange}
+                  handleChange={handleSaveDescribtion}
                   fontsize={"13px"}
                   lineheight={"14px"}
                   minHeight={"90px"}
@@ -122,21 +124,50 @@ export default function GymDetailesBodySecondContainer() {
             )}
           </div>
         </div>
+
         <div className="flex flex-col gap-[10px] w-[609px] ">
-          <TextAndTextButton text1={"Фотографии:"} text2={"Изменить"} />
+          {!isEdittingPhotosEnabled && (
+            <TextAndTextButton
+              text1={"Фотографии"}
+              text2={"Удалить фото"}
+              isRedText={isEdittingPhotosEnabled}
+              onclick={() => setPhotosEditting(true)}
+            />
+          )}
+          {isEdittingPhotosEnabled && (
+            <TextAndTextButton
+              text1={"Фотографии"}
+              text2={"Отменить"}
+              isRedText={isEdittingPhotosEnabled}
+              onclick={() => setPhotosEditting(false)}
+            />
+          )}
           <div className="recomendations_to_photo">
             <p>Рекомендуемые форматы для загрузки: jpeg, png</p>
             <p>Минимально допустимая сторона фотографии: 1080px</p>
           </div>
           <div className="activity_photos_container">
-            {activityPhotos.map((item, index) => (
-              <img
-                className="activity_each_photo"
-                key={index}
-                src={item}
-                alt=""
-              />
-            ))}
+            {!isEdittingPhotosEnabled &&
+              activityPhotos.map((item, index) => (
+                <img
+                  className="activity_each_photo"
+                  key={index}
+                  src={item}
+                  alt=""
+                />
+              ))}
+            {isEdittingPhotosEnabled &&
+              activityPhotos.map((item, index) => (
+                <button className="activity_each_photo_editting">
+                  <img
+                    key={index}
+                    src={item}
+                    alt=""
+                    className="rounded-[8px]"
+                  />
+                  <img className="delete-icon" src={deleteSvg} alt="" />
+                </button>
+              ))}
           </div>
         </div>
       </div>
