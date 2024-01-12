@@ -1,7 +1,7 @@
 import React from "react";
 import "./gym_details_body_second.css";
 import {
-  chips,
+  activities,
   features,
   activityPhotos,
 } from "../../../../../dummy_data/dymmy_data";
@@ -10,17 +10,32 @@ import { useState, useRef, useEffect } from "react";
 import { EditableTextfield } from "../first/gym_detailes_body_first";
 import doneSvg from "../../../../../assets/svg/done.svg";
 import deleteSvg from "../../../../../assets/svg/delete.svg";
+import removeActivitySvg from "../../../../../assets/svg/remove_activities.svg";
+import editActivitySvg from "../../../../../assets/svg/edit_activities.svg";
+import AddActivitySvg from "../../../../../assets/svg/add_activity.svg";
+import addPhotoSvg from "../../../../../assets/svg/add_photo.svg";
+import CustomButton from "../../../../../components/button/button";
+import CustomDialog from "../../../../../components/dialog/dialog";
 
 export default function GymDetailesBodySecondContainer() {
+  // use states
   const [activeChip, setActiveChip] = useState("");
   const [isDescribtionEdittingEnabled, setDescribtionEditting] =
     useState(false);
   const [isFeaturesEdittingEnabled, setFeaturesEditting] = useState(false);
   const [isEdittingPhotosEnabled, setPhotosEditting] = useState(false);
+  const [isActivitiesModalOpened, openActivitiesModal] = useState(false);
+  const [listOfPhotos, changeListOfPhotos] = useState(activityPhotos);
+
   const [describtion, setDescribtion] = useState(
     "Смешанные единоборства в нашем зале представляют собой смесь изразных видов единоборств. Освоить все виды могут не только лишь все, мало кто может это делать."
   );
   const [features, setFeatures] = useState("");
+
+  // use refs
+  const hiddenFileInput = useRef(null);
+
+  // functions
   const handleSaveDescribtion = (newDescribtion) => {
     setDescribtion(newDescribtion);
     setDescribtionEditting(false);
@@ -37,6 +52,32 @@ export default function GymDetailesBodySecondContainer() {
       .map((line) => line.trim());
     handleSaveFeatures(newFeaturesArray);
   };
+  function handleRemovingActivityPhotos(id) {
+    const newList = listOfPhotos.filter((item) => item.id !== id);
+    changeListOfPhotos(newList);
+  }
+  // Обработчик для добавления новой фотографии
+  const handleNewPhoto = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // Создаём новый объект фото с уникальным id и image URL
+        const newPhoto = {
+          id: listOfPhotos.length + 1,
+          image: e.target.result,
+        };
+        // Обновляем состояние со списком фотографий
+        changeListOfPhotos([...listOfPhotos, newPhoto]);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // передаем это на кнопку добавления,(как бы через ref, нажимаем на саму input file которого скрыли)
+  const handleClick = () => {
+    hiddenFileInput.current.click();
+  };
 
   return (
     <div className="flex flex-col bg-white h-fit rounded-[16px] p-[32px] gap-[32px]">
@@ -44,10 +85,12 @@ export default function GymDetailesBodySecondContainer() {
         <TextAndTextButton
           text1={"Активности"}
           text2={"Редактировать список активностей"}
-          onclick={() => {}}
+          onclick={() => {
+            openActivitiesModal(true);
+          }}
         />
         <div className="chips_row ">
-          {chips.map((chip) => {
+          {activities.map((chip) => {
             return (
               <Chip
                 key={chip.id}
@@ -58,6 +101,13 @@ export default function GymDetailesBodySecondContainer() {
             );
           })}
         </div>
+        <CustomDialog isOpened={isActivitiesModalOpened}>
+          <ActivitiesModal
+            closeModal={() => {
+              openActivitiesModal(false);
+            }}
+          />
+        </CustomDialog>
       </div>
       <div className="flex flex-row gap-[50px]">
         <div className="describtion_and_features_column">
@@ -129,16 +179,17 @@ export default function GymDetailesBodySecondContainer() {
           {!isEdittingPhotosEnabled && (
             <TextAndTextButton
               text1={"Фотографии"}
-              text2={"Удалить фото"}
+              text2={listOfPhotos.length > 0 ? "Удалить фото" : ""}
               isRedText={isEdittingPhotosEnabled}
-              onclick={() => setPhotosEditting(true)}
+              onclick={() =>
+                listOfPhotos.length > 0 ? setPhotosEditting(true) : {}
+              }
             />
           )}
           {isEdittingPhotosEnabled && (
             <TextAndTextButton
               text1={"Фотографии"}
-              text2={"Отменить"}
-              isRedText={isEdittingPhotosEnabled}
+              text2={"Готово"}
               onclick={() => setPhotosEditting(false)}
             />
           )}
@@ -148,26 +199,49 @@ export default function GymDetailesBodySecondContainer() {
           </div>
           <div className="activity_photos_container">
             {!isEdittingPhotosEnabled &&
-              activityPhotos.map((item, index) => (
+              listOfPhotos.map((item, index) => (
                 <img
                   className="activity_each_photo"
                   key={index}
-                  src={item}
+                  src={item.image}
                   alt=""
                 />
               ))}
             {isEdittingPhotosEnabled &&
-              activityPhotos.map((item, index) => (
+              listOfPhotos.map((item, index) => (
                 <button className="activity_each_photo_editting">
                   <img
                     key={index}
-                    src={item}
+                    src={item.image}
                     alt=""
                     className="rounded-[8px]"
                   />
-                  <img className="delete-icon" src={deleteSvg} alt="" />
+                  <img
+                    className="delete-icon"
+                    src={deleteSvg}
+                    alt=""
+                    onClick={() => {
+                      handleRemovingActivityPhotos(item.id);
+                    }}
+                  />
                 </button>
               ))}
+            {!isEdittingPhotosEnabled && (
+              <>
+                <img
+                  src={addPhotoSvg}
+                  alt=""
+                  style={{ cursor: "pointer" }}
+                  onClick={handleClick} // нажимаем как бы на input file
+                />
+                <input
+                  type="file"
+                  ref={hiddenFileInput}
+                  onChange={handleNewPhoto}
+                  style={{ display: "none" }} // Скрываем input
+                />
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -249,5 +323,94 @@ function EditableFeaturesTextfield({ handleChange, fontsize, lineheight }) {
         <img src={doneSvg} alt="" />
       </button>
     </div>
+  );
+}
+
+function ActivitiesModal({ closeModal }) {
+  const [activeActivity, setActiveActivity] = useState("Бокс");
+  return (
+    <div className="main_container ">
+      <div className="flex flex-col gap-[5px]">
+        <div className="text-[16px] font-semibold leading-[16px]">
+          Редактирование активностей
+        </div>
+        <div className="text-[14px] font-normal leading-[16px]">
+          Выберите активность, чтобы добавить в неё занятия. Дополнительные
+          занятия - это не обязательная опция, вы можете использовать только
+          основные активности.
+        </div>
+      </div>
+      {/* activities and podactivities */}
+      <div className="flex flex-row gap-[24px]">
+        <div className="activities_col">
+          <div className="text-[14px] font-bold">Ваши активности:</div>
+          <div className="blue_bordered_container">
+            {activities.map((activity) => {
+              return (
+                <EachActivity
+                  key={activity.id}
+                  title={activity.name}
+                  onclick={() => {
+                    setActiveActivity(activity.name);
+                  }}
+                  isActive={activity.name === activeActivity}
+                />
+              );
+            })}
+            <AddActivity />
+          </div>
+        </div>
+        <div className="podactivities_col">
+          <div className="text-[14px] font-bold">
+            Доп. занятия внутри активности:
+          </div>
+          <div className="blue_bordered_container"></div>
+        </div>
+      </div>
+      <CustomButton
+        height={"40px"}
+        width={"100%"}
+        title={"Закончить редактирование"}
+        onСlick={closeModal}
+        fontSize={"14px"}
+        showShadow={false}
+      />
+    </div>
+  );
+}
+
+function EachActivity({
+  title,
+  onclick,
+  isActive,
+  onRemoveClicked,
+  onEditClicked,
+}) {
+  return (
+    <div className={isActive ? "isActive" : "each_activity"}>
+      <img
+        style={{ cursor: "pointer" }}
+        src={removeActivitySvg}
+        alt=""
+        onClick={onRemoveClicked}
+      />
+      <p onClick={onclick}>{title}</p>
+      <img
+        style={{ cursor: "pointer" }}
+        className="edit_icon"
+        onClick={onEditClicked}
+        src={editActivitySvg}
+        alt=""
+      />
+    </div>
+  );
+}
+
+function AddActivity({ onclick }) {
+  return (
+    <button className="add_activity">
+      <img src={AddActivitySvg} alt="" />
+      <button onClick={onclick}>Добавить</button>
+    </button>
   );
 }

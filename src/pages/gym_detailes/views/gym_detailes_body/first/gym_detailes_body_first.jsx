@@ -3,8 +3,10 @@ import "./gym_details_body_first.css";
 import TextAndTextButton from "../../../components/text_and_textbutton";
 import SizeOfPicture from "../../../components/size_of_picture";
 import topDogMainPic from "../../../../../assets/images/top_dog.png";
-import gosling from "../../../../../assets/images/gosling.jpg";
-import goggins from "../../../../../assets/images/goggins.jpg";
+/* import gosling from "../../../../../assets/images/gosling.jpg";
+import goggins from "../../../../../assets/images/goggins.jpg"; */
+import mainPicPlaceHolder from "../../../../../assets/svg/main_photo_placeholder.svg";
+import logoPlaceholder from "../../../../../assets/svg/logo_placeholder.svg";
 import topDogLogo from "../../../../../assets/images/top_dog_logo.jpeg";
 import phoneSvg from "../../../../../assets/svg/phone.svg";
 import tgSvg from "../../../../../assets/svg/tg.svg";
@@ -14,8 +16,10 @@ import arrowDownSvg from "../../../../../assets/svg/arrow_down.svg";
 import arrowLeftSvg from "../../../../../assets/svg/arrow_left.svg";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import { useState, useRef, useEffect } from "react";
+import CustomButton from "../../../../../components/button/button";
 
 export default function GymDetailesBodyFirstContainer() {
+  // use states
   const [isNameEditingEnabled, setNameEditing] = useState(false);
   const [isDescribtionEdittingEnabled, setDescribtionEditing] = useState(false);
   const [isAddressEdittingEnabled, setAddressEditting] = useState(false);
@@ -23,12 +27,35 @@ export default function GymDetailesBodyFirstContainer() {
   const [isModalPhotoOpened, openModalPhoto] = useState(false);
   const [isModalLogoOpened, openModalLogo] = useState(false);
   const [gymName, changeGymName] = useState("Top DOG Fight Club");
+  const [mainPic, setMainPic] = useState("");
+  const [logo, setLogo] = useState("");
   const [describtion, setDescribtion] = useState(
     "В июне 2021 года был открыт Top Dog Club — зал с фитнессом и единоборствами, просуществовавший более двух лет."
   );
   const [address, setAddress] = useState(
     "ул. Лёни Ленина, д. 12, БЦ “Big Мук”"
   );
+
+  // use refs
+  const fileInputMainPhotoRef = useRef();
+  const fileInputLogoRef = useRef();
+
+  // functions
+  const openFilePickerForMainPhoto = () => {
+    try {
+      fileInputMainPhotoRef.current.click();
+    } catch (error) {
+      alert(error);
+    }
+  };
+  const openFilePickerForLogo = () => {
+    try {
+      fileInputLogoRef.current.click();
+    } catch (error) {
+      alert(error);
+    }
+  };
+
   const handleSaveGymName = (newName) => {
     changeGymName(newName);
     setNameEditing(false);
@@ -42,6 +69,35 @@ export default function GymDetailesBodyFirstContainer() {
     setAddressEditting(false);
   };
 
+  // Обработчик для добавления новой фотографии
+  const handleNewPhoto = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // Создаём новый объект фото
+        const newPhoto = e.target.result;
+        // Обновляем состояние со  фотография
+        setMainPic(newPhoto);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  // Обработчик для добавления нового логотипа
+  const handleNewLogo = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // Создаём новый объект фото
+        const newLogo = e.target.result;
+        // Обновляем состояние со  фотография
+        setLogo(newLogo);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
       {/* Photos and Logos */}
@@ -51,54 +107,126 @@ export default function GymDetailesBodyFirstContainer() {
         <div className="gym_main_photo_column">
           <TextAndTextButton
             text1={"Фоновая фотография"}
-            text2={"Изменить"}
-            onclick={() => {
-              openModalPhoto(true);
-            }}
+            text2={mainPic == "" ? "" : "Изменить"}
+            onclick={() => (mainPic != "" ? openModalPhoto(true) : {})}
           />
-          <button
-            onClick={() => {
-              openModalPhoto(true);
-            }}
-          >
-            <img className="main_pic" src={topDogMainPic} alt="" />
-          </button>
+
+          {mainPic.length > 0 && (
+            <img
+              className="main_pic"
+              src={mainPic}
+              onClick={() => openModalPhoto(true)}
+              style={{ cursor: "pointer" }}
+            />
+          )}
+          {mainPic == "" && (
+            <>
+              <img
+                className=""
+                src={mainPicPlaceHolder}
+                style={{ cursor: "pointer" }}
+                onClick={openFilePickerForMainPhoto}
+              />
+              <input
+                ref={fileInputMainPhotoRef}
+                onChange={handleNewPhoto}
+                type="file"
+                style={{ display: "none" }}
+              />
+            </>
+          )}
+
           <SizeOfPicture size={"375x210px"} />
           <CustomDialog isOpened={isModalPhotoOpened}>
             <ChangeMainPhotoModal
               onPop={() => openModalPhoto(false)}
-              photo={topDogMainPic}
+              onDeleteClicked={() => {
+                openModalPhoto(false);
+                setMainPic("");
+              }}
+              openFilePicker={openFilePickerForMainPhoto}
+              photo={mainPic == "" ? "" : mainPic}
+              fileInputRef={fileInputMainPhotoRef}
+              uploadNewPhoto={handleNewPhoto}
             />
           </CustomDialog>
         </div>
-        {/* Big logo */}
+        {/*  Logos Column */}
         <div className="flex flex-col gap-[10px] mt-[30px] ml-[43px]">
           <TextAndTextButton
             text1={"Логотип"}
-            text2={"Изменить"}
-            onclick={() => {openModalLogo(true)}}
+            text2={logo == "" ? "" : "Изменить"}
+            onclick={() => (mainPic != "" ? openModalLogo(true) : {})}
           />
-          <button onClick={() => {openModalLogo(true)}} className="w-[180px] h-[180px]">
-            <img className="logo_rounded" src={topDogLogo} alt="" />
-          </button>
+          {/* Big logo */}
+          {logo != "" && (
+            <img
+              className="logo_rounded180"
+              src={logo}
+              onClick={() => openModalLogo(true)}
+              style={{ cursor: "pointer" }}
+            />
+          )}
+          {logo == "" && (
+            <>
+              <img
+                src={logoPlaceholder}
+                style={{ cursor: "pointer" }}
+                onClick={openFilePickerForLogo}
+              />
+              <input
+                ref={fileInputLogoRef}
+                onChange={handleNewLogo}
+                type="file"
+                style={{ display: "none" }}
+              />
+            </>
+          )}
+
           <SizeOfPicture size={"180x180px"} />
         </div>
         {/* Medium logo */}
-        <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
-          <button onClick={() => {openModalLogo(true)}} className="w-[90px] h-[90px]">
-            <img className="logo_rounded" src={topDogLogo} alt="" />
-          </button>
-          <SizeOfPicture size={"90x90px"} />
-        </div>
+        {logo != "" && (
+          <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
+            <img
+              onClick={() => {
+                openModalLogo(true);
+              }}
+              className="logo_rounded90"
+              style={{ cursor: "pointer" }}
+              src={logo}
+            />
+            <SizeOfPicture size={"90x90px"} />
+          </div>
+        )}
+
         {/* Small logo */}
-        <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
-          <button onClick={() => {openModalLogo(true)}} className="w-[50px] h-[50px]">
-            <img className="logo_rounded" src={topDogLogo} alt="" />
-          </button>
-          <SizeOfPicture size={"50x50px"} />
-        </div>
+        {logo != "" && (
+          <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
+            <img
+              className="logo_rounded50"
+              style={{ cursor: "pointer" }}
+              src={logo}
+              onClick={() => {
+                openModalLogo(true);
+              }}
+            />
+
+            <SizeOfPicture size={"50x50px"} />
+          </div>
+        )}
         <CustomDialog isOpened={isModalLogoOpened}>
-          <ChangeLogoModal onPop={()=>{openModalLogo(false)}} logo={topDogLogo} />
+          <ChangeLogoModal
+            onPop={() => openModalLogo(false)}
+            onDeleteClicked={() => {
+              openModalLogo(false);
+              setLogo("");
+            }}
+            openFilePicker={openFilePickerForLogo}
+            logo={logo}
+            fileInputRef={fileInputLogoRef}
+            uploadNewLogo={handleNewLogo}
+          />
         </CustomDialog>
       </div>
 
@@ -398,11 +526,27 @@ function EditableContacts({ text, info, icon, isPhone, isTg, isVk }) {
     </div>
   );
 }
-function ChangeMainPhotoModal({ onPop, photo }) {
+
+function ChangeMainPhotoModal({
+  onPop,
+  photo,
+  onDeleteClicked,
+  openFilePicker,
+  fileInputRef,
+  uploadNewPhoto,
+}) {
   return (
     <div className="photo_dialog_container">
       {/* photo */}
-      <img className="w-[513px] h-[250px] rounded-t-[16px]" src={photo}></img>
+      {photo != "" && (
+        <img className="w-[513px] h-[250px] rounded-t-[16px]" src={photo}></img>
+      )}
+      {photo == "" && (
+        <div className="w-[513px] h-[250px] rounded-t-[16px] bg-white flex justify-center">
+          <img className="" src={mainPicPlaceHolder}></img>
+        </div>
+      )}
+
       {/* white container */}
       <div className="bg-white p-[32px] flex flex-col justify-center items-center gap-[24px] rounded-b-[16px]">
         <div className="flex flex-col gap-[5-x]">
@@ -414,23 +558,37 @@ function ChangeMainPhotoModal({ onPop, photo }) {
         {/* Row of buttons */}
         <div className="flex flex-row w-full h-[40px] gap-[10px] ">
           <button className="rounded_button" onClick={onPop}>
-            <img style={{ color: "white" }} src={arrowLeftSvg} alt="" />
+            <img src={arrowLeftSvg} alt="" />
           </button>
-          <button className="second_button">
+          <button onClick={onDeleteClicked} className="second_button">
             <p>Удалить фото</p>
           </button>
-          <button className="third_button">
-            <div className="text-[14px] font-medium text-white">
-              {" "}
-              Загрузить другое фото
-            </div>
-          </button>
+          <CustomButton
+            width={"202px"}
+            height={"40px"}
+            title={"Загрузить другое фото"}
+            fontSize={"14px"}
+            onСlick={openFilePicker}
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            style={{ display: "none" }}
+            onChange={uploadNewPhoto}
+          />
         </div>
       </div>
     </div>
   );
 }
-function ChangeLogoModal({onPop, logo}) {
+function ChangeLogoModal({
+  onPop,
+  logo,
+  onDeleteClicked,
+  openFilePicker,
+  fileInputRef,
+  uploadNewLogo,
+}) {
   return (
     <div className="logo_dialog_container">
       <div className="w-full flex justify-center">
@@ -444,18 +602,25 @@ function ChangeLogoModal({onPop, logo}) {
         </div>
         {/* Row of buttons */}
         <div className="flex flex-row w-full h-[40px] gap-[10px] ">
-          <button className="rounded_button">
-            <img src={arrowLeftSvg} alt="" onClick={onPop}/>
+          <button className="rounded_button" onClick={onPop}>
+            <img src={arrowLeftSvg} alt="" />
           </button>
-          <button className="second_button">
+          <button className="second_button" onClick={onDeleteClicked}>
             <p>Удалить логотип</p>
           </button>
-          <button className="third_button">
-            <div className="text-[14px] font-medium text-white">
-              {" "}
-              Загрузить другой логотип
-            </div>
-          </button>
+          <CustomButton
+            width={"223px"}
+            height={"40px"}
+            title={"Загрузить другой логотип"}
+            fontSize={"14px"}
+            onСlick={openFilePicker}
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            style={{ display: "none" }}
+            onChange={uploadNewLogo}
+          />
         </div>
       </div>
     </div>

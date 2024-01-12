@@ -87,7 +87,7 @@
   flex-direction: row;
   flex-wrap: wrap;
   gap: 14px;
-  width: 100%;
+  width: fit-content;
   height: fit-content;
   /* background-color: brown; */
   padding: 16px;

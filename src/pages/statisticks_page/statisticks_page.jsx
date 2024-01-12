@@ -1,84 +1,100 @@
 import React, { Component } from "react";
 import "./statisticks.css";
-import topDogPhoto from "../../assets/images/top_dog.png";
-import gosling from "../../assets/images/gosling.jpg";
-import arrowLeftSvg from "../../assets/svg/arrow_left.svg";
-import logo from "../../assets/images/top_dog_logo.jpeg";
+import CustomButton from "../../components/button/button";
+import removeActivitySvg from "../../assets/svg/remove_activities.svg";
+import editActivitySvg from "../../assets/svg/edit_activities.svg";
+import AddActivitySvg from "../../assets/svg/add_activity.svg";
+import { activities } from "../../dummy_data/dymmy_data";
+import { useState } from "react";
 
-export class StatisticksPage extends Component {
-  render() {
-    return (
-      <div className="flex flex-col items-center gap-[50px] p-[20px]">
-        <ChangeMainPhotoModal />
-        <ChangeLogoModal />
-      </div>
-    );
-  }
-}
+export default function StatisticksPage() {
+  const [activeActivity, setActiveActivity] = useState("Бокс");
 
-export default StatisticksPage;
-
- function ChangeMainPhotoModal() {
   return (
-    <div className="photo_dialog_container">
-      {/* photo */}
-      <img className="w-[513px] h-[250px] rounded-t-[16px]" src={gosling}></img>
-      {/* white container */}
-      <div className="bg-white p-[32px] flex flex-col justify-center items-center gap-[24px] rounded-b-[16px]">
-        <div className="flex flex-col gap-[5-x]">
-          <div className="font-semibold text-[16px] ">
-            Изменение фоновой фотографии
+    <div className="flex flex-col items-center gap-[50px] p-[20px]">
+      <div className="main_container ">
+        <div className="flex flex-col gap-[5px]">
+          <div className="text-[16px] font-semibold leading-[16px]">
+            Редактирование активностей
           </div>
-          <div className="font-normal text-[14px]">Что вы хотите сделать?</div>
+          <div className="text-[14px] font-normal leading-[16px]">
+            Выберите активность, чтобы добавить в неё занятия. Дополнительные
+            занятия - это не обязательная опция, вы можете использовать только
+            основные активности.
+          </div>
         </div>
-        {/* Row of buttons */}
-        <div className="flex flex-row w-full h-[40px] gap-[10px] ">
-          <button className="rounded_button">
-            <img src={arrowLeftSvg} alt="" />
-          </button>
-          <button className="second_button">
-            <p>Удалить фото</p>
-          </button>
-          <button className="third_button">
-            <div className="text-[14px] font-medium text-white">
-              {" "}
-              Загрузить другое фото
+        {/* activities and podactivities */}
+        <div className="flex flex-row gap-[24px]">
+          <div className="activities_col">
+            <div className="text-[14px] font-bold">Ваши активности:</div>
+            <div className="blue_bordered_container">
+              {activities.map((activity) => {
+                return (
+                  <EachActivity
+                    key={activity.id}
+                    title={activity.name}
+                    onclick={() => {
+                      setActiveActivity(activity.name);
+                    }}
+                    isActive={activity.name === activeActivity}
+                  />
+                );
+              })}
+              <AddActivity />
             </div>
-          </button>
+          </div>
+          <div className="podactivities_col">
+            <div className="text-[14px] font-bold">
+              Доп. занятия внутри активности:
+            </div>
+            <div className="blue_bordered_container"></div>
+          </div>
         </div>
+        <CustomButton
+          height={"40px"}
+          width={"100%"}
+          title={"Закончить редактирование"}
+          onclick={() => {}}
+          fontSize={"14px"}
+          showShadow={false}
+        />
       </div>
     </div>
   );
 }
 
-function ChangeLogoModal() {
+function EachActivity({
+  title,
+  onclick,
+  isActive,
+  onRemoveClicked,
+  onEditClicked,
+}) {
   return (
-    <div className="logo_dialog_container">
-      <div className="w-full flex justify-center">
-        <img className="logo" src={gosling}></img>
-      </div>
-      {/* white container */}
-      <div className="flex flex-col gap-[24px]">
-        <div className="flex flex-col gap-[5-x] ml-[50px]">
-          <div className="font-semibold text-[16px] ">Изменение логотипа</div>
-          <div className="font-normal text-[14px]">Что вы хотите сделать?</div>
-        </div>
-        {/* Row of buttons */}
-        <div className="flex flex-row w-full h-[40px] gap-[10px] ">
-          <button className="rounded_button">
-            <img src={arrowLeftSvg} alt="" />
-          </button>
-          <button className="second_button">
-            <p>Удалить логотип</p>
-          </button>
-          <button className="third_button">
-            <div className="text-[14px] font-medium text-white">
-              {" "}
-              Загрузить другой логотип
-            </div>
-          </button>
-        </div>
-      </div>
+    <div className={isActive ? "isActive" : "each_activity"}>
+      <img
+        style={{ cursor: "pointer" }}
+        src={removeActivitySvg}
+        alt=""
+        onClick={onRemoveClicked}
+      />
+      <p onClick={onclick}>{title}</p>
+      <img
+        style={{ cursor: "pointer" }}
+        className="edit_icon"
+        onClick={onEditClicked}
+        src={editActivitySvg}
+        alt=""
+      />
     </div>
+  );
+}
+
+function AddActivity({ onclick }) {
+  return (
+    <button className="add_activity">
+      <img src={AddActivitySvg} alt="" />
+      <button onClick={onclick}>Добавить</button>
+    </button>
   );
 }
