@@ -3,8 +3,33 @@ import "./dialog.css";
 import { createPortal } from "react-dom";
 import { useEffect } from "react";
 
-export default function CustomDialog({ isOpened, children }) {
+export default function CustomDialog({
+  isOpened,
+  children,
+  closeOnTapOutside,
+}) {
   const dialogRef = useRef();
+
+  /* useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dialogRef.current &&
+        !dialogRef.current.contains(event.target) &&
+        isOpened
+      ) {
+        if (typeof closeOnTapOutside === "function") {
+          closeOnTapOutside();
+        }
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [closeOnTapOutside]); */
+
   useEffect(() => {
     const dialog = dialogRef.current;
 
@@ -24,9 +49,7 @@ export default function CustomDialog({ isOpened, children }) {
     }
   }, [isOpened]);
   return createPortal(
-    <dialog sty ref={dialogRef}>
-      {children}
-    </dialog>,
+    <dialog ref={dialogRef}>{children}</dialog>,
     document.getElementById("modal")
   );
 }

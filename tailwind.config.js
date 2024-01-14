@@ -11,6 +11,7 @@ module.exports = {
         "blue-border" : "rgba(89, 154, 254, 1)",
         "blue-text" : "rgba(62, 134, 245, 1)",
         "grey-text" : "rgba(176, 176, 176, 1)",
+        "red-text" : "rgba(255, 136, 136, 1)",
       }
     },
   },

@@ -156,7 +156,7 @@ export default function GymDetailesBodyFirstContainer() {
           <TextAndTextButton
             text1={"Логотип"}
             text2={logo == "" ? "" : "Изменить"}
-            onclick={() => (mainPic != "" ? openModalLogo(true) : {})}
+            onclick={() => (logo != "" ? openModalLogo(true) : {})}
           />
           {/* Big logo */}
           {logo != "" && (
