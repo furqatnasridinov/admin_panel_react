@@ -6,9 +6,9 @@ import "./custom_dropdown.css";
 
 export default function CustomDropdown({
   isDropDownOpened,
-  currentGym,
+  text,
   openCloseDropDown,
-  ongymSelected,
+  map,
 }) {
   return (
     <div className="column">
@@ -18,14 +18,15 @@ export default function CustomDropdown({
         }
         onClick={openCloseDropDown}
       >
-        <div className="text-[14px] font-medium">{currentGym}</div>
+        <div className="text-[14px] font-medium">{text}</div>
         <div className={isDropDownOpened ? "rotate-icon" : "arrow-icon"}>
           <img src={arrowDownSvg} alt="" />
         </div>
       </button>
       {isDropDownOpened && (
         <div className="dropdown_body">
-          {gyms.map((item, index) => (
+          {map}
+          {/* {gyms.map((item, index) => (
             <button
               key={index}
               className="gym_names"
@@ -33,7 +34,7 @@ export default function CustomDropdown({
             >
               {item.gymName}
             </button>
-          ))}
+          ))} */}
         </div>
       )}
     </div>

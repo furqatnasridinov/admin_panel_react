@@ -3,8 +3,6 @@ import "./gym_details_body_first.css";
 import TextAndTextButton from "../../../components/text_and_textbutton";
 import SizeOfPicture from "../../../components/size_of_picture";
 import topDogMainPic from "../../../../../assets/images/top_dog.png";
-/* import gosling from "../../../../../assets/images/gosling.jpg";
-import goggins from "../../../../../assets/images/goggins.jpg"; */
 import mainPicPlaceHolder from "../../../../../assets/svg/main_photo_placeholder.svg";
 import logoPlaceholder from "../../../../../assets/svg/logo_placeholder.svg";
 import topDogLogo from "../../../../../assets/images/top_dog_logo.jpeg";
@@ -18,7 +16,7 @@ import CustomDialog from "../../../../../components/dialog/dialog";
 import { useState, useRef, useEffect } from "react";
 import CustomButton from "../../../../../components/button/button";
 
-export default function GymDetailesBodyFirstContainer() {
+export default function GymDetailesBodyFirstContainer({ gym }) {
   // use states
   const [isNameEditingEnabled, setNameEditing] = useState(false);
   const [isDescribtionEdittingEnabled, setDescribtionEditing] = useState(false);
@@ -244,7 +242,7 @@ export default function GymDetailesBodyFirstContainer() {
                   isRedText={isNameEditingEnabled}
                   onclick={() => setNameEditing(true)}
                 />
-                <div className="text-[14px]">{gymName}</div>
+                <div className="text-[14px]">{gym.name}</div>
               </>
             )}
             {isNameEditingEnabled && (
@@ -256,8 +254,10 @@ export default function GymDetailesBodyFirstContainer() {
                   onclick={() => setNameEditing(false)}
                 />
                 <EditableTextfield
-                  value={gymName}
+                  value={gym.name}
                   handleChange={handleSaveGymName}
+                  lineheight={"16px"}
+                  fontsize={"14px"}
                 />
               </>
             )}
@@ -274,7 +274,9 @@ export default function GymDetailesBodyFirstContainer() {
                     setDescribtionEditing(true);
                   }}
                 />
-                <div className="leading-[14px] text-[13px]">{describtion}</div>
+                <div className="leading-[14px] text-[13px]">
+                  {gym.description}
+                </div>
               </>
             )}
             {isDescribtionEdittingEnabled && (
@@ -288,7 +290,7 @@ export default function GymDetailesBodyFirstContainer() {
                   }}
                 />
                 <EditableTextfield
-                  value={describtion}
+                  value={gym.description}
                   handleChange={handleSaveDescribtion}
                   fontsize={"13px"}
                   lineheight={"14px"}
@@ -308,7 +310,7 @@ export default function GymDetailesBodyFirstContainer() {
                     setAddressEditting(true);
                   }}
                 />
-                <div className="leading-[16px] text-[14px]">{address}</div>
+                <div className="leading-[16px] text-[14px]">{gym.address}</div>
               </>
             )}
             {isAddressEdittingEnabled && (
@@ -322,7 +324,7 @@ export default function GymDetailesBodyFirstContainer() {
                   }}
                 />
                 <EditableTextfield
-                  value={address}
+                  value={gym.address}
                   handleChange={handleSaveAddress}
                   fontsize={"14px"}
                 />
@@ -343,20 +345,24 @@ export default function GymDetailesBodyFirstContainer() {
                 {/* Phone */}
                 <div className="icon_and_tag">
                   <img src={phoneSvg} alt="" />
-                  <div className="font-normal text-[14px]">
-                    +7 (965) 029 25-55
-                  </div>
+                  <div className="font-normal text-[14px]">{gym.phone}</div>
                 </div>
                 {/* Tg */}
-                <div className="icon_and_tag">
-                  <img src={tgSvg} alt="" />
-                  <div className="font-normal text-[14px]">TopDogFC</div>
-                </div>
+                {gym.telegram !== null && gym.telegram !== "" && (
+                  <div className="icon_and_tag">
+                    <img src={tgSvg} alt="" />
+                    <div className="font-normal text-[14px]">
+                      {gym.telegram}
+                    </div>
+                  </div>
+                )}
                 {/* Vk */}
-                <div className="icon_and_tag">
-                  <img src={vkSvg} alt="" />
-                  <div className="font-normal text-[14px]">TopDog_FC</div>
-                </div>
+                {gym.vk !== null && gym.vk !== "" && (
+                  <div className="icon_and_tag">
+                    <img src={tgSvg} alt="" />
+                    <div className="font-normal text-[14px]">{gym.vk}</div>
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -371,19 +377,19 @@ export default function GymDetailesBodyFirstContainer() {
                 <EditableContacts
                   icon={phoneSvg}
                   text={"Телефон"}
-                  info={"+7 (965) 029 25-55"}
+                  info={gym.phone}
                   isPhone={true}
                 />
                 <EditableContacts
                   icon={tgSvg}
                   text={"Telegram"}
-                  info={"TopDogFC"}
+                  info={gym.telegram == null ? "" : gym.telegram}
                   isTg={true}
                 />
                 <EditableContacts
                   icon={vkSvg}
                   text={"VKontakte"}
-                  info={"TopDog_FC"}
+                  info={gym.vk == null ? "" : gym.vk}
                   isVk={true}
                 />
               </div>

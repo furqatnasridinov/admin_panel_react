@@ -6,6 +6,7 @@ import userLogo from "../../../../../assets/svg/user_logo.svg";
 import phoneSvg from "../../../../../assets/svg/phone2.svg";
 import availableSvg from "../../../../../assets/svg/available.svg";
 import notAvailable from "../../../../../assets/svg/not_available.svg";
+import goggins from "../../../../.././assets/images/goggins.jpg"
 import starSvg from "../../../../../assets/svg/star.svg";
 import docsSvg from "../../../../../assets/svg/docs.svg";
 import garbage from "../../../../../assets/images/garbage.png";
@@ -16,7 +17,7 @@ import TextAndTextButton from "../../../components/text_and_textbutton";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import ReactInputMask from "react-input-mask";
 
-export default function Employees() {
+export default function Employees({listOfEmployees}) {
   // use state for add employees dialog
   const [nameTextfieldHasFocus, setNameFocus] = useState(false);
   const [surnameTextfieldHasFocus, setSurnameFocus] = useState(false);
@@ -91,6 +92,7 @@ export default function Employees() {
       alert("Сотрудник добавлен");
     }
   };
+
   const closeAddEmolyeesDialogOntapOutside = () =>
     openAddEmployeesDialog(false);
 
@@ -279,13 +281,14 @@ export default function Employees() {
         </div>
       </CustomDialog>
       <div className="employees_list">
-        {employees.map((employee) => {
+        {listOfEmployees.map((employee) => {
           return (
             <EachEmployee
               key={employee.id}
-              photo={employee.photo}
-              name={employee.name}
-              job={employee.job}
+              photo={goggins}
+              name={employee.user.firstName}
+              lastName={employee.user.lastName}
+              job={employee.roles}
               isThatYou={employee.isThatYou}
             />
           );
@@ -438,6 +441,7 @@ export default function Employees() {
 export function EachEmployee({
   photo,
   name,
+  lastName,
   job,
   isThatYou,
   showPointer,
@@ -464,7 +468,7 @@ export function EachEmployee({
           {/* Name and job */}
           <div className="flex flex-col gap-0 justify-center">
             <div className="flex flex-row gap-[3px]">
-              <div className="text-[14px] font-bold leading-none">{name}</div>
+              <div className="text-[14px] font-bold leading-none">{name} {lastName}</div>
               <div className="you leading-none">{isThatYou ? "(Вы)" : ""}</div>
             </div>
             <div className="text-[14px] font-normal leading-none">{job}</div>

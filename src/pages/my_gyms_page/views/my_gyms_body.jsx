@@ -1,8 +1,27 @@
 import React from "react";
 import Gym from "../components/gym";
-import { gyms } from "../../../dummy_data/dymmy_data";
+import { useState, useEffect } from "react";
+import axiosClient from "../../../config/axios_client";
+import AppConstants from "../../../config/app_constants";
 
 const MyGymsBody = () => {
+  const [listOfGyms, setGyms] = useState([]);
+
+  useEffect(() => {
+    const getGyms = async () => {
+      console.log("get gyms started");
+      try {
+        const response = await axiosClient.get(AppConstants.getGyms);
+        if (response.data["operationResult"] == "OK") {
+          setGyms(response.data["object"]);
+        }
+      } catch (error) {
+        alert(`getGyms ${error}`);
+      }
+    };
+    getGyms();
+  }, []);
+
   return (
     <div className="px-[30px] pt-[34px] bg-white rounded-[16px] flex flex-col flex-1 h-full">
       {/* Top section */}
@@ -19,11 +38,11 @@ const MyGymsBody = () => {
       {/* LIST BUILDER */}
 
       <div className="h-[490px] overflow-y-auto ">
-        {gyms.map((gym) => (
+        {listOfGyms.map((gym) => (
           <Gym
             key={gym.id}
-            id = {gym.id}
-            gymName={gym.gymName}
+            id={gym.id}
+            gymName={gym.name}
             activitiesForMonth={gym.activitiesForMonth}
             activitiesForWeek={gym.activitiesForWeek}
             activitiesForDay={gym.activitiesForDay}

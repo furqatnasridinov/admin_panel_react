@@ -8,7 +8,9 @@ const MyGymsHeader = () => {
 
       <CustomButton
         title="Добавить"
-        onclick={() => {}}
+        onСlick={() => {
+          console.log(localStorage.getItem("token"));
+        }}
         width={"203px"}
         height={"46px"}
         showShadow={true}

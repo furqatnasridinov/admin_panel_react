@@ -408,9 +408,9 @@ function EachActivity({
 
 function AddActivity({ onclick }) {
   return (
-    <button className="add_activity">
+    <div className="add_activity">
       <img src={AddActivitySvg} alt="" />
       <button onClick={onclick}>Добавить</button>
-    </button>
+    </div>
   );
 }

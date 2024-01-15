@@ -4,19 +4,114 @@ import GymDetailesHeader from "./views/gym_detailes_header/gym_detailes_header";
 import GymDetailesBodyFirstContainer from "./views/gym_detailes_body/first/gym_detailes_body_first";
 import GymDetailesBodySecondContainer from "./views/gym_detailes_body/second/gym_details_body_second";
 import Employees from "./views/gym_detailes_body/employees/employees";
+import { useEffect, useState } from "react";
+import axiosClient from "../../config/axios_client";
+import AppConstants from "../../config/app_constants";
 
 export default function GymDetails() {
   let { gymId } = useParams(); // This hooks allows you to extract params from the URL
+  const [currentGym, setCurrentGym] = useState(null);
+  const [listOfGyms, setListOfGyms] = useState([]);
+  const [listOfEmployees, setListOfEmployees] = useState([]);
 
-  // Logic to fetch gym details based on gymId
-  // ...
+  // this useeffect will trigger only once at the beginning
+  useEffect(() => {
+    // function to get all gyms(to show on dropDown)
+    const getGyms = async () => {
+      try {
+        const response = await axiosClient.get(AppConstants.getGyms);
+        if (response.data["operationResult"] == "OK") {
+          setListOfGyms(response.data["object"]);
+        }
+      } catch (error) {
+        alert(`getGyms ${error}`);
+      }
+    };
+    // function to get gymdetailes based on gymID
+    async function getGymDetails() {
+      console.log(`getGymDetails 1 trigered >> gym id  ${gymId}`);
+      try {
+        const response = await axiosClient.get(`api/admin/gyms/${gymId}`);
+        if (response.data["operationResult"] == "OK") {
+          setCurrentGym(response.data["object"]);
+        } else {
+          alert("operationResult is not OK");
+        }
+      } catch (error) {
+        alert(`getGymDetails ${error}`);
+      }
+    }
+    // function to get employees based on gymId
+    async function getListOfEmployees() {
+      try {
+        const response = await axiosClient.get(
+          `api/admin/gyms/${gymId}/workers`
+        );
+        if (response.data["operationResult"] == "OK") {
+          setListOfEmployees(response.data["object"]);
+        } else {
+          alert("operationResult is not OK");
+        }
+      } catch (error) {
+        alert(`getListOfEmployees ${error}`);
+      }
+    }
+    getGyms();
+    getGymDetails();
+    getListOfEmployees();
+  }, []);
+
+  // here will be functions to get new data`s after selecting another gym from dropdown
+  function selectAnotherGym(gym) {
+    if (gym.id != currentGym.id) {
+      // function to get gymdetailes based on gymID
+      async function getGymDetails() {
+        console.log(`getGymDetails 2 trigered >> selected id  ${gym.id}`);
+        try {
+          const response = await axiosClient.get(`api/admin/gyms/${gym.id}`);
+          if (response.data["operationResult"] == "OK") {
+            setCurrentGym(response.data["object"]);
+          } else {
+            alert("operationResult is not OK");
+          }
+        } catch (error) {
+          alert(`getGymDetails ${error}`);
+        }
+      }
+      async function getListOfEmployees() {
+        try {
+          const response = await axiosClient.get(
+            `api/admin/gyms/${gym.id}/workers`
+          );
+          if (response.data["operationResult"] == "OK") {
+            setListOfEmployees(response.data["object"]);
+          } else {
+            alert("operationResult is not OK");
+          }
+        } catch (error) {
+          alert(`getListOfEmployees ${error}`);
+        }
+      }
+      getGymDetails();
+      getListOfEmployees();
+    }
+  }
 
   return (
     <div className=" ml-[10px] h-[97vh] overflow-y-auto">
-      <GymDetailesHeader />
-      <Employees />
-      <GymDetailesBodyFirstContainer />
-      <GymDetailesBodySecondContainer />
+      {currentGym != null && (
+        <>
+          <GymDetailesHeader
+            gym={currentGym}
+            listOfGyms={listOfGyms}
+            showDropDown={listOfGyms.length > 1}
+            selectAnotherGym={selectAnotherGym}
+          />
+          <Employees  listOfEmployees={listOfEmployees}/>
+          <GymDetailesBodyFirstContainer gym={currentGym} />
+          <GymDetailesBodySecondContainer />
+        </>
+      )}
     </div>
   );
 }

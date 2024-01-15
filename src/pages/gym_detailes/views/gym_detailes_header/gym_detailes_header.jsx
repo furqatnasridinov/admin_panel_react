@@ -3,17 +3,26 @@ import "./gym_detailes.css";
 import { useState, useRef, useEffect } from "react";
 import CustomDropdown from "../../../../components/dropdown/custom_dropdown";
 
-export default function GymDetailesHeader() {
+export default function GymDetailesHeader({
+  gym,
+  listOfGyms,
+  showDropDown,
+  selectAnotherGym,
+}) {
   const [isDropDownOpened, openDropDown] = useState(false);
-  const [currentGym, setCurrentGym] = useState("И-Талия");
+  const [currentGym, setCurrentGym] = useState(gym.name);
 
   function openCloseDropDown() {
     openDropDown(!isDropDownOpened);
   }
-  function setCurrentGymAndPop(name) {
-    if (currentGym != name) {
-      setCurrentGym(name);
+
+  function setCurrentGymAndPop(gym) {
+    try {
+      selectAnotherGym(gym);
       openCloseDropDown();
+      setCurrentGym(gym.name)
+    } catch (error) {
+      alert(`setCurrentGymAndPop ${error}`);
     }
   }
 
@@ -22,12 +31,25 @@ export default function GymDetailesHeader() {
       <div className="text-[14px] font-normal">Ваши заведения</div>
 
       <div className="slash"> / </div>
-      <CustomDropdown
-        currentGym={currentGym}
-        isDropDownOpened={isDropDownOpened}
-        openCloseDropDown={openCloseDropDown}
-        ongymSelected={setCurrentGymAndPop}
-      />
+      {showDropDown && (
+        <CustomDropdown
+          text={currentGym}
+          isDropDownOpened={isDropDownOpened}
+          openCloseDropDown={openCloseDropDown}
+          map={listOfGyms.map((item, index) => (
+            <button
+              key={index}
+              className="gym_names"
+              onClick={() => setCurrentGymAndPop(item)}
+            >
+              {item.name}
+            </button>
+          ))}
+        />
+      )}
+      {!showDropDown && (
+        <div className="text-[14px font-normal]">{gym.name}</div>
+      )}
     </div>
   );
 }
