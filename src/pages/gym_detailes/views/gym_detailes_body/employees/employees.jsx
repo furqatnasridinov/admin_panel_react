@@ -6,7 +6,7 @@ import userLogo from "../../../../../assets/svg/user_logo.svg";
 import phoneSvg from "../../../../../assets/svg/phone2.svg";
 import availableSvg from "../../../../../assets/svg/available.svg";
 import notAvailable from "../../../../../assets/svg/not_available.svg";
-import goggins from "../../../../.././assets/images/goggins.jpg"
+import goggins from "../../../../.././assets/images/goggins.jpg";
 import starSvg from "../../../../../assets/svg/star.svg";
 import docsSvg from "../../../../../assets/svg/docs.svg";
 import garbage from "../../../../../assets/images/garbage.png";
@@ -17,7 +17,7 @@ import TextAndTextButton from "../../../components/text_and_textbutton";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import ReactInputMask from "react-input-mask";
 
-export default function Employees({listOfEmployees}) {
+export default function Employees({ listOfEmployees }) {
   // use state for add employees dialog
   const [nameTextfieldHasFocus, setNameFocus] = useState(false);
   const [surnameTextfieldHasFocus, setSurnameFocus] = useState(false);
@@ -124,162 +124,165 @@ export default function Employees({listOfEmployees}) {
     <div className="employees_container">
       <TextAndTextButton
         text1={"Сотрудники"}
-        text2={"Редактировать"}
-        onclick={() => {
-          openRefEmployeesDialog(true);
-        }}
+        text2={listOfEmployees.length === 0 ? "" : "Редактировать"}
+        onclick={() =>
+          listOfEmployees.length === 0 ? {} : openRefEmployeesDialog(true)
+        }
       />
-      <CustomDialog isOpened={isRefEmployeesDialogOpened}>
-        {/* Refactor employees dialog body */}
-        <div className="ref_employee_dialog">
-          <div className="flex flex-col gap-[5px]">
-            <div className="text-[16px] font-semibold leading-[16px]">
-              Редактировать сотрудника
-            </div>
-            <div className="text-[14px] font-normal leading-[16px]">
-              Здесь вы можете изменить личную информацию о сотруднике, такую как
-              имя, или номер телефона, а так же настроить уровень его доступа.
-            </div>
-          </div>
-          {/* Choose an employee */}
-          <div className="flex flex-col gap-[16px]">
-            <div className="flex flex-row gap-[10px] items-center">
-              <img src={userLogo} />
+      {listOfEmployees.length !== 0 && (
+        <CustomDialog isOpened={isRefEmployeesDialogOpened}>
+          {/* Refactor employees dialog body */}
+          <div className="ref_employee_dialog">
+            <div className="flex flex-col gap-[5px]">
               <div className="text-[16px] font-semibold leading-[16px]">
-                Выберите сотрудника для редактирования
+                Редактировать сотрудника
+              </div>
+              <div className="text-[14px] font-normal leading-[16px]">
+                Здесь вы можете изменить личную информацию о сотруднике, такую
+                как имя, или номер телефона, а так же настроить уровень его
+                доступа.
               </div>
             </div>
-            <div className="employees_wrap">
-              {employees.map((employee) => {
-                return (
-                  <EachEmployee
-                    key={employee.id}
-                    photo={employee.photo}
-                    name={employee.name}
-                    job={employee.job}
-                    isThatYou={employee.isThatYou}
-                    showPointer={true}
-                    onEmployeeClicked={() => {
-                      selectEmployee(employee.id);
-                    }}
-                    isSelected={employee.id === selectedEmployeeId}
+            {/* Choose an employee */}
+            <div className="flex flex-col gap-[16px]">
+              <div className="flex flex-row gap-[10px] items-center">
+                <img src={userLogo} />
+                <div className="text-[16px] font-semibold leading-[16px]">
+                  Выберите сотрудника для редактирования
+                </div>
+              </div>
+              <div className="employees_wrap">
+                {listOfEmployees.map((employee) => {
+                  return (
+                    <EachEmployee
+                      key={employee.id}
+                      photo={goggins}
+                      name={employee.user.firstName}
+                      //job={employee.roles[0].name}
+                      //isThatYou={employee.isThatYou}
+                      showPointer={true}
+                      onEmployeeClicked={() => {
+                        selectEmployee(employee.id);
+                      }}
+                      isSelected={employee.id === selectedEmployeeId}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+            {/* Personal info */}
+            <div className="flex flex-col gap-[16px]">
+              <div className="flex flex-row gap-[10px] items-center">
+                <img className="w-[24px] h-[24px]" src={docsSvg} />
+                <div className="text-[16px] font-semibold leading-[16px]">
+                  Личная информация
+                </div>
+              </div>
+              <div className="flex flex-col gap-[10px]">
+                <div className="flex flex-row gap-[32px]">
+                  {/* Name */}
+                  <TextAndTextfield
+                    value={name2}
+                    onChange={changeName2}
+                    textfieldHasFocus={nameTextfield2HasFocus}
+                    requestFocus={() => setName2Focus(true)}
+                    removeFocus={() => setName2Focus(false)}
+                    text={"Имя сотрудника"}
+                    placeholder={"Имя"}
+                    logo={userLogo}
                   />
+                  {/* Surname */}
+                  <TextAndTextfield
+                    value={surname2}
+                    onChange={changeSurName2}
+                    textfieldHasFocus={surnameTextfield2HasFocus}
+                    requestFocus={() => setSurname2Focus(true)}
+                    removeFocus={() => setSurname2Focus(false)}
+                    text={"Фамилия"}
+                    placeholder={"Фамилия"}
+                    logo={userLogo}
+                  />
+                </div>
+                <div className="flex flex-row gap-[32px]">
+                  {/* Phone */}
+                  <TextAndTextfield
+                    value={phoneNumber2}
+                    onChange={changePhone2}
+                    textfieldHasFocus={phoneNumberTextfield2HasFocus}
+                    requestFocus={() => setPhone2Focus(true)}
+                    removeFocus={() => setPhone2Focus(false)}
+                    text={"Номер телефона"}
+                    placeholder={"+7 (900) 855 45-58"}
+                    logo={phoneSvg}
+                    isPhoneTextfield={true}
+                  />
+                  {/* Empty space */}
+                  <div className="w-full"></div>
+                </div>
+              </div>
+            </div>
+            {/* Dropdown section */}
+            <div className="flex flex-col gap-[16px]">
+              <div className="flex flex-row gap-[10px] items-center">
+                <img src={starSvg} />
+                <div className="text-[16px] font-semibold leading-[16px]">
+                  Роль сотрудника
+                </div>
+              </div>
+              <div className="flex flex-col gap-[5px] w-fit h-fit ml-[34px]">
+                <div className="text-[16px] font-medium leading-[16px]">
+                  Уровень доступа сотрудника{" "}
+                </div>
+                <CustomDropdown
+                  currentGym={currentEmployee2}
+                  isDropDownOpened={isDropDown2Opened}
+                  openCloseDropDown={openCloseDropDown2}
+                  ongymSelected={setCurrentEmployeeAndPop2}
+                />
+              </div>
+            </div>
+
+            {/* blue container  */}
+            <div className="big_blue_container">
+              <div className="text-[14px] font-normal leading-[16px]">
+                Подробная информация о том, какими правами наделён “
+                {currentEmployee2}”:
+              </div>
+              {roles.map((role) => {
+                return role.available ? (
+                  <div
+                    key={role.id}
+                    className="flex flex-row gap-[10px] items-center"
+                  >
+                    <img src={availableSvg} />
+                    <div className="text-[14px] font-normal leading-[16px]">
+                      {role.name}
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    key={role.id}
+                    className="flex flex-row gap-[10px] items-center"
+                  >
+                    <img src={notAvailable} />
+                    <div className="text-[14px] font-normal leading-[16px] text-grey-text">
+                      {role.name}
+                    </div>
+                  </div>
                 );
               })}
             </div>
-          </div>
-          {/* Personal info */}
-          <div className="flex flex-col gap-[16px]">
-            <div className="flex flex-row gap-[10px] items-center">
-              <img className="w-[24px] h-[24px]" src={docsSvg} />
-              <div className="text-[16px] font-semibold leading-[16px]">
-                Личная информация
-              </div>
-            </div>
-            <div className="flex flex-col gap-[10px]">
-              <div className="flex flex-row gap-[32px]">
-                {/* Name */}
-                <TextAndTextfield
-                  value={name2}
-                  onChange={changeName2}
-                  textfieldHasFocus={nameTextfield2HasFocus}
-                  requestFocus={() => setName2Focus(true)}
-                  removeFocus={() => setName2Focus(false)}
-                  text={"Имя сотрудника"}
-                  placeholder={"Имя"}
-                  logo={userLogo}
-                />
-                {/* Surname */}
-                <TextAndTextfield
-                  value={surname2}
-                  onChange={changeSurName2}
-                  textfieldHasFocus={surnameTextfield2HasFocus}
-                  requestFocus={() => setSurname2Focus(true)}
-                  removeFocus={() => setSurname2Focus(false)}
-                  text={"Фамилия"}
-                  placeholder={"Фамилия"}
-                  logo={userLogo}
-                />
-              </div>
-              <div className="flex flex-row gap-[32px]">
-                {/* Phone */}
-                <TextAndTextfield
-                  value={phoneNumber2}
-                  onChange={changePhone2}
-                  textfieldHasFocus={phoneNumberTextfield2HasFocus}
-                  requestFocus={() => setPhone2Focus(true)}
-                  removeFocus={() => setPhone2Focus(false)}
-                  text={"Номер телефона"}
-                  placeholder={"+7 (900) 855 45-58"}
-                  logo={phoneSvg}
-                  isPhoneTextfield={true}
-                />
-                {/* Empty space */}
-                <div className="w-full"></div>
-              </div>
-            </div>
-          </div>
-          {/* Dropdown section */}
-          <div className="flex flex-col gap-[16px]">
-            <div className="flex flex-row gap-[10px] items-center">
-              <img src={starSvg} />
-              <div className="text-[16px] font-semibold leading-[16px]">
-                Роль сотрудника
-              </div>
-            </div>
-            <div className="flex flex-col gap-[5px] w-fit h-fit ml-[34px]">
-              <div className="text-[16px] font-medium leading-[16px]">
-                Уровень доступа сотрудника{" "}
-              </div>
-              <CustomDropdown
-                currentGym={currentEmployee2}
-                isDropDownOpened={isDropDown2Opened}
-                openCloseDropDown={openCloseDropDown2}
-                ongymSelected={setCurrentEmployeeAndPop2}
+            <div className="flex flex-col gap-2">
+              <CustomButton
+                width={"100%"}
+                height={"40px"}
+                title={"Завершить редактирование"}
+                onСlick={() => {}}
               />
             </div>
           </div>
-
-          {/* blue container  */}
-          <div className="big_blue_container">
-            <div className="text-[14px] font-normal leading-[16px]">
-              Подробная информация о том, какими правами наделён “
-              {currentEmployee2}”:
-            </div>
-            {roles.map((role) => {
-              return role.available ? (
-                <div
-                  key={role.id}
-                  className="flex flex-row gap-[10px] items-center"
-                >
-                  <img src={availableSvg} />
-                  <div className="text-[14px] font-normal leading-[16px]">
-                    {role.name}
-                  </div>
-                </div>
-              ) : (
-                <div
-                  key={role.id}
-                  className="flex flex-row gap-[10px] items-center"
-                >
-                  <img src={notAvailable} />
-                  <div className="text-[14px] font-normal leading-[16px] text-grey-text">
-                    {role.name}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="flex flex-col gap-2">
-            <CustomButton
-              width={"100%"}
-              height={"40px"}
-              title={"Завершить редактирование"}
-              onСlick={() => {}}
-            />
-          </div>
-        </div>
-      </CustomDialog>
+        </CustomDialog>
+      )}
       <div className="employees_list">
         {listOfEmployees.map((employee) => {
           return (
@@ -468,7 +471,9 @@ export function EachEmployee({
           {/* Name and job */}
           <div className="flex flex-col gap-0 justify-center">
             <div className="flex flex-row gap-[3px]">
-              <div className="text-[14px] font-bold leading-none">{name} {lastName}</div>
+              <div className="text-[14px] font-bold leading-none">
+                {name} {lastName}
+              </div>
               <div className="you leading-none">{isThatYou ? "(Вы)" : ""}</div>
             </div>
             <div className="text-[14px] font-normal leading-none">{job}</div>

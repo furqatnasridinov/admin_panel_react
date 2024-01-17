@@ -115,6 +115,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
               src={mainPic}
               onClick={() => openModalPhoto(true)}
               style={{ cursor: "pointer" }}
+              draggable={false}
             />
           )}
           {mainPic == "" && (
@@ -124,12 +125,13 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
                 src={mainPicPlaceHolder}
                 style={{ cursor: "pointer" }}
                 onClick={openFilePickerForMainPhoto}
+                draggable={false}
               />
               <input
                 ref={fileInputMainPhotoRef}
                 onChange={handleNewPhoto}
                 type="file"
-                style={{ display: "none" }}
+                style={{ display: "none" }} //hiding input
               />
             </>
           )}
@@ -163,6 +165,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
               src={logo}
               onClick={() => openModalLogo(true)}
               style={{ cursor: "pointer" }}
+              draggable = {false}
             />
           )}
           {logo == "" && (
@@ -171,6 +174,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
                 src={logoPlaceholder}
                 style={{ cursor: "pointer" }}
                 onClick={openFilePickerForLogo}
+                draggable = {false}
               />
               <input
                 ref={fileInputLogoRef}

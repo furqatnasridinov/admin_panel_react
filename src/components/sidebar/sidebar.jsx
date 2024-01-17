@@ -14,7 +14,6 @@ import { useState, useRef, useEffect } from "react";
 const Sidebar = () => {
   const [isSidebarOpened, openCloseSearchBar] = useState(true);
   const [isMenuCompanyShown, showMenuCompany] = useState(false);
-  //const [isTextVisible, showText] = useState(false);
   const sidebarHeaderRef = useRef();
 
   const handleClick = () => {
@@ -29,20 +28,6 @@ const Sidebar = () => {
       showMenuCompany(true);
     }
   };
-
-  /*   useEffect(() => {
-    let timer;
-    if (isSidebarOpened) {
-      timer = setTimeout(() => {
-        console.log("useEffect showText true");
-        showText(true);
-      }, 300);
-    } else {
-      showText(false);
-      console.log("useEffect showText false ");
-    }
-    return () => clearTimeout(timer);
-  }, [isSidebarOpened]); */
 
   // This function will be passed to MenuCompany to close it
   const closeMenuCompany = () => showMenuCompany(false);
@@ -124,15 +109,13 @@ const Sidebar = () => {
         {/* Две нижние блоки */}
 
         <div className="flex flex-col">
-          <div className=" mb-[37px] px-[16px] opacity-50">
-            <hr />
-          </div>
-
-          <div className="absolute left-56 bottom-[175px] transition-width duration-300 ease-in-out">
-            <button onClick={handleClick}>
-              {" "}
-              <img src={sidebarOpenedLogo} alt="" />
-            </button>
+          <div className="flex flex-row relative mb-[37px] px-[16px]">
+            <hr className="w-full opacity-50" />
+            <div className="absolute right-[-20px] top-[-15px] transition-width duration-300 ease-in-out">
+              <button onClick={handleClick}>
+                <img src={sidebarOpenedLogo} alt="" />
+              </button>
+            </div>
           </div>
 
           <NavLink
@@ -237,15 +220,13 @@ const Sidebar = () => {
         {/* Две нижние блоки */}
 
         <div className="flex flex-col">
-          <div className=" mb-[37px] px-[16px] opacity-50">
-            <hr />
-          </div>
-
-          <div className="absolute left-[100px] bottom-[175px] transition-width duration-300 ease-in-out">
-            <button onClick={handleClick}>
-              {" "}
-              <img src={sidebarClosedLogo} alt="" />
-            </button>
+          <div className="flex flex-row relative mb-[37px] px-[16px]">
+            <hr className="w-full opacity-50" />
+            <div className="absolute right-[-20px] top-[-15px] transition-width duration-300 ease-in-out">
+              <button onClick={handleClick}>
+                <img src={sidebarClosedLogo} alt="" />
+              </button>
+            </div>
           </div>
 
           <NavLink

@@ -13,6 +13,11 @@ export default function GymDetails() {
   const [currentGym, setCurrentGym] = useState(null);
   const [listOfGyms, setListOfGyms] = useState([]);
   const [listOfEmployees, setListOfEmployees] = useState([]);
+  const [listOfActivities, setListOfActivities] = useState([]);
+  const [selectedActivity, setSelectedActivity] = useState("");
+  const [infoForType, setInfoForType] = useState([]);
+  const [activityDescribtion, setActivityDescribtion] = useState("");
+  const [activityPeculiarities, setActivityPeculiarities] = useState(""); // in future may be list
 
   // this useeffect will trigger only once at the beginning
   useEffect(() => {
@@ -20,19 +25,20 @@ export default function GymDetails() {
     const getGyms = async () => {
       try {
         const response = await axiosClient.get(AppConstants.getGyms);
-        if (response.data["operationResult"] == "OK") {
+        if (response.data["operationResult"] === "OK") {
           setListOfGyms(response.data["object"]);
         }
       } catch (error) {
         alert(`getGyms ${error}`);
       }
     };
+
     // function to get gymdetailes based on gymID
     async function getGymDetails() {
       console.log(`getGymDetails 1 trigered >> gym id  ${gymId}`);
       try {
         const response = await axiosClient.get(`api/admin/gyms/${gymId}`);
-        if (response.data["operationResult"] == "OK") {
+        if (response.data["operationResult"] === "OK") {
           setCurrentGym(response.data["object"]);
         } else {
           alert("operationResult is not OK");
@@ -41,13 +47,14 @@ export default function GymDetails() {
         alert(`getGymDetails ${error}`);
       }
     }
+
     // function to get employees based on gymId
     async function getListOfEmployees() {
       try {
         const response = await axiosClient.get(
           `api/admin/gyms/${gymId}/workers`
         );
-        if (response.data["operationResult"] == "OK") {
+        if (response.data["operationResult"] === "OK") {
           setListOfEmployees(response.data["object"]);
         } else {
           alert("operationResult is not OK");
@@ -56,20 +63,51 @@ export default function GymDetails() {
         alert(`getListOfEmployees ${error}`);
       }
     }
+
+    // function to get activities based on gymId
+    async function getActivities() {
+      try {
+        const response = await axiosClient.get(`api/gym/${gymId}/types`);
+        if (response.data["operationResult"] === "OK") {
+          setListOfActivities(response.data["object"]);
+        } else {
+          alert("operationResult is not OK");
+        }
+      } catch (error) {
+        alert(`getActivities ${error}`);
+      }
+    }
+
+    // function to get infoFor type
+    async function getInfoForType() {
+      try {
+        const response = await axiosClient.get(`api/gym/${gymId}/infoForType`);
+        if (response.data["operationResult"] === "OK") {
+          setInfoForType(response.data["object"]);
+        } else {
+          alert("operationResult is not OK");
+        }
+      } catch (error) {
+        alert(`getActivities ${error}`);
+      }
+    }
+
     getGyms();
     getGymDetails();
     getListOfEmployees();
+    getActivities();
+    getInfoForType();
   }, []);
 
   // here will be functions to get new data`s after selecting another gym from dropdown
   function selectAnotherGym(gym) {
-    if (gym.id != currentGym.id) {
-      // function to get gymdetailes based on gymID
+    if (gym.id !== currentGym.id) {
+      // function to get gymdetailes based on gymnewSelected gymid
       async function getGymDetails() {
         console.log(`getGymDetails 2 trigered >> selected id  ${gym.id}`);
         try {
           const response = await axiosClient.get(`api/admin/gyms/${gym.id}`);
-          if (response.data["operationResult"] == "OK") {
+          if (response.data["operationResult"] === "OK") {
             setCurrentGym(response.data["object"]);
           } else {
             alert("operationResult is not OK");
@@ -78,12 +116,13 @@ export default function GymDetails() {
           alert(`getGymDetails ${error}`);
         }
       }
+      // function to get List Of Employees based on gymnewSelected gymid
       async function getListOfEmployees() {
         try {
           const response = await axiosClient.get(
             `api/admin/gyms/${gym.id}/workers`
           );
-          if (response.data["operationResult"] == "OK") {
+          if (response.data["operationResult"] === "OK") {
             setListOfEmployees(response.data["object"]);
           } else {
             alert("operationResult is not OK");
@@ -92,10 +131,69 @@ export default function GymDetails() {
           alert(`getListOfEmployees ${error}`);
         }
       }
+      // function to get List Of Activities based on gymnewSelected gymid
+      async function getActivities() {
+        try {
+          const response = await axiosClient.get(`api/gym/${gym.id}/types`);
+          if (response.data["operationResult"] === "OK") {
+            setListOfActivities(response.data["object"]);
+          } else {
+            alert("operationResult is not OK");
+          }
+        } catch (error) {
+          alert(`getActivities ${error}`);
+        }
+      }
+
+      // function to get infoFor type
+      async function getInfoForType() {
+        try {
+          const response = await axiosClient.get(
+            `api/gym/${gym.id}/infoForType`
+          );
+          if (response.data["operationResult"] === "OK") {
+            setInfoForType(response.data["object"]);
+          } else {
+            alert("operationResult is not OK");
+          }
+        } catch (error) {
+          alert(`getActivities ${error}`);
+        }
+      }
+
       getGymDetails();
+      getInfoForType();
       getListOfEmployees();
+      getActivities();
     }
   }
+
+  // after getting list of activities making first of its item as active
+  useEffect(() => {
+    if (listOfActivities.length > 0) {
+      setSelectedActivity(listOfActivities[0]);
+    }
+  }, [listOfActivities]); // This useEffect will only run when listOfActivities changes
+
+  useEffect(() => {
+    console.log(infoForType.length);
+    if (selectedActivity !== "") {
+      try {
+        setActivityDescribtion(
+          Array.isArray(infoForType[selectedActivity])
+            ? infoForType[selectedActivity]?.[0]?.["typeDescription"]
+            : undefined
+        );
+        setActivityPeculiarities(
+          Array.isArray(infoForType[selectedActivity])
+            ? infoForType[selectedActivity]?.[0]?.["peculiarities"]
+            : undefined
+        );
+      } catch (error) {
+        alert(error);
+      }
+    }
+  }, [selectedActivity]); // calling this after everytime when selectedActivity changes
 
   return (
     <div className=" ml-[10px] h-[97vh] overflow-y-auto">
@@ -107,9 +205,17 @@ export default function GymDetails() {
             showDropDown={listOfGyms.length > 1}
             selectAnotherGym={selectAnotherGym}
           />
-          <Employees  listOfEmployees={listOfEmployees}/>
+          <Employees listOfEmployees={listOfEmployees} />
           <GymDetailesBodyFirstContainer gym={currentGym} />
-          <GymDetailesBodySecondContainer />
+          <GymDetailesBodySecondContainer
+            listOfActivities={listOfActivities}
+            selectedActivity={selectedActivity}
+            setselectedActivity={setSelectedActivity}
+            activityPeculiarities={activityPeculiarities}
+            activityDescribtion={activityDescribtion}
+            setActivityDescribtion={setActivityDescribtion}
+            setActivityPeculiarities={setActivityPeculiarities}
+          />
         </>
       )}
     </div>

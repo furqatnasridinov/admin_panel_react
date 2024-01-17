@@ -17,9 +17,16 @@ import addPhotoSvg from "../../../../../assets/svg/add_photo.svg";
 import CustomButton from "../../../../../components/button/button";
 import CustomDialog from "../../../../../components/dialog/dialog";
 
-export default function GymDetailesBodySecondContainer() {
+export default function GymDetailesBodySecondContainer({
+  listOfActivities,
+  selectedActivity,
+  setselectedActivity,
+  activityDescribtion,
+  activityPeculiarities,
+  setActivityDescribtion,
+  setActivityPeculiarities,
+}) {
   // use states
-  const [activeChip, setActiveChip] = useState("");
   const [isDescribtionEdittingEnabled, setDescribtionEditting] =
     useState(false);
   const [isFeaturesEdittingEnabled, setFeaturesEditting] = useState(false);
@@ -27,22 +34,17 @@ export default function GymDetailesBodySecondContainer() {
   const [isActivitiesModalOpened, openActivitiesModal] = useState(false);
   const [listOfPhotos, changeListOfPhotos] = useState(activityPhotos);
 
-  const [describtion, setDescribtion] = useState(
-    "Смешанные единоборства в нашем зале представляют собой смесь изразных видов единоборств. Освоить все виды могут не только лишь все, мало кто может это делать."
-  );
-  const [features, setFeatures] = useState("");
-
   // use refs
   const hiddenFileInput = useRef(null);
 
   // functions
   const handleSaveDescribtion = (newDescribtion) => {
-    setDescribtion(newDescribtion);
+    setActivityDescribtion(newDescribtion);
     setDescribtionEditting(false);
   };
   const handleSaveFeatures = (newFeaturesArray) => {
     // Assuming newFeaturesArray is already an array of strings
-    setFeatures(newFeaturesArray); // Set new features array to state
+    setActivityPeculiarities(newFeaturesArray); // Set new features array to state
     setFeaturesEditting(false); // Exit editing mode
   };
   const handleChange = (textValue) => {
@@ -74,10 +76,35 @@ export default function GymDetailesBodySecondContainer() {
     }
   };
 
-  // передаем это на кнопку добавления,(как бы через ref, нажимаем на саму input file которого скрыли)
+  // передаем это на кнопку добавления фото,(как бы через ref, нажимаем на саму input file которого скрыли)
   const handleClick = () => {
     hiddenFileInput.current.click();
   };
+
+  // drad & drop functions
+  const draggedItemRef = useRef(null);
+  const draggedOverRef = useRef(null);
+
+  function handleSortingPhotos() {
+    // creating duplicate of list
+    const dublicatedList = [...listOfPhotos];
+
+    //remove and save dragged item
+    const draggedItemContent = dublicatedList.splice(
+      draggedItemRef.current,
+      1
+    )[0];
+
+    //switch the position
+    dublicatedList.splice(draggedOverRef.current, 0, draggedItemContent);
+
+    // reset the position ref
+    draggedItemRef.current = null;
+    draggedOverRef.current = null;
+
+    // update the actual array
+    changeListOfPhotos(dublicatedList);
+  }
 
   return (
     <div className="flex flex-col bg-white h-fit rounded-[16px] p-[32px] gap-[32px]">
@@ -90,13 +117,13 @@ export default function GymDetailesBodySecondContainer() {
           }}
         />
         <div className="chips_row ">
-          {activities.map((chip) => {
+          {listOfActivities.map((activity, index) => {
             return (
               <Chip
-                key={chip.id}
-                name={chip.name}
-                isActive={chip.name === activeChip}
-                onclick={() => setActiveChip(chip.name)}
+                key={index}
+                name={activity}
+                isActive={activity === selectedActivity}
+                onclick={() => setselectedActivity(activity)}
               />
             );
           })}
@@ -106,6 +133,7 @@ export default function GymDetailesBodySecondContainer() {
             closeModal={() => {
               openActivitiesModal(false);
             }}
+            activities={listOfActivities}
           />
         </CustomDialog>
       </div>
@@ -121,7 +149,7 @@ export default function GymDetailesBodySecondContainer() {
                   onclick={() => setDescribtionEditting(true)}
                 />
                 <div className="text-[14px] font-normal leading-[14px]">
-                  {describtion}
+                  {activityDescribtion}
                 </div>
               </>
             )}
@@ -134,7 +162,7 @@ export default function GymDetailesBodySecondContainer() {
                   isRedText={isDescribtionEdittingEnabled}
                 />
                 <EditableTextfield
-                  value={describtion}
+                  value={activityDescribtion}
                   handleChange={handleSaveDescribtion}
                   fontsize={"13px"}
                   lineheight={"14px"}
@@ -143,7 +171,6 @@ export default function GymDetailesBodySecondContainer() {
               </>
             )}
           </div>
-          {/* features */}
 
           <div className="features">
             {!isFeaturesEdittingEnabled && (
@@ -154,7 +181,12 @@ export default function GymDetailesBodySecondContainer() {
                   isRedText={isFeaturesEdittingEnabled}
                   onclick={() => setFeaturesEditting(true)}
                 />
-                <Features />
+                <ul className="marked_list">
+                  <li>{activityPeculiarities} </li>
+                  {/* {activityPeculiarities.map((item, index) => (
+                    <li key={index}>{item} </li>
+                  ))} */}
+                </ul>
               </>
             )}
             {isFeaturesEdittingEnabled && (
@@ -169,6 +201,7 @@ export default function GymDetailesBodySecondContainer() {
                   handleChange={handleSaveFeatures}
                   fontsize={"13px"}
                   lineheight={"14px"}
+                  peculiarities={[]}
                 />
               </>
             )}
@@ -197,6 +230,8 @@ export default function GymDetailesBodySecondContainer() {
             <p>Рекомендуемые форматы для загрузки: jpeg, png</p>
             <p>Минимально допустимая сторона фотографии: 1080px</p>
           </div>
+
+          {/* Container with photos */}
           <div className="activity_photos_container">
             {!isEdittingPhotosEnabled &&
               listOfPhotos.map((item, index) => (
@@ -205,16 +240,22 @@ export default function GymDetailesBodySecondContainer() {
                   key={index}
                   src={item.image}
                   alt=""
+                  draggable={true}
+                  onDragStart={(e) => (draggedItemRef.current = index)}
+                  onDragEnter={(e) => (draggedOverRef.current = index)}
+                  onDragEnd={handleSortingPhotos}
+                  onDragOver={(e) => e.preventDefault()}
+                  //
                 />
               ))}
             {isEdittingPhotosEnabled &&
               listOfPhotos.map((item, index) => (
-                <button className="activity_each_photo_editting">
+                <button key={index} className="activity_each_photo_editting">
                   <img
-                    key={index}
                     src={item.image}
                     alt=""
                     className="rounded-[8px]"
+                    draggable={false}
                   />
                   <img
                     className="delete-icon"
@@ -223,6 +264,7 @@ export default function GymDetailesBodySecondContainer() {
                     onClick={() => {
                       handleRemovingActivityPhotos(item.id);
                     }}
+                    draggable={false}
                   />
                 </button>
               ))}
@@ -257,19 +299,14 @@ function Chip({ name, onclick, isActive }) {
   );
 }
 
-function Features() {
-  return (
-    <ul className="marked_list">
-      {features.map((item, index) => (
-        <li key={index}>{item} </li>
-      ))}
-    </ul>
-  );
-}
-
-function EditableFeaturesTextfield({ handleChange, fontsize, lineheight }) {
+function EditableFeaturesTextfield({
+  handleChange,
+  fontsize,
+  lineheight,
+  peculiarities,
+}) {
   // Join the array with newline and bullet point for display in textarea
-  const initialFeaturesString = features.join("\n• ");
+  const initialFeaturesString = peculiarities.join("\n• ");
 
   // Set this string as the initial value for  textarea
   const [tempValue, setTempValue] = useState(`• ${initialFeaturesString}`);
@@ -326,10 +363,11 @@ function EditableFeaturesTextfield({ handleChange, fontsize, lineheight }) {
   );
 }
 
-function ActivitiesModal({ closeModal }) {
-  const [activeActivity, setActiveActivity] = useState("Бокс");
+function ActivitiesModal({ closeModal, activities }) {
+  // using this activeActivity make api call to podactivnodsti
+  const [activeActivity, setActiveActivity] = useState("");
   return (
-    <div className="main_container ">
+    <div className="main_container">
       <div className="flex flex-col gap-[5px]">
         <div className="text-[16px] font-semibold leading-[16px]">
           Редактирование активностей
@@ -345,15 +383,15 @@ function ActivitiesModal({ closeModal }) {
         <div className="activities_col">
           <div className="text-[14px] font-bold">Ваши активности:</div>
           <div className="blue_bordered_container">
-            {activities.map((activity) => {
+            {activities.map((activity, index) => {
               return (
                 <EachActivity
-                  key={activity.id}
-                  title={activity.name}
+                  key={index}
+                  title={activity}
                   onclick={() => {
-                    setActiveActivity(activity.name);
+                    setActiveActivity(activity);
                   }}
-                  isActive={activity.name === activeActivity}
+                  isActive={activity === activeActivity}
                 />
               );
             })}
@@ -387,7 +425,7 @@ function EachActivity({
   onEditClicked,
 }) {
   return (
-    <div className={isActive ? "isActive" : "each_activity"}>
+    <div className={isActive ? "isActive" : "each_activity"} draggable={true}>
       <img
         style={{ cursor: "pointer" }}
         src={removeActivitySvg}

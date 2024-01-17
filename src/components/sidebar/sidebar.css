@@ -1,7 +1,7 @@
 .sidebar_section {
   margin-top: 16px;
   margin-left: 16px;
-  margin-right: 16px; 
+  margin-right: 16px;
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -20,7 +20,7 @@
 .sidebar_section_closed {
   margin-top: 16px;
   margin-left: 16px;
-  margin-right: 16px; 
+  margin-right: 16px;
   padding-left: 16px;
   padding-right: 16px;
   padding-top: 10px;
@@ -43,11 +43,13 @@
 
 .sidebar_opened {
   width: 225px;
+  min-width: 225px;
   transition: width 0.3s ease;
 }
 
 .sidebar_closed {
   width: 100px;
+  min-width: 100px;
   transition: width 0.3s ease;
 }
 
