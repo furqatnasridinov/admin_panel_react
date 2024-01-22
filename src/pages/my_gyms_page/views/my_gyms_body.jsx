@@ -1,26 +1,17 @@
 import React from "react";
 import Gym from "../components/gym";
-import { useState, useEffect } from "react";
-import axiosClient from "../../../config/axios_client";
-import AppConstants from "../../../config/app_constants";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { getListOfGyms } from "../../../features/list_of_gyms_slice";
 
 const MyGymsBody = () => {
-  const [listOfGyms, setGyms] = useState([]);
+  const dispatch = useDispatch();
+  const listOfGymsSlice = useSelector((state) => state.listOfGyms); // listOfGymsSlice ==> {isLoading: false, data: Array(8), isError: false}
 
   useEffect(() => {
-    const getGyms = async () => {
-      console.log("get gyms started");
-      try {
-        const response = await axiosClient.get(AppConstants.getGyms);
-        if (response.data["operationResult"] == "OK") {
-          setGyms(response.data["object"]);
-        }
-      } catch (error) {
-        alert(`getGyms ${error}`);
-      }
-    };
-    getGyms();
+    dispatch(getListOfGyms());
   }, []);
+  console.log(listOfGymsSlice);
 
   return (
     <div className="px-[30px] bg-white rounded-[16px] flex flex-col h-[86vh]">
@@ -35,7 +26,7 @@ const MyGymsBody = () => {
       {/* LIST BUILDER */}
 
       <div className="overflow-y-auto pt-[20px]">
-        {listOfGyms.map((gym) => (
+        {listOfGymsSlice.data.map((gym) => (
           <Gym
             key={gym.id}
             id={gym.id}

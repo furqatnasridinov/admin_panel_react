@@ -10,14 +10,25 @@ import goggins from "../../../../.././assets/images/goggins.jpg";
 import starSvg from "../../../../../assets/svg/star.svg";
 import docsSvg from "../../../../../assets/svg/docs.svg";
 import garbage from "../../../../../assets/images/garbage.png";
-import { roles, employees } from "../../../../../dummy_data/dymmy_data";
+import { roles, allRoles } from "../../../../../dummy_data/dymmy_data";
 import { useState } from "react";
 import CustomButton from "../../../../../components/button/button";
 import TextAndTextButton from "../../../components/text_and_textbutton";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import ReactInputMask from "react-input-mask";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectAnEmployee,
+  changeSelectedEmployeesName,
+  selectARoleName,
+  selectARoleId,
+  selectARoleCode,
+} from "../../../../../features/employees_slice";
 
 export default function Employees({ listOfEmployees }) {
+  const dispatch = useDispatch();
+  const employeesSlice = useSelector((state) => state.employees);
+
   // use state for add employees dialog
   const [nameTextfieldHasFocus, setNameFocus] = useState(false);
   const [surnameTextfieldHasFocus, setSurnameFocus] = useState(false);
@@ -43,12 +54,12 @@ export default function Employees({ listOfEmployees }) {
   const [selectedEmployeeId, selectEmployee] = useState(0);
   const [isRefEmployeesDialogOpened, openRefEmployeesDialog] = useState(false);
 
-  // functions for add employees dialog
+  // functions for addemployees dialog
   function openCloseDropDown() {
     openDropDown(!isDropDownOpened);
   }
 
-  function setCurrentGymAndPop(name) {
+  function setCurrentAndPop(name) {
     if (currentEmployee !== name) {
       setCurrentEmployee(name);
       openCloseDropDown();
@@ -93,8 +104,9 @@ export default function Employees({ listOfEmployees }) {
     }
   };
 
-  const closeAddEmolyeesDialogOntapOutside = () =>
+  const closeAddEmolyeesDialogOntapOutside = () => {
     openAddEmployeesDialog(false);
+  };
 
   // functions for refactor employees dialog
   function openCloseDropDown2() {
@@ -119,7 +131,9 @@ export default function Employees({ listOfEmployees }) {
   const changePhone2 = (event) => {
     setPhoneNumber2(event.target.value);
   };
-
+  console.log(
+    `selected emp ${JSON.stringify(employeesSlice.selectedEmployee)}`
+  );
   return (
     <div className="employees_container">
       <TextAndTextButton
@@ -157,14 +171,22 @@ export default function Employees({ listOfEmployees }) {
                     <EachEmployee
                       key={employee.id}
                       photo={goggins}
-                      name={employee.user.firstName}
-                      //job={employee.roles[0].name}
-                      //isThatYou={employee.isThatYou}
+                      name={employee.firstName}
+                      job={
+                        employee.roles.length === 0
+                          ? "Нет роли"
+                          : employee.roles[0].name
+                      }
+                      //isThatYou={localStorage.id === employee.id} <== maybe?
                       showPointer={true}
-                      onEmployeeClicked={() => {
-                        selectEmployee(employee.id);
-                      }}
-                      isSelected={employee.id === selectedEmployeeId}
+                      onEmployeeClicked={() =>
+                        dispatch(selectAnEmployee(employee))
+                      }
+                      isSelected={
+                        employeesSlice.selectedEmployee !== null
+                          ? employeesSlice.selectedEmployee.id === employee.id
+                          : false
+                      }
                     />
                   );
                 })}
@@ -182,8 +204,14 @@ export default function Employees({ listOfEmployees }) {
                 <div className="flex flex-row gap-[32px]">
                   {/* Name */}
                   <TextAndTextfield
-                    value={name2}
-                    onChange={changeName2}
+                    value={
+                      employeesSlice.selectedEmployee !== null
+                        ? employeesSlice.selectedEmployee.firstName
+                        : ""
+                    }
+                    onChange={(event) => {
+                      dispatch(changeSelectedEmployeesName(event.target.value));
+                    }}
                     textfieldHasFocus={nameTextfield2HasFocus}
                     requestFocus={() => setName2Focus(true)}
                     removeFocus={() => setName2Focus(false)}
@@ -193,7 +221,15 @@ export default function Employees({ listOfEmployees }) {
                   />
                   {/* Surname */}
                   <TextAndTextfield
-                    value={surname2}
+                    value={
+                      employeesSlice.selectedEmployee !== null &&
+                      employeesSlice.selectedEmployee.lastName === null
+                        ? ""
+                        : employeesSlice.selectedEmployee !== null &&
+                          employeesSlice.selectedEmployee.lastName !== null
+                        ? employeesSlice.selectedEmployee.lastName
+                        : ""
+                    }
                     onChange={changeSurName2}
                     textfieldHasFocus={surnameTextfield2HasFocus}
                     requestFocus={() => setSurname2Focus(true)}
@@ -206,7 +242,11 @@ export default function Employees({ listOfEmployees }) {
                 <div className="flex flex-row gap-[32px]">
                   {/* Phone */}
                   <TextAndTextfield
-                    value={phoneNumber2}
+                    value={
+                      employeesSlice.selectedEmployee !== null
+                        ? employeesSlice.selectedEmployee.login
+                        : ""
+                    }
                     onChange={changePhone2}
                     textfieldHasFocus={phoneNumberTextfield2HasFocus}
                     requestFocus={() => setPhone2Focus(true)}
@@ -234,10 +274,18 @@ export default function Employees({ listOfEmployees }) {
                   Уровень доступа сотрудника{" "}
                 </div>
                 <CustomDropdown
-                  currentGym={currentEmployee2}
+                  currentRole={
+                    employeesSlice.selectedRoleName !== null
+                      ? employeesSlice.selectedRoleName
+                      : employeesSlice.selectedEmployee === null
+                      ? ""
+                      : employeesSlice.selectedEmployee.roles.length === 0
+                      ? "Нет роли"
+                      : employeesSlice.selectedEmployee.roles[0].name
+                  }
                   isDropDownOpened={isDropDown2Opened}
                   openCloseDropDown={openCloseDropDown2}
-                  ongymSelected={setCurrentEmployeeAndPop2}
+                  bloclClick={employeesSlice.selectedEmployee === null}
                 />
               </div>
             </div>
@@ -277,7 +325,7 @@ export default function Employees({ listOfEmployees }) {
                 width={"100%"}
                 height={"40px"}
                 title={"Завершить редактирование"}
-                onСlick={() => {}}
+                onСlick={() => openRefEmployeesDialog(false)}
               />
             </div>
           </div>
@@ -289,10 +337,14 @@ export default function Employees({ listOfEmployees }) {
             <EachEmployee
               key={employee.id}
               photo={goggins}
-              name={employee.user.firstName}
-              lastName={employee.user.lastName}
-              job={employee.roles}
-              isThatYou={employee.isThatYou}
+              name={employee.firstName}
+              lastName={employee.lastName}
+              job={
+                employee.roles.length === 0
+                  ? "Нет роли"
+                  : employee.roles[0].name
+              }
+              //isThatYou={localStorage.id === employee.id} <== maybe?
             />
           );
         })}
@@ -309,10 +361,7 @@ export default function Employees({ listOfEmployees }) {
         {/* Add employee dialog */}
         <CustomDialog
           isOpened={isAddEmployeesDialogOpened}
-          closeOnTapOutside={() =>
-            /* not working */
-            openAddEmployeesDialog(false)
-          }
+          closeOnTapOutside={() => openAddEmployeesDialog(false)}
         >
           {/* Add employee dialog body */}
           <div className="add_employee_dialog">
@@ -371,10 +420,10 @@ export default function Employees({ listOfEmployees }) {
                   Уровень доступа сотрудника
                 </div>
                 <CustomDropdown
-                  currentGym={currentEmployee}
+                  currentRole={currentEmployee}
                   isDropDownOpened={isDropDownOpened}
                   openCloseDropDown={openCloseDropDown}
-                  ongymSelected={setCurrentGymAndPop}
+                  onRoleSelected={setCurrentAndPop}
                 />
               </div>
             </div>
@@ -390,7 +439,7 @@ export default function Employees({ listOfEmployees }) {
                     key={role.id}
                     className="flex flex-row gap-[10px] items-center"
                   >
-                    <img src={availableSvg} alt=""/>
+                    <img src={availableSvg} alt="" />
                     <div className="text-[14px] font-normal leading-[16px]">
                       {role.name}
                     </div>
@@ -400,7 +449,7 @@ export default function Employees({ listOfEmployees }) {
                     key={role.id}
                     className="flex flex-row gap-[10px] items-center"
                   >
-                    <img src={notAvailable} alt=""/>
+                    <img src={notAvailable} alt="" />
                     <div className="text-[14px] font-normal leading-[16px] text-grey-text">
                       {role.name}
                     </div>
@@ -500,7 +549,7 @@ export function EachEmployee({
             </div>
           </div>
           <div className="delete_red_container">
-            <img src={garbage} alt=""/>
+            <img src={garbage} alt="" />
           </div>
         </>
       )}
@@ -540,7 +589,7 @@ export function TextAndTextfield({
             : "icon_and_textfield_row"
         }
       >
-        <img src={logo} className="userlogo" alt=""/>
+        <img src={logo} className="userlogo" alt="" />
         {isPhoneTextfield && (
           <ReactInputMask
             className="textfiled"
@@ -572,34 +621,47 @@ export function TextAndTextfield({
 
 function CustomDropdown({
   isDropDownOpened,
-  currentGym,
+  currentRole,
   openCloseDropDown,
-  ongymSelected,
+  bloclClick,
 }) {
+  const dispatch = useDispatch();
   return (
     <div className="column">
       <button
         className={
           isDropDownOpened ? "dropdown_header_opened" : "dropdown_header"
         }
-        onClick={openCloseDropDown}
+        onClick={bloclClick ? () => {} : openCloseDropDown}
       >
-        <div className="text-[14px] font-medium">{currentGym}</div>
+        <div className="text-[14px] font-medium">
+          {bloclClick ? "Выберите сотрудника" : currentRole}
+        </div>
         <div className={isDropDownOpened ? "rotate-icon" : "arrow-icon"}>
           <img src={arrowDownSvg} alt="" />
         </div>
       </button>
       {isDropDownOpened && (
         <div className="dropdown_body">
-          {employees.map((item, index) => (
-            <button
-              key={index}
-              className="gym_names"
-              onClick={() => ongymSelected(item.job)}
-            >
-              {item.job}
-            </button>
-          ))}
+          {allRoles.map(
+            (item, index) => (
+              console.log(`allRoles ${JSON.stringify(allRoles)}`),
+              (
+                <button
+                  key={index}
+                  className="gym_names"
+                  onClick={() => {
+                    dispatch(selectARoleName(item.name));
+                    dispatch(selectARoleId(item.id));
+                    dispatch(selectARoleCode(item.code));
+                    openCloseDropDown();
+                  }}
+                >
+                  {item.name}
+                </button>
+              )
+            )
+          )}
         </div>
       )}
     </div>

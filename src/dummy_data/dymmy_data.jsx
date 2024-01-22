@@ -56,7 +56,6 @@ export const employees = [
     job: "Администратор",
     isThatYou: false,
   },
-  
 ];
 
 export const activities = [
@@ -154,5 +153,33 @@ export const roles = [
     id: 6,
     name: "Не может редактировать основную информацию о заведении (Название, лого, описание, адрес, контакты)",
     available: false,
+  },
+];
+
+export const allRoles = [
+  {
+    id: 1,
+    code: "ROLE_ADMIN",
+    name: "Администратор",
+  },
+  {
+    id: 2,
+    code: "ROLE_USER",
+    name: "Пользователь",
+  },
+  {
+    id: 3,
+    code: "ROLE_DIRECTOR",
+    name: "Директор",
+  },
+  {
+    id: 4,
+    code: "ROLE_MANAGER",
+    name: "Менеджер",
+  },
+  {
+    id: 5,
+    code: "ROLE_WORKER",
+    name: "Работник",
   },
 ];

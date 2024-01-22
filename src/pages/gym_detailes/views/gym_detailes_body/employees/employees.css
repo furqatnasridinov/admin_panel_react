@@ -43,6 +43,8 @@
   height: fit-content;
   margin-left: 34px;
 }
+
+
 .selected_employee_row {
   display: flex;
   flex-direction: row;
@@ -75,6 +77,7 @@
   justify-content: center;
   width: 40px;
   height: 100%;
+  cursor: pointer;
   border-radius: 0px 16px 16px 0px;
   border-top: 1px solid #ff3d00;
   border-right: 1px solid #ff3d00;

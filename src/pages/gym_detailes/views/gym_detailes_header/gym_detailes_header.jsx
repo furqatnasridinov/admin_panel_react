@@ -10,7 +10,6 @@ export default function GymDetailesHeader({
   selectAnotherGym,
 }) {
   const [isDropDownOpened, openDropDown] = useState(false);
-  const [currentGym, setCurrentGym] = useState(gym.name);
 
   function openCloseDropDown() {
     openDropDown(!isDropDownOpened);
@@ -20,7 +19,6 @@ export default function GymDetailesHeader({
     try {
       selectAnotherGym(gym);
       openCloseDropDown();
-      setCurrentGym(gym.name)
     } catch (error) {
       alert(`setCurrentGymAndPop ${error}`);
     }
@@ -33,7 +31,7 @@ export default function GymDetailesHeader({
       <div className="slash"> / </div>
       {showDropDown && (
         <CustomDropdown
-          text={currentGym}
+          text={gym.name}
           isDropDownOpened={isDropDownOpened}
           openCloseDropDown={openCloseDropDown}
           map={listOfGyms.map((item, index) => (

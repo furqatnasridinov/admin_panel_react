@@ -11,12 +11,14 @@ import AddActivitySvg from "../../../../../assets/svg/add_activity.svg";
 import addPhotoSvg from "../../../../../assets/svg/add_photo.svg";
 import CustomButton from "../../../../../components/button/button";
 import CustomDialog from "../../../../../components/dialog/dialog";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  dragAndDropActivities,
+  selectAnActivity,
+} from "../../../../../features/activities_slice";
 
 export default function GymDetailesBodySecondContainer({
   listOfActivities,
-  setListOfactivities,
-  selectedActivity,
-  setselectedActivity,
   activityDescribtion,
   activityPeculiarities,
   setActivityDescribtion,
@@ -24,6 +26,9 @@ export default function GymDetailesBodySecondContainer({
   photosOfSelectedActivity,
   setPhotosOfSelectedActivity,
 }) {
+  const dispatch = useDispatch();
+  const activitiesSlice = useSelector((state) => state.activities);
+
   // use states
   const [isDescribtionEdittingEnabled, setDescribtionEditting] =
     useState(false);
@@ -81,7 +86,7 @@ export default function GymDetailesBodySecondContainer({
     hiddenFileInput.current.click();
   };
 
-  // drad & drop functions
+  // drad & drop functions for photos
   const draggedItemRef = useRef(null);
   const draggedOverRef = useRef(null);
   function handleSortingPhotos() {
@@ -122,7 +127,7 @@ export default function GymDetailesBodySecondContainer({
     draggedActivityRef.current = null;
     draggedOverActivityRef.current = null;
     // update the actual array
-    setListOfactivities(dublicatedList);
+    dispatch(dragAndDropActivities(dublicatedList));
   }
 
   return (
@@ -141,8 +146,8 @@ export default function GymDetailesBodySecondContainer({
               <Chip
                 key={index}
                 name={activity}
-                isActive={activity === selectedActivity}
-                onclick={() => setselectedActivity(activity)}
+                isActive={activity === activitiesSlice.selectedActivity}
+                onclick={() => dispatch(selectAnActivity(activity))}
               />
             );
           })}
@@ -171,9 +176,9 @@ export default function GymDetailesBodySecondContainer({
                         key={index}
                         title={activity}
                         onclick={() => {
-                          setselectedActivity(activity);
+                          dispatch(selectAnActivity(activity));
                         }}
-                        isActive={activity === selectedActivity}
+                        isActive={activity === activitiesSlice.selectedActivity}
                         onDragStart={() => (draggedActivityRef.current = index)}
                         onDragEnter={() =>
                           (draggedOverActivityRef.current = index)
@@ -324,7 +329,7 @@ export default function GymDetailesBodySecondContainer({
             {showPhotoInDialog && (
               <CustomDialog
                 isOpened={isPhotoShownInDialog}
-                closeOnTapOutside={()=>showPhotoInDialog(false)}
+                closeOnTapOutside={() => showPhotoInDialog(false)}
               >
                 <img src={photoToShowInDialog} alt="" />
               </CustomDialog>
