@@ -1,10 +1,5 @@
 import React from "react";
 import "./gym_details_body_second.css";
-import {
-  activities,
-  features,
-  activityPhotos,
-} from "../../../../../dummy_data/dymmy_data";
 import TextAndTextButton from "../../../components/text_and_textbutton";
 import { useState, useRef, useEffect } from "react";
 import { EditableTextfield } from "../first/gym_detailes_body_first";
@@ -19,12 +14,15 @@ import CustomDialog from "../../../../../components/dialog/dialog";
 
 export default function GymDetailesBodySecondContainer({
   listOfActivities,
+  setListOfactivities,
   selectedActivity,
   setselectedActivity,
   activityDescribtion,
   activityPeculiarities,
   setActivityDescribtion,
   setActivityPeculiarities,
+  photosOfSelectedActivity,
+  setPhotosOfSelectedActivity,
 }) {
   // use states
   const [isDescribtionEdittingEnabled, setDescribtionEditting] =
@@ -32,7 +30,8 @@ export default function GymDetailesBodySecondContainer({
   const [isFeaturesEdittingEnabled, setFeaturesEditting] = useState(false);
   const [isEdittingPhotosEnabled, setPhotosEditting] = useState(false);
   const [isActivitiesModalOpened, openActivitiesModal] = useState(false);
-  const [listOfPhotos, changeListOfPhotos] = useState(activityPhotos);
+  const [isPhotoShownInDialog, showPhotoInDialog] = useState(false);
+  const [photoToShowInDialog, setPhotoToBeShownInDialog] = useState("");
 
   // use refs
   const hiddenFileInput = useRef(null);
@@ -54,27 +53,28 @@ export default function GymDetailesBodySecondContainer({
       .map((line) => line.trim());
     handleSaveFeatures(newFeaturesArray);
   };
-  function handleRemovingActivityPhotos(id) {
-    const newList = listOfPhotos.filter((item) => item.id !== id);
-    changeListOfPhotos(newList);
+
+  function handleRemovingActivityPhotos(deletedItem) {
+    const newList = photosOfSelectedActivity.filter(
+      (item) => item !== deletedItem
+    );
+    setPhotosOfSelectedActivity(newList);
   }
+
   // Обработчик для добавления новой фотографии
-  const handleNewPhoto = (event) => {
+  function handleNewPhoto(event) {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = function (e) {
-        // Создаём новый объект фото с уникальным id и image URL
-        const newPhoto = {
-          id: listOfPhotos.length + 1,
-          image: e.target.result,
-        };
+        // Создаём новый объект фото с уникальным  image URL
+        const newPhoto = e.target.result;
         // Обновляем состояние со списком фотографий
-        changeListOfPhotos([...listOfPhotos, newPhoto]);
+        setPhotosOfSelectedActivity([...photosOfSelectedActivity, newPhoto]);
       };
       reader.readAsDataURL(file);
     }
-  };
+  }
 
   // передаем это на кнопку добавления фото,(как бы через ref, нажимаем на саму input file которого скрыли)
   const handleClick = () => {
@@ -84,26 +84,45 @@ export default function GymDetailesBodySecondContainer({
   // drad & drop functions
   const draggedItemRef = useRef(null);
   const draggedOverRef = useRef(null);
-
   function handleSortingPhotos() {
     // creating duplicate of list
-    const dublicatedList = [...listOfPhotos];
-
+    const dublicatedList = [...photosOfSelectedActivity];
     //remove and save dragged item
     const draggedItemContent = dublicatedList.splice(
       draggedItemRef.current,
       1
     )[0];
-
     //switch the position
     dublicatedList.splice(draggedOverRef.current, 0, draggedItemContent);
-
     // reset the position ref
     draggedItemRef.current = null;
     draggedOverRef.current = null;
-
     // update the actual array
-    changeListOfPhotos(dublicatedList);
+    setPhotosOfSelectedActivity(dublicatedList);
+  }
+
+  // drag & drop for activities
+  const draggedActivityRef = useRef(null);
+  const draggedOverActivityRef = useRef(null);
+  function handleSortingActivities() {
+    // creating duplicate of list
+    const dublicatedList = [...listOfActivities];
+    //remove and save dragged item
+    const draggedItemContent = dublicatedList.splice(
+      draggedActivityRef.current,
+      1
+    )[0];
+    //switch the position
+    dublicatedList.splice(
+      draggedOverActivityRef.current,
+      0,
+      draggedItemContent
+    );
+    // reset the position ref
+    draggedActivityRef.current = null;
+    draggedOverActivityRef.current = null;
+    // update the actual array
+    setListOfactivities(dublicatedList);
   }
 
   return (
@@ -129,12 +148,60 @@ export default function GymDetailesBodySecondContainer({
           })}
         </div>
         <CustomDialog isOpened={isActivitiesModalOpened}>
-          <ActivitiesModal
-            closeModal={() => {
-              openActivitiesModal(false);
-            }}
-            activities={listOfActivities}
-          />
+          {/* Activities modal body */}
+          <div className="main_container">
+            <div className="flex flex-col gap-[5px]">
+              <div className="text-[16px] font-semibold leading-[16px]">
+                Редактирование активностей
+              </div>
+              <div className="text-[14px] font-normal leading-[16px]">
+                Выберите активность, чтобы добавить в неё занятия.
+                Дополнительные занятия - это не обязательная опция, вы можете
+                использовать только основные активности.
+              </div>
+            </div>
+            {/* activities and podactivities */}
+            <div className="flex flex-row gap-[24px]">
+              <div className="activities_col">
+                <div className="text-[14px] font-bold">Ваши активности:</div>
+                <div className="blue_bordered_container">
+                  {listOfActivities.map((activity, index) => {
+                    return (
+                      <EachActivity
+                        key={index}
+                        title={activity}
+                        onclick={() => {
+                          setselectedActivity(activity);
+                        }}
+                        isActive={activity === selectedActivity}
+                        onDragStart={() => (draggedActivityRef.current = index)}
+                        onDragEnter={() =>
+                          (draggedOverActivityRef.current = index)
+                        }
+                        onDragEnd={handleSortingActivities}
+                        onDragOver={(e) => e.preventDefault()}
+                      />
+                    );
+                  })}
+                  <AddActivity />
+                </div>
+              </div>
+              <div className="podactivities_col">
+                <div className="text-[14px] font-bold">
+                  Доп. занятия внутри активности:
+                </div>
+                <div className="blue_bordered_container"></div>
+              </div>
+            </div>
+            <CustomButton
+              height={"40px"}
+              width={"100%"}
+              title={"Закончить редактирование"}
+              onСlick={() => openActivitiesModal(false)}
+              fontSize={"14px"}
+              showShadow={false}
+            />
+          </div>
         </CustomDialog>
       </div>
       <div className="flex flex-row gap-[50px]">
@@ -212,10 +279,12 @@ export default function GymDetailesBodySecondContainer({
           {!isEdittingPhotosEnabled && (
             <TextAndTextButton
               text1={"Фотографии"}
-              text2={listOfPhotos.length > 0 ? "Удалить фото" : ""}
+              text2={photosOfSelectedActivity.length > 0 ? "Удалить фото" : ""}
               isRedText={isEdittingPhotosEnabled}
               onclick={() =>
-                listOfPhotos.length > 0 ? setPhotosEditting(true) : {}
+                photosOfSelectedActivity.length > 0
+                  ? setPhotosEditting(true)
+                  : {}
               }
             />
           )}
@@ -234,27 +303,39 @@ export default function GymDetailesBodySecondContainer({
           {/* Container with photos */}
           <div className="activity_photos_container">
             {!isEdittingPhotosEnabled &&
-              listOfPhotos.map((item, index) => (
+              photosOfSelectedActivity.map((item, index) => (
                 <img
                   className="activity_each_photo"
                   key={index}
-                  src={item.image}
+                  src={item}
                   alt=""
+                  onClick={() => {
+                    showPhotoInDialog(true);
+                    setPhotoToBeShownInDialog(item);
+                  }}
                   draggable={true}
-                  onDragStart={(e) => (draggedItemRef.current = index)}
-                  onDragEnter={(e) => (draggedOverRef.current = index)}
+                  onDragStart={() => (draggedItemRef.current = index)}
+                  onDragEnter={() => (draggedOverRef.current = index)}
                   onDragEnd={handleSortingPhotos}
                   onDragOver={(e) => e.preventDefault()}
                   //
                 />
               ))}
+            {showPhotoInDialog && (
+              <CustomDialog
+                isOpened={isPhotoShownInDialog}
+                closeOnTapOutside={()=>showPhotoInDialog(false)}
+              >
+                <img src={photoToShowInDialog} alt="" />
+              </CustomDialog>
+            )}
             {isEdittingPhotosEnabled &&
-              listOfPhotos.map((item, index) => (
+              photosOfSelectedActivity.map((item, index) => (
                 <button key={index} className="activity_each_photo_editting">
                   <img
-                    src={item.image}
+                    src={item}
                     alt=""
-                    className="rounded-[8px]"
+                    className="rounded-[8px] h-full w-full object-cover"
                     draggable={false}
                   />
                   <img
@@ -262,7 +343,7 @@ export default function GymDetailesBodySecondContainer({
                     src={deleteSvg}
                     alt=""
                     onClick={() => {
-                      handleRemovingActivityPhotos(item.id);
+                      handleRemovingActivityPhotos(item);
                     }}
                     draggable={false}
                   />
@@ -363,69 +444,26 @@ function EditableFeaturesTextfield({
   );
 }
 
-function ActivitiesModal({ closeModal, activities }) {
-  // using this activeActivity make api call to podactivnodsti
-  const [activeActivity, setActiveActivity] = useState("");
-  return (
-    <div className="main_container">
-      <div className="flex flex-col gap-[5px]">
-        <div className="text-[16px] font-semibold leading-[16px]">
-          Редактирование активностей
-        </div>
-        <div className="text-[14px] font-normal leading-[16px]">
-          Выберите активность, чтобы добавить в неё занятия. Дополнительные
-          занятия - это не обязательная опция, вы можете использовать только
-          основные активности.
-        </div>
-      </div>
-      {/* activities and podactivities */}
-      <div className="flex flex-row gap-[24px]">
-        <div className="activities_col">
-          <div className="text-[14px] font-bold">Ваши активности:</div>
-          <div className="blue_bordered_container">
-            {activities.map((activity, index) => {
-              return (
-                <EachActivity
-                  key={index}
-                  title={activity}
-                  onclick={() => {
-                    setActiveActivity(activity);
-                  }}
-                  isActive={activity === activeActivity}
-                />
-              );
-            })}
-            <AddActivity />
-          </div>
-        </div>
-        <div className="podactivities_col">
-          <div className="text-[14px] font-bold">
-            Доп. занятия внутри активности:
-          </div>
-          <div className="blue_bordered_container"></div>
-        </div>
-      </div>
-      <CustomButton
-        height={"40px"}
-        width={"100%"}
-        title={"Закончить редактирование"}
-        onСlick={closeModal}
-        fontSize={"14px"}
-        showShadow={false}
-      />
-    </div>
-  );
-}
-
 function EachActivity({
   title,
   onclick,
   isActive,
   onRemoveClicked,
   onEditClicked,
+  onDragStart,
+  onDragEnter,
+  onDragEnd,
+  onDragOver,
 }) {
   return (
-    <div className={isActive ? "isActive" : "each_activity"} draggable={true}>
+    <div
+      className={isActive ? "isActive" : "each_activity"}
+      draggable={true}
+      onDragStart={onDragStart}
+      onDragEnter={onDragEnter}
+      onDragEnd={onDragEnd}
+      onDragOver={onDragOver}
+    >
       <img
         style={{ cursor: "pointer" }}
         src={removeActivitySvg}

@@ -2,10 +2,8 @@ import React from "react";
 import "./gym_details_body_first.css";
 import TextAndTextButton from "../../../components/text_and_textbutton";
 import SizeOfPicture from "../../../components/size_of_picture";
-import topDogMainPic from "../../../../../assets/images/top_dog.png";
 import mainPicPlaceHolder from "../../../../../assets/svg/main_photo_placeholder.svg";
 import logoPlaceholder from "../../../../../assets/svg/logo_placeholder.svg";
-import topDogLogo from "../../../../../assets/images/top_dog_logo.jpeg";
 import phoneSvg from "../../../../../assets/svg/phone.svg";
 import tgSvg from "../../../../../assets/svg/tg.svg";
 import vkSvg from "../../../../../assets/svg/vk.svg";
@@ -16,7 +14,7 @@ import CustomDialog from "../../../../../components/dialog/dialog";
 import { useState, useRef, useEffect } from "react";
 import CustomButton from "../../../../../components/button/button";
 
-export default function GymDetailesBodyFirstContainer({ gym }) {
+export default function GymDetailesBodyFirstContainer({ currentGym }) {
   // use states
   const [isNameEditingEnabled, setNameEditing] = useState(false);
   const [isDescribtionEdittingEnabled, setDescribtionEditing] = useState(false);
@@ -24,7 +22,6 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
   const [isContactsEdittingEnabled, setContactsEditting] = useState(false);
   const [isModalPhotoOpened, openModalPhoto] = useState(false);
   const [isModalLogoOpened, openModalLogo] = useState(false);
-  const [gymName, changeGymName] = useState("Top DOG Fight Club");
   const [mainPic, setMainPic] = useState("");
   const [logo, setLogo] = useState("");
   const [describtion, setDescribtion] = useState(
@@ -54,10 +51,10 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
     }
   };
 
-  const handleSaveGymName = (newName) => {
-    changeGymName(newName);
+  function handleSaveGymName(newName) {
+    //changeGymName(newName);
     setNameEditing(false);
-  };
+  }
   const handleSaveDescribtion = (newDescribtion) => {
     setDescribtion(newDescribtion);
     setDescribtionEditing(false);
@@ -97,6 +94,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
   };
 
   return (
+    
     <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
       {/* Photos and Logos */}
 
@@ -105,8 +103,8 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
         <div className="gym_main_photo_column">
           <TextAndTextButton
             text1={"Фоновая фотография"}
-            text2={mainPic == "" ? "" : "Изменить"}
-            onclick={() => (mainPic != "" ? openModalPhoto(true) : {})}
+            text2={mainPic === "" ? "" : "Изменить"}
+            onclick={() => (mainPic !== "" ? openModalPhoto(true) : {})}
           />
 
           {mainPic.length > 0 && (
@@ -116,16 +114,17 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
               onClick={() => openModalPhoto(true)}
               style={{ cursor: "pointer" }}
               draggable={false}
+              alt=""
             />
           )}
-          {mainPic == "" && (
+          {mainPic === "" && (
             <>
               <img
-                className=""
                 src={mainPicPlaceHolder}
                 style={{ cursor: "pointer" }}
                 onClick={openFilePickerForMainPhoto}
                 draggable={false}
+                alt=""
               />
               <input
                 ref={fileInputMainPhotoRef}
@@ -145,7 +144,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
                 setMainPic("");
               }}
               openFilePicker={openFilePickerForMainPhoto}
-              photo={mainPic == "" ? "" : mainPic}
+              photo={mainPic === "" ? "" : mainPic}
               fileInputRef={fileInputMainPhotoRef}
               uploadNewPhoto={handleNewPhoto}
             />
@@ -155,26 +154,28 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
         <div className="flex flex-col gap-[10px] mt-[30px] ml-[43px]">
           <TextAndTextButton
             text1={"Логотип"}
-            text2={logo == "" ? "" : "Изменить"}
-            onclick={() => (logo != "" ? openModalLogo(true) : {})}
+            text2={logo === "" ? "" : "Изменить"}
+            onclick={() => (logo !== "" ? openModalLogo(true) : {})}
           />
           {/* Big logo */}
-          {logo != "" && (
+          {logo !== "" && (
             <img
               className="logo_rounded180"
               src={logo}
               onClick={() => openModalLogo(true)}
               style={{ cursor: "pointer" }}
-              draggable = {false}
+              draggable={false}
+              alt=""
             />
           )}
-          {logo == "" && (
+          {logo === "" && (
             <>
               <img
                 src={logoPlaceholder}
                 style={{ cursor: "pointer" }}
                 onClick={openFilePickerForLogo}
-                draggable = {false}
+                draggable={false}
+                alt=""
               />
               <input
                 ref={fileInputLogoRef}
@@ -188,7 +189,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
           <SizeOfPicture size={"180x180px"} />
         </div>
         {/* Medium logo */}
-        {logo != "" && (
+        {logo !== "" && (
           <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
             <img
               onClick={() => {
@@ -197,13 +198,14 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
               className="logo_rounded90"
               style={{ cursor: "pointer" }}
               src={logo}
+              alt=""
             />
             <SizeOfPicture size={"90x90px"} />
           </div>
         )}
 
         {/* Small logo */}
-        {logo != "" && (
+        {logo !== "" && (
           <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
             <img
               className="logo_rounded50"
@@ -212,6 +214,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
               onClick={() => {
                 openModalLogo(true);
               }}
+              alt=""
             />
 
             <SizeOfPicture size={"50x50px"} />
@@ -246,7 +249,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
                   isRedText={isNameEditingEnabled}
                   onclick={() => setNameEditing(true)}
                 />
-                <div className="text-[14px]">{gym.name}</div>
+                <div className="text-[14px]">{currentGym.name}</div>
               </>
             )}
             {isNameEditingEnabled && (
@@ -258,7 +261,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
                   onclick={() => setNameEditing(false)}
                 />
                 <EditableTextfield
-                  value={gym.name}
+                  value={currentGym.name}
                   handleChange={handleSaveGymName}
                   lineheight={"16px"}
                   fontsize={"14px"}
@@ -279,7 +282,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
                   }}
                 />
                 <div className="leading-[14px] text-[13px]">
-                  {gym.description}
+                  {currentGym.description}
                 </div>
               </>
             )}
@@ -294,7 +297,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
                   }}
                 />
                 <EditableTextfield
-                  value={gym.description}
+                  value={currentGym.description}
                   handleChange={handleSaveDescribtion}
                   fontsize={"13px"}
                   lineheight={"14px"}
@@ -314,7 +317,9 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
                     setAddressEditting(true);
                   }}
                 />
-                <div className="leading-[16px] text-[14px]">{gym.address}</div>
+                <div className="leading-[16px] text-[14px]">
+                  {currentGym.address}
+                </div>
               </>
             )}
             {isAddressEdittingEnabled && (
@@ -328,7 +333,7 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
                   }}
                 />
                 <EditableTextfield
-                  value={gym.address}
+                  value={currentGym.address}
                   handleChange={handleSaveAddress}
                   fontsize={"14px"}
                 />
@@ -349,22 +354,26 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
                 {/* Phone */}
                 <div className="icon_and_tag">
                   <img src={phoneSvg} alt="" />
-                  <div className="font-normal text-[14px]">{gym.phone}</div>
+                  <div className="font-normal text-[14px]">
+                    {currentGym.phone}
+                  </div>
                 </div>
                 {/* Tg */}
-                {gym.telegram !== null && gym.telegram !== "" && (
+                {currentGym.telegram !== null && currentGym.telegram !== "" && (
                   <div className="icon_and_tag">
                     <img src={tgSvg} alt="" />
                     <div className="font-normal text-[14px]">
-                      {gym.telegram}
+                      {currentGym.telegram}
                     </div>
                   </div>
                 )}
                 {/* Vk */}
-                {gym.vk !== null && gym.vk !== "" && (
+                {currentGym.vk !== null && currentGym.vk !== "" && (
                   <div className="icon_and_tag">
                     <img src={tgSvg} alt="" />
-                    <div className="font-normal text-[14px]">{gym.vk}</div>
+                    <div className="font-normal text-[14px]">
+                      {currentGym.vk}
+                    </div>
                   </div>
                 )}
               </div>
@@ -381,19 +390,19 @@ export default function GymDetailesBodyFirstContainer({ gym }) {
                 <EditableContacts
                   icon={phoneSvg}
                   text={"Телефон"}
-                  info={gym.phone}
+                  info={currentGym.phone}
                   isPhone={true}
                 />
                 <EditableContacts
                   icon={tgSvg}
                   text={"Telegram"}
-                  info={gym.telegram == null ? "" : gym.telegram}
+                  info={currentGym.telegram == null ? "" : currentGym.telegram}
                   isTg={true}
                 />
                 <EditableContacts
                   icon={vkSvg}
                   text={"VKontakte"}
-                  info={gym.vk == null ? "" : gym.vk}
+                  info={currentGym.vk == null ? "" : currentGym.vk}
                   isVk={true}
                 />
               </div>
@@ -548,12 +557,16 @@ function ChangeMainPhotoModal({
   return (
     <div className="photo_dialog_container">
       {/* photo */}
-      {photo != "" && (
-        <img className="w-[513px] h-[250px] rounded-t-[16px]" src={photo}></img>
+      {photo !== "" && (
+        <img
+          className="w-[513px] h-[250px] rounded-t-[16px]"
+          src={photo}
+          alt=""
+        ></img>
       )}
-      {photo == "" && (
+      {photo === "" && (
         <div className="w-[513px] h-[250px] rounded-t-[16px] bg-white flex justify-center">
-          <img className="" src={mainPicPlaceHolder}></img>
+          <img src={mainPicPlaceHolder} alt=""></img>
         </div>
       )}
 
@@ -602,7 +615,7 @@ function ChangeLogoModal({
   return (
     <div className="logo_dialog_container">
       <div className="w-full flex justify-center">
-        <img className="logo" src={logo}></img>
+        <img className="logo" src={logo} alt=""></img>
       </div>
       {/* white container */}
       <div className="flex flex-col gap-[24px]">

@@ -49,7 +49,7 @@ export default function Employees({ listOfEmployees }) {
   }
 
   function setCurrentGymAndPop(name) {
-    if (currentEmployee != name) {
+    if (currentEmployee !== name) {
       setCurrentEmployee(name);
       openCloseDropDown();
     }
@@ -102,7 +102,7 @@ export default function Employees({ listOfEmployees }) {
   }
 
   function setCurrentEmployeeAndPop2(name) {
-    if (currentEmployee2 != name) {
+    if (currentEmployee2 !== name) {
       setCurrentEmployee2(name);
       openCloseDropDown2();
     }
@@ -146,7 +146,7 @@ export default function Employees({ listOfEmployees }) {
             {/* Choose an employee */}
             <div className="flex flex-col gap-[16px]">
               <div className="flex flex-row gap-[10px] items-center">
-                <img src={userLogo} />
+                <img src={userLogo} alt="" />
                 <div className="text-[16px] font-semibold leading-[16px]">
                   Выберите сотрудника для редактирования
                 </div>
@@ -173,7 +173,7 @@ export default function Employees({ listOfEmployees }) {
             {/* Personal info */}
             <div className="flex flex-col gap-[16px]">
               <div className="flex flex-row gap-[10px] items-center">
-                <img className="w-[24px] h-[24px]" src={docsSvg} />
+                <img className="w-[24px] h-[24px]" src={docsSvg} alt="" />
                 <div className="text-[16px] font-semibold leading-[16px]">
                   Личная информация
                 </div>
@@ -224,7 +224,7 @@ export default function Employees({ listOfEmployees }) {
             {/* Dropdown section */}
             <div className="flex flex-col gap-[16px]">
               <div className="flex flex-row gap-[10px] items-center">
-                <img src={starSvg} />
+                <img src={starSvg} alt="" />
                 <div className="text-[16px] font-semibold leading-[16px]">
                   Роль сотрудника
                 </div>
@@ -254,7 +254,7 @@ export default function Employees({ listOfEmployees }) {
                     key={role.id}
                     className="flex flex-row gap-[10px] items-center"
                   >
-                    <img src={availableSvg} />
+                    <img src={availableSvg} alt="" />
                     <div className="text-[14px] font-normal leading-[16px]">
                       {role.name}
                     </div>
@@ -264,7 +264,7 @@ export default function Employees({ listOfEmployees }) {
                     key={role.id}
                     className="flex flex-row gap-[10px] items-center"
                   >
-                    <img src={notAvailable} />
+                    <img src={notAvailable} alt="" />
                     <div className="text-[14px] font-normal leading-[16px] text-grey-text">
                       {role.name}
                     </div>
@@ -390,7 +390,7 @@ export default function Employees({ listOfEmployees }) {
                     key={role.id}
                     className="flex flex-row gap-[10px] items-center"
                   >
-                    <img src={availableSvg} />
+                    <img src={availableSvg} alt=""/>
                     <div className="text-[14px] font-normal leading-[16px]">
                       {role.name}
                     </div>
@@ -400,7 +400,7 @@ export default function Employees({ listOfEmployees }) {
                     key={role.id}
                     className="flex flex-row gap-[10px] items-center"
                   >
-                    <img src={notAvailable} />
+                    <img src={notAvailable} alt=""/>
                     <div className="text-[14px] font-normal leading-[16px] text-grey-text">
                       {role.name}
                     </div>
@@ -500,7 +500,7 @@ export function EachEmployee({
             </div>
           </div>
           <div className="delete_red_container">
-            <img src={garbage} />
+            <img src={garbage} alt=""/>
           </div>
         </>
       )}
@@ -540,7 +540,7 @@ export function TextAndTextfield({
             : "icon_and_textfield_row"
         }
       >
-        <img src={logo} className="userlogo" />
+        <img src={logo} className="userlogo" alt=""/>
         {isPhoneTextfield && (
           <ReactInputMask
             className="textfiled"

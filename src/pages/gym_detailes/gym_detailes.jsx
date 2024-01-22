@@ -18,6 +18,8 @@ export default function GymDetails() {
   const [infoForType, setInfoForType] = useState([]);
   const [activityDescribtion, setActivityDescribtion] = useState("");
   const [activityPeculiarities, setActivityPeculiarities] = useState(""); // in future may be list
+  const [allPhotos, setAllPhotos] = useState([]);
+  const [photosOfSelectedActivity, setPhotosOfSelectedActivity] = useState([]);
 
   // this useeffect will trigger only once at the beginning
   useEffect(() => {
@@ -88,7 +90,21 @@ export default function GymDetails() {
           alert("operationResult is not OK");
         }
       } catch (error) {
-        alert(`getActivities ${error}`);
+        alert(`getInfoForType ${error}`);
+      }
+    }
+
+    // function to get allPhotos(all activities)
+    async function getAllPhotos() {
+      try {
+        const response = await axiosClient.get(`api/gym/${gymId}/photo`);
+        if (response.data["operationResult"] === "OK") {
+          setAllPhotos(response.data["object"]);
+        } else {
+          alert("operationResult is not OK");
+        }
+      } catch (error) {
+        alert(`getAllPhotos ${error}`);
       }
     }
 
@@ -97,6 +113,7 @@ export default function GymDetails() {
     getListOfEmployees();
     getActivities();
     getInfoForType();
+    getAllPhotos();
   }, []);
 
   // here will be functions to get new data`s after selecting another gym from dropdown
@@ -104,7 +121,7 @@ export default function GymDetails() {
     if (gym.id !== currentGym.id) {
       // function to get gymdetailes based on gymnewSelected gymid
       async function getGymDetails() {
-        console.log(`getGymDetails 2 trigered >> selected id  ${gym.id}`);
+        console.log(`getGymDetails 2 trigered >> selected id  ${gym.name}`);
         try {
           const response = await axiosClient.get(`api/admin/gyms/${gym.id}`);
           if (response.data["operationResult"] === "OK") {
@@ -116,6 +133,7 @@ export default function GymDetails() {
           alert(`getGymDetails ${error}`);
         }
       }
+
       // function to get List Of Employees based on gymnewSelected gymid
       async function getListOfEmployees() {
         try {
@@ -131,6 +149,7 @@ export default function GymDetails() {
           alert(`getListOfEmployees ${error}`);
         }
       }
+
       // function to get List Of Activities based on gymnewSelected gymid
       async function getActivities() {
         try {
@@ -161,10 +180,26 @@ export default function GymDetails() {
         }
       }
 
+      // function to get all photos(of all activities)
+      async function getAllPhotos() {
+        try {
+          const response = await axiosClient.get(`api/gym/${gym.id}/photo`);
+          if (response.data["operationResult"] === "OK") {
+            setAllPhotos(response.data["object"]);
+            console.log("mana 2", allPhotos);
+          } else {
+            alert("operationResult is not OK");
+          }
+        } catch (error) {
+          alert(`getAllPhotos ${error}`);
+        }
+      }
+
       getGymDetails();
       getInfoForType();
       getListOfEmployees();
       getActivities();
+      getAllPhotos();
     }
   }
 
@@ -176,8 +211,9 @@ export default function GymDetails() {
   }, [listOfActivities]); // This useEffect will only run when listOfActivities changes
 
   useEffect(() => {
-    console.log(infoForType.length);
+    console.log("useEffect selectedActivity");
     if (selectedActivity !== "") {
+      console.log("useEffect selectedActivity selectedActivity !==");
       try {
         setActivityDescribtion(
           Array.isArray(infoForType[selectedActivity])
@@ -192,32 +228,55 @@ export default function GymDetails() {
       } catch (error) {
         alert(error);
       }
+
+      // getting photos relatively to selected activity
+      if (allPhotos[selectedActivity]) {
+        console.log("allPhotos[selectedActivity] true");
+        const notModifiedList = [...allPhotos[selectedActivity]];
+        const modifiedList = notModifiedList.map((element) => {
+          return `http://77.222.53.122/image/${element}`;
+        });
+        setPhotosOfSelectedActivity(modifiedList);
+      } else {
+        console.log("allPhotos[selectedActivity] false");
+        console.log("allPhotos lenth", allPhotos.length);
+        setPhotosOfSelectedActivity([]);
+      }
     }
   }, [selectedActivity]); // calling this after everytime when selectedActivity changes
 
   return (
-    <div className=" ml-[10px] h-[97vh] overflow-y-auto">
-      {currentGym != null && (
-        <>
-          <GymDetailesHeader
-            gym={currentGym}
-            listOfGyms={listOfGyms}
-            showDropDown={listOfGyms.length > 1}
-            selectAnotherGym={selectAnotherGym}
-          />
-          <Employees listOfEmployees={listOfEmployees} />
-          <GymDetailesBodyFirstContainer gym={currentGym} />
-          <GymDetailesBodySecondContainer
-            listOfActivities={listOfActivities}
-            selectedActivity={selectedActivity}
-            setselectedActivity={setSelectedActivity}
-            activityPeculiarities={activityPeculiarities}
-            activityDescribtion={activityDescribtion}
-            setActivityDescribtion={setActivityDescribtion}
-            setActivityPeculiarities={setActivityPeculiarities}
-          />
-        </>
-      )}
-    </div>
+    console.log("phooto sel act ", photosOfSelectedActivity),
+    (
+      <div className=" ml-[10px] h-[97vh] overflow-y-auto">
+        {currentGym != null && (
+          <>
+            <GymDetailesHeader
+              gym={currentGym}
+              listOfGyms={listOfGyms}
+              showDropDown={listOfGyms.length > 1}
+              selectAnotherGym={selectAnotherGym}
+            />
+            <Employees listOfEmployees={listOfEmployees} />
+            <GymDetailesBodyFirstContainer
+              currentGym={currentGym}
+              setCurrentGym={setCurrentGym}
+            />
+            <GymDetailesBodySecondContainer
+              listOfActivities={listOfActivities}
+              setListOfactivities={setListOfActivities}
+              selectedActivity={selectedActivity}
+              setselectedActivity={setSelectedActivity}
+              activityPeculiarities={activityPeculiarities}
+              activityDescribtion={activityDescribtion}
+              setActivityDescribtion={setActivityDescribtion}
+              setActivityPeculiarities={setActivityPeculiarities}
+              photosOfSelectedActivity={photosOfSelectedActivity}
+              setPhotosOfSelectedActivity={setPhotosOfSelectedActivity}
+            />
+          </>
+        )}
+      </div>
+    )
   );
 }

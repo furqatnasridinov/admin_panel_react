@@ -10,32 +10,35 @@ export default function CustomDialog({
 }) {
   const dialogRef = useRef();
 
-  /* useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         dialogRef.current &&
-        !dialogRef.current.contains(event.target) &&
-        isOpened
+        !dialogRef.current.contains(event.target)
       ) {
         if (typeof closeOnTapOutside === "function") {
+          console.log("Clicked outside the modal. Closing...");
+
           closeOnTapOutside();
         }
       }
     };
-
-    document.addEventListener("click", handleClickOutside);
+    if (isOpened) {
+      console.log("Adding event listener for mousedown");
+      document.addEventListener("mousedown", handleClickOutside);
+    }
 
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      console.log("Removing event listener for mousedown");
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [closeOnTapOutside]); */
+  }, [isOpened]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
 
     if (isOpened) {
       dialog.showModal();
-
       // Используем requestAnimationFrame для плавного открытия
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {

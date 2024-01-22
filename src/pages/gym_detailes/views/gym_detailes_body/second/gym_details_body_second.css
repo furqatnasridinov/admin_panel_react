@@ -98,15 +98,16 @@
 .activity_each_photo {
   width: 70px;
   height: 70px;
+  object-fit: cover;
   border-radius: 8px;
   cursor: grab;
 }
 
 .activity_each_photo_editting {
   position: relative;
+  object-fit: cover;
   width: 70px;
   height: 70px;
-  
 }
 
 .activity_each_photo_editting img.delete-icon {
