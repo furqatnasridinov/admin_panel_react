@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useParams } from "react-router-dom";
 import GymDetailesHeader from "./views/gym_detailes_header/gym_detailes_header";
 import GymDetailesBodyFirstContainer from "./views/gym_detailes_body/first/gym_detailes_body_first";
 import GymDetailesBodySecondContainer from "./views/gym_detailes_body/second/gym_details_body_second";
 import Employees from "./views/gym_detailes_body/employees/employees";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getListOfGyms } from "../../features/list_of_gyms_slice";
 import { getCurrentGym } from "../../features/current_gym_slice";
@@ -18,6 +18,7 @@ import {
   getPhotos,
   setPhotosOfSelectedActivity,
 } from "../../features/activities_slice";
+import CustomSnackbar from "../../components/snackbar/custom_snackbar";
 
 export default function GymDetails() {
   let { gymId } = useParams(); // This hooks allows you to extract params from the URL
@@ -91,6 +92,15 @@ export default function GymDetails() {
     activitiesSlice.photosOfAllActivities,
   ]); // calling this after everytime when selectedActivity changes
 
+  // ref for snackbar
+  const snackBarRef = useRef(null);
+
+  // for showing Snackbar
+
+  /* function showSnackbar() {
+    snackBarRef.current.show("Вы удалили сотрудника");
+  } */
+
   return (
     console.log("selected act ", activitiesSlice.selectedActivity),
     (
@@ -103,11 +113,17 @@ export default function GymDetails() {
               showDropDown={listOfGymsSlice.data.length > 1}
               selectAnotherGym={selectAnotherGym}
             />
-            <Employees listOfEmployees={listOfEmployees.employees} />
+            <Employees
+              listOfEmployees={listOfEmployees.employees}
+              gymId={currentGymSlice.currentGym.id}
+              snackbarRef={snackBarRef}
+            />
             <GymDetailesBodyFirstContainer
               currentGym={currentGymSlice.currentGym}
+              snackbarRef={snackBarRef}
             />
             <GymDetailesBodySecondContainer
+              gymId={gymId}
               listOfActivities={activitiesSlice.listOfActivities}
               activityPeculiarities={activitiesSlice.activityPeculiarities}
               activityDescribtion={activitiesSlice.activityDescribtion}
@@ -117,6 +133,10 @@ export default function GymDetails() {
                 activitiesSlice.photosOfSelectedActivity
               }
               setPhotosOfSelectedActivity={setPhotosOfSelectedActivity}
+            />
+            <CustomSnackbar
+              ref={snackBarRef}
+              message={"Вы удалили сотрудника"}
             />
           </>
         )}

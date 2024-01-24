@@ -10,22 +10,33 @@ import goggins from "../../../../.././assets/images/goggins.jpg";
 import starSvg from "../../../../../assets/svg/star.svg";
 import docsSvg from "../../../../../assets/svg/docs.svg";
 import garbage from "../../../../../assets/images/garbage.png";
-import { roles, allRoles } from "../../../../../dummy_data/dymmy_data";
+import {
+  roles,
+  allRoles,
+} from "../../../../../dummy_data/dymmy_data";
 import { useState } from "react";
 import CustomButton from "../../../../../components/button/button";
 import TextAndTextButton from "../../../components/text_and_textbutton";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import ReactInputMask from "react-input-mask";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   selectAnEmployee,
   changeSelectedEmployeesName,
+  changeSelectedEmployeesLastname,
+  changeSelectedEmployeesPhone,
+  changeSelectedEmployeesRole,
+  getListOfEmployees,
+  addEmployee,
+  editEmployee,
   selectARoleName,
   selectARoleId,
   selectARoleCode,
+  deleteEmployee,
 } from "../../../../../features/employees_slice";
 
-export default function Employees({ listOfEmployees }) {
+export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
   const dispatch = useDispatch();
   const employeesSlice = useSelector((state) => state.employees);
 
@@ -37,7 +48,9 @@ export default function Employees({ listOfEmployees }) {
   const [name, setname] = useState("");
   const [surname, setSurname] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [currentEmployee, setCurrentEmployee] = useState("Администратор");
+  const [roleId, setRoleId] = useState("1");
+  const [roleCode, setRoleCode] = useState("ROLE_ADMIN");
+  const [roleName, setRoleName] = useState("Администратор");
   const [nameNotValidated, setNameNotValidated] = useState();
   const [phoneNotValidated, setPhoneNotValidated] = useState();
   const [isAddEmployeesDialogOpened, openAddEmployeesDialog] = useState(false);
@@ -47,11 +60,6 @@ export default function Employees({ listOfEmployees }) {
   const [surnameTextfield2HasFocus, setSurname2Focus] = useState(false);
   const [phoneNumberTextfield2HasFocus, setPhone2Focus] = useState(false);
   const [isDropDown2Opened, openDropDown2] = useState(false);
-  const [name2, setName2] = useState("");
-  const [surname2, setSurname2] = useState("");
-  const [phoneNumber2, setPhoneNumber2] = useState("");
-  const [currentEmployee2, setCurrentEmployee2] = useState("Администратор");
-  const [selectedEmployeeId, selectEmployee] = useState(0);
   const [isRefEmployeesDialogOpened, openRefEmployeesDialog] = useState(false);
 
   // functions for addemployees dialog
@@ -59,12 +67,6 @@ export default function Employees({ listOfEmployees }) {
     openDropDown(!isDropDownOpened);
   }
 
-  function setCurrentAndPop(name) {
-    if (currentEmployee !== name) {
-      setCurrentEmployee(name);
-      openCloseDropDown();
-    }
-  }
 
   const changeName = (event) => {
     setname(event.target.value);
@@ -75,418 +77,493 @@ export default function Employees({ listOfEmployees }) {
   };
 
   const changePhone = (event) => {
-    setPhoneNumber(event.target.value);
-  };
-  const checkValidation = () => {
-    // Assume both fields are valid to start with
-    let isPhoneValid = true;
-    let isNameValid = true;
-
-    // Check phone number validity (assuming you want exactly 18 characters)
-    if (phoneNumber.length !== 18) {
-      setPhoneNotValidated(true);
-      isPhoneValid = false; // Set the phone validity to false
-    } else {
-      setPhoneNotValidated(false);
-    }
-
-    // Check name validity (assuming you want at least 1 character)
-    if (name.trim().length === 0) {
-      setNameNotValidated(true);
-      isNameValid = false; // Set the name validity to false
-    } else {
-      setNameNotValidated(false);
-    }
-
-    // Only proceed if both fields are valid
-    if (isPhoneValid && isNameValid) {
-      alert("Сотрудник добавлен");
-    }
+    // Удалить все нецифровые символы из строки
+    const digitsOnly = event.target.value.replace(/\D/g, "");
+    // Добавить нужные символы для форматирования номера
+    const formattedNumber = `+7${digitsOnly.slice(1, 11)}`;
+    setPhoneNumber(formattedNumber);
   };
 
-  const closeAddEmolyeesDialogOntapOutside = () => {
-    openAddEmployeesDialog(false);
-  };
+
 
   // functions for refactor employees dialog
   function openCloseDropDown2() {
     openDropDown2(!isDropDown2Opened);
   }
 
-  function setCurrentEmployeeAndPop2(name) {
-    if (currentEmployee2 !== name) {
-      setCurrentEmployee2(name);
-      openCloseDropDown2();
-    }
-  }
-
-  const changeName2 = (event) => {
-    setName2(event.target.value);
-  };
-
-  const changeSurName2 = (event) => {
-    setSurname2(event.target.value);
-  };
-
-  const changePhone2 = (event) => {
-    setPhoneNumber2(event.target.value);
-  };
-  console.log(
-    `selected emp ${JSON.stringify(employeesSlice.selectedEmployee)}`
-  );
   return (
-    <div className="employees_container">
-      <TextAndTextButton
-        text1={"Сотрудники"}
-        text2={listOfEmployees.length === 0 ? "" : "Редактировать"}
-        onclick={() =>
-          listOfEmployees.length === 0 ? {} : openRefEmployeesDialog(true)
-        }
-      />
-      {listOfEmployees.length !== 0 && (
-        <CustomDialog isOpened={isRefEmployeesDialogOpened}>
-          {/* Refactor employees dialog body */}
-          <div className="ref_employee_dialog">
-            <div className="flex flex-col gap-[5px]">
-              <div className="text-[16px] font-semibold leading-[16px]">
-                Редактировать сотрудника
-              </div>
-              <div className="text-[14px] font-normal leading-[16px]">
-                Здесь вы можете изменить личную информацию о сотруднике, такую
-                как имя, или номер телефона, а так же настроить уровень его
-                доступа.
-              </div>
-            </div>
-            {/* Choose an employee */}
-            <div className="flex flex-col gap-[16px]">
-              <div className="flex flex-row gap-[10px] items-center">
-                <img src={userLogo} alt="" />
+    console.log(`имя ${name}`),
+    console.log(`фамилия ${surname}`),
+    console.log(`телефон ${phoneNumber}`),
+    console.log(`role id ${roleId}`),
+    console.log(`role code ${roleCode}`),
+    console.log(`role name ${roleName}`),
+    (
+      <div className="employees_container">
+        <TextAndTextButton
+          text1={"Сотрудники"}
+          text2={listOfEmployees.length === 0 ? "" : "Редактировать"}
+          onclick={() =>
+            listOfEmployees.length === 0 ? {} : openRefEmployeesDialog(true)
+          }
+        />
+        {listOfEmployees.length !== 0 && (
+          <CustomDialog isOpened={isRefEmployeesDialogOpened}>
+            {/* Refactor employees dialog body */}
+            <div className="ref_employee_dialog">
+              <div className="flex flex-col gap-[5px]">
                 <div className="text-[16px] font-semibold leading-[16px]">
-                  Выберите сотрудника для редактирования
+                  Редактировать сотрудника
+                </div>
+                <div className="text-[14px] font-normal leading-[16px]">
+                  Здесь вы можете изменить личную информацию о сотруднике, такую
+                  как имя, или номер телефона, а так же настроить уровень его
+                  доступа.
                 </div>
               </div>
-              <div className="employees_wrap">
-                {listOfEmployees.map((employee) => {
-                  return (
-                    <EachEmployee
-                      key={employee.id}
-                      photo={goggins}
-                      name={employee.firstName}
-                      job={
-                        employee.roles.length === 0
-                          ? "Нет роли"
-                          : employee.roles[0].name
-                      }
-                      //isThatYou={localStorage.id === employee.id} <== maybe?
-                      showPointer={true}
-                      onEmployeeClicked={() =>
-                        dispatch(selectAnEmployee(employee))
-                      }
-                      isSelected={
+              {/* Choose an employee */}
+              <div className="flex flex-col gap-[16px]">
+                <div className="flex flex-row gap-[10px] items-center">
+                  <img src={userLogo} alt="" />
+                  <div className="text-[16px] font-semibold leading-[16px]">
+                    Выберите сотрудника для редактирования
+                  </div>
+                </div>
+                <div className="employees_wrap">
+                  {listOfEmployees.map((employee) => {
+                    return (
+                      <EachEmployee
+                        key={employee.id}
+                        photo={goggins}
+                        lastName={
+                          employee.lastName == null ? "" : employee.lastName
+                        }
+                        name={employee.firstName}
+                        job={
+                          employee.roles.length === 0
+                            ? "Нет роли"
+                            : employee.roles[0].name
+                        }
+                        onDeleteClicked={async () => {
+                          dispatch(deleteEmployee(employee.id));
+                          setTimeout(() => {
+                            dispatch(getListOfEmployees(gymId));
+                          }, 1000);
+                          openRefEmployeesDialog(false);
+                          snackbarRef.current.show("Вы удалили сотрудника");
+                        }}
+                        //isThatYou={localStorage.id === employee.id} <== maybe?
+                        showPointer={true}
+                        onEmployeeClicked={() =>
+                          dispatch(selectAnEmployee(employee))
+                        }
+                        isSelected={
+                          employeesSlice.selectedEmployee !== null
+                            ? employeesSlice.selectedEmployee.id === employee.id
+                            : false
+                        }
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+              {/* Personal info */}
+              <div className="flex flex-col gap-[16px]">
+                <div className="flex flex-row gap-[10px] items-center">
+                  <img className="w-[24px] h-[24px]" src={docsSvg} alt="" />
+                  <div className="text-[16px] font-semibold leading-[16px]">
+                    Личная информация
+                  </div>
+                </div>
+                <div className="flex flex-col gap-[10px]">
+                  <div className="flex flex-row gap-[32px]">
+                    {/* Name */}
+                    <TextAndTextfield
+                      value={
                         employeesSlice.selectedEmployee !== null
-                          ? employeesSlice.selectedEmployee.id === employee.id
-                          : false
+                          ? employeesSlice.selectedEmployee.firstName
+                          : ""
                       }
+                      onChange={(event) => {
+                        dispatch(
+                          changeSelectedEmployeesName(event.target.value)
+                        );
+                      }}
+                      textfieldHasFocus={nameTextfield2HasFocus}
+                      requestFocus={() => setName2Focus(true)}
+                      removeFocus={() => setName2Focus(false)}
+                      text={"Имя сотрудника"}
+                      placeholder={"Имя"}
+                      logo={userLogo}
                     />
+                    {/* Surname */}
+                    <TextAndTextfield
+                      value={
+                        employeesSlice.selectedEmployee !== null &&
+                        employeesSlice.selectedEmployee.lastName === null
+                          ? ""
+                          : employeesSlice.selectedEmployee !== null &&
+                            employeesSlice.selectedEmployee.lastName !== null
+                          ? employeesSlice.selectedEmployee.lastName
+                          : ""
+                      }
+                      onChange={(event) => {
+                        dispatch(
+                          changeSelectedEmployeesLastname(event.target.value)
+                        );
+                      }}
+                      textfieldHasFocus={surnameTextfield2HasFocus}
+                      requestFocus={() => setSurname2Focus(true)}
+                      removeFocus={() => setSurname2Focus(false)}
+                      text={"Фамилия"}
+                      placeholder={"Фамилия"}
+                      logo={userLogo}
+                    />
+                  </div>
+                  <div className="flex flex-row gap-[32px]">
+                    {/* Phone */}
+                    <TextAndTextfield
+                      value={
+                        employeesSlice.selectedEmployee !== null
+                          ? employeesSlice.selectedEmployee.login
+                          : ""
+                      }
+                      onChange={(event) => {
+                        dispatch(
+                          changeSelectedEmployeesPhone(
+                            event.target.value.replace(/\D/g, "")
+                          )
+                        );
+                      }}
+                      textfieldHasFocus={phoneNumberTextfield2HasFocus}
+                      requestFocus={() => setPhone2Focus(true)}
+                      removeFocus={() => setPhone2Focus(false)}
+                      text={"Номер телефона"}
+                      placeholder={"+7 (900) 855 45-58"}
+                      logo={phoneSvg}
+                      isPhoneTextfield={true}
+                    />
+                    {/* Empty space */}
+                    <div className="w-full"></div>
+                  </div>
+                </div>
+              </div>
+              {/* Dropdown section */}
+              <div className="flex flex-col gap-[16px]">
+                <div className="flex flex-row gap-[10px] items-center">
+                  <img src={starSvg} alt="" />
+                  <div className="text-[16px] font-semibold leading-[16px]">
+                    Роль сотрудника
+                  </div>
+                </div>
+                <div className="flex flex-col gap-[5px] w-fit h-fit ml-[34px]">
+                  <div className="text-[16px] font-medium leading-[16px]">
+                    Уровень доступа сотрудника{" "}
+                  </div>
+                  <CustomDropdown
+                    currentRole={
+                      employeesSlice.selectedRoleName !== null
+                        ? employeesSlice.selectedRoleName
+                        : employeesSlice.selectedEmployee === null
+                        ? ""
+                        : employeesSlice.selectedEmployee.roles.length === 0
+                        ? "Нет роли"
+                        : employeesSlice.selectedEmployee.roles[0].name
+                    }
+                    isDropDownOpened={isDropDown2Opened}
+                    openCloseDropDown={openCloseDropDown2}
+                    bloclClick={employeesSlice.selectedEmployee === null}
+                  />
+                </div>
+              </div>
+
+              {/* blue container  */}
+              <div className="big_blue_container">
+                <div className="text-[14px] font-normal leading-[16px]">
+                  Подробная информация о том, какими правами наделена выбранная
+                  вами роль
+                </div>
+                {roles.map((role) => {
+                  return role.available ? (
+                    <div
+                      key={role.id}
+                      className="flex flex-row gap-[10px] items-center"
+                    >
+                      <img src={availableSvg} alt="" />
+                      <div className="text-[14px] font-normal leading-[16px]">
+                        {role.name}
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      key={role.id}
+                      className="flex flex-row gap-[10px] items-center"
+                    >
+                      <img src={notAvailable} alt="" />
+                      <div className="text-[14px] font-normal leading-[16px] text-grey-text">
+                        {role.name}
+                      </div>
+                    </div>
                   );
                 })}
               </div>
-            </div>
-            {/* Personal info */}
-            <div className="flex flex-col gap-[16px]">
-              <div className="flex flex-row gap-[10px] items-center">
-                <img className="w-[24px] h-[24px]" src={docsSvg} alt="" />
-                <div className="text-[16px] font-semibold leading-[16px]">
-                  Личная информация
-                </div>
-              </div>
-              <div className="flex flex-col gap-[10px]">
-                <div className="flex flex-row gap-[32px]">
-                  {/* Name */}
-                  <TextAndTextfield
-                    value={
-                      employeesSlice.selectedEmployee !== null
-                        ? employeesSlice.selectedEmployee.firstName
-                        : ""
-                    }
-                    onChange={(event) => {
-                      dispatch(changeSelectedEmployeesName(event.target.value));
-                    }}
-                    textfieldHasFocus={nameTextfield2HasFocus}
-                    requestFocus={() => setName2Focus(true)}
-                    removeFocus={() => setName2Focus(false)}
-                    text={"Имя сотрудника"}
-                    placeholder={"Имя"}
-                    logo={userLogo}
-                  />
-                  {/* Surname */}
-                  <TextAndTextfield
-                    value={
-                      employeesSlice.selectedEmployee !== null &&
-                      employeesSlice.selectedEmployee.lastName === null
-                        ? ""
-                        : employeesSlice.selectedEmployee !== null &&
-                          employeesSlice.selectedEmployee.lastName !== null
-                        ? employeesSlice.selectedEmployee.lastName
-                        : ""
-                    }
-                    onChange={changeSurName2}
-                    textfieldHasFocus={surnameTextfield2HasFocus}
-                    requestFocus={() => setSurname2Focus(true)}
-                    removeFocus={() => setSurname2Focus(false)}
-                    text={"Фамилия"}
-                    placeholder={"Фамилия"}
-                    logo={userLogo}
-                  />
-                </div>
-                <div className="flex flex-row gap-[32px]">
-                  {/* Phone */}
-                  <TextAndTextfield
-                    value={
-                      employeesSlice.selectedEmployee !== null
-                        ? employeesSlice.selectedEmployee.login
-                        : ""
-                    }
-                    onChange={changePhone2}
-                    textfieldHasFocus={phoneNumberTextfield2HasFocus}
-                    requestFocus={() => setPhone2Focus(true)}
-                    removeFocus={() => setPhone2Focus(false)}
-                    text={"Номер телефона"}
-                    placeholder={"+7 (900) 855 45-58"}
-                    logo={phoneSvg}
-                    isPhoneTextfield={true}
-                  />
-                  {/* Empty space */}
-                  <div className="w-full"></div>
-                </div>
-              </div>
-            </div>
-            {/* Dropdown section */}
-            <div className="flex flex-col gap-[16px]">
-              <div className="flex flex-row gap-[10px] items-center">
-                <img src={starSvg} alt="" />
-                <div className="text-[16px] font-semibold leading-[16px]">
-                  Роль сотрудника
-                </div>
-              </div>
-              <div className="flex flex-col gap-[5px] w-fit h-fit ml-[34px]">
-                <div className="text-[16px] font-medium leading-[16px]">
-                  Уровень доступа сотрудника{" "}
-                </div>
-                <CustomDropdown
-                  currentRole={
-                    employeesSlice.selectedRoleName !== null
-                      ? employeesSlice.selectedRoleName
-                      : employeesSlice.selectedEmployee === null
-                      ? ""
-                      : employeesSlice.selectedEmployee.roles.length === 0
-                      ? "Нет роли"
-                      : employeesSlice.selectedEmployee.roles[0].name
+              <div className="flex flex-col gap-2">
+                <CustomButton
+                  width={"100%"}
+                  height={"40px"}
+                  title={
+                    employeesSlice.isChangesOccured
+                      ? "Применять изменения"
+                      : "Завершить редактирование"
                   }
-                  isDropDownOpened={isDropDown2Opened}
-                  openCloseDropDown={openCloseDropDown2}
-                  bloclClick={employeesSlice.selectedEmployee === null}
+                  onСlick={async () => {
+                    if (employeesSlice.isChangesOccured) {
+                      const { id, roles, firstName, lastName, login } =
+                        employeesSlice.selectedEmployee;
+                      dispatch(
+                        editEmployee({
+                          gymId,
+                          id,
+                          roles,
+                          firstName,
+                          lastName,
+                          login,
+                        })
+                      );
+                      setTimeout(() => {
+                        dispatch(getListOfEmployees(gymId));
+                      }, 1000);
+                    }
+                    openRefEmployeesDialog(false);
+                  }}
                 />
               </div>
             </div>
+          </CustomDialog>
+        )}
+        <div className="employees_list">
+          {listOfEmployees.map((employee) => {
+            return (
+              <EachEmployee
+                key={employee.id}
+                photo={goggins}
+                name={employee.firstName}
+                lastName={employee.lastName}
+                job={
+                  employee.roles.length === 0
+                    ? "Нет роли"
+                    : employee.roles[0].name
+                }
+                //isThatYou={localStorage.id === employee.id} <== maybe?
+              />
+            );
+          })}
+          {/* Add button */}
+          <div
+            className="button"
+            onClick={() => {
+              openAddEmployeesDialog(true);
+            }}
+          >
+            <img src={addSvg} alt="" />
+            <div className="">Добавить</div>
+          </div>
+          {/* Add employee dialog */}
+          <CustomDialog
+            isOpened={isAddEmployeesDialogOpened}
+            closeOnTapOutside={() => openAddEmployeesDialog(false)}
+          >
+            {/* Add employee dialog body */}
+            <div className="add_employee_dialog">
+              <div className="flex flex-col gap-[5px]">
+                <div className="flex flex-row items-center justify-between">
+                  <div className="text-[16px] font-semibold leading-[16px]">
+                    Добавить нового сотрудника
+                  </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      openAddEmployeesDialog(false);
+                    }}
+                  >
+                    Закрыть
+                  </div>
+                </div>
 
-            {/* blue container  */}
-            <div className="big_blue_container">
-              <div className="text-[14px] font-normal leading-[16px]">
-                Подробная информация о том, какими правами наделён “
-                {currentEmployee2}”:
-              </div>
-              {roles.map((role) => {
-                return role.available ? (
-                  <div
-                    key={role.id}
-                    className="flex flex-row gap-[10px] items-center"
-                  >
-                    <img src={availableSvg} alt="" />
-                    <div className="text-[14px] font-normal leading-[16px]">
-                      {role.name}
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    key={role.id}
-                    className="flex flex-row gap-[10px] items-center"
-                  >
-                    <img src={notAvailable} alt="" />
-                    <div className="text-[14px] font-normal leading-[16px] text-grey-text">
-                      {role.name}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex flex-col gap-2">
-              <CustomButton
-                width={"100%"}
-                height={"40px"}
-                title={"Завершить редактирование"}
-                onСlick={() => openRefEmployeesDialog(false)}
-              />
-            </div>
-          </div>
-        </CustomDialog>
-      )}
-      <div className="employees_list">
-        {listOfEmployees.map((employee) => {
-          return (
-            <EachEmployee
-              key={employee.id}
-              photo={goggins}
-              name={employee.firstName}
-              lastName={employee.lastName}
-              job={
-                employee.roles.length === 0
-                  ? "Нет роли"
-                  : employee.roles[0].name
-              }
-              //isThatYou={localStorage.id === employee.id} <== maybe?
-            />
-          );
-        })}
-        {/* Add button */}
-        <div
-          className="button"
-          onClick={() => {
-            openAddEmployeesDialog(true);
-          }}
-        >
-          <img src={addSvg} alt="" />
-          <div className="">Добавить</div>
-        </div>
-        {/* Add employee dialog */}
-        <CustomDialog
-          isOpened={isAddEmployeesDialogOpened}
-          closeOnTapOutside={() => openAddEmployeesDialog(false)}
-        >
-          {/* Add employee dialog body */}
-          <div className="add_employee_dialog">
-            <div className="flex flex-col gap-[5px]">
-              <div className="text-[16px] font-semibold leading-[16px]">
-                Добавить нового сотрудника
-              </div>
-              <div className="text-[14px] font-normal leading-[16px]">
-                Вам нужно указать номер телефона человека, которого вы хотите
-                добавить. С помощью этого номера он сможет войти на платформу.
-                Так же необходимо задать уровень доступа.
-              </div>
-            </div>
-            <div className="flex flex-row gap-[24px]">
-              {/* Иям */}
-              <TextAndTextfield
-                value={name}
-                onChange={changeName}
-                textfieldHasFocus={nameTextfieldHasFocus}
-                requestFocus={() => setNameFocus(true)}
-                removeFocus={() => setNameFocus(false)}
-                text={"Имя сотрудника"}
-                placeholder={"Имя"}
-                logo={userLogo}
-                isError={nameNotValidated}
-              />
-              {/* Фамилия */}
-              <TextAndTextfield
-                value={surname}
-                onChange={changeSurName}
-                textfieldHasFocus={surnameTextfieldHasFocus}
-                requestFocus={() => setSurnameFocus(true)}
-                removeFocus={() => setSurnameFocus(false)}
-                text={"Фамилия"}
-                placeholder={"Фамилия"}
-                logo={userLogo}
-              />
-            </div>
-            <div className="flex flex-row gap-[24px]">
-              {/* Номер */}
-              <TextAndTextfield
-                value={phoneNumber}
-                onChange={changePhone}
-                textfieldHasFocus={phoneNumberTextfieldHasFocus}
-                requestFocus={() => setPhoneFocus(true)}
-                removeFocus={() => setPhoneFocus(false)}
-                text={"Номер телефона"}
-                placeholder={"+7 (900) 855 45-58"}
-                logo={phoneSvg}
-                isPhoneTextfield={true}
-                isError={phoneNotValidated}
-              />
-              {/* Drop down */}
-              <div className="flex flex-col gap-[5px] w-full ">
-                <div className="text-[14px] font-bold">
-                  Уровень доступа сотрудника
+                <div className="text-[14px] font-normal leading-[16px]">
+                  Вам нужно указать номер телефона человека, которого вы хотите
+                  добавить. С помощью этого номера он сможет войти на платформу.
+                  Так же необходимо задать уровень доступа.
                 </div>
-                <CustomDropdown
-                  currentRole={currentEmployee}
-                  isDropDownOpened={isDropDownOpened}
-                  openCloseDropDown={openCloseDropDown}
-                  onRoleSelected={setCurrentAndPop}
+              </div>
+              <div className="flex flex-row gap-[24px]">
+                {/* Иям */}
+                <TextAndTextfield
+                  value={name}
+                  onChange={changeName}
+                  textfieldHasFocus={nameTextfieldHasFocus}
+                  requestFocus={() => setNameFocus(true)}
+                  removeFocus={() => setNameFocus(false)}
+                  text={"Имя сотрудника"}
+                  placeholder={"Имя"}
+                  logo={userLogo}
+                  isError={nameNotValidated}
+                />
+                {/* Фамилия */}
+                <TextAndTextfield
+                  value={surname}
+                  onChange={changeSurName}
+                  textfieldHasFocus={surnameTextfieldHasFocus}
+                  requestFocus={() => setSurnameFocus(true)}
+                  removeFocus={() => setSurnameFocus(false)}
+                  text={"Фамилия"}
+                  placeholder={"Фамилия"}
+                  logo={userLogo}
                 />
               </div>
-            </div>
-            {/* blue container  */}
-            <div className="big_blue_container">
-              <div className="text-[14px] font-normal leading-[16px]">
-                Подробная информация о том, какими правами наделён “
-                {currentEmployee}”:
-              </div>
-              {roles.map((role) => {
-                return role.available ? (
-                  <div
-                    key={role.id}
-                    className="flex flex-row gap-[10px] items-center"
-                  >
-                    <img src={availableSvg} alt="" />
-                    <div className="text-[14px] font-normal leading-[16px]">
-                      {role.name}
-                    </div>
+              <div className="flex flex-row gap-[24px]">
+                {/* Номер */}
+                <TextAndTextfield
+                  value={phoneNumber}
+                  onChange={changePhone}
+                  textfieldHasFocus={phoneNumberTextfieldHasFocus}
+                  requestFocus={() => setPhoneFocus(true)}
+                  removeFocus={() => setPhoneFocus(false)}
+                  text={"Номер телефона"}
+                  placeholder={"+7 (900) 855 45-58"}
+                  logo={phoneSvg}
+                  isPhoneTextfield={true}
+                  isError={phoneNotValidated}
+                />
+                {/* Drop down */}
+                <div className="flex flex-col gap-[5px] w-full ">
+                  <div className="text-[14px] font-bold">
+                    Уровень доступа сотрудника
                   </div>
-                ) : (
-                  <div
-                    key={role.id}
-                    className="flex flex-row gap-[10px] items-center"
-                  >
-                    <img src={notAvailable} alt="" />
-                    <div className="text-[14px] font-normal leading-[16px] text-grey-text">
-                      {role.name}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            {/* Инструкция */}
-            <div className="flex flex-col gap-[5px]">
-              <div className="text-[16px] font-semibold leading-[16px]">
-                Как сотруднику войти в систему?
-              </div>
-              <div className="text-[14px] font-normal leading-[16px]">
-                После того, как вы добавите нового сотрудника - ему необходимо
-                перейти по адресу myfit.ru/admin и войти в систему, используя
-                свой номер телефона. Там он получит смс с кодом, который сможет
-                использовать как пароль для входа.
-              </div>
-            </div>
-            <div className="flex flex-col gap-[16px]">
-              <CustomButton
-                width={"100%"}
-                height={"40px"}
-                title={"Добавить сотрудника"}
-                onСlick={checkValidation}
-              />
-              {(nameNotValidated || phoneNotValidated) && (
-                <div className="text-[14px] font-normal text-red-400 leading-[16px]">
-                  Чтобы продолжить - необходимо заполнить все обязательные поля,
-                  выделенные красным
+                  <CustomDropdownForAddingEmployee
+                    currentRole={roleName}
+                    isDropDownOpened={isDropDownOpened}
+                    openCloseDropDown={openCloseDropDown}
+                    onRoleSelected={async (role) => {
+                      setRoleId(role.id);
+                      setRoleCode(role.code);
+                      setRoleName(role.name);
+                      openCloseDropDown();
+                    }}
+                  />
                 </div>
-              )}
+              </div>
+              {/* blue container  */}
+              <div className="big_blue_container">
+                <div className="text-[14px] font-normal leading-[16px]">
+                  Подробная информация о том, какими правами наделена выбранная
+                  вами роль
+                </div>
+                {roles.map((role) => {
+                  return role.available ? (
+                    <div
+                      key={role.id}
+                      className="flex flex-row gap-[10px] items-center"
+                    >
+                      <img src={availableSvg} alt="" />
+                      <div className="text-[14px] font-normal leading-[16px]">
+                        {role.name}
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      key={role.id}
+                      className="flex flex-row gap-[10px] items-center"
+                    >
+                      <img src={notAvailable} alt="" />
+                      <div className="text-[14px] font-normal leading-[16px] text-grey-text">
+                        {role.name}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Инструкция */}
+              <div className="flex flex-col gap-[5px]">
+                <div className="text-[16px] font-semibold leading-[16px]">
+                  Как сотруднику войти в систему?
+                </div>
+                <div className="text-[14px] font-normal leading-[16px]">
+                  После того, как вы добавите нового сотрудника - ему необходимо
+                  перейти по адресу myfit.ru/admin и войти в систему, используя
+                  свой номер телефона. Там он получит смс с кодом, который
+                  сможет использовать как пароль для входа.
+                </div>
+              </div>
+              <div className="flex flex-col gap-[16px]">
+                <CustomButton
+                  width={"100%"}
+                  height={"40px"}
+                  title={"Добавить сотрудника"}
+                  onСlick={() => {
+                    // Assume both fields are valid to start with
+                    let isPhoneValid = true;
+                    let isNameValid = true;
+
+                    // Check phone number validity (assuming you want exactly 18 characters)
+                    if (phoneNumber.length !== 12) {
+                      setPhoneNotValidated(true);
+                      isPhoneValid = false; // Set the phone validity to false
+                    } else {
+                      setPhoneNotValidated(false);
+                    }
+
+                    // Check name validity (assuming you want at least 1 character)
+                    if (name.trim().length === 0) {
+                      setNameNotValidated(true);
+                      isNameValid = false; // Set the name validity to false
+                    } else {
+                      setNameNotValidated(false);
+                    }
+
+                    // when validation passes
+                    if (isPhoneValid && isNameValid) {
+                      const { firstName, lastName, login, roles } = {
+                        firstName: name,
+                        lastName: surname,
+                        login: phoneNumber,
+                        roles: [
+                          {
+                            id: roleId,
+                            code: roleCode,
+                            name: roleName,
+                          },
+                        ],
+                      };
+
+                      dispatch(
+                        addEmployee({
+                          gymId,
+                          firstName,
+                          lastName,
+                          login,
+                          roles,
+                        })
+                      );
+                      setTimeout(() => {
+                        dispatch(getListOfEmployees(gymId));
+                      }, 1000);
+                      openAddEmployeesDialog(false);
+                    }
+                  }}
+                />
+                {(nameNotValidated || phoneNotValidated) && (
+                  <div className="text-[14px] font-normal text-red-400 leading-[16px]">
+                    Чтобы продолжить - необходимо заполнить все обязательные
+                    поля, выделенные красным
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </CustomDialog>
+          </CustomDialog>
+        </div>
       </div>
-    </div>
+    )
   );
 }
 
@@ -499,6 +576,7 @@ export function EachEmployee({
   showPointer,
   onEmployeeClicked,
   isSelected,
+  onDeleteClicked,
 }) {
   return (
     <div
@@ -540,7 +618,9 @@ export function EachEmployee({
             {/* Name and job */}
             <div className="flex flex-col gap-0 justify-center">
               <div className="flex flex-row gap-[3px]">
-                <div className="text-[14px] font-bold leading-none">{name}</div>
+                <div className="text-[14px] font-bold leading-none">
+                  {name} {lastName}
+                </div>
                 <div className="you leading-none">
                   {isThatYou ? "(Вы)" : ""}
                 </div>
@@ -548,7 +628,7 @@ export function EachEmployee({
               <div className="text-[14px] font-normal leading-none">{job}</div>
             </div>
           </div>
-          <div className="delete_red_container">
+          <div className="delete_red_container" onClick={onDeleteClicked}>
             <img src={garbage} alt="" />
           </div>
         </>
@@ -645,15 +725,16 @@ function CustomDropdown({
         <div className="dropdown_body">
           {allRoles.map(
             (item, index) => (
-              console.log(`allRoles ${JSON.stringify(allRoles)}`),
+              console.log(`allRoles ${JSON.stringify(allRoles)}`)
               (
                 <button
                   key={index}
                   className="gym_names"
-                  onClick={() => {
+                  onClick={async () => {
                     dispatch(selectARoleName(item.name));
                     dispatch(selectARoleId(item.id));
                     dispatch(selectARoleCode(item.code));
+                    dispatch(changeSelectedEmployeesRole());
                     openCloseDropDown();
                   }}
                 >
@@ -662,6 +743,45 @@ function CustomDropdown({
               )
             )
           )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CustomDropdownForAddingEmployee({
+  isDropDownOpened,
+  currentRole,
+  openCloseDropDown,
+  bloclClick,
+  onRoleSelected,
+}) {
+  return (
+    <div className="column">
+      <button
+        className={
+          isDropDownOpened ? "dropdown_header_opened" : "dropdown_header"
+        }
+        onClick={bloclClick ? () => {} : openCloseDropDown}
+      >
+        <div className="text-[14px] font-medium">
+          {bloclClick ? "Выберите сотрудника" : currentRole}
+        </div>
+        <div className={isDropDownOpened ? "rotate-icon" : "arrow-icon"}>
+          <img src={arrowDownSvg} alt="" />
+        </div>
+      </button>
+      {isDropDownOpened && (
+        <div className="dropdown_body">
+          {allRoles.map((item, index) => (
+            <button
+              key={index}
+              className="gym_names"
+              onClick={() => onRoleSelected(item)}
+            >
+              {item.name}
+            </button>
+          ))}
         </div>
       )}
     </div>

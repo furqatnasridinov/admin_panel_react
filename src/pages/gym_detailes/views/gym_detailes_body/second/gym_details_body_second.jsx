@@ -15,9 +15,18 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   dragAndDropActivities,
   selectAnActivity,
+  getPhotos,
+  patchDescriptionOfSelectedActivity,
+  patchPeculiaritiesOfSelectedActivity,
+  changeActivityPeculiarities,
+  changeActivityDescribtion,
+  getInfoForType,
+  resetChanges,
 } from "../../../../../features/activities_slice";
+import { addPhotoToSelectedActivity } from "../../../../../features/activities_slice";
 
 export default function GymDetailesBodySecondContainer({
+  gymId,
   listOfActivities,
   activityDescribtion,
   activityPeculiarities,
@@ -42,22 +51,6 @@ export default function GymDetailesBodySecondContainer({
   const hiddenFileInput = useRef(null);
 
   // functions
-  const handleSaveDescribtion = (newDescribtion) => {
-    setActivityDescribtion(newDescribtion);
-    setDescribtionEditting(false);
-  };
-  const handleSaveFeatures = (newFeaturesArray) => {
-    // Assuming newFeaturesArray is already an array of strings
-    setActivityPeculiarities(newFeaturesArray); // Set new features array to state
-    setFeaturesEditting(false); // Exit editing mode
-  };
-  const handleChange = (textValue) => {
-    const newFeaturesArray = textValue
-      .split("\n")
-      .filter((line) => line.trim() !== "")
-      .map((line) => line.trim());
-    handleSaveFeatures(newFeaturesArray);
-  };
 
   function handleRemovingActivityPhotos(deletedItem) {
     const newList = photosOfSelectedActivity.filter(
@@ -69,16 +62,15 @@ export default function GymDetailesBodySecondContainer({
   // Обработчик для добавления новой фотографии
   function handleNewPhoto(event) {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        // Создаём новый объект фото с уникальным  image URL
-        const newPhoto = e.target.result;
-        // Обновляем состояние со списком фотографий
-        setPhotosOfSelectedActivity([...photosOfSelectedActivity, newPhoto]);
-      };
-      reader.readAsDataURL(file);
-    }
+    const { id, files, type } = {
+      id: gymId,
+      files: file,
+      type: activitiesSlice.selectedActivity,
+    };
+    dispatch(addPhotoToSelectedActivity({ id, files, type }));
+    setTimeout(() => {
+      dispatch(getPhotos(gymId));
+    }, 1000);
   }
 
   // передаем это на кнопку добавления фото,(как бы через ref, нажимаем на саму input file которого скрыли)
@@ -131,249 +123,309 @@ export default function GymDetailesBodySecondContainer({
   }
 
   return (
-    <div className="flex flex-col bg-white h-fit rounded-[16px] p-[32px] gap-[32px]">
-      <div className="activities">
-        <TextAndTextButton
-          text1={"Активности"}
-          text2={"Редактировать список активностей"}
-          onclick={() => {
-            openActivitiesModal(true);
-          }}
-        />
-        <div className="chips_row ">
-          {listOfActivities.map((activity, index) => {
-            return (
-              <Chip
-                key={index}
-                name={activity}
-                isActive={activity === activitiesSlice.selectedActivity}
-                onclick={() => dispatch(selectAnActivity(activity))}
-              />
-            );
-          })}
-        </div>
-        <CustomDialog isOpened={isActivitiesModalOpened}>
-          {/* Activities modal body */}
-          <div className="main_container">
-            <div className="flex flex-col gap-[5px]">
-              <div className="text-[16px] font-semibold leading-[16px]">
-                Редактирование активностей
-              </div>
-              <div className="text-[14px] font-normal leading-[16px]">
-                Выберите активность, чтобы добавить в неё занятия.
-                Дополнительные занятия - это не обязательная опция, вы можете
-                использовать только основные активности.
-              </div>
-            </div>
-            {/* activities and podactivities */}
-            <div className="flex flex-row gap-[24px]">
-              <div className="activities_col">
-                <div className="text-[14px] font-bold">Ваши активности:</div>
-                <div className="blue_bordered_container">
-                  {listOfActivities.map((activity, index) => {
-                    return (
-                      <EachActivity
-                        key={index}
-                        title={activity}
-                        onclick={() => {
-                          dispatch(selectAnActivity(activity));
-                        }}
-                        isActive={activity === activitiesSlice.selectedActivity}
-                        onDragStart={() => (draggedActivityRef.current = index)}
-                        onDragEnter={() =>
-                          (draggedOverActivityRef.current = index)
-                        }
-                        onDragEnd={handleSortingActivities}
-                        onDragOver={(e) => e.preventDefault()}
-                      />
-                    );
-                  })}
-                  <AddActivity />
-                </div>
-              </div>
-              <div className="podactivities_col">
-                <div className="text-[14px] font-bold">
-                  Доп. занятия внутри активности:
-                </div>
-                <div className="blue_bordered_container"></div>
-              </div>
-            </div>
-            <CustomButton
-              height={"40px"}
-              width={"100%"}
-              title={"Закончить редактирование"}
-              onСlick={() => openActivitiesModal(false)}
-              fontSize={"14px"}
-              showShadow={false}
-            />
-          </div>
-        </CustomDialog>
-      </div>
-      <div className="flex flex-row gap-[50px]">
-        <div className="describtion_and_features_column">
-          {/* describtion */}
-          <div className="describtion_to_activity">
-            {!isDescribtionEdittingEnabled && (
-              <>
-                <TextAndTextButton
-                  text1={"Описание"}
-                  text2={"Изменить"}
-                  onclick={() => setDescribtionEditting(true)}
-                />
-                <div className="text-[14px] font-normal leading-[14px]">
-                  {activityDescribtion}
-                </div>
-              </>
-            )}
-            {isDescribtionEdittingEnabled && (
-              <>
-                <TextAndTextButton
-                  text1={"Описание"}
-                  text2={"Отменить"}
-                  onclick={() => setDescribtionEditting(false)}
-                  isRedText={isDescribtionEdittingEnabled}
-                />
-                <EditableTextfield
-                  value={activityDescribtion}
-                  handleChange={handleSaveDescribtion}
-                  fontsize={"13px"}
-                  lineheight={"14px"}
-                  minHeight={"90px"}
-                />
-              </>
-            )}
-          </div>
-
-          <div className="features">
-            {!isFeaturesEdittingEnabled && (
-              <>
-                <TextAndTextButton
-                  text1={"Особенности посещения"}
-                  text2={"Изменить"}
-                  isRedText={isFeaturesEdittingEnabled}
-                  onclick={() => setFeaturesEditting(true)}
-                />
-                <ul className="marked_list">
-                  <li>{activityPeculiarities} </li>
-                  {/* {activityPeculiarities.map((item, index) => (
-                    <li key={index}>{item} </li>
-                  ))} */}
-                </ul>
-              </>
-            )}
-            {isFeaturesEdittingEnabled && (
-              <>
-                <TextAndTextButton
-                  text1={"Особенности посещения"}
-                  text2={"Отменить"}
-                  isRedText={isFeaturesEdittingEnabled}
-                  onclick={() => setFeaturesEditting(false)}
-                />
-                <EditableFeaturesTextfield
-                  handleChange={handleSaveFeatures}
-                  fontsize={"13px"}
-                  lineheight={"14px"}
-                  peculiarities={[]}
-                />
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-[10px] w-[609px] ">
-          {!isEdittingPhotosEnabled && (
-            <TextAndTextButton
-              text1={"Фотографии"}
-              text2={photosOfSelectedActivity.length > 0 ? "Удалить фото" : ""}
-              isRedText={isEdittingPhotosEnabled}
-              onclick={() =>
-                photosOfSelectedActivity.length > 0
-                  ? setPhotosEditting(true)
-                  : {}
-              }
-            />
-          )}
-          {isEdittingPhotosEnabled && (
-            <TextAndTextButton
-              text1={"Фотографии"}
-              text2={"Готово"}
-              onclick={() => setPhotosEditting(false)}
-            />
-          )}
-          <div className="recomendations_to_photo">
-            <p>Рекомендуемые форматы для загрузки: jpeg, png</p>
-            <p>Минимально допустимая сторона фотографии: 1080px</p>
-          </div>
-
-          {/* Container with photos */}
-          <div className="activity_photos_container">
-            {!isEdittingPhotosEnabled &&
-              photosOfSelectedActivity.map((item, index) => (
-                <img
-                  className="activity_each_photo"
+    console.log(`selected activity ${activitiesSlice.selectedActivity}`),
+    console.log(`activity Describtion ${activityDescribtion}`),
+    console.log(`activity pecu ${activityPeculiarities}`),
+    (
+      <div className="flex flex-col bg-white h-fit rounded-[16px] p-[32px] gap-[32px]">
+        <div className="activities">
+          <TextAndTextButton
+            text1={"Активности"}
+            text2={"Редактировать список активностей"}
+            onclick={() => {
+              openActivitiesModal(true);
+            }}
+          />
+          <div className="chips_row ">
+            {listOfActivities.map((activity, index) => {
+              return (
+                <Chip
                   key={index}
-                  src={item}
-                  alt=""
-                  onClick={() => {
-                    showPhotoInDialog(true);
-                    setPhotoToBeShownInDialog(item);
-                  }}
-                  draggable={true}
-                  onDragStart={() => (draggedItemRef.current = index)}
-                  onDragEnter={() => (draggedOverRef.current = index)}
-                  onDragEnd={handleSortingPhotos}
-                  onDragOver={(e) => e.preventDefault()}
-                  //
+                  name={activity}
+                  isActive={activity === activitiesSlice.selectedActivity}
+                  onclick={() => dispatch(selectAnActivity(activity))}
                 />
-              ))}
-            {showPhotoInDialog && (
-              <CustomDialog
-                isOpened={isPhotoShownInDialog}
-                closeOnTapOutside={() => showPhotoInDialog(false)}
-              >
-                <img src={photoToShowInDialog} alt="" />
-              </CustomDialog>
+              );
+            })}
+          </div>
+          <CustomDialog isOpened={isActivitiesModalOpened}>
+            {/* Activities modal body */}
+            <div className="main_container">
+              <div className="flex flex-col gap-[5px]">
+                <div className="text-[16px] font-semibold leading-[16px]">
+                  Редактирование активностей
+                </div>
+                <div className="text-[14px] font-normal leading-[16px]">
+                  Выберите активность, чтобы добавить в неё занятия.
+                  Дополнительные занятия - это не обязательная опция, вы можете
+                  использовать только основные активности.
+                </div>
+              </div>
+              {/* activities and podactivities */}
+              <div className="flex flex-row gap-[24px]">
+                <div className="activities_col">
+                  <div className="text-[14px] font-bold">Ваши активности:</div>
+                  <div className="blue_bordered_container">
+                    {listOfActivities.map((activity, index) => {
+                      return (
+                        <EachActivity
+                          key={index}
+                          title={activity}
+                          onclick={() => {
+                            dispatch(selectAnActivity(activity));
+                          }}
+                          isActive={
+                            activity === activitiesSlice.selectedActivity
+                          }
+                          onDragStart={() =>
+                            (draggedActivityRef.current = index)
+                          }
+                          onDragEnter={() =>
+                            (draggedOverActivityRef.current = index)
+                          }
+                          onDragEnd={handleSortingActivities}
+                          onDragOver={(e) => e.preventDefault()}
+                        />
+                      );
+                    })}
+                    <AddActivity />
+                  </div>
+                </div>
+                <div className="podactivities_col">
+                  <div className="text-[14px] font-bold">
+                    Доп. занятия внутри активности:
+                  </div>
+                  <div className="blue_bordered_container"></div>
+                </div>
+              </div>
+              <CustomButton
+                height={"40px"}
+                width={"100%"}
+                title={"Закончить редактирование"}
+                onСlick={() => openActivitiesModal(false)}
+                fontSize={"14px"}
+                showShadow={false}
+              />
+            </div>
+          </CustomDialog>
+        </div>
+        <div className="flex flex-row gap-[50px]">
+          <div className="describtion_and_features_column">
+            {/* describtion */}
+            <div className="describtion_to_activity">
+              {!isDescribtionEdittingEnabled && (
+                <>
+                  <TextAndTextButton
+                    text1={"Описание"}
+                    text2={"Изменить"}
+                    onclick={() => setDescribtionEditting(true)}
+                  />
+                  <div className="text-[14px] font-normal leading-[14px]">
+                    {activityDescribtion}
+                  </div>
+                </>
+              )}
+              {isDescribtionEdittingEnabled && (
+                <>
+                  <TextAndTextButton
+                    text1={"Описание"}
+                    text2={"Отменить"}
+                    onclick={() => {
+                      if (activitiesSlice.isChangesOcurred) {
+                        dispatch(getInfoForType(gymId));
+                      }
+                      setDescribtionEditting(false);
+                    }}
+                    isRedText={isDescribtionEdittingEnabled}
+                  />
+                  <EditableTextfield
+                    value={activityDescribtion}
+                    onChange={(e) => {
+                      dispatch(changeActivityDescribtion(e.target.value));
+                    }}
+                    onButtonClicked={() => {
+                      const { id, lessonType, typeDescription } = {
+                        id: gymId,
+                        lessonType: activitiesSlice.selectedActivity,
+                        typeDescription: activityDescribtion,
+                      };
+                      dispatch(
+                        patchDescriptionOfSelectedActivity({
+                          id,
+                          lessonType,
+                          typeDescription,
+                        })
+                      );
+                      setTimeout(() => {
+                        getInfoForType(gymId);
+                      }, 1000);
+                      setDescribtionEditting(false);
+                      dispatch(resetChanges());
+                    }}
+                    fontsize={"13px"}
+                    lineheight={"14px"}
+                    minHeight={"90px"}
+                  />
+                </>
+              )}
+            </div>
+
+            <div className="features">
+              {!isFeaturesEdittingEnabled && (
+                <>
+                  <TextAndTextButton
+                    text1={"Особенности посещения"}
+                    text2={"Изменить"}
+                    isRedText={isFeaturesEdittingEnabled}
+                    onclick={() => setFeaturesEditting(true)}
+                  />
+                  <ul className="marked_list">
+                    <li>{activityPeculiarities} </li>
+                  </ul>
+                </>
+              )}
+              {isFeaturesEdittingEnabled && (
+                <>
+                  <TextAndTextButton
+                    text1={"Особенности посещения"}
+                    text2={"Отменить"}
+                    isRedText={isFeaturesEdittingEnabled}
+                    onclick={() => {
+                      if (activitiesSlice.isChangesOcurred) {
+                        dispatch(getInfoForType(gymId));
+                      }
+                      setFeaturesEditting(false);
+                    }}
+                  />
+                  <EditableFeaturesTextfield
+                    onButtonClicked={() => {
+                      const { id, lessonType, peculiarities } = {
+                        id: gymId,
+                        lessonType: activitiesSlice.selectedActivity,
+                        peculiarities: activityPeculiarities,
+                      };
+                      dispatch(
+                        patchPeculiaritiesOfSelectedActivity({
+                          id,
+                          lessonType,
+                          peculiarities,
+                        })
+                      );
+                      setTimeout(() => {
+                        getInfoForType(gymId);
+                      }, 1000);
+                      setFeaturesEditting(false);
+                      dispatch(resetChanges());
+                    }}
+                    onChanged={(e) => {
+                      dispatch(changeActivityPeculiarities(e.target.value));
+                    }}
+                    fontsize={"13px"}
+                    lineheight={"14px"}
+                    peculiarities={activityPeculiarities}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-[10px] w-[609px] ">
+            {!isEdittingPhotosEnabled && (
+              <TextAndTextButton
+                text1={"Фотографии"}
+                text2={
+                  photosOfSelectedActivity.length > 0 ? "Удалить фото" : ""
+                }
+                isRedText={isEdittingPhotosEnabled}
+                onclick={() =>
+                  photosOfSelectedActivity.length > 0
+                    ? setPhotosEditting(true)
+                    : {}
+                }
+              />
             )}
-            {isEdittingPhotosEnabled &&
-              photosOfSelectedActivity.map((item, index) => (
-                <button key={index} className="activity_each_photo_editting">
+            {isEdittingPhotosEnabled && (
+              <TextAndTextButton
+                text1={"Фотографии"}
+                text2={"Готово"}
+                onclick={() => setPhotosEditting(false)}
+              />
+            )}
+            <div className="recomendations_to_photo">
+              <p>Рекомендуемые форматы для загрузки: jpeg, png</p>
+              <p>Минимально допустимая сторона фотографии: 1080px</p>
+            </div>
+
+            {/* Container with photos */}
+            <div className="activity_photos_container">
+              {!isEdittingPhotosEnabled &&
+                photosOfSelectedActivity.map((item, index) => (
                   <img
+                    className="activity_each_photo"
+                    key={index}
                     src={item}
                     alt=""
-                    className="rounded-[8px] h-full w-full object-cover"
-                    draggable={false}
-                  />
-                  <img
-                    className="delete-icon"
-                    src={deleteSvg}
-                    alt=""
                     onClick={() => {
-                      handleRemovingActivityPhotos(item);
+                      showPhotoInDialog(true);
+                      setPhotoToBeShownInDialog(item);
                     }}
-                    draggable={false}
+                    draggable={true}
+                    onDragStart={() => (draggedItemRef.current = index)}
+                    onDragEnter={() => (draggedOverRef.current = index)}
+                    onDragEnd={handleSortingPhotos}
+                    onDragOver={(e) => e.preventDefault()}
+                    //
                   />
-                </button>
-              ))}
-            {!isEdittingPhotosEnabled && (
-              <>
-                <img
-                  src={addPhotoSvg}
-                  alt=""
-                  style={{ cursor: "pointer" }}
-                  onClick={handleClick} // нажимаем как бы на input file
-                />
-                <input
-                  type="file"
-                  ref={hiddenFileInput}
-                  onChange={handleNewPhoto}
-                  style={{ display: "none" }} // Скрываем input
-                />
-              </>
-            )}
+                ))}
+              {showPhotoInDialog && (
+                <CustomDialog
+                  isOpened={isPhotoShownInDialog}
+                  closeOnTapOutside={() => showPhotoInDialog(false)}
+                >
+                  <img src={photoToShowInDialog} alt="" />
+                </CustomDialog>
+              )}
+              {isEdittingPhotosEnabled &&
+                photosOfSelectedActivity.map((item, index) => (
+                  <button key={index} className="activity_each_photo_editting">
+                    <img
+                      src={item}
+                      alt=""
+                      className="rounded-[8px] h-full w-full object-cover"
+                      draggable={false}
+                    />
+                    <img
+                      className="delete-icon"
+                      src={deleteSvg}
+                      alt=""
+                      onClick={() => {
+                        handleRemovingActivityPhotos(item);
+                      }}
+                      draggable={false}
+                    />
+                  </button>
+                ))}
+              {!isEdittingPhotosEnabled && (
+                <>
+                  <img
+                    src={addPhotoSvg}
+                    alt=""
+                    style={{ cursor: "pointer" }}
+                    onClick={handleClick} // нажимаем как бы на input file
+                  />
+                  <input
+                    type="file"
+                    ref={hiddenFileInput}
+                    onChange={handleNewPhoto}
+                    style={{ display: "none" }} // Скрываем input
+                  />
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    )
   );
 }
 
@@ -386,17 +438,15 @@ function Chip({ name, onclick, isActive }) {
 }
 
 function EditableFeaturesTextfield({
-  handleChange,
+  onChanged,
   fontsize,
   lineheight,
   peculiarities,
+  onButtonClicked,
 }) {
   // Join the array with newline and bullet point for display in textarea
-  const initialFeaturesString = peculiarities.join("\n• ");
 
   // Set this string as the initial value for  textarea
-  const [tempValue, setTempValue] = useState(`• ${initialFeaturesString}`);
-
   const inputRef = useRef(null);
   // for autofocus calls when component first renders
   useEffect(() => {
@@ -412,24 +462,13 @@ function EditableFeaturesTextfield({
     }
   }, []);
 
-  const handleTempChange = (event) => {
-    setTempValue(event.target.value);
-    const target = event.target;
-    target.style.height = "inherit"; // Reset height to recalculate
-    target.style.height = `${target.scrollHeight}px`; // Set new height based on scroll height
-  };
-
-  const handleSave = () => {
-    handleChange(tempValue); // Call handleChange with the current value of the textarea
-  };
-
   return (
     <div className="flex flex-row justify-between gap-[10px] items-start">
       <textarea
         ref={inputRef}
-        value={tempValue}
+        value={peculiarities}
         //className="textarea-transition"
-        onChange={handleTempChange}
+        onChange={onChanged}
         style={{
           width: "100%",
           padding: "10px 16px 10px 8px",
@@ -442,7 +481,7 @@ function EditableFeaturesTextfield({
           lineHeight: lineheight,
         }}
       />
-      <button onClick={handleSave}>
+      <button onClick={onButtonClicked}>
         <img src={doneSvg} alt="" />
       </button>
     </div>
