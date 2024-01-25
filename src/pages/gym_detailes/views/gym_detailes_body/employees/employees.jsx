@@ -10,10 +10,8 @@ import goggins from "../../../../.././assets/images/goggins.jpg";
 import starSvg from "../../../../../assets/svg/star.svg";
 import docsSvg from "../../../../../assets/svg/docs.svg";
 import garbage from "../../../../../assets/images/garbage.png";
-import {
-  roles,
-  allRoles,
-} from "../../../../../dummy_data/dymmy_data";
+import cancelSvg from "../../../../../assets/svg/cancel.svg";
+import { roles, allRoles } from "../../../../../dummy_data/dymmy_data";
 import { useState } from "react";
 import CustomButton from "../../../../../components/button/button";
 import TextAndTextButton from "../../../components/text_and_textbutton";
@@ -67,7 +65,6 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
     openDropDown(!isDropDownOpened);
   }
 
-
   const changeName = (event) => {
     setname(event.target.value);
   };
@@ -83,8 +80,6 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
     const formattedNumber = `+7${digitsOnly.slice(1, 11)}`;
     setPhoneNumber(formattedNumber);
   };
-
-
 
   // functions for refactor employees dialog
   function openCloseDropDown2() {
@@ -145,12 +140,15 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
                             : employee.roles[0].name
                         }
                         onDeleteClicked={async () => {
-                          dispatch(deleteEmployee(employee.id));
+                          const { employeeId, snackBarRef } = {
+                            employeeId: employee.id,
+                            snackBarRef: snackbarRef,
+                          };
+                          dispatch(deleteEmployee({ employeeId, snackBarRef }));
                           setTimeout(() => {
                             dispatch(getListOfEmployees(gymId));
                           }, 1000);
                           openRefEmployeesDialog(false);
-                          snackbarRef.current.show("Вы удалили сотрудника");
                         }}
                         //isThatYou={localStorage.id === employee.id} <== maybe?
                         showPointer={true}
@@ -380,14 +378,14 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
                   <div className="text-[16px] font-semibold leading-[16px]">
                     Добавить нового сотрудника
                   </div>
-                  <div
-                    className="cursor-pointer"
+                  <img
+                    className="w-[20px] h-[20px] cursor-pointer"
+                    src={cancelSvg}
+                    alt=""
                     onClick={() => {
                       openAddEmployeesDialog(false);
                     }}
-                  >
-                    Закрыть
-                  </div>
+                  />
                 </div>
 
                 <div className="text-[14px] font-normal leading-[16px]">
@@ -723,24 +721,21 @@ function CustomDropdown({
       </button>
       {isDropDownOpened && (
         <div className="dropdown_body">
-          {allRoles.map(
-            (item, index) => (
-              console.log(`allRoles ${JSON.stringify(allRoles)}`)
-              (
-                <button
-                  key={index}
-                  className="gym_names"
-                  onClick={async () => {
-                    dispatch(selectARoleName(item.name));
-                    dispatch(selectARoleId(item.id));
-                    dispatch(selectARoleCode(item.code));
-                    dispatch(changeSelectedEmployeesRole());
-                    openCloseDropDown();
-                  }}
-                >
-                  {item.name}
-                </button>
-              )
+          {allRoles.map((item, index) =>
+            console.log(`allRoles ${JSON.stringify(allRoles)}`)(
+              <button
+                key={index}
+                className="gym_names"
+                onClick={async () => {
+                  dispatch(selectARoleName(item.name));
+                  dispatch(selectARoleId(item.id));
+                  dispatch(selectARoleCode(item.code));
+                  dispatch(changeSelectedEmployeesRole());
+                  openCloseDropDown();
+                }}
+              >
+                {item.name}
+              </button>
             )
           )}
         </div>

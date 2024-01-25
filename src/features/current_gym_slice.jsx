@@ -42,7 +42,7 @@ export const addGymPicture = createAsyncThunk(
 
 export const removeGymMainPic = createAsyncThunk(
   "currentGymSlice/editGym",
-  async (gymId) => {
+  async ({ gymId, snackBarRef }) => {
     try {
       const dataToSend = {
         id: gymId,
@@ -53,7 +53,7 @@ export const removeGymMainPic = createAsyncThunk(
         dataToSend
       );
       if (response.data["operationResult"] === "OK") {
-        //alert(response.data["object"]);
+        snackBarRef.current.show("Вы удалили фото");
       } else {
         alert("operationResult is not OK");
       }
@@ -93,7 +93,7 @@ export const addGymLogo = createAsyncThunk(
 
 export const removeGymLogo = createAsyncThunk(
   "currentGymSlice/editGym",
-  async (gymId) => {
+  async ({ gymId, snackBarRef }) => {
     try {
       const dataToSend = {
         id: gymId,
@@ -104,7 +104,7 @@ export const removeGymLogo = createAsyncThunk(
         dataToSend
       );
       if (response.data["operationResult"] === "OK") {
-        //alert(response.data["object"]);
+        snackBarRef.current.show("Вы удалили логотип");
       } else {
         alert("operationResult is not OK");
       }

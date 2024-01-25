@@ -16,12 +16,12 @@ export const getListOfEmployees = createAsyncThunk(
 
 export const deleteEmployee = createAsyncThunk(
   "employess/deleteEmployee",
-  async (employeeId) => {
+  async ({ employeeId, snackBarRef }) => {
     try {
       const response = await axiosClient.delete(
         `api/admin/workers/${employeeId}`
       );
-      //alert(response.data["operationInfo"]);
+      snackBarRef.current.show("Вы удалили сотрудника");
     } catch (error) {
       alert(`deleteEmployee ${error}`);
     }
@@ -161,7 +161,7 @@ const employeesSlice = createSlice({
     });
 
     // for deleting employees
-   /*  builder.addCase(deleteEmployee.pending, (state) => {
+    /*  builder.addCase(deleteEmployee.pending, (state) => {
       state.isLoading = true;
     });
     builder.addCase(deleteEmployee.fulfilled, (state, action) => {

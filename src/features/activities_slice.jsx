@@ -5,7 +5,9 @@ export const getListOfActivities = createAsyncThunk(
   "activities/getListOfActivities",
   async (gymId) => {
     try {
-      const response = await axiosClient.get(`api/gym/${gymId}/types`);
+      const response = await axiosClient.get(
+        `api/director/gyms/${gymId}/lessonTypes`
+      );
       return response.data["object"];
     } catch (error) {
       alert(`getListOfActivities ${error}`);
@@ -114,6 +116,67 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
   }
 );
 
+export const deleteActivityPhoto = createAsyncThunk(
+  "activitiesSlice/deleteActivityPhoto",
+  async ({ id, url, snackbarRef }) => {
+    try {
+      var formData = new FormData();
+      formData.append("url", url);
+      const response = await axiosClient.delete(
+        `api/director/gyms/${id}/pictures`,
+        {
+          data: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response.data["operationResult"] === "OK") {
+        //alert(response.data["object"]);
+        snackbarRef.current.show("Вы удалили картинку");
+      }
+    } catch (error) {
+      alert(`changeDescriptionOfSelectedActivity ${error}`);
+    }
+  }
+);
+
+export const deleteActivity = createAsyncThunk(
+  "activitiesSlice/deleteActivity",
+  async ({ id, lessonType }) => {
+    try {
+      const response = await axiosClient.delete(
+        `api/director/gyms/${id}/lessonType/${lessonType}`
+      );
+      if (response.data["operationResult"] === "OK") {
+        alert(response.data["object"]);
+      }
+    } catch (error) {
+      alert(`changeDescriptionOfSelectedActivity ${error}`);
+    }
+  }
+);
+
+export const addNewActivity = createAsyncThunk(
+  "activitiesSlice/addNewActivity",
+  async ({ id, lessonType }) => {
+    try {
+      const dataToSend = {
+        lessonType: lessonType,
+      };
+      const response = await axiosClient.patch(
+        `api/director/gyms/${id}`,
+        dataToSend
+      );
+      if (response.data["operationResult"] === "OK") {
+        alert(response.data["object"]);
+      }
+    } catch (error) {
+      alert(`changeDescriptionOfSelectedActivity ${error}`);
+    }
+  }
+);
+
 const activitiesSlice = createSlice({
   name: "activities",
   initialState: {
@@ -184,10 +247,10 @@ const activitiesSlice = createSlice({
         const notModifiedList = [
           ...state.photosOfAllActivities[state.selectedActivity],
         ];
-        const modifiedList = notModifiedList.map((element) => {
+        /* const modifiedList = notModifiedList.map((element) => {
           return `http://77.222.53.122/image/${element}`;
-        });
-        state.photosOfSelectedActivity = modifiedList;
+        }); */
+        state.photosOfSelectedActivity = notModifiedList;
       } else {
         state.photosOfSelectedActivity = [];
       }

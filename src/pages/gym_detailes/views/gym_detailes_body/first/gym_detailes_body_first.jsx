@@ -9,7 +9,7 @@ import tgSvg from "../../../../../assets/svg/tg.svg";
 import vkSvg from "../../../../../assets/svg/vk.svg";
 import doneSvg from "../../../../../assets/svg/done.svg";
 import arrowDownSvg from "../../../../../assets/svg/arrow_down.svg";
-import arrowLeftSvg from "../../../../../assets/svg/arrow_left.svg";
+import { ReactComponent as Popbutton } from "../../../../../assets/svg/arrow_left.svg";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import { useState, useRef, useEffect } from "react";
 import CustomButton from "../../../../../components/button/button";
@@ -40,7 +40,7 @@ export default function GymDetailesBodyFirstContainer({
 }) {
   const dispatch = useDispatch();
   const currentGymState = useSelector((state) => state.currentGym);
-  const activityState = useSelector((state)=> state.activities);
+  const activityState = useSelector((state) => state.activities);
   // use states
   const [isNameEditingEnabled, setNameEditing] = useState(false);
   const [isDescribtionEdittingEnabled, setDescribtionEditing] = useState(false);
@@ -76,7 +76,7 @@ export default function GymDetailesBodyFirstContainer({
     dispatch(addGymPicture({ gymId, image }));
     setTimeout(() => {
       dispatch(getCurrentGym(currentGym.id));
-    }, 1000);
+    }, 2500);
     if (isModalPhotoOpened) {
       openModalPhoto(false);
     }
@@ -153,19 +153,19 @@ export default function GymDetailesBodyFirstContainer({
               </>
             )}
 
-            <SizeOfPicture
-              size={"375x210px"}
-              //onClick={() => snackbarRef.current.show("Вы удалили сотрудника")}
-            />
+            <SizeOfPicture size={"375x210px"} />
             <CustomDialog isOpened={isModalPhotoOpened}>
               <ChangeMainPhotoModal
                 onPop={() => openModalPhoto(false)}
                 onDeleteClicked={async () => {
-                  dispatch(removeGymMainPic(currentGym.id));
+                  const { gymId, snackBarRef } = {
+                    gymId: currentGym.id,
+                    snackBarRef: snackbarRef,
+                  };
+                  dispatch(removeGymMainPic({ gymId, snackBarRef }));
                   setTimeout(() => {
                     dispatch(getCurrentGym(currentGym.id));
                   }, 1500);
-                  snackbarRef.current.show("Вы удалили фото");
                   openModalPhoto(false);
                 }}
                 openFilePicker={openFilePickerForMainPhoto}
@@ -262,12 +262,14 @@ export default function GymDetailesBodyFirstContainer({
             <ChangeLogoModal
               onPop={() => openModalLogo(false)}
               onDeleteClicked={() => {
-                dispatch(removeGymLogo(currentGym.id));
+                const { gymId, snackBarRef } = {
+                  gymId: currentGym.id,
+                  snackBarRef: snackbarRef,
+                };
+                dispatch(removeGymLogo({ gymId, snackBarRef }));
                 setTimeout(() => {
                   dispatch(getCurrentGym(currentGym.id));
                 }, 1500);
-
-                snackbarRef.current.show("Вы удалили логотип");
                 openModalLogo(false);
               }}
               openFilePicker={openFilePickerForLogo}
@@ -750,7 +752,8 @@ function ChangeMainPhotoModal({
         {/* Row of buttons */}
         <div className="flex flex-row w-full h-[40px] gap-[10px] ">
           <button className="rounded_button" onClick={onPop}>
-            <img src={arrowLeftSvg} alt="" />
+            <Popbutton color="white" stroke="red" />
+            {/* <svg  src={arrowLeftSvg} alt="" /> */}
           </button>
           <button onClick={onDeleteClicked} className="second_button">
             <p>Удалить фото</p>
@@ -799,7 +802,8 @@ function ChangeLogoModal({
         {/* Row of buttons */}
         <div className="flex flex-row w-full h-[40px] gap-[10px] ">
           <button className="rounded_button" onClick={onPop}>
-            <img src={arrowLeftSvg} alt="" />
+            <Popbutton />
+            {/* <svg  src={arrowLeftSvg} alt="" /> */}
           </button>
           <button className="second_button" onClick={onDeleteClicked}>
             <p>Удалить логотип</p>

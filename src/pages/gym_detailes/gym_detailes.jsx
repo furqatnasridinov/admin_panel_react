@@ -95,12 +95,6 @@ export default function GymDetails() {
   // ref for snackbar
   const snackBarRef = useRef(null);
 
-  // for showing Snackbar
-
-  /* function showSnackbar() {
-    snackBarRef.current.show("Вы удалили сотрудника");
-  } */
-
   return (
     console.log("selected act ", activitiesSlice.selectedActivity),
     (
@@ -127,17 +121,13 @@ export default function GymDetails() {
               listOfActivities={activitiesSlice.listOfActivities}
               activityPeculiarities={activitiesSlice.activityPeculiarities}
               activityDescribtion={activitiesSlice.activityDescribtion}
-              setActivityDescribtion={setActivityDescribtion}
-              setActivityPeculiarities={setActivityPeculiarities}
               photosOfSelectedActivity={
                 activitiesSlice.photosOfSelectedActivity
               }
               setPhotosOfSelectedActivity={setPhotosOfSelectedActivity}
+              snackbarRef={snackBarRef}
             />
-            <CustomSnackbar
-              ref={snackBarRef}
-              message={"Вы удалили сотрудника"}
-            />
+            <CustomSnackbar ref={snackBarRef} />
           </>
         )}
       </div>

@@ -18,10 +18,13 @@ import {
   getPhotos,
   patchDescriptionOfSelectedActivity,
   patchPeculiaritiesOfSelectedActivity,
+  deleteActivityPhoto,
   changeActivityPeculiarities,
   changeActivityDescribtion,
   getInfoForType,
   resetChanges,
+  deleteActivity,
+  getListOfActivities,
 } from "../../../../../features/activities_slice";
 import { addPhotoToSelectedActivity } from "../../../../../features/activities_slice";
 
@@ -30,10 +33,9 @@ export default function GymDetailesBodySecondContainer({
   listOfActivities,
   activityDescribtion,
   activityPeculiarities,
-  setActivityDescribtion,
-  setActivityPeculiarities,
   photosOfSelectedActivity,
   setPhotosOfSelectedActivity,
+  snackbarRef,
 }) {
   const dispatch = useDispatch();
   const activitiesSlice = useSelector((state) => state.activities);
@@ -49,29 +51,6 @@ export default function GymDetailesBodySecondContainer({
 
   // use refs
   const hiddenFileInput = useRef(null);
-
-  // functions
-
-  function handleRemovingActivityPhotos(deletedItem) {
-    const newList = photosOfSelectedActivity.filter(
-      (item) => item !== deletedItem
-    );
-    setPhotosOfSelectedActivity(newList);
-  }
-
-  // Обработчик для добавления новой фотографии
-  function handleNewPhoto(event) {
-    const file = event.target.files[0];
-    const { id, files, type } = {
-      id: gymId,
-      files: file,
-      type: activitiesSlice.selectedActivity,
-    };
-    dispatch(addPhotoToSelectedActivity({ id, files, type }));
-    setTimeout(() => {
-      dispatch(getPhotos(gymId));
-    }, 1000);
-  }
 
   // передаем это на кнопку добавления фото,(как бы через ref, нажимаем на саму input file которого скрыли)
   const handleClick = () => {
@@ -174,6 +153,18 @@ export default function GymDetailesBodySecondContainer({
                           onclick={() => {
                             dispatch(selectAnActivity(activity));
                           }}
+                          onEditClicked={() => {}}
+                          onRemoveClicked={() => {
+                            // function to delete activity
+                            const { id, lessonType } = {
+                              id: gymId,
+                              lessonType: activitiesSlice.selectedActivity,
+                            };
+                            dispatch(deleteActivity({ id, lessonType }));
+                            setTimeout(() => {
+                              dispatch(getListOfActivities(gymId));
+                            }, 1500);
+                          }}
                           isActive={
                             activity === activitiesSlice.selectedActivity
                           }
@@ -257,8 +248,8 @@ export default function GymDetailesBodySecondContainer({
                         })
                       );
                       setTimeout(() => {
-                        getInfoForType(gymId);
-                      }, 1000);
+                        dispatch(getInfoForType(gymId));
+                      }, 1500);
                       setDescribtionEditting(false);
                       dispatch(resetChanges());
                     }}
@@ -312,8 +303,8 @@ export default function GymDetailesBodySecondContainer({
                         })
                       );
                       setTimeout(() => {
-                        getInfoForType(gymId);
-                      }, 1000);
+                        dispatch(getInfoForType(gymId));
+                      }, 1500);
                       setFeaturesEditting(false);
                       dispatch(resetChanges());
                     }}
@@ -363,7 +354,7 @@ export default function GymDetailesBodySecondContainer({
                   <img
                     className="activity_each_photo"
                     key={index}
-                    src={item}
+                    src={`http://77.222.53.122/image/${item}`}
                     alt=""
                     onClick={() => {
                       showPhotoInDialog(true);
@@ -389,7 +380,7 @@ export default function GymDetailesBodySecondContainer({
                 photosOfSelectedActivity.map((item, index) => (
                   <button key={index} className="activity_each_photo_editting">
                     <img
-                      src={item}
+                      src={`http://77.222.53.122/image/${item}`}
                       alt=""
                       className="rounded-[8px] h-full w-full object-cover"
                       draggable={false}
@@ -399,7 +390,12 @@ export default function GymDetailesBodySecondContainer({
                       src={deleteSvg}
                       alt=""
                       onClick={() => {
-                        handleRemovingActivityPhotos(item);
+                        // removing photos
+                        const { id, url } = { id: gymId, url: item };
+                        dispatch(deleteActivityPhoto({ id, url, snackbarRef }));
+                        setTimeout(() => {
+                          dispatch(getPhotos(gymId));
+                        }, 1500);
                       }}
                       draggable={false}
                     />
@@ -416,7 +412,19 @@ export default function GymDetailesBodySecondContainer({
                   <input
                     type="file"
                     ref={hiddenFileInput}
-                    onChange={handleNewPhoto}
+                    onChange={(event) => {
+                      // Обработчик для добавления новой фотографии
+                      const file = event.target.files[0];
+                      const { id, files, type } = {
+                        id: gymId,
+                        files: file,
+                        type: activitiesSlice.selectedActivity,
+                      };
+                      dispatch(addPhotoToSelectedActivity({ id, files, type }));
+                      setTimeout(() => {
+                        dispatch(getPhotos(gymId));
+                      }, 2500);
+                    }}
                     style={{ display: "none" }} // Скрываем input
                   />
                 </>
