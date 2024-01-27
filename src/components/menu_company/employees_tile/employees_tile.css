@@ -1,0 +1,43 @@
+.container {
+  background-color: #f5f9ff;
+  height: 52px;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 8px;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.photo_background {
+  width: 32px;
+  height: 32px;
+  padding: 2px;
+  background-color: #77aaf9;
+  border-radius: 50%;
+  display: flex; /* Center the child img */
+  justify-content: center; /* Center the child img */
+  align-items: center; /* Center the child img */
+}
+
+.photo_background img {
+  width: 100%; /* Make the image fill the div */
+  height: 100%; /* Make the image fill the div */
+  border-radius: 50%; /* Make the image round */
+}
+
+.name_and_job {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+.you {
+  font-size: 14px;
+  font-weight: 400;
+  color: #b0b0b0;
+  line-height: 1;
+}
+

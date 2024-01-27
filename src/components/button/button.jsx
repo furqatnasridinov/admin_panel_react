@@ -1,10 +1,30 @@
-import React from 'react'
-import './button.css'
+import React from "react";
+import "./button.css";
 
-export default function CustomButton({title,onclick}) {
+export default function CustomButton({
+  title,
+  onСlick,
+  width,
+  height,
+  showShadow,
+  fontSize,
+}) {
   return (
-    <button className="custom_button" onclick={onclick}>
-                <p>{title}</p>
-            </button>
-  )
+    <button
+      onClick={onСlick}
+      style={{
+        width: width,
+        height: height,
+      }}
+      className={showShadow ? "with_shadow" : "with_no_shadow"}
+    >
+      <p
+        style={{
+          fontSize: fontSize,
+        }}
+      >
+        {title}
+      </p>
+    </button>
+  );
 }

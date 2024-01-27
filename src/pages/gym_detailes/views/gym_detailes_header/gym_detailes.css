@@ -1,0 +1,17 @@
+.slash {
+  margin-left: 10px;
+  margin-right: 10px;
+  color: #b0b0b0;
+}
+
+
+.gym_names {
+  font-size: 14px;
+  font-weight: 500;
+  color: #252525;
+  width: fit-content;
+  padding-left: 7px;
+  padding-right: 7px;
+  border-radius: 4px;
+  text-align: start;
+}

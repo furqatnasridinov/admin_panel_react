@@ -1,0 +1,11 @@
+dialog{
+  background-color: transparent;
+  border-radius: 16px;
+  margin: auto;
+  opacity: 0; /* Начальное состояние: полностью прозрачный */
+  transition: opacity 0.5s ease;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.80); /* Set the opacity as you like */
+}

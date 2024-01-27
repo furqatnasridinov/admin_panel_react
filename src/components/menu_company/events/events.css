@@ -1,0 +1,19 @@
+.events{
+    /* background-color: red; */
+    height: 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.events:hover{
+    background-color: #F5F9FF;
+}
+
+
+.event_text{
+    font-size: 14px;
+    font-weight: 400;
+}
