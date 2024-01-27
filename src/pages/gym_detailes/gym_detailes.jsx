@@ -17,6 +17,7 @@ import {
   setActivityPeculiarities,
   getPhotos,
   setPhotosOfSelectedActivity,
+  getAllAvailableLessonTypes,
 } from "../../features/activities_slice";
 import CustomSnackbar from "../../components/snackbar/custom_snackbar";
 
@@ -48,6 +49,9 @@ export default function GymDetails() {
 
     // function to get allPhotos(all activities)
     dispatch(getPhotos(gymId));
+
+    // function to get all available lessontypes to show on dropdown
+    dispatch(getAllAvailableLessonTypes());
   }, []);
 
   // here will be functions to get new data`s after selecting another gym from dropdown
@@ -127,7 +131,12 @@ export default function GymDetails() {
               setPhotosOfSelectedActivity={setPhotosOfSelectedActivity}
               snackbarRef={snackBarRef}
             />
-            <CustomSnackbar ref={snackBarRef} />
+            <CustomSnackbar
+              ref={snackBarRef}
+              undoAction={() => {
+                alert("Че раp");
+              }}
+            />
           </>
         )}
       </div>

@@ -1,9 +1,9 @@
 import React from "react";
 import arrowDownSvg from "../../assets/svg/arrow_down.svg";
 
-import "./custom_dropdown.css";
+import "./dropdown_smaller.css";
 
-export default function CustomDropdown({
+export default function DropDownSmaller({
   isDropDownOpened,
   text,
   openCloseDropDown,
@@ -22,20 +22,7 @@ export default function CustomDropdown({
           <img src={arrowDownSvg} alt="" />
         </div>
       </button>
-      {isDropDownOpened && (
-        <div className="dropdown_body">
-          {map}
-          {/* {gyms.map((item, index) => (
-            <button
-              key={index}
-              className="gym_names"
-              onClick={() => ongymSelected(item.gymName)}
-            >
-              {item.gymName}
-            </button>
-          ))} */}
-        </div>
-      )}
+      {isDropDownOpened && <div className="dropdown_body">{map}</div>}
     </div>
   );
 }

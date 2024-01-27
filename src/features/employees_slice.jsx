@@ -145,6 +145,12 @@ const employeesSlice = createSlice({
     selectARoleCode: (state, action) => {
       state.selectedRoleCode = action.payload;
     },
+
+    resetChanges: (state) => {
+      if (state.isChangesOccured) {
+        state.isChangesOccured = false;
+      }
+    },
   },
 
   extraReducers: (builder) => {
@@ -186,6 +192,7 @@ export const {
   selectARoleName,
   selectARoleId,
   selectARoleCode,
+  resetChanges
 } = employeesSlice.actions;
 
 export default employeesSlice.reducer;

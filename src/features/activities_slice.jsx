@@ -152,7 +152,7 @@ export const deleteActivity = createAsyncThunk(
         alert(response.data["object"]);
       }
     } catch (error) {
-      alert(`changeDescriptionOfSelectedActivity ${error}`);
+      alert(`deleteActivity ${error}`);
     }
   }
 );
@@ -177,11 +177,28 @@ export const addNewActivity = createAsyncThunk(
   }
 );
 
+export const getAllAvailableLessonTypes = createAsyncThunk(
+  "activities/getAllAvailableLessonTypes",
+  async () => {
+    try {
+      const response = await axiosClient.get("api/main/lessonTypes");
+      if (response.data["operationResult"] === "OK") {
+        return response.data["object"];
+      } else {
+        alert("operationResult is not OK");
+      }
+    } catch (error) {
+      alert(`getAllAvailableLessonTypes ${error}`);
+    }
+  }
+);
+
 const activitiesSlice = createSlice({
   name: "activities",
   initialState: {
     isLoading: false,
     listOfActivities: [],
+    allAvailableLessonTypes: [],
     isError: false,
     selectedActivity: "",
     infoForType: {},
@@ -293,6 +310,19 @@ const activitiesSlice = createSlice({
       state.photosOfAllActivities = action.payload;
     });
     builder.addCase(getPhotos.rejected, (state) => {
+      state.isLoading = false;
+      state.isError = true;
+    });
+
+    // for getting all available lessontypes
+    builder.addCase(getAllAvailableLessonTypes.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getAllAvailableLessonTypes.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.allAvailableLessonTypes = action.payload;
+    });
+    builder.addCase(getAllAvailableLessonTypes.rejected, (state) => {
       state.isLoading = false;
       state.isError = true;
     });

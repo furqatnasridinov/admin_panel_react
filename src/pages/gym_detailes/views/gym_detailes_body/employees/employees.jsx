@@ -32,6 +32,7 @@ import {
   selectARoleId,
   selectARoleCode,
   deleteEmployee,
+  resetChanges
 } from "../../../../../features/employees_slice";
 
 export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
@@ -332,6 +333,7 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
                         dispatch(getListOfEmployees(gymId));
                       }, 1000);
                     }
+                    dispatch(resetChanges())
                     openRefEmployeesDialog(false);
                   }}
                 />
@@ -360,7 +362,8 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
           <div
             className="button"
             onClick={() => {
-              openAddEmployeesDialog(true);
+              /* openAddEmployeesDialog(true); */
+              snackbarRef.current.show("Кера мак");
             }}
           >
             <img src={addSvg} alt="" />
@@ -721,23 +724,21 @@ function CustomDropdown({
       </button>
       {isDropDownOpened && (
         <div className="dropdown_body">
-          {allRoles.map((item, index) =>
-            console.log(`allRoles ${JSON.stringify(allRoles)}`)(
-              <button
-                key={index}
-                className="gym_names"
-                onClick={async () => {
-                  dispatch(selectARoleName(item.name));
-                  dispatch(selectARoleId(item.id));
-                  dispatch(selectARoleCode(item.code));
-                  dispatch(changeSelectedEmployeesRole());
-                  openCloseDropDown();
-                }}
-              >
-                {item.name}
-              </button>
-            )
-          )}
+          {allRoles.map((item, index) => (
+            <button
+              key={index}
+              className="gym_names"
+              onClick={async () => {
+                dispatch(selectARoleName(item.name));
+                dispatch(selectARoleId(item.id));
+                dispatch(selectARoleCode(item.code));
+                dispatch(changeSelectedEmployeesRole());
+                openCloseDropDown();
+              }}
+            >
+              {item.name}
+            </button>
+          ))}
         </div>
       )}
     </div>

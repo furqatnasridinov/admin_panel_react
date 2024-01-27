@@ -12,8 +12,8 @@ export default function TextAndTextButton({
       <button
         className={
           isRedText
-            ? "text-[13px] font-medium text-red-400"
-            : "text-[13px] font-medium text-blue-text"
+            ? "text-[13px] font-medium text-red-400 cursor-pointer"
+            : "text-[13px] font-medium text-blue-text cursor-pointer"
         }
         onClick={onclick}
       >

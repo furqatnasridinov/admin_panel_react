@@ -42,7 +42,7 @@ export const addGymPicture = createAsyncThunk(
 
 export const removeGymMainPic = createAsyncThunk(
   "currentGymSlice/editGym",
-  async ({ gymId, snackBarRef }) => {
+  async ({ gymId }) => {
     try {
       const dataToSend = {
         id: gymId,
@@ -52,11 +52,6 @@ export const removeGymMainPic = createAsyncThunk(
         "api/director/gyms/",
         dataToSend
       );
-      if (response.data["operationResult"] === "OK") {
-        snackBarRef.current.show("Вы удалили фото");
-      } else {
-        alert("operationResult is not OK");
-      }
     } catch (error) {
       alert(`editGym ${error}`);
       console.log(`${error.massage}`);
@@ -215,8 +210,10 @@ const currentGymSlice = createSlice({
   initialState: {
     isLoading: false,
     currentGym: null,
+    gymPictureCopy: "",
     isError: false,
     isChangesOccured: false,
+    isMainPhotoDeleted: false,
   },
 
   reducers: {
@@ -274,13 +271,35 @@ const currentGymSlice = createSlice({
       state.isChangesOccured = false;
     },
 
-    /* changeCurrentGymsMainPicture: (state, action) => {
-      state.currentGym.mainPictureUrl = action.payload;
+    setEmptyStringToMainPic: (state) => {
+      if (state.currentGym.mainPictureUrl !== "") {
+        // удаляем саму mainpic и оставлям копию
+        state.gymPictureCopy = state.currentGym.mainPictureUrl;
+        state.currentGym.mainPictureUrl = "";
+        state.isMainPhotoDeleted = true;
+      }
     },
 
-    changeCurrentGymsLogo: (state, action) => {
-      state.currentGym.logoUrl = action.payload;
-    }, */
+    cancelRemoveMainPic: (state) => {
+      // при отмене удаления обратно с копии передаем оригиналу
+      if (state.gymPictureCopy !== "") {
+        state.currentGym.mainPictureUrl = state.gymPictureCopy;
+        state.gymPictureCopy = "";
+        state.isMainPhotoDeleted = false;
+      }
+    },
+
+    removePhotoCopy: (state) => {
+      if (state.gymPictureCopy !== "") {
+        state.gymPictureCopy = "";
+      }
+    },
+
+    resetIsMainPhotoDeleted: (state) => {
+      if (state.isMainPhotoDeleted) {
+        state.isMainPhotoDeleted = false;
+      }
+    },
   },
 
   extraReducers: (builder) => {
@@ -307,5 +326,9 @@ export const {
   changeCurrentGymsTelegram,
   changeCurrentGymsVk,
   resetChanges,
+  setEmptyStringToMainPic,
+  cancelRemoveMainPic,
+  removePhotoCopy,
+  resetIsMainPhotoDeleted,
 } = currentGymSlice.actions;
 export default currentGymSlice.reducer;

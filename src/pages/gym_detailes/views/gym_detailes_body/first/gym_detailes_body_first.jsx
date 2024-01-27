@@ -14,6 +14,7 @@ import CustomDialog from "../../../../../components/dialog/dialog";
 import { useState, useRef, useEffect } from "react";
 import CustomButton from "../../../../../components/button/button";
 import { useDispatch, useSelector } from "react-redux";
+import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 import {
   addGymPicture,
   changeCurrentGymsName,
@@ -31,6 +32,10 @@ import {
   removeGymMainPic,
   removeGymLogo,
   addGymLogo,
+  setEmptyStringToMainPic,
+  cancelRemoveMainPic,
+  removePhotoCopy,
+  resetIsMainPhotoDeleted,
 } from "../../../../../features/current_gym_slice";
 import ReactInputMask from "react-input-mask";
 
@@ -40,7 +45,11 @@ export default function GymDetailesBodyFirstContainer({
 }) {
   const dispatch = useDispatch();
   const currentGymState = useSelector((state) => state.currentGym);
-  const activityState = useSelector((state) => state.activities);
+
+  // refs of snackbars
+  const deleteMainPicSnackbarRef = useRef(null);
+  const deleteLogoSnackbarRef = useRef(null);
+
   // use states
   const [isNameEditingEnabled, setNameEditing] = useState(false);
   const [isDescribtionEdittingEnabled, setDescribtionEditing] = useState(false);
@@ -97,7 +106,7 @@ export default function GymDetailesBodyFirstContainer({
 
   return (
     console.log(`current gym ${JSON.stringify(currentGym)}`),
-    console.log(`pics ${activityState.photosOfSelectedActivity}`),
+    console.log(`mainpiccha ${currentGym.mainPictureUrl}`),
     (
       <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
         {/* Photos and Logos */}
@@ -158,15 +167,22 @@ export default function GymDetailesBodyFirstContainer({
               <ChangeMainPhotoModal
                 onPop={() => openModalPhoto(false)}
                 onDeleteClicked={async () => {
-                  const { gymId, snackBarRef } = {
-                    gymId: currentGym.id,
-                    snackBarRef: snackbarRef,
-                  };
-                  dispatch(removeGymMainPic({ gymId, snackBarRef }));
-                  setTimeout(() => {
-                    dispatch(getCurrentGym(currentGym.id));
-                  }, 1500);
+                  // визуально скрываем фото
+                  dispatch(setEmptyStringToMainPic());
+                  deleteMainPicSnackbarRef.current.show("Вы удалили фото");
                   openModalPhoto(false);
+                  setTimeout(() => {
+                    if (currentGym.isMainPhotoDeleted) {
+                      // undefined
+                      const { gymId } = {
+                        gymId: currentGym.id,
+                      };
+                      // Удаляем фото
+                      dispatch(removeGymMainPic({ gymId }));
+                      dispatch(resetIsMainPhotoDeleted());
+                      dispatch(removePhotoCopy());
+                    }
+                  }, 9000);
                 }}
                 openFilePicker={openFilePickerForMainPhoto}
                 photo={
@@ -179,6 +195,12 @@ export default function GymDetailesBodyFirstContainer({
                 uploadNewPhoto={handleNewPhoto}
               />
             </CustomDialog>
+            <CustomSnackbar
+              ref={deleteMainPicSnackbarRef}
+              undoAction={() => {
+                dispatch(cancelRemoveMainPic());
+              }}
+            />
           </div>
           {/*  Logos Column */}
           <div className="flex flex-col gap-[10px] mt-[30px] ml-[43px]">

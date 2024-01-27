@@ -13,16 +13,16 @@ const CustomSnackbar = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     show(message) {
       const newSnackbar = { id: Date.now(), message, countdown: 9 };
-
       setSnackbars((prevSnackbars) => [...prevSnackbars, newSnackbar]);
-
       setTimeout(() => {
         setSnackbars((prevSnackbars) =>
           prevSnackbars.filter((snackbar) => snackbar.id !== newSnackbar.id)
         );
+        // onTimeEnded
       }, 9000);
     },
-    cancel: (id) => {
+
+    cancel(id) {
       // Remove the snackbar with the given id
       setSnackbars((prevSnackbars) =>
         prevSnackbars.filter((snackbar) => snackbar.id !== id)
@@ -55,7 +55,8 @@ const CustomSnackbar = forwardRef((props, ref) => {
               className="text-[14px] font-medium text-blue-text cursor-pointer"
               onClick={() => {
                 // Add your undo functionality here
-                // Call cancel function on ref to remove the snackbar
+                props.undoAction();
+                //remove the snackbar
                 ref.current && ref.current.cancel(snackbar.id);
               }}
             >

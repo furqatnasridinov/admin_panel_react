@@ -25,8 +25,10 @@ import {
   resetChanges,
   deleteActivity,
   getListOfActivities,
+  addNewActivity,
 } from "../../../../../features/activities_slice";
 import { addPhotoToSelectedActivity } from "../../../../../features/activities_slice";
+import DropDownSmaller from "../../../../../components/dropdown/dropdown_smaller";
 
 export default function GymDetailesBodySecondContainer({
   gymId,
@@ -48,6 +50,12 @@ export default function GymDetailesBodySecondContainer({
   const [isActivitiesModalOpened, openActivitiesModal] = useState(false);
   const [isPhotoShownInDialog, showPhotoInDialog] = useState(false);
   const [photoToShowInDialog, setPhotoToBeShownInDialog] = useState("");
+  const [isDropDrownShown, showDropDown] = useState(false);
+  const [isDropDownOpened, openDropDown] = useState(false);
+
+  function openCloseDropDown() {
+    openDropDown(!isDropDownOpened);
+  }
 
   // use refs
   const hiddenFileInput = useRef(null);
@@ -179,7 +187,47 @@ export default function GymDetailesBodySecondContainer({
                         />
                       );
                     })}
-                    <AddActivity />
+                    {/* Кнопка добавить */}
+                    {!isDropDrownShown && (
+                      <div className="add_activity">
+                        <img src={AddActivitySvg} alt="" />
+                        <button
+                          onClick={() => {
+                            showDropDown(true);
+                          }}
+                        >
+                          Добавить
+                        </button>
+                      </div>
+                    )}
+                    {isDropDrownShown && (
+                      <DropDownSmaller
+                        text={"Добавить"}
+                        isDropDownOpened={isDropDownOpened}
+                        openCloseDropDown={openCloseDropDown}
+                        map={activitiesSlice.allAvailableLessonTypes.map(
+                          (item, index) => (
+                            <button
+                              key={index}
+                              className="gym_names"
+                              onClick={() => {
+                                const { id, lessonType } = {
+                                  id: gymId,
+                                  lessonType: item,
+                                };
+                                dispatch(addNewActivity({ id, lessonType }));
+                                setTimeout(() => {
+                                  dispatch(getListOfActivities(gymId));
+                                }, 1000);
+                                showDropDown(false);
+                              }}
+                            >
+                              {item}
+                            </button>
+                          )
+                        )}
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="podactivities_col">
@@ -373,7 +421,10 @@ export default function GymDetailesBodySecondContainer({
                   isOpened={isPhotoShownInDialog}
                   closeOnTapOutside={() => showPhotoInDialog(false)}
                 >
-                  <img src={photoToShowInDialog} alt="" />
+                  <img
+                    src={`http://77.222.53.122/image/${photoToShowInDialog}`}
+                    alt=""
+                  />
                 </CustomDialog>
               )}
               {isEdittingPhotosEnabled &&
@@ -530,15 +581,6 @@ function EachActivity({
         src={editActivitySvg}
         alt=""
       />
-    </div>
-  );
-}
-
-function AddActivity({ onclick }) {
-  return (
-    <div className="add_activity">
-      <img src={AddActivitySvg} alt="" />
-      <button onClick={onclick}>Добавить</button>
     </div>
   );
 }
