@@ -30,18 +30,18 @@ import {
   getCurrentGym,
   resetChanges,
   removeGymMainPic,
-  removeGymLogo,
   addGymLogo,
   setEmptyStringToMainPic,
   cancelRemoveMainPic,
   removePhotoCopy,
-  resetIsMainPhotoDeleted,
+  setEmptyStringToLogo,
+  cancelRemovingLogo,
+  removeLogoCopy,
+  removeGymLogo
 } from "../../../../../features/current_gym_slice";
 import ReactInputMask from "react-input-mask";
 
-export default function GymDetailesBodyFirstContainer({
-  currentGym,
-}) {
+export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const dispatch = useDispatch();
   const currentGymState = useSelector((state) => state.currentGym);
 
@@ -57,6 +57,7 @@ export default function GymDetailesBodyFirstContainer({
   const [isModalPhotoOpened, openModalPhoto] = useState(false);
   const [isModalLogoOpened, openModalLogo] = useState(false);
   const [cancelDeleteTimeoutPhoto, setCancelDeleteTimeoutPhoto] = useState();
+  const [cancelDeleteTimeoutLogo, setCancelDeleteTimeoutLogo] = useState();
 
   // use refs
   const fileInputMainPhotoRef = useRef();
@@ -104,7 +105,7 @@ export default function GymDetailesBodyFirstContainer({
     }
   };
 
-  // Обновите undoDelete, чтобы использовать cancelDeleteTimeout из состояния
+  //  при отмене удалении фото
   const undoDeletePhoto = useCallback(() => {
     dispatch(cancelRemoveMainPic());
     if (cancelDeleteTimeoutPhoto) {
@@ -112,12 +113,13 @@ export default function GymDetailesBodyFirstContainer({
     }
   }, [dispatch, cancelDeleteTimeoutPhoto]);
 
+  //  при отмене удалении фото
   const undoDeleteLogo = useCallback(() => {
-    dispatch(cancelRemoveMainPic());
-    if (cancelDeleteTimeoutPhoto) {
-      cancelDeleteTimeoutPhoto();
+    dispatch(cancelRemovingLogo());
+    if (cancelDeleteTimeoutLogo) {
+      cancelDeleteTimeoutLogo();
     }
-  }, [dispatch, cancelDeleteTimeoutPhoto]);
+  }, [dispatch, cancelDeleteTimeoutLogo]);
 
   return (
     console.log(`current gym ${JSON.stringify(currentGym)}`),
@@ -190,7 +192,6 @@ export default function GymDetailesBodyFirstContainer({
                       // function when onTime Ended
                       const { gymId } = { gymId: currentGym.id };
                       dispatch(removeGymMainPic({ gymId }));
-                      dispatch(resetIsMainPhotoDeleted());
                       dispatch(removePhotoCopy());
                     }
                   );
@@ -293,21 +294,20 @@ export default function GymDetailesBodyFirstContainer({
           <CustomDialog isOpened={isModalLogoOpened}>
             <ChangeLogoModal
               onPop={() => openModalLogo(false)}
-              /* onDeleteClicked={() => {
-                dispatch(setEmptyStringToMainPic());
-                openModalPhoto(false);
-                const cancelTimeout = deleteMainPicSnackbarRef.current.show(
-                  "Вы удалили фото",
+              onDeleteClicked={() => {
+                dispatch(setEmptyStringToLogo());
+                openModalLogo(false);
+                const cancelTimeout = deleteLogoSnackbarRef.current.show(
+                  "Вы удалили логотип",
                   () => {
                     // function when onTime Ended
                     const { gymId } = { gymId: currentGym.id };
-                    dispatch(removeGymMainPic({ gymId }));
-                    dispatch(resetIsMainPhotoDeleted());
-                    dispatch(removePhotoCopy());
+                    dispatch(removeGymLogo({ gymId }));
+                    dispatch(removeLogoCopy());
                   }
                 );
-                setCancelDeleteTimeout(() => cancelTimeout);
-              }} */
+                setCancelDeleteTimeoutLogo(() => cancelTimeout);
+              }}
               openFilePicker={openFilePickerForLogo}
               logo={currentGym.logoUrl}
               fileInputRef={fileInputLogoRef}

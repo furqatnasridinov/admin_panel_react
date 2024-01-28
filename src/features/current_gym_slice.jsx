@@ -88,7 +88,7 @@ export const addGymLogo = createAsyncThunk(
 
 export const removeGymLogo = createAsyncThunk(
   "currentGymSlice/editGym",
-  async ({ gymId, snackBarRef }) => {
+  async ({ gymId }) => {
     try {
       const dataToSend = {
         id: gymId,
@@ -99,7 +99,6 @@ export const removeGymLogo = createAsyncThunk(
         dataToSend
       );
       if (response.data["operationResult"] === "OK") {
-        snackBarRef.current.show("Вы удалили логотип");
       } else {
         alert("operationResult is not OK");
       }
@@ -211,9 +210,9 @@ const currentGymSlice = createSlice({
     isLoading: false,
     currentGym: null,
     gymPictureCopy: "",
+    logoCopy: "",
     isError: false,
     isChangesOccured: false,
-    isMainPhotoDeleted: false,
   },
 
   reducers: {
@@ -271,12 +270,11 @@ const currentGymSlice = createSlice({
       state.isChangesOccured = false;
     },
 
-    setEmptyStringToMainPic:  (state) => {
+    setEmptyStringToMainPic: (state) => {
       if (state.currentGym.mainPictureUrl !== "") {
         // удаляем саму mainpic и оставлям копию
         state.gymPictureCopy = state.currentGym.mainPictureUrl;
         state.currentGym.mainPictureUrl = "";
-        state.isMainPhotoDeleted = true;
       }
     },
 
@@ -285,7 +283,6 @@ const currentGymSlice = createSlice({
       if (state.gymPictureCopy !== "") {
         state.currentGym.mainPictureUrl = state.gymPictureCopy;
         state.gymPictureCopy = "";
-        state.isMainPhotoDeleted = false;
       }
     },
 
@@ -295,9 +292,25 @@ const currentGymSlice = createSlice({
       }
     },
 
-    resetIsMainPhotoDeleted: (state) => {
-      if (state.isMainPhotoDeleted) {
-        state.isMainPhotoDeleted = false;
+    setEmptyStringToLogo: (state) => {
+      if (state.currentGym.logoUrl !== "") {
+        // удаляем саму logo и оставлям копию
+        state.logoCopy = state.currentGym.logoUrl;
+        state.currentGym.logoUrl = "";
+      }
+    },
+
+    cancelRemovingLogo: (state) => {
+      // при отмене удаления обратно с копии передаем оригиналу
+      if (state.logoCopy !== "") {
+        state.currentGym.logoUrl = state.logoCopy;
+        state.logoCopy = "";
+      }
+    },
+
+    removeLogoCopy: (state) => {
+      if (state.logoCopy !== "") {
+        state.logoCopy = "";
       }
     },
   },
@@ -329,6 +342,8 @@ export const {
   setEmptyStringToMainPic,
   cancelRemoveMainPic,
   removePhotoCopy,
-  resetIsMainPhotoDeleted,
+  setEmptyStringToLogo,
+  cancelRemovingLogo,
+  removeLogoCopy,
 } = currentGymSlice.actions;
 export default currentGymSlice.reducer;
