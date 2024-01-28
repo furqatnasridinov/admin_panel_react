@@ -11,7 +11,7 @@ import doneSvg from "../../../../../assets/svg/done.svg";
 import arrowDownSvg from "../../../../../assets/svg/arrow_down.svg";
 import { ReactComponent as Popbutton } from "../../../../../assets/svg/arrow_left.svg";
 import CustomDialog from "../../../../../components/dialog/dialog";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import CustomButton from "../../../../../components/button/button";
 import { useDispatch, useSelector } from "react-redux";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
@@ -41,7 +41,6 @@ import ReactInputMask from "react-input-mask";
 
 export default function GymDetailesBodyFirstContainer({
   currentGym,
-  snackbarRef,
 }) {
   const dispatch = useDispatch();
   const currentGymState = useSelector((state) => state.currentGym);
@@ -57,6 +56,7 @@ export default function GymDetailesBodyFirstContainer({
   const [isContactsEdittingEnabled, setContactsEditting] = useState(false);
   const [isModalPhotoOpened, openModalPhoto] = useState(false);
   const [isModalLogoOpened, openModalLogo] = useState(false);
+  const [cancelDeleteTimeoutPhoto, setCancelDeleteTimeoutPhoto] = useState();
 
   // use refs
   const fileInputMainPhotoRef = useRef();
@@ -103,6 +103,21 @@ export default function GymDetailesBodyFirstContainer({
       openModalLogo(false);
     }
   };
+
+  // Обновите undoDelete, чтобы использовать cancelDeleteTimeout из состояния
+  const undoDeletePhoto = useCallback(() => {
+    dispatch(cancelRemoveMainPic());
+    if (cancelDeleteTimeoutPhoto) {
+      cancelDeleteTimeoutPhoto();
+    }
+  }, [dispatch, cancelDeleteTimeoutPhoto]);
+
+  const undoDeleteLogo = useCallback(() => {
+    dispatch(cancelRemoveMainPic());
+    if (cancelDeleteTimeoutPhoto) {
+      cancelDeleteTimeoutPhoto();
+    }
+  }, [dispatch, cancelDeleteTimeoutPhoto]);
 
   return (
     console.log(`current gym ${JSON.stringify(currentGym)}`),
@@ -166,23 +181,20 @@ export default function GymDetailesBodyFirstContainer({
             <CustomDialog isOpened={isModalPhotoOpened}>
               <ChangeMainPhotoModal
                 onPop={() => openModalPhoto(false)}
-                onDeleteClicked={async () => {
-                  // визуально скрываем фото
+                onDeleteClicked={() => {
                   dispatch(setEmptyStringToMainPic());
-                  deleteMainPicSnackbarRef.current.show("Вы удалили фото");
                   openModalPhoto(false);
-                  setTimeout(() => {
-                    if (currentGym.isMainPhotoDeleted) {
-                      // undefined
-                      const { gymId } = {
-                        gymId: currentGym.id,
-                      };
-                      // Удаляем фото
+                  const cancelTimeout = deleteMainPicSnackbarRef.current.show(
+                    "Вы удалили фото",
+                    () => {
+                      // function when onTime Ended
+                      const { gymId } = { gymId: currentGym.id };
                       dispatch(removeGymMainPic({ gymId }));
                       dispatch(resetIsMainPhotoDeleted());
                       dispatch(removePhotoCopy());
                     }
-                  }, 9000);
+                  );
+                  setCancelDeleteTimeoutPhoto(() => cancelTimeout);
                 }}
                 openFilePicker={openFilePickerForMainPhoto}
                 photo={
@@ -197,9 +209,7 @@ export default function GymDetailesBodyFirstContainer({
             </CustomDialog>
             <CustomSnackbar
               ref={deleteMainPicSnackbarRef}
-              undoAction={() => {
-                dispatch(cancelRemoveMainPic());
-              }}
+              undoAction={undoDeletePhoto}
             />
           </div>
           {/*  Logos Column */}
@@ -283,23 +293,31 @@ export default function GymDetailesBodyFirstContainer({
           <CustomDialog isOpened={isModalLogoOpened}>
             <ChangeLogoModal
               onPop={() => openModalLogo(false)}
-              onDeleteClicked={() => {
-                const { gymId, snackBarRef } = {
-                  gymId: currentGym.id,
-                  snackBarRef: snackbarRef,
-                };
-                dispatch(removeGymLogo({ gymId, snackBarRef }));
-                setTimeout(() => {
-                  dispatch(getCurrentGym(currentGym.id));
-                }, 1500);
-                openModalLogo(false);
-              }}
+              /* onDeleteClicked={() => {
+                dispatch(setEmptyStringToMainPic());
+                openModalPhoto(false);
+                const cancelTimeout = deleteMainPicSnackbarRef.current.show(
+                  "Вы удалили фото",
+                  () => {
+                    // function when onTime Ended
+                    const { gymId } = { gymId: currentGym.id };
+                    dispatch(removeGymMainPic({ gymId }));
+                    dispatch(resetIsMainPhotoDeleted());
+                    dispatch(removePhotoCopy());
+                  }
+                );
+                setCancelDeleteTimeout(() => cancelTimeout);
+              }} */
               openFilePicker={openFilePickerForLogo}
               logo={currentGym.logoUrl}
               fileInputRef={fileInputLogoRef}
               uploadNewLogo={handleNewLogo}
             />
           </CustomDialog>
+          <CustomSnackbar
+            ref={deleteLogoSnackbarRef}
+            undoAction={undoDeleteLogo}
+          />
         </div>
 
         {/* ContactInfos */}

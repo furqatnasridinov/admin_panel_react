@@ -271,7 +271,7 @@ const currentGymSlice = createSlice({
       state.isChangesOccured = false;
     },
 
-    setEmptyStringToMainPic: (state) => {
+    setEmptyStringToMainPic:  (state) => {
       if (state.currentGym.mainPictureUrl !== "") {
         // удаляем саму mainpic и оставлям копию
         state.gymPictureCopy = state.currentGym.mainPictureUrl;

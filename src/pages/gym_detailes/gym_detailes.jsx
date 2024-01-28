@@ -114,7 +114,6 @@ export default function GymDetails() {
             <Employees
               listOfEmployees={listOfEmployees.employees}
               gymId={currentGymSlice.currentGym.id}
-              snackbarRef={snackBarRef}
             />
             <GymDetailesBodyFirstContainer
               currentGym={currentGymSlice.currentGym}

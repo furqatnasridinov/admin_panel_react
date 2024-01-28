@@ -11,22 +11,27 @@ const CustomSnackbar = forwardRef((props, ref) => {
   const [snackbars, setSnackbars] = useState([]);
 
   useImperativeHandle(ref, () => ({
-    show(message) {
-      const newSnackbar = { id: Date.now(), message, countdown: 9 };
+    show(message, onTimeEnded) {
+      const id = Date.now();
+      const newSnackbar = { id, message, countdown: 9 };
       setSnackbars((prevSnackbars) => [...prevSnackbars, newSnackbar]);
-      setTimeout(() => {
+      // Запускаем таймер, который будет вызывать onTimeEnded после истечения времени
+      const timeoutId = setTimeout(() => {
         setSnackbars((prevSnackbars) =>
-          prevSnackbars.filter((snackbar) => snackbar.id !== newSnackbar.id)
+          prevSnackbars.filter((snackbar) => snackbar.id !== id)
         );
-        // onTimeEnded
+        if (onTimeEnded) onTimeEnded(); // Вызываем onTimeEnded если он был передан
       }, 9000);
-    },
 
+      // Возвращаем функцию для отмены таймера
+      return () => clearTimeout(timeoutId);
+    },
     cancel(id) {
       // Remove the snackbar with the given id
       setSnackbars((prevSnackbars) =>
         prevSnackbars.filter((snackbar) => snackbar.id !== id)
       );
+      
     },
   }));
 
@@ -54,9 +59,9 @@ const CustomSnackbar = forwardRef((props, ref) => {
             <div
               className="text-[14px] font-medium text-blue-text cursor-pointer"
               onClick={() => {
-                // Add your undo functionality here
-                props.undoAction();
-                //remove the snackbar
+                // Вызываем функцию undoAction, переданную из родительского компонента
+                if (props.undoAction) props.undoAction();
+                // Удаляем снэкбар
                 ref.current && ref.current.cancel(snackbar.id);
               }}
             >
