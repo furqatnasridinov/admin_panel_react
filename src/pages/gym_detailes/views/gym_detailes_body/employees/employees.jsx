@@ -32,7 +32,7 @@ import {
   selectARoleId,
   selectARoleCode,
   deleteEmployee,
-  resetChanges
+  resetChanges,
 } from "../../../../../features/employees_slice";
 
 export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
@@ -74,6 +74,15 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
     setSurname(event.target.value);
   };
 
+  function removeDatas() {
+    setname("");
+    setSurname("");
+    setPhoneNumber("");
+    setRoleId("1");
+    setRoleCode("ROLE_ADMIN");
+    setRoleName("Администратор");
+  }
+
   const changePhone = (event) => {
     // Удалить все нецифровые символы из строки
     const digitsOnly = event.target.value.replace(/\D/g, "");
@@ -103,8 +112,13 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
             listOfEmployees.length === 0 ? {} : openRefEmployeesDialog(true)
           }
         />
-        {listOfEmployees.length !== 0 && (
-          <CustomDialog isOpened={isRefEmployeesDialogOpened}>
+        {listOfEmployees.length !== 0 && isRefEmployeesDialogOpened && (
+          <CustomDialog
+            isOpened={isRefEmployeesDialogOpened}
+            closeOnTapOutside={() => {
+              openRefEmployeesDialog(false);
+            }}
+          >
             {/* Refactor employees dialog body */}
             <div className="ref_employee_dialog">
               <div className="flex flex-col gap-[5px]">
@@ -174,8 +188,8 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
                     Личная информация
                   </div>
                 </div>
-                <div className="flex flex-col gap-[10px]">
-                  <div className="flex flex-row gap-[32px]">
+                <div className="flex flex-col gap-[10px] pl-[35px]">
+                  <div className="flex flex-row gap-[32px] ">
                     {/* Name */}
                     <TextAndTextfield
                       value={
@@ -333,7 +347,7 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
                         dispatch(getListOfEmployees(gymId));
                       }, 1000);
                     }
-                    dispatch(resetChanges())
+                    dispatch(resetChanges());
                     openRefEmployeesDialog(false);
                   }}
                 />
@@ -362,206 +376,208 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
           <div
             className="button"
             onClick={() => {
-              /* openAddEmployeesDialog(true); */
-              snackbarRef.current.show("Кера мак");
+              openAddEmployeesDialog(true);
             }}
           >
             <img src={addSvg} alt="" />
             <div className="">Добавить</div>
           </div>
           {/* Add employee dialog */}
-          <CustomDialog
-            isOpened={isAddEmployeesDialogOpened}
-            closeOnTapOutside={() => openAddEmployeesDialog(false)}
-          >
-            {/* Add employee dialog body */}
-            <div className="add_employee_dialog">
-              <div className="flex flex-col gap-[5px]">
-                <div className="flex flex-row items-center justify-between">
+          {isAddEmployeesDialogOpened && (
+            <CustomDialog
+              isOpened={isAddEmployeesDialogOpened}
+              closeOnTapOutside={() => openAddEmployeesDialog(false)}
+            >
+              {/* Add employee dialog body */}
+              <div className="add_employee_dialog">
+                <div className="flex flex-col gap-[5px]">
+                  <div className="flex flex-row items-center justify-between">
+                    <div className="text-[16px] font-semibold leading-[16px]">
+                      Добавить нового сотрудника
+                    </div>
+                    <img
+                      className="w-[20px] h-[20px] cursor-pointer"
+                      src={cancelSvg}
+                      alt=""
+                      onClick={() => {
+                        openAddEmployeesDialog(false);
+                      }}
+                    />
+                  </div>
+
+                  <div className="text-[14px] font-normal leading-[16px]">
+                    Вам нужно указать номер телефона человека, которого вы
+                    хотите добавить. С помощью этого номера он сможет войти на
+                    платформу. Так же необходимо задать уровень доступа.
+                  </div>
+                </div>
+                <div className="flex flex-row gap-[24px]">
+                  {/* Иям */}
+                  <TextAndTextfield
+                    value={name}
+                    onChange={changeName}
+                    textfieldHasFocus={nameTextfieldHasFocus}
+                    requestFocus={() => setNameFocus(true)}
+                    removeFocus={() => setNameFocus(false)}
+                    text={"Имя сотрудника"}
+                    placeholder={"Имя"}
+                    logo={userLogo}
+                    isError={nameNotValidated}
+                  />
+                  {/* Фамилия */}
+                  <TextAndTextfield
+                    value={surname}
+                    onChange={changeSurName}
+                    textfieldHasFocus={surnameTextfieldHasFocus}
+                    requestFocus={() => setSurnameFocus(true)}
+                    removeFocus={() => setSurnameFocus(false)}
+                    text={"Фамилия"}
+                    placeholder={"Фамилия"}
+                    logo={userLogo}
+                  />
+                </div>
+                <div className="flex flex-row gap-[24px]">
+                  {/* Номер */}
+                  <TextAndTextfield
+                    value={phoneNumber}
+                    onChange={changePhone}
+                    textfieldHasFocus={phoneNumberTextfieldHasFocus}
+                    requestFocus={() => setPhoneFocus(true)}
+                    removeFocus={() => setPhoneFocus(false)}
+                    text={"Номер телефона"}
+                    placeholder={"+7 (900) 855 45-58"}
+                    logo={phoneSvg}
+                    isPhoneTextfield={true}
+                    isError={phoneNotValidated}
+                  />
+                  {/* Drop down */}
+                  <div className="flex flex-col gap-[5px] w-full ">
+                    <div className="text-[14px] font-bold">
+                      Уровень доступа сотрудника
+                    </div>
+                    <CustomDropdownForAddingEmployee
+                      currentRole={roleName}
+                      isDropDownOpened={isDropDownOpened}
+                      openCloseDropDown={openCloseDropDown}
+                      onRoleSelected={async (role) => {
+                        setRoleId(role.id);
+                        setRoleCode(role.code);
+                        setRoleName(role.name);
+                        openCloseDropDown();
+                      }}
+                    />
+                  </div>
+                </div>
+                {/* blue container  */}
+                <div className="big_blue_container">
+                  <div className="text-[14px] font-normal leading-[16px]">
+                    Подробная информация о том, какими правами наделена
+                    выбранная вами роль
+                  </div>
+                  {roles.map((role) => {
+                    return role.available ? (
+                      <div
+                        key={role.id}
+                        className="flex flex-row gap-[10px] items-center"
+                      >
+                        <img src={availableSvg} alt="" />
+                        <div className="text-[14px] font-normal leading-[16px]">
+                          {role.name}
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        key={role.id}
+                        className="flex flex-row gap-[10px] items-center"
+                      >
+                        <img src={notAvailable} alt="" />
+                        <div className="text-[14px] font-normal leading-[16px] text-grey-text">
+                          {role.name}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* Инструкция */}
+                <div className="flex flex-col gap-[5px]">
                   <div className="text-[16px] font-semibold leading-[16px]">
-                    Добавить нового сотрудника
+                    Как сотруднику войти в систему?
                   </div>
-                  <img
-                    className="w-[20px] h-[20px] cursor-pointer"
-                    src={cancelSvg}
-                    alt=""
-                    onClick={() => {
-                      openAddEmployeesDialog(false);
+                  <div className="text-[14px] font-normal leading-[16px]">
+                    После того, как вы добавите нового сотрудника - ему
+                    необходимо перейти по адресу myfit.ru/admin и войти в
+                    систему, используя свой номер телефона. Там он получит смс с
+                    кодом, который сможет использовать как пароль для входа.
+                  </div>
+                </div>
+                <div className="flex flex-col gap-[16px]">
+                  <CustomButton
+                    width={"100%"}
+                    height={"40px"}
+                    title={"Добавить сотрудника"}
+                    onСlick={() => {
+                      // Assume both fields are valid to start with
+                      let isPhoneValid = true;
+                      let isNameValid = true;
+
+                      // Check phone number validity (assuming you want exactly 18 characters)
+                      if (phoneNumber.length !== 12) {
+                        setPhoneNotValidated(true);
+                        isPhoneValid = false; // Set the phone validity to false
+                      } else {
+                        setPhoneNotValidated(false);
+                      }
+
+                      // Check name validity (assuming you want at least 1 character)
+                      if (name.trim().length === 0) {
+                        setNameNotValidated(true);
+                        isNameValid = false; // Set the name validity to false
+                      } else {
+                        setNameNotValidated(false);
+                      }
+
+                      // when validation passes
+                      if (isPhoneValid && isNameValid) {
+                        const { firstName, lastName, login, roles } = {
+                          firstName: name,
+                          lastName: surname,
+                          login: phoneNumber,
+                          roles: [
+                            {
+                              id: roleId,
+                              code: roleCode,
+                              name: roleName,
+                            },
+                          ],
+                        };
+
+                        dispatch(
+                          addEmployee({
+                            gymId,
+                            firstName,
+                            lastName,
+                            login,
+                            roles,
+                          })
+                        );
+                        setTimeout(() => {
+                          dispatch(getListOfEmployees(gymId));
+                        }, 1000);
+                        openAddEmployeesDialog(false);
+                        removeDatas();
+                      }
                     }}
                   />
-                </div>
-
-                <div className="text-[14px] font-normal leading-[16px]">
-                  Вам нужно указать номер телефона человека, которого вы хотите
-                  добавить. С помощью этого номера он сможет войти на платформу.
-                  Так же необходимо задать уровень доступа.
-                </div>
-              </div>
-              <div className="flex flex-row gap-[24px]">
-                {/* Иям */}
-                <TextAndTextfield
-                  value={name}
-                  onChange={changeName}
-                  textfieldHasFocus={nameTextfieldHasFocus}
-                  requestFocus={() => setNameFocus(true)}
-                  removeFocus={() => setNameFocus(false)}
-                  text={"Имя сотрудника"}
-                  placeholder={"Имя"}
-                  logo={userLogo}
-                  isError={nameNotValidated}
-                />
-                {/* Фамилия */}
-                <TextAndTextfield
-                  value={surname}
-                  onChange={changeSurName}
-                  textfieldHasFocus={surnameTextfieldHasFocus}
-                  requestFocus={() => setSurnameFocus(true)}
-                  removeFocus={() => setSurnameFocus(false)}
-                  text={"Фамилия"}
-                  placeholder={"Фамилия"}
-                  logo={userLogo}
-                />
-              </div>
-              <div className="flex flex-row gap-[24px]">
-                {/* Номер */}
-                <TextAndTextfield
-                  value={phoneNumber}
-                  onChange={changePhone}
-                  textfieldHasFocus={phoneNumberTextfieldHasFocus}
-                  requestFocus={() => setPhoneFocus(true)}
-                  removeFocus={() => setPhoneFocus(false)}
-                  text={"Номер телефона"}
-                  placeholder={"+7 (900) 855 45-58"}
-                  logo={phoneSvg}
-                  isPhoneTextfield={true}
-                  isError={phoneNotValidated}
-                />
-                {/* Drop down */}
-                <div className="flex flex-col gap-[5px] w-full ">
-                  <div className="text-[14px] font-bold">
-                    Уровень доступа сотрудника
-                  </div>
-                  <CustomDropdownForAddingEmployee
-                    currentRole={roleName}
-                    isDropDownOpened={isDropDownOpened}
-                    openCloseDropDown={openCloseDropDown}
-                    onRoleSelected={async (role) => {
-                      setRoleId(role.id);
-                      setRoleCode(role.code);
-                      setRoleName(role.name);
-                      openCloseDropDown();
-                    }}
-                  />
-                </div>
-              </div>
-              {/* blue container  */}
-              <div className="big_blue_container">
-                <div className="text-[14px] font-normal leading-[16px]">
-                  Подробная информация о том, какими правами наделена выбранная
-                  вами роль
-                </div>
-                {roles.map((role) => {
-                  return role.available ? (
-                    <div
-                      key={role.id}
-                      className="flex flex-row gap-[10px] items-center"
-                    >
-                      <img src={availableSvg} alt="" />
-                      <div className="text-[14px] font-normal leading-[16px]">
-                        {role.name}
-                      </div>
+                  {(nameNotValidated || phoneNotValidated) && (
+                    <div className="text-[14px] font-normal text-red-400 leading-[16px]">
+                      Чтобы продолжить - необходимо заполнить все обязательные
+                      поля, выделенные красным
                     </div>
-                  ) : (
-                    <div
-                      key={role.id}
-                      className="flex flex-row gap-[10px] items-center"
-                    >
-                      <img src={notAvailable} alt="" />
-                      <div className="text-[14px] font-normal leading-[16px] text-grey-text">
-                        {role.name}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              {/* Инструкция */}
-              <div className="flex flex-col gap-[5px]">
-                <div className="text-[16px] font-semibold leading-[16px]">
-                  Как сотруднику войти в систему?
-                </div>
-                <div className="text-[14px] font-normal leading-[16px]">
-                  После того, как вы добавите нового сотрудника - ему необходимо
-                  перейти по адресу myfit.ru/admin и войти в систему, используя
-                  свой номер телефона. Там он получит смс с кодом, который
-                  сможет использовать как пароль для входа.
+                  )}
                 </div>
               </div>
-              <div className="flex flex-col gap-[16px]">
-                <CustomButton
-                  width={"100%"}
-                  height={"40px"}
-                  title={"Добавить сотрудника"}
-                  onСlick={() => {
-                    // Assume both fields are valid to start with
-                    let isPhoneValid = true;
-                    let isNameValid = true;
-
-                    // Check phone number validity (assuming you want exactly 18 characters)
-                    if (phoneNumber.length !== 12) {
-                      setPhoneNotValidated(true);
-                      isPhoneValid = false; // Set the phone validity to false
-                    } else {
-                      setPhoneNotValidated(false);
-                    }
-
-                    // Check name validity (assuming you want at least 1 character)
-                    if (name.trim().length === 0) {
-                      setNameNotValidated(true);
-                      isNameValid = false; // Set the name validity to false
-                    } else {
-                      setNameNotValidated(false);
-                    }
-
-                    // when validation passes
-                    if (isPhoneValid && isNameValid) {
-                      const { firstName, lastName, login, roles } = {
-                        firstName: name,
-                        lastName: surname,
-                        login: phoneNumber,
-                        roles: [
-                          {
-                            id: roleId,
-                            code: roleCode,
-                            name: roleName,
-                          },
-                        ],
-                      };
-
-                      dispatch(
-                        addEmployee({
-                          gymId,
-                          firstName,
-                          lastName,
-                          login,
-                          roles,
-                        })
-                      );
-                      setTimeout(() => {
-                        dispatch(getListOfEmployees(gymId));
-                      }, 1000);
-                      openAddEmployeesDialog(false);
-                    }
-                  }}
-                />
-                {(nameNotValidated || phoneNotValidated) && (
-                  <div className="text-[14px] font-normal text-red-400 leading-[16px]">
-                    Чтобы продолжить - необходимо заполнить все обязательные
-                    поля, выделенные красным
-                  </div>
-                )}
-              </div>
-            </div>
-          </CustomDialog>
+            </CustomDialog>
+          )}
         </div>
       </div>
     )

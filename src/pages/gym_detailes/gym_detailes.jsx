@@ -102,7 +102,7 @@ export default function GymDetails() {
   return (
     console.log("selected act ", activitiesSlice.selectedActivity),
     (
-      <div className=" ml-[10px] h-[97vh] overflow-y-auto">
+      <div className=" ml-[10px] h-[97vh] overflow-y-auto  ">
         {currentGymSlice.currentGym != null && (
           <>
             <GymDetailesHeader
@@ -111,14 +111,16 @@ export default function GymDetails() {
               showDropDown={listOfGymsSlice.data.length > 1}
               selectAnotherGym={selectAnotherGym}
             />
+
             <Employees
               listOfEmployees={listOfEmployees.employees}
               gymId={currentGymSlice.currentGym.id}
             />
+
             <GymDetailesBodyFirstContainer
               currentGym={currentGymSlice.currentGym}
-              snackbarRef={snackBarRef}
             />
+
             <GymDetailesBodySecondContainer
               gymId={gymId}
               listOfActivities={activitiesSlice.listOfActivities}
@@ -129,12 +131,6 @@ export default function GymDetails() {
               }
               setPhotosOfSelectedActivity={setPhotosOfSelectedActivity}
               snackbarRef={snackBarRef}
-            />
-            <CustomSnackbar
-              ref={snackBarRef}
-              undoAction={() => {
-                alert("Че раp");
-              }}
             />
           </>
         )}

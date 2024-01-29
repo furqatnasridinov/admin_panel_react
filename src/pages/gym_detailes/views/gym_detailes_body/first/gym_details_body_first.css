@@ -96,10 +96,12 @@
   background-color: white;
   align-items: center;
   border: 1px solid #599afe;
+  --icon-color: black;
 }
 
 .rounded_button:hover {
   background-color: #599afe;
+  --icon-color: white;
   transition: background-color 0.5s ease;
 }
 
@@ -107,10 +109,6 @@
   outline: none;
 }
 
-.rounded_button:hover img {
-  color: white;
-  transition: color 0.5s ease;
-}
 
 .second_button {
   width: 140px;
@@ -122,10 +120,12 @@
   align-items: center;
   border: 1px solid #599afe;
 }
+
 .second_button:hover {
   background-color: #599afe;
   transition: background-color 0.5s ease;
 }
+
 .second_button:hover p {
   color: white;
   transition: background-color 0.5s ease;
@@ -170,6 +170,7 @@
 }
 
 .photo_dialog_container {
+  width: 513px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;

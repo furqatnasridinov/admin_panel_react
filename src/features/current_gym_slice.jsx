@@ -29,11 +29,7 @@ export const addGymPicture = createAsyncThunk(
           },
         }
       );
-      if (response.data["operationResult"] === "OK") {
-        alert(response.data["operationInfo"]);
-      } else {
-        alert("operationResult is not OK");
-      }
+      
     } catch (error) {
       alert(`addGymPicture ${error}`);
     }
@@ -75,11 +71,7 @@ export const addGymLogo = createAsyncThunk(
           },
         }
       );
-      if (response.data["operationResult"] === "OK") {
-        alert(response.data["operationInfo"]);
-      } else {
-        alert("operationResult is not OK");
-      }
+      
     } catch (error) {
       alert(`addGymPicture ${error}`);
     }
@@ -98,10 +90,7 @@ export const removeGymLogo = createAsyncThunk(
         "api/director/gyms/",
         dataToSend
       );
-      if (response.data["operationResult"] === "OK") {
-      } else {
-        alert("operationResult is not OK");
-      }
+     
     } catch (error) {
       alert(`editGym ${error}`);
       console.log(`${error.massage}`);
@@ -121,11 +110,7 @@ export const patchGymName = createAsyncThunk(
         "api/director/gyms/",
         dataToSend
       );
-      if (response.data["operationResult"] === "OK") {
-        alert(response.data["object"]);
-      } else {
-        alert("operationResult is not OK");
-      }
+     
     } catch (error) {
       alert(`editGym ${error}`);
       console.log(`${error.massage}`);
@@ -145,11 +130,7 @@ export const patchGymDescription = createAsyncThunk(
         "api/director/gyms/",
         dataToSend
       );
-      if (response.data["operationResult"] === "OK") {
-        alert(response.data["object"]);
-      } else {
-        alert("operationResult is not OK");
-      }
+      
     } catch (error) {
       alert(`editGym ${error}`);
     }
@@ -168,11 +149,7 @@ export const patchGymAddress = createAsyncThunk(
         "api/director/gyms/",
         dataToSend
       );
-      if (response.data["operationResult"] === "OK") {
-        alert(response.data["object"]);
-      } else {
-        alert("operationResult is not OK");
-      }
+      
     } catch (error) {
       alert(`editGym ${error}`);
     }
@@ -193,11 +170,7 @@ export const patchGymContacts = createAsyncThunk(
         "api/director/gyms/",
         dataToSend
       );
-      if (response.data["operationResult"] === "OK") {
-        alert(response.data["object"]);
-      } else {
-        alert("operationResult is not OK");
-      }
+      
     } catch (error) {
       alert(`editGym ${error}`);
     }

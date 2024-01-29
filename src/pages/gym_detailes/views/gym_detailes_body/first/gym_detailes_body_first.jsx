@@ -9,7 +9,6 @@ import tgSvg from "../../../../../assets/svg/tg.svg";
 import vkSvg from "../../../../../assets/svg/vk.svg";
 import doneSvg from "../../../../../assets/svg/done.svg";
 import arrowDownSvg from "../../../../../assets/svg/arrow_down.svg";
-import { ReactComponent as Popbutton } from "../../../../../assets/svg/arrow_left.svg";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import { useState, useRef, useEffect, useCallback } from "react";
 import CustomButton from "../../../../../components/button/button";
@@ -37,7 +36,7 @@ import {
   setEmptyStringToLogo,
   cancelRemovingLogo,
   removeLogoCopy,
-  removeGymLogo
+  removeGymLogo,
 } from "../../../../../features/current_gym_slice";
 import ReactInputMask from "react-input-mask";
 
@@ -180,34 +179,42 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
             )}
 
             <SizeOfPicture size={"375x210px"} />
-            <CustomDialog isOpened={isModalPhotoOpened}>
-              <ChangeMainPhotoModal
-                onPop={() => openModalPhoto(false)}
-                onDeleteClicked={() => {
-                  dispatch(setEmptyStringToMainPic());
+            {isModalPhotoOpened && (
+              <CustomDialog
+                isOpened={isModalPhotoOpened}
+                closeOnTapOutside={() => {
                   openModalPhoto(false);
-                  const cancelTimeout = deleteMainPicSnackbarRef.current.show(
-                    "Вы удалили фото",
-                    () => {
-                      // function when onTime Ended
-                      const { gymId } = { gymId: currentGym.id };
-                      dispatch(removeGymMainPic({ gymId }));
-                      dispatch(removePhotoCopy());
-                    }
-                  );
-                  setCancelDeleteTimeoutPhoto(() => cancelTimeout);
                 }}
-                openFilePicker={openFilePickerForMainPhoto}
-                photo={
-                  currentGym.mainPictureUrl === "" ||
-                  currentGym.mainPictureUrl === null
-                    ? ""
-                    : currentGym.mainPictureUrl
-                }
-                fileInputRef={fileInputMainPhotoRef}
-                uploadNewPhoto={handleNewPhoto}
-              />
-            </CustomDialog>
+              >
+                <ChangeMainPhotoModal
+                  onPop={() => openModalPhoto(false)}
+                  onDeleteClicked={() => {
+                    dispatch(setEmptyStringToMainPic());
+                    openModalPhoto(false);
+                    const cancelTimeout = deleteMainPicSnackbarRef.current.show(
+                      "Вы удалили фото",
+                      () => {
+                        // function when onTime Ended
+                        const { gymId } = { gymId: currentGym.id };
+                        dispatch(removeGymMainPic({ gymId }));
+                        dispatch(removePhotoCopy());
+                      }
+                    );
+                    setCancelDeleteTimeoutPhoto(() => cancelTimeout);
+                  }}
+                  openFilePicker={openFilePickerForMainPhoto}
+                  photo={
+                    currentGym.mainPictureUrl === "" ||
+                    currentGym.mainPictureUrl === null
+                      ? ""
+                      : currentGym.mainPictureUrl
+                  }
+                  fileInputRef={fileInputMainPhotoRef}
+                  uploadNewPhoto={handleNewPhoto}
+                />
+              </CustomDialog>
+            )}
+
             <CustomSnackbar
               ref={deleteMainPicSnackbarRef}
               undoAction={undoDeletePhoto}
@@ -291,29 +298,36 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
               <SizeOfPicture size={"50x50px"} />
             </div>
           )}
-          <CustomDialog isOpened={isModalLogoOpened}>
-            <ChangeLogoModal
-              onPop={() => openModalLogo(false)}
-              onDeleteClicked={() => {
-                dispatch(setEmptyStringToLogo());
+          {isModalLogoOpened && (
+            <CustomDialog
+              isOpened={isModalLogoOpened}
+              closeOnTapOutside={() => {
                 openModalLogo(false);
-                const cancelTimeout = deleteLogoSnackbarRef.current.show(
-                  "Вы удалили логотип",
-                  () => {
-                    // function when onTime Ended
-                    const { gymId } = { gymId: currentGym.id };
-                    dispatch(removeGymLogo({ gymId }));
-                    dispatch(removeLogoCopy());
-                  }
-                );
-                setCancelDeleteTimeoutLogo(() => cancelTimeout);
               }}
-              openFilePicker={openFilePickerForLogo}
-              logo={currentGym.logoUrl}
-              fileInputRef={fileInputLogoRef}
-              uploadNewLogo={handleNewLogo}
-            />
-          </CustomDialog>
+            >
+              <ChangeLogoModal
+                onPop={() => openModalLogo(false)}
+                onDeleteClicked={() => {
+                  dispatch(setEmptyStringToLogo());
+                  openModalLogo(false);
+                  const cancelTimeout = deleteLogoSnackbarRef.current.show(
+                    "Вы удалили логотип",
+                    () => {
+                      // function when onTime Ended
+                      const { gymId } = { gymId: currentGym.id };
+                      dispatch(removeGymLogo({ gymId }));
+                      dispatch(removeLogoCopy());
+                    }
+                  );
+                  setCancelDeleteTimeoutLogo(() => cancelTimeout);
+                }}
+                openFilePicker={openFilePickerForLogo}
+                logo={currentGym.logoUrl}
+                fileInputRef={fileInputLogoRef}
+                uploadNewLogo={handleNewLogo}
+              />
+            </CustomDialog>
+          )}
           <CustomSnackbar
             ref={deleteLogoSnackbarRef}
             undoAction={undoDeleteLogo}
@@ -770,7 +784,7 @@ function ChangeMainPhotoModal({
       {/* photo */}
       {photo !== "" && (
         <img
-          className="w-[513px] h-[250px] rounded-t-[16px]"
+          className=" h-[250px] rounded-t-[16px] object-cover"
           src={`http://77.222.53.122/image/${photo}`}
           alt=""
         ></img>
@@ -782,8 +796,8 @@ function ChangeMainPhotoModal({
       )}
 
       {/* white container */}
-      <div className="bg-white p-[32px] flex flex-col justify-center items-center gap-[24px] rounded-b-[16px]">
-        <div className="flex flex-col gap-[5-x]">
+      <div className="bg-white p-[32px] flex flex-col justify-center  gap-[24px] rounded-b-[16px]">
+        <div className="flex flex-col gap-[5-x] pl-[50px]">
           <div className="font-semibold text-[16px] ">
             Изменение фоновой фотографии
           </div>
@@ -792,8 +806,20 @@ function ChangeMainPhotoModal({
         {/* Row of buttons */}
         <div className="flex flex-row w-full h-[40px] gap-[10px] ">
           <button className="rounded_button" onClick={onPop}>
-            <Popbutton color="white" stroke="red" />
-            {/* <svg  src={arrowLeftSvg} alt="" /> */}
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10.875 4.875L7.125 8.625L10.875 12.375"
+                stroke="var(--icon-color)"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </button>
           <button onClick={onDeleteClicked} className="second_button">
             <p>Удалить фото</p>
@@ -842,8 +868,20 @@ function ChangeLogoModal({
         {/* Row of buttons */}
         <div className="flex flex-row w-full h-[40px] gap-[10px] ">
           <button className="rounded_button" onClick={onPop}>
-            <Popbutton />
-            {/* <svg  src={arrowLeftSvg} alt="" /> */}
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 18 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10.875 4.875L7.125 8.625L10.875 12.375"
+                stroke="var(--icon-color)"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </button>
           <button className="second_button" onClick={onDeleteClicked}>
             <p>Удалить логотип</p>

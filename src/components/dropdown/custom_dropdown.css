@@ -73,18 +73,4 @@
   overflow-y: auto;
 }
 
-.gym_names {
-  font-size: 14px;
-  font-weight: 500;
-  color: #252525;
-  width: fit-content;
-  padding-left: 7px;
-  padding-right: 7px;
-  border-radius: 4px;
-  text-align: start;
-}
 
-.gym_names:hover {
-  background-color: #d4e5ff;
-  transition: background-color 0.5s ease;
-}

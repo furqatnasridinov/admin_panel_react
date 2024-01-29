@@ -135,118 +135,122 @@ export default function GymDetailesBodySecondContainer({
               );
             })}
           </div>
-          <CustomDialog isOpened={isActivitiesModalOpened}>
-            {/* Activities modal body */}
-            <div className="main_container">
-              <div className="flex flex-col gap-[5px]">
-                <div className="text-[16px] font-semibold leading-[16px]">
-                  Редактирование активностей
+          {isActivitiesModalOpened && (
+            <CustomDialog isOpened={isActivitiesModalOpened}>
+              {/* Activities modal body */}
+              <div className="main_container">
+                <div className="flex flex-col gap-[5px]">
+                  <div className="text-[16px] font-semibold leading-[16px]">
+                    Редактирование активностей
+                  </div>
+                  <div className="text-[14px] font-normal leading-[16px]">
+                    Выберите активность, чтобы добавить в неё занятия.
+                    Дополнительные занятия - это не обязательная опция, вы
+                    можете использовать только основные активности.
+                  </div>
                 </div>
-                <div className="text-[14px] font-normal leading-[16px]">
-                  Выберите активность, чтобы добавить в неё занятия.
-                  Дополнительные занятия - это не обязательная опция, вы можете
-                  использовать только основные активности.
-                </div>
-              </div>
-              {/* activities and podactivities */}
-              <div className="flex flex-row gap-[24px]">
-                <div className="activities_col">
-                  <div className="text-[14px] font-bold">Ваши активности:</div>
-                  <div className="blue_bordered_container">
-                    {listOfActivities.map((activity, index) => {
-                      return (
-                        <EachActivity
-                          key={index}
-                          title={activity}
-                          onclick={() => {
-                            dispatch(selectAnActivity(activity));
-                          }}
-                          onEditClicked={() => {}}
-                          onRemoveClicked={() => {
-                            // function to delete activity
-                            const { id, lessonType } = {
-                              id: gymId,
-                              lessonType: activitiesSlice.selectedActivity,
-                            };
-                            dispatch(deleteActivity({ id, lessonType }));
-                            setTimeout(() => {
-                              dispatch(getListOfActivities(gymId));
-                            }, 1500);
-                          }}
-                          isActive={
-                            activity === activitiesSlice.selectedActivity
-                          }
-                          onDragStart={() =>
-                            (draggedActivityRef.current = index)
-                          }
-                          onDragEnter={() =>
-                            (draggedOverActivityRef.current = index)
-                          }
-                          onDragEnd={handleSortingActivities}
-                          onDragOver={(e) => e.preventDefault()}
+                {/* activities and podactivities */}
+                <div className="flex flex-row gap-[24px]">
+                  <div className="activities_col">
+                    <div className="text-[14px] font-bold">
+                      Ваши активности:
+                    </div>
+                    <div className="blue_bordered_container">
+                      {listOfActivities.map((activity, index) => {
+                        return (
+                          <EachActivity
+                            key={index}
+                            title={activity}
+                            onclick={() => {
+                              dispatch(selectAnActivity(activity));
+                            }}
+                            onEditClicked={() => {}}
+                            onRemoveClicked={() => {
+                              // function to delete activity
+                              const { id, lessonType } = {
+                                id: gymId,
+                                lessonType: activitiesSlice.selectedActivity,
+                              };
+                              dispatch(deleteActivity({ id, lessonType }));
+                              setTimeout(() => {
+                                dispatch(getListOfActivities(gymId));
+                              }, 1500);
+                            }}
+                            isActive={
+                              activity === activitiesSlice.selectedActivity
+                            }
+                            onDragStart={() =>
+                              (draggedActivityRef.current = index)
+                            }
+                            onDragEnter={() =>
+                              (draggedOverActivityRef.current = index)
+                            }
+                            onDragEnd={handleSortingActivities}
+                            onDragOver={(e) => e.preventDefault()}
+                          />
+                        );
+                      })}
+                      {/* Кнопка добавить */}
+                      {!isDropDrownShown && (
+                        <div className="add_activity">
+                          <img src={AddActivitySvg} alt="" />
+                          <button
+                            onClick={() => {
+                              showDropDown(true);
+                            }}
+                          >
+                            Добавить
+                          </button>
+                        </div>
+                      )}
+                      {isDropDrownShown && (
+                        <DropDownSmaller
+                          text={"Добавить"}
+                          isDropDownOpened={isDropDownOpened}
+                          openCloseDropDown={openCloseDropDown}
+                          map={activitiesSlice.allAvailableLessonTypes.map(
+                            (item, index) => (
+                              <button
+                                key={index}
+                                className="gym_names"
+                                onClick={() => {
+                                  const { id, lessonType } = {
+                                    id: gymId,
+                                    lessonType: item,
+                                  };
+                                  dispatch(addNewActivity({ id, lessonType }));
+                                  setTimeout(() => {
+                                    dispatch(getListOfActivities(gymId));
+                                  }, 1000);
+                                  showDropDown(false);
+                                }}
+                              >
+                                {item}
+                              </button>
+                            )
+                          )}
                         />
-                      );
-                    })}
-                    {/* Кнопка добавить */}
-                    {!isDropDrownShown && (
-                      <div className="add_activity">
-                        <img src={AddActivitySvg} alt="" />
-                        <button
-                          onClick={() => {
-                            showDropDown(true);
-                          }}
-                        >
-                          Добавить
-                        </button>
-                      </div>
-                    )}
-                    {isDropDrownShown && (
-                      <DropDownSmaller
-                        text={"Добавить"}
-                        isDropDownOpened={isDropDownOpened}
-                        openCloseDropDown={openCloseDropDown}
-                        map={activitiesSlice.allAvailableLessonTypes.map(
-                          (item, index) => (
-                            <button
-                              key={index}
-                              className="gym_names"
-                              onClick={() => {
-                                const { id, lessonType } = {
-                                  id: gymId,
-                                  lessonType: item,
-                                };
-                                dispatch(addNewActivity({ id, lessonType }));
-                                setTimeout(() => {
-                                  dispatch(getListOfActivities(gymId));
-                                }, 1000);
-                                showDropDown(false);
-                              }}
-                            >
-                              {item}
-                            </button>
-                          )
-                        )}
-                      />
-                    )}
+                      )}
+                    </div>
+                  </div>
+                  <div className="podactivities_col">
+                    <div className="text-[14px] font-bold">
+                      Доп. занятия внутри активности:
+                    </div>
+                    <div className="blue_bordered_container"></div>
                   </div>
                 </div>
-                <div className="podactivities_col">
-                  <div className="text-[14px] font-bold">
-                    Доп. занятия внутри активности:
-                  </div>
-                  <div className="blue_bordered_container"></div>
-                </div>
+                <CustomButton
+                  height={"40px"}
+                  width={"100%"}
+                  title={"Закончить редактирование"}
+                  onСlick={() => openActivitiesModal(false)}
+                  fontSize={"14px"}
+                  showShadow={false}
+                />
               </div>
-              <CustomButton
-                height={"40px"}
-                width={"100%"}
-                title={"Закончить редактирование"}
-                onСlick={() => openActivitiesModal(false)}
-                fontSize={"14px"}
-                showShadow={false}
-              />
-            </div>
-          </CustomDialog>
+            </CustomDialog>
+          )}
         </div>
         <div className="flex flex-row gap-[50px]">
           <div className="describtion_and_features_column">
@@ -416,7 +420,7 @@ export default function GymDetailesBodySecondContainer({
                     //
                   />
                 ))}
-              {showPhotoInDialog && (
+              {showPhotoInDialog && isPhotoShownInDialog && (
                 <CustomDialog
                   isOpened={isPhotoShownInDialog}
                   closeOnTapOutside={() => showPhotoInDialog(false)}

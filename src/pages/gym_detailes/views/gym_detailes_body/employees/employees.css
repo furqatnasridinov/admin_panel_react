@@ -34,6 +34,11 @@
   padding: 32px;
 }
 
+/* hide scrollbar for chrome, safari and opera */
+.ref_employee_dialog::-webkit-scrollbar {
+  display: none;
+}
+
 .employees_wrap {
   display: flex;
   flex-direction: row;
@@ -43,7 +48,6 @@
   height: fit-content;
   margin-left: 34px;
 }
-
 
 .selected_employee_row {
   display: flex;

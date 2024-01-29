@@ -1,6 +1,6 @@
 import React from "react";
 import "./gym_detailes.css";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import CustomDropdown from "../../../../components/dropdown/custom_dropdown";
 
 export default function GymDetailesHeader({

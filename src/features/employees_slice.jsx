@@ -44,7 +44,6 @@ export const editEmployee = createAsyncThunk(
         `api/director/gyms/${gymId}/workers`,
         dataToSend
       );
-      //alert("Сотрудник успешно изменен");
     } catch (error) {
       alert(`editEmployee error: ${error.message}`);
     }
@@ -66,8 +65,6 @@ export const addEmployee = createAsyncThunk(
         `api/director/gyms/${gymId}/workers`,
         dataToSend
       );
-
-      alert("Сотрудник успешно добавлен");
       getListOfEmployees(gymId);
     } catch (error) {
       alert(`addEmployee error: ${error.message}`);
