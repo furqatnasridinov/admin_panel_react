@@ -9,6 +9,7 @@ import tgSvg from "../../../../../assets/svg/tg.svg";
 import vkSvg from "../../../../../assets/svg/vk.svg";
 import doneSvg from "../../../../../assets/svg/done.svg";
 import arrowDownSvg from "../../../../../assets/svg/arrow_down.svg";
+import plusSvg from "../../../../../assets/svg/plus.svg";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import { useState, useRef, useEffect, useCallback } from "react";
 import CustomButton from "../../../../../components/button/button";
@@ -57,6 +58,9 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const [isModalLogoOpened, openModalLogo] = useState(false);
   const [cancelDeleteTimeoutPhoto, setCancelDeleteTimeoutPhoto] = useState();
   const [cancelDeleteTimeoutLogo, setCancelDeleteTimeoutLogo] = useState();
+  const [addingTelegram, setAddingTelegram] = useState(false);
+  const [addingVk, setAddingVk] = useState(false);
+  const [hideAdding, setAdding] = useState(false);
 
   // use refs
   const fileInputMainPhotoRef = useRef();
@@ -123,6 +127,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   return (
     console.log(`current gym ${JSON.stringify(currentGym)}`),
     console.log(`mainpiccha ${currentGym.mainPictureUrl}`),
+    console.log(`tg adding ${addingTelegram}`),
+    console.log(`vk adding ${addingVk}`),
     (
       <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
         {/* Photos and Logos */}
@@ -542,6 +548,15 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   text1={"Контакты"}
                   text2={"Сохранить"}
                   onclick={() => {
+                    if (addingTelegram) {
+                      setAddingTelegram(false);
+                    }
+                    if (addingVk) {
+                      setAddingVk(false);
+                    }
+                    if (hideAdding) {
+                      setAdding(false);
+                    }
                     const { id, phone, telegram, vk } = {
                       id: currentGym.id,
                       phone: currentGym.phone,
@@ -559,41 +574,102 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   }}
                 />
                 <div className="flex flex-col gap-[10px]">
-                  <EditableContacts
-                    icon={phoneSvg}
-                    text={"Телефон"}
-                    value={currentGym.phone}
-                    isPhone={true}
-                    onChange={(e) => {
-                      dispatch(changeCurrentGymsPhone(e.target.value));
-                    }}
-                  />
-                  <EditableContacts
-                    icon={tgSvg}
-                    text={"Telegram"}
-                    value={
-                      currentGym.telegram === null || currentGym.telegram === ""
-                        ? ""
-                        : `${currentGym.telegram}`
-                    }
-                    isTg={true}
-                    onChange={(e) => {
-                      dispatch(changeCurrentGymsTelegram(e.target.value));
-                    }}
-                  />
-                  <EditableContacts
-                    icon={vkSvg}
-                    text={"VKontakte"}
-                    value={
-                      currentGym.vk === null || currentGym.vk === ""
-                        ? ""
-                        : `${currentGym.vk}`
-                    }
-                    isVk={true}
-                    onChange={(e) => {
-                      dispatch(changeCurrentGymsVk(e.target.value));
-                    }}
-                  />
+                  {/* phone */}
+                  {currentGym.phone !== null && currentGym.phone !== "" && (
+                    <EditableContacts
+                      icon={phoneSvg}
+                      text={"Телефон"}
+                      value={currentGym.phone}
+                      isPhone={true}
+                      onChange={(e) => {
+                        dispatch(changeCurrentGymsPhone(e.target.value));
+                      }}
+                    />
+                  )}
+
+                  {/* telegram */}
+                  {currentGym.telegram !== null &&
+                    currentGym.telegram !== "" &&
+                    !addingTelegram && (
+                      <EditableContacts
+                        icon={tgSvg}
+                        text={"Telegram"}
+                        value={currentGym.telegram}
+                        isTg={true}
+                        onChange={(e) => {
+                          dispatch(changeCurrentGymsTelegram(e.target.value));
+                        }}
+                      />
+                    )}
+
+                  {/* vk */}
+                  {currentGym.vk !== null &&
+                    currentGym.vk !== "" &&
+                    !addingVk && (
+                      <EditableContacts
+                        icon={vkSvg}
+                        text={"VKontakte"}
+                        value={
+                          currentGym.vk === null || currentGym.vk === ""
+                            ? ""
+                            : `${currentGym.vk}`
+                        }
+                        isVk={true}
+                        onChange={(e) => {
+                          dispatch(changeCurrentGymsVk(e.target.value));
+                        }}
+                      />
+                    )}
+
+                  {/* when select adding */}
+                  {addingTelegram && (
+                    <EditableContacts
+                      icon={tgSvg}
+                      text={"Telegram"}
+                      value={currentGym.telegram}
+                      isTg={true}
+                      onChange={(e) => {
+                        dispatch(changeCurrentGymsTelegram(e.target.value));
+                      }}
+                    />
+                  )}
+
+                  {addingVk && (
+                    <EditableContacts
+                      icon={vkSvg}
+                      text={"VKontakte"}
+                      value={
+                        currentGym.vk === null || currentGym.vk === ""
+                          ? ""
+                          : `${currentGym.vk}`
+                      }
+                      isVk={true}
+                      onChange={(e) => {
+                        dispatch(changeCurrentGymsVk(e.target.value));
+                      }}
+                    />
+                  )}
+
+                  {(currentGym.phone == null ||
+                    currentGym.phone === "" ||
+                    currentGym.telegram == null ||
+                    currentGym.telegram === "" ||
+                    currentGym.vk == null ||
+                    currentGym.vk === "") &&
+                    !hideAdding && (
+                      <AddContacts
+                        text={"Добавить новый контакт"}
+                        currentGym={currentGym}
+                        setAddingVk={() => {
+                          setAddingVk(true);
+                          setAdding(true);
+                        }}
+                        setAddingTelegram={() => {
+                          setAddingTelegram(true);
+                          setAdding(true);
+                        }}
+                      />
+                    )}
                 </div>
               </>
             )}
@@ -625,33 +701,15 @@ export function EditableTextfield({
       input.style.height = `${input.scrollHeight}px`; // Set new height based on scroll height
     }
   }, []);
-  /* const [tempValue, setTempValue] = useState(value);
-    const handleTempChange = (event) => {
-    setTempValue(event.target.value);
-    const target = event.target;
-    target.style.height = "inherit"; // Reset height to recalculate
-    target.style.height = `${target.scrollHeight}px`; // Set new height based on scroll height
-  };
-
-  const handleSave = () => {
-    handleChange(tempValue); // Обновляет gymName в родительском компоненте
-  }; */
 
   return (
     <div className="flex flex-row justify-between gap-[10px] items-start">
       <textarea
+        className="textArea"
         ref={inputRef}
         value={value}
-        //className="textarea-transition"
         onChange={onChange}
         style={{
-          width: "100%",
-          padding: "10px 16px 10px 8px",
-          border: "1px solid #77AAF9",
-          borderRadius: "8px",
-          outline: "none",
-          maxHeight: "120px",
-          resize: "none",
           fontSize: fontsize,
           lineHeight: lineheight,
         }}
@@ -900,6 +958,63 @@ function ChangeLogoModal({
             onChange={uploadNewLogo}
           />
         </div>
+      </div>
+    </div>
+  );
+}
+
+function AddContacts({ text, currentGym, setAddingTelegram, setAddingVk }) {
+  return (
+    <div className="flex flex-row gap-[10px] w-fit">
+      <img src={plusSvg} alt="" />
+      {/* first textfield tappable */}
+      <div className="relative">
+        <select
+          defaultValue=""
+          name=""
+          id="sec"
+          onChange={(e) => {
+            if (e.target.value == "vk") {
+              setAddingVk();
+            }
+            if (e.target.value == "telegram") {
+              setAddingTelegram();
+            }
+          }}
+          style={{
+            width: "220px",
+            height: "30px",
+            padding: "0 6px 0 16px",
+            border: "1px solid #77AAF9",
+            borderRadius: "8px",
+            outline: "none",
+            fontSize: "14px",
+            fontWeight: "500",
+            color: "#B0B0B0",
+          }}
+        >
+          <option value="" disabled hidden>
+            {text}
+          </option>
+          {/* phone */}
+          {(currentGym.phone === null || currentGym.phone === "") && (
+            <option value="phone">phone</option>
+          )}
+          {/* telegram */}
+          {(currentGym.telegram === null || currentGym.telegram === "") && (
+            <option value="telegram">telegram</option>
+          )}
+          {/* vk */}
+          {(currentGym.vk === null || currentGym.vk === "") && (
+            <option value="vk">vk</option>
+          )}
+        </select>
+
+        <img
+          src={arrowDownSvg}
+          alt=""
+          className="absolute right-2 top-1/2 transform -translate-y-1/2" // Выравнивание иконки
+        />
       </div>
     </div>
   );

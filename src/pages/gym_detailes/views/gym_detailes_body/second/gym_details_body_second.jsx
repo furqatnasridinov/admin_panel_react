@@ -322,9 +322,12 @@ export default function GymDetailesBodySecondContainer({
                     isRedText={isFeaturesEdittingEnabled}
                     onclick={() => setFeaturesEditting(true)}
                   />
-                  <ul className="marked_list">
-                    <li>{activityPeculiarities} </li>
-                  </ul>
+                  {activityPeculiarities &&
+                    activityPeculiarities.trim() !== "" && (
+                      <ul className="marked_list">
+                        <li>{activityPeculiarities}</li>
+                      </ul>
+                    )}
                 </>
               )}
               {isFeaturesEdittingEnabled && (

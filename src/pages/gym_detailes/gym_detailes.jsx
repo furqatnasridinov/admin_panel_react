@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { useParams } from "react-router-dom";
+import "./gym_details.css";
 import GymDetailesHeader from "./views/gym_detailes_header/gym_detailes_header";
 import GymDetailesBodyFirstContainer from "./views/gym_detailes_body/first/gym_detailes_body_first";
 import GymDetailesBodySecondContainer from "./views/gym_detailes_body/second/gym_details_body_second";
@@ -19,7 +20,6 @@ import {
   setPhotosOfSelectedActivity,
   getAllAvailableLessonTypes,
 } from "../../features/activities_slice";
-import CustomSnackbar from "../../components/snackbar/custom_snackbar";
 
 export default function GymDetails() {
   let { gymId } = useParams(); // This hooks allows you to extract params from the URL
@@ -102,7 +102,7 @@ export default function GymDetails() {
   return (
     console.log("selected act ", activitiesSlice.selectedActivity),
     (
-      <div className=" ml-[10px] h-[97vh] overflow-y-auto  ">
+      <div className="gym_details">
         {currentGymSlice.currentGym != null && (
           <>
             <GymDetailesHeader

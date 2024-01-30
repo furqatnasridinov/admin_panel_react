@@ -71,6 +71,10 @@
   border-radius: 8px;
   border: 1px solid #77aaf9;
   overflow-y: auto;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
-
+.dropdown_body::-webkit-scrollbar {
+  display: none;
+}

@@ -391,18 +391,8 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
               {/* Add employee dialog body */}
               <div className="add_employee_dialog">
                 <div className="flex flex-col gap-[5px]">
-                  <div className="flex flex-row items-center justify-between">
-                    <div className="text-[16px] font-semibold leading-[16px]">
-                      Добавить нового сотрудника
-                    </div>
-                    <img
-                      className="w-[20px] h-[20px] cursor-pointer"
-                      src={cancelSvg}
-                      alt=""
-                      onClick={() => {
-                        openAddEmployeesDialog(false);
-                      }}
-                    />
+                  <div className="text-[16px] font-semibold leading-[16px]">
+                    Добавить нового сотрудника
                   </div>
 
                   <div className="text-[14px] font-normal leading-[16px]">
