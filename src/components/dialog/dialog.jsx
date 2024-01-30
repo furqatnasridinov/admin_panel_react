@@ -12,20 +12,31 @@ export default function CustomDialog({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        dialogRef.current &&
-        !dialogRef.current.contains(event.target)
-      ) {
+      console.log(`tap ${event.toElement.localName}`);
+      if (event.toElement.localName == "dialog") {
+        closeOnTapOutside();
+      }
+      /* if (dialogRef.current && !dialogRef.current.contains(event.target)) {
         if (typeof closeOnTapOutside === "function") {
           console.log("Clicked outside the modal. Closing...");
-
           closeOnTapOutside();
         }
-      }
+      } */
     };
+    const dialog = dialogRef.current;
     if (isOpened) {
-      console.log("Adding event listener for mousedown");
-      document.addEventListener("mousedown", handleClickOutside);
+      dialog.showModal();
+      // Используем requestAnimationFrame для плавного открытия
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          dialog.style.opacity = 1;
+        });
+      });
+      document.addEventListener("mousedown", handleClickOutside); // adding listeneter to click
+    } else {
+      // Плавное исчезновение
+      dialog.style.opacity = 0;
+      setTimeout(() => dialog.close(), 200); // Закрыть диалог после анимации
     }
 
     return () => {
@@ -35,24 +46,28 @@ export default function CustomDialog({
   }, [isOpened]);
 
   useEffect(() => {
-    const dialog = dialogRef.current;
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        console.log("Escape key pressed. Closing dialog...");
+        closeOnTapOutside();
+      }
+    };
 
     if (isOpened) {
-      dialog.showModal();
-      // Используем requestAnimationFrame для плавного открытия
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          dialog.style.opacity = 1;
-        });
-      });
+      document.addEventListener("keydown", handleEscape);
     } else {
-      // Плавное исчезновение
-      dialog.style.opacity = 0;
-      setTimeout(() => dialog.close(), 200); // Закрыть диалог после анимации
+      document.removeEventListener("keydown", handleEscape);
     }
-  }, [isOpened]);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpened, closeOnTapOutside]);
+
   return createPortal(
-    <dialog ref={dialogRef}>{children}</dialog>,
+    <dialog ref={dialogRef} onClick={(e) => e.stopPropagation()}>
+      {children}{" "}
+    </dialog>,
     document.getElementById("modal")
   );
 }

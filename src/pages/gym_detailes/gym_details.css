@@ -1,0 +1,11 @@
+.gym_details {
+  height: 97vh;
+  margin-left: 10px;
+  overflow-y: auto;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.gym_details::-webkit-scrollbar {
+  display: none;
+}

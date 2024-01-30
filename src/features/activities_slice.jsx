@@ -22,9 +22,8 @@ export const getInfoForType = createAsyncThunk(
       const response = await axiosClient.get(`api/gym/${gymId}/infoForType`);
       if (response.data["operationResult"] === "OK") {
         return response.data["object"];
-      } else {
-        alert("operationResult is not OK");
-      }
+      } 
+     
     } catch (error) {
       alert(`getActivities ${error}`);
     }
@@ -38,9 +37,8 @@ export const getPhotos = createAsyncThunk(
       const response = await axiosClient.get(`api/gym/${gymId}/photo`);
       if (response.data["operationResult"] === "OK") {
         return response.data["object"];
-      } else {
-        alert("operationResult is not OK");
-      }
+      } 
+     
     } catch (error) {
       alert(`getPhotos ${error}`);
     }
@@ -63,11 +61,7 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
           },
         }
       );
-      if (response.data["operationResult"] === "OK") {
-        alert("Картинка добавлено");
-      } else {
-        alert("operationResult is not OK");
-      }
+      
     } catch (error) {
       alert(`addPhotoToSelectedActivity ${error}`);
     }
@@ -86,9 +80,7 @@ export const patchDescriptionOfSelectedActivity = createAsyncThunk(
         `api/director/gyms/${id}`,
         dataToSend
       );
-      if (response.data["operationResult"] === "OK") {
-        alert("Описание успешно изменено");
-      }
+      
     } catch (error) {
       alert(`changeDescriptionOfSelectedActivity ${error}`);
     }
@@ -107,9 +99,7 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
         `api/director/gyms/${id}`,
         dataToSend
       );
-      if (response.data["operationResult"] === "OK") {
-        alert("Описание успешно изменено");
-      }
+      
     } catch (error) {
       alert(`changeDescriptionOfSelectedActivity ${error}`);
     }
@@ -131,10 +121,7 @@ export const deleteActivityPhoto = createAsyncThunk(
           },
         }
       );
-      if (response.data["operationResult"] === "OK") {
-        //alert(response.data["object"]);
-        snackbarRef.current.show("Вы удалили картинку");
-      }
+      
     } catch (error) {
       alert(`changeDescriptionOfSelectedActivity ${error}`);
     }
@@ -148,9 +135,7 @@ export const deleteActivity = createAsyncThunk(
       const response = await axiosClient.delete(
         `api/director/gyms/${id}/lessonType/${lessonType}`
       );
-      if (response.data["operationResult"] === "OK") {
-        alert(response.data["object"]);
-      }
+      
     } catch (error) {
       alert(`deleteActivity ${error}`);
     }
@@ -168,9 +153,7 @@ export const addNewActivity = createAsyncThunk(
         `api/director/gyms/${id}`,
         dataToSend
       );
-      if (response.data["operationResult"] === "OK") {
-        alert(response.data["object"]);
-      }
+      
     } catch (error) {
       alert(`changeDescriptionOfSelectedActivity ${error}`);
     }
@@ -184,9 +167,8 @@ export const getAllAvailableLessonTypes = createAsyncThunk(
       const response = await axiosClient.get("api/main/lessonTypes");
       if (response.data["operationResult"] === "OK") {
         return response.data["object"];
-      } else {
-        alert("operationResult is not OK");
-      }
+      } 
+     
     } catch (error) {
       alert(`getAllAvailableLessonTypes ${error}`);
     }

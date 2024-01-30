@@ -22,20 +22,7 @@ export default function CustomDropdown({
           <img src={arrowDownSvg} alt="" />
         </div>
       </button>
-      {isDropDownOpened && (
-        <div className="dropdown_body">
-          {map}
-          {/* {gyms.map((item, index) => (
-            <button
-              key={index}
-              className="gym_names"
-              onClick={() => ongymSelected(item.gymName)}
-            >
-              {item.gymName}
-            </button>
-          ))} */}
-        </div>
-      )}
+      {isDropDownOpened && <div className="dropdown_body">{map}</div>}
     </div>
   );
 }

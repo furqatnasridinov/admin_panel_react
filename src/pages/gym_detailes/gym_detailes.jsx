@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { useParams } from "react-router-dom";
+import "./gym_details.css";
 import GymDetailesHeader from "./views/gym_detailes_header/gym_detailes_header";
 import GymDetailesBodyFirstContainer from "./views/gym_detailes_body/first/gym_detailes_body_first";
 import GymDetailesBodySecondContainer from "./views/gym_detailes_body/second/gym_details_body_second";
@@ -19,7 +20,6 @@ import {
   setPhotosOfSelectedActivity,
   getAllAvailableLessonTypes,
 } from "../../features/activities_slice";
-import CustomSnackbar from "../../components/snackbar/custom_snackbar";
 
 export default function GymDetails() {
   let { gymId } = useParams(); // This hooks allows you to extract params from the URL
@@ -27,7 +27,7 @@ export default function GymDetails() {
   const dispatch = useDispatch();
   const listOfGymsSlice = useSelector((state) => state.listOfGyms);
   const currentGymSlice = useSelector((state) => state.currentGym);
-  const listOfEmployees = useSelector((state) => state.employees);
+  const employeesSlice = useSelector((state) => state.employees);
   const activitiesSlice = useSelector((state) => state.activities);
 
   // this useeffect will trigger only once at the beginning
@@ -102,7 +102,7 @@ export default function GymDetails() {
   return (
     console.log("selected act ", activitiesSlice.selectedActivity),
     (
-      <div className=" ml-[10px] h-[97vh] overflow-y-auto">
+      <div className="gym_details">
         {currentGymSlice.currentGym != null && (
           <>
             <GymDetailesHeader
@@ -111,15 +111,16 @@ export default function GymDetails() {
               showDropDown={listOfGymsSlice.data.length > 1}
               selectAnotherGym={selectAnotherGym}
             />
+
             <Employees
-              listOfEmployees={listOfEmployees.employees}
+              listOfEmployees={employeesSlice.employees}
               gymId={currentGymSlice.currentGym.id}
-              snackbarRef={snackBarRef}
             />
+
             <GymDetailesBodyFirstContainer
               currentGym={currentGymSlice.currentGym}
-              snackbarRef={snackBarRef}
             />
+
             <GymDetailesBodySecondContainer
               gymId={gymId}
               listOfActivities={activitiesSlice.listOfActivities}
@@ -130,12 +131,6 @@ export default function GymDetails() {
               }
               setPhotosOfSelectedActivity={setPhotosOfSelectedActivity}
               snackbarRef={snackBarRef}
-            />
-            <CustomSnackbar
-              ref={snackBarRef}
-              undoAction={() => {
-                alert("Че раp");
-              }}
             />
           </>
         )}

@@ -96,20 +96,17 @@
   background-color: white;
   align-items: center;
   border: 1px solid #599afe;
+  --icon-color: black;
 }
 
 .rounded_button:hover {
   background-color: #599afe;
+  --icon-color: white;
   transition: background-color 0.5s ease;
 }
 
 .rounded_button:focus {
   outline: none;
-}
-
-.rounded_button:hover img {
-  color: white;
-  transition: color 0.5s ease;
 }
 
 .second_button {
@@ -122,10 +119,12 @@
   align-items: center;
   border: 1px solid #599afe;
 }
+
 .second_button:hover {
   background-color: #599afe;
   transition: background-color 0.5s ease;
 }
+
 .second_button:hover p {
   color: white;
   transition: background-color 0.5s ease;
@@ -170,9 +169,35 @@
 }
 
 .photo_dialog_container {
+  width: 513px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
   box-shadow: 0px 4px 13px -6px rgba(0, 0, 0, 0.25),
     0px 21px 17px -12px rgba(0, 0, 0, 0.25);
+}
+
+.textArea {
+  width: 100%;
+  padding: 10px 16px 10px 8px;
+  border: 1px solid #77aaf9;
+  border-radius: 8px;
+  outline: none;
+  max-height: 120px;
+  resize: none;
+  overflow-y: auto;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.textArea::-webkit-scrollbar {
+  display: none;
+}
+
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
 }
