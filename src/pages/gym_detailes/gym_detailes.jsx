@@ -27,7 +27,7 @@ export default function GymDetails() {
   const dispatch = useDispatch();
   const listOfGymsSlice = useSelector((state) => state.listOfGyms);
   const currentGymSlice = useSelector((state) => state.currentGym);
-  const listOfEmployees = useSelector((state) => state.employees);
+  const employeesSlice = useSelector((state) => state.employees);
   const activitiesSlice = useSelector((state) => state.activities);
 
   // this useeffect will trigger only once at the beginning
@@ -113,7 +113,7 @@ export default function GymDetails() {
             />
 
             <Employees
-              listOfEmployees={listOfEmployees.employees}
+              listOfEmployees={employeesSlice.employees}
               gymId={currentGymSlice.currentGym.id}
             />
 

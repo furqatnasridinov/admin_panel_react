@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import "./employees.css";
 import arrowDownSvg from "../../../../../assets/svg/arrow_down.svg";
 import addSvg from "../../../../../assets/svg/add_employee.svg";
@@ -10,7 +10,6 @@ import goggins from "../../../../.././assets/images/goggins.jpg";
 import starSvg from "../../../../../assets/svg/star.svg";
 import docsSvg from "../../../../../assets/svg/docs.svg";
 import garbage from "../../../../../assets/images/garbage.png";
-import cancelSvg from "../../../../../assets/svg/cancel.svg";
 import { roles, allRoles } from "../../../../../dummy_data/dymmy_data";
 import { useState } from "react";
 import CustomButton from "../../../../../components/button/button";
@@ -33,9 +32,13 @@ import {
   selectARoleCode,
   deleteEmployee,
   resetChanges,
+  removeEmployeeFromList,
+  returnDeletedEmployee,
+  resetSelectedEmployee,
 } from "../../../../../features/employees_slice";
+import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 
-export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
+export default function Employees({ listOfEmployees, gymId }) {
   const dispatch = useDispatch();
   const employeesSlice = useSelector((state) => state.employees);
 
@@ -53,13 +56,17 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
   const [nameNotValidated, setNameNotValidated] = useState();
   const [phoneNotValidated, setPhoneNotValidated] = useState();
   const [isAddEmployeesDialogOpened, openAddEmployeesDialog] = useState(false);
-
+  const [cancelDeleteTimeoutEmployee, setCancelDeleteTimeoutEmployee] =
+    useState();
   //use states for refactor employees dialog
   const [nameTextfield2HasFocus, setName2Focus] = useState(false);
   const [surnameTextfield2HasFocus, setSurname2Focus] = useState(false);
   const [phoneNumberTextfield2HasFocus, setPhone2Focus] = useState(false);
   const [isDropDown2Opened, openDropDown2] = useState(false);
   const [isRefEmployeesDialogOpened, openRefEmployeesDialog] = useState(false);
+
+  // snackbar ref
+  const deleteEmployeeSnackRef = useRef();
 
   // functions for addemployees dialog
   function openCloseDropDown() {
@@ -97,12 +104,10 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
   }
 
   return (
-    console.log(`имя ${name}`),
-    console.log(`фамилия ${surname}`),
-    console.log(`телефон ${phoneNumber}`),
-    console.log(`role id ${roleId}`),
-    console.log(`role code ${roleCode}`),
-    console.log(`role name ${roleName}`),
+    console.log(`employees ${JSON.stringify(employeesSlice.employees)}`),
+    console.log(
+      `deletedemployees ${JSON.stringify(employeesSlice.deletedEmployess)}`
+    ),
     (
       <div className="employees_container">
         <TextAndTextButton
@@ -146,7 +151,9 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
                         key={employee.id}
                         photo={goggins}
                         lastName={
-                          employee.lastName == null ? "" : employee.lastName
+                          employee.lastName == null || employee.lastName == ""
+                            ? ""
+                            : employee.lastName
                         }
                         name={employee.firstName}
                         job={
@@ -155,15 +162,24 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
                             : employee.roles[0].name
                         }
                         onDeleteClicked={async () => {
-                          const { employeeId, snackBarRef } = {
-                            employeeId: employee.id,
-                            snackBarRef: snackbarRef,
-                          };
-                          dispatch(deleteEmployee({ employeeId, snackBarRef }));
-                          setTimeout(() => {
-                            dispatch(getListOfEmployees(gymId));
-                          }, 1000);
-                          openRefEmployeesDialog(false);
+                          dispatch(resetSelectedEmployee());
+                          dispatch(removeEmployeeFromList(employee));
+                          removeDatas();
+                          const cancelTimeOut =
+                            deleteEmployeeSnackRef.current.show(
+                              "Вы удалили сотрудника",
+                              () => {
+                                // function when time ended
+                                const { employeeId } = {
+                                  employeeId: employee.id,
+                                };
+                                dispatch(deleteEmployee({ employeeId }));
+                                setTimeout(() => {
+                                  dispatch(getListOfEmployees(gymId));
+                                }, 1000);
+                              }
+                            );
+                          setCancelDeleteTimeoutEmployee(() => cancelTimeOut);
                         }}
                         //isThatYou={localStorage.id === employee.id} <== maybe?
                         showPointer={true}
@@ -178,6 +194,15 @@ export default function Employees({ listOfEmployees, gymId, snackbarRef }) {
                       />
                     );
                   })}
+                  <CustomSnackbar
+                    ref={deleteEmployeeSnackRef}
+                    undoAction={() => {
+                      dispatch(returnDeletedEmployee());
+                      if (cancelDeleteTimeoutEmployee) {
+                        cancelDeleteTimeoutEmployee();
+                      }
+                    }}
+                  />
                 </div>
               </div>
               {/* Personal info */}

@@ -125,10 +125,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   }, [dispatch, cancelDeleteTimeoutLogo]);
 
   return (
-    console.log(`current gym ${JSON.stringify(currentGym)}`),
-    console.log(`mainpiccha ${currentGym.mainPictureUrl}`),
-    console.log(`tg adding ${addingTelegram}`),
-    console.log(`vk adding ${addingVk}`),
+   
     (
       <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
         {/* Photos and Logos */}

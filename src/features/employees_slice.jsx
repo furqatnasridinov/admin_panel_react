@@ -16,12 +16,11 @@ export const getListOfEmployees = createAsyncThunk(
 
 export const deleteEmployee = createAsyncThunk(
   "employess/deleteEmployee",
-  async ({ employeeId, snackBarRef }) => {
+  async ({ employeeId }) => {
     try {
       const response = await axiosClient.delete(
         `api/admin/workers/${employeeId}`
       );
-      snackBarRef.current.show("Вы удалили сотрудника");
     } catch (error) {
       alert(`deleteEmployee ${error}`);
     }
@@ -77,6 +76,7 @@ const employeesSlice = createSlice({
   initialState: {
     isLoading: false,
     employees: [],
+    deletedEmployess: [],
     selectedEmployee: null,
     selectedRoleName: null,
     selectedRoleId: 0,
@@ -98,6 +98,10 @@ const employeesSlice = createSlice({
       if (!state.isChangesOccured) {
         state.isChangesOccured = true;
       }
+    },
+
+    resetSelectedEmployee: (state) => {
+      state.selectedEmployee = null;
     },
 
     changeSelectedEmployeesLastname: (state, action) => {
@@ -128,6 +132,22 @@ const employeesSlice = createSlice({
       ];
       if (!state.isChangesOccured) {
         state.isChangesOccured = true;
+      }
+    },
+
+    removeEmployeeFromList: (state, action) => {
+      state.employees = state.employees.filter(
+        (employee) => employee.id !== action.payload.id
+      );
+      state.deletedEmployess.push(action.payload);
+    },
+
+    returnDeletedEmployee: (state) => {
+      if (state.deletedEmployess.length > 0) {
+        // Используйте pop() для удаления и возврата последнего элемента массива
+        const lastElement = state.deletedEmployess.pop();
+        // Добавьте элемент обратно в массив employees
+        state.employees.push(lastElement);
       }
     },
 
@@ -189,7 +209,10 @@ export const {
   selectARoleName,
   selectARoleId,
   selectARoleCode,
-  resetChanges
+  resetChanges,
+  removeEmployeeFromList,
+  returnDeletedEmployee,
+  resetSelectedEmployee,
 } = employeesSlice.actions;
 
 export default employeesSlice.reducer;
