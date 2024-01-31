@@ -9,6 +9,7 @@ import tgSvg from "../../../../../assets/svg/tg.svg";
 import vkSvg from "../../../../../assets/svg/vk.svg";
 import doneSvg from "../../../../../assets/svg/done.svg";
 import arrowDownSvg from "../../../../../assets/svg/arrow_down.svg";
+import redBasketSvg from "../../../../../assets/svg/red_basket.svg";
 import plusSvg from "../../../../../assets/svg/plus.svg";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -60,7 +61,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const [cancelDeleteTimeoutLogo, setCancelDeleteTimeoutLogo] = useState();
   const [addingTelegram, setAddingTelegram] = useState(false);
   const [addingVk, setAddingVk] = useState(false);
-  const [hideAdding, setAdding] = useState(false);
+  const [hideAdding, setHideAdding] = useState(false);
+  const [isDropDownOpened, openDropDown] = useState(false);
 
   // use refs
   const fileInputMainPhotoRef = useRef();
@@ -124,8 +126,18 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
     }
   }, [dispatch, cancelDeleteTimeoutLogo]);
 
+  useEffect(() => {
+    if (
+      (addingTelegram && addingVk) ||
+      (addingTelegram && currentGym.vk !== null && currentGym.vk !== "") ||
+      (addingVk && currentGym.telegram !== null && currentGym.telegram !== "")
+    ) {
+      setHideAdding(true);
+    }
+  }, [addingTelegram, addingVk]);
+
   return (
-   
+    console.log(`currentgym ${currentGym.phone.length}`),
     (
       <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
         {/* Photos and Logos */}
@@ -180,7 +192,6 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                 />
               </>
             )}
-
             <SizeOfPicture size={"375x210px"} />
             {isModalPhotoOpened && (
               <CustomDialog
@@ -217,14 +228,13 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                 />
               </CustomDialog>
             )}
-
-            <CustomSnackbar
-              ref={deleteMainPicSnackbarRef}
-              undoAction={undoDeletePhoto}
-            />
           </div>
+          <CustomSnackbar
+            ref={deleteMainPicSnackbarRef}
+            undoAction={undoDeletePhoto}
+          />
           {/*  Logos Column */}
-          <div className="flex flex-col gap-[10px] mt-[30px] ml-[43px]">
+          <div className="flex flex-col gap-[10px] mt-[30px] ml-[43px] justify-end ">
             <TextAndTextButton
               text1={"Логотип"}
               text2={
@@ -271,7 +281,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
           </div>
           {/* Medium logo */}
           {currentGym.logoUrl !== "" && currentGym.logoUrl !== null && (
-            <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
+            <div className="flex flex-col gap-[10px] ml-[10px] justify-end ">
               <img
                 onClick={() => {
                   openModalLogo(true);
@@ -287,7 +297,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
 
           {/* Small logo */}
           {currentGym.logoUrl !== "" && currentGym.logoUrl !== null && (
-            <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
+            <div className="flex flex-col gap-[10px] ml-[10px] justify-end ">
               <img
                 className="logo_rounded50"
                 style={{ cursor: "pointer" }}
@@ -342,7 +352,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
         <div className="flex flex-col gap-[32px]">
           <div className="flex flex-row  gap-[32px]">
             {/* Name  */}
-            <div className="name">
+            <div className="name ">
               {!isNameEditingEnabled && (
                 <>
                   <TextAndTextButton
@@ -351,7 +361,9 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     isRedText={isNameEditingEnabled}
                     onclick={() => setNameEditing(true)}
                   />
-                  <div className="text-[14px]">{currentGym.name}</div>
+                  <div className="text-[13px] font-normal font-inter">
+                    {currentGym.name}
+                  </div>
                 </>
               )}
               {isNameEditingEnabled && (
@@ -385,7 +397,6 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       dispatch(resetChanges());
                     }}
                     lineheight={"16px"}
-                    fontsize={"14px"}
                   />
                 </>
               )}
@@ -402,7 +413,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       setDescribtionEditing(true);
                     }}
                   />
-                  <div className="leading-[14px] text-[13px]">
+                  <div className="leading-[14px] text-[13px] font-normal font-inter">
                     {currentGym.description}
                   </div>
                 </>
@@ -437,7 +448,6 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       setDescribtionEditing(false);
                       dispatch(resetChanges());
                     }}
-                    fontsize={"13px"}
                     lineheight={"14px"}
                   />
                 </>
@@ -455,7 +465,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       setAddressEditting(true);
                     }}
                   />
-                  <div className="leading-[16px] text-[14px]">
+                  <div className="leading-[16px] text-[13px] font-normal font-inter">
                     {currentGym.address}
                   </div>
                 </>
@@ -478,7 +488,6 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     onChange={(e) => {
                       dispatch(changeCurrentGymsAddress(e.target.value));
                     }}
-                    fontsize={"14px"}
                     onButtonClicked={() => {
                       const { id, address } = {
                         id: currentGym.id,
@@ -514,15 +523,21 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       value={currentGym.phone}
                       mask="+7 (999) 999 99-99"
                       placeholder="+7 (900) 855 45-58"
-                      style={{ outline: "none" }}
+                      style={{
+                        width: "fit-content",
+                        outline: "none",
+                        fontSize: "13px",
+                        fontWeight: "400",
+                        fontFamily: "Inter, sans-serif",
+                      }}
                     />
                   </div>
                   {/* Tg */}
                   {currentGym.telegram !== null &&
                     currentGym.telegram !== "" && (
-                      <div className="icon_and_tag">
+                      <div className="icon_and_tag mr-[20px] ">
                         <img src={tgSvg} alt="" />
-                        <div className="font-normal text-[14px]">
+                        <div className=" text-[13px] font-normal font-inter">
                           {currentGym.telegram}
                         </div>
                       </div>
@@ -531,7 +546,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   {currentGym.vk !== null && currentGym.vk !== "" && (
                     <div className="icon_and_tag">
                       <img src={vkSvg} alt="" />
-                      <div className="font-normal text-[14px]">
+                      <div className=" text-[13px] font-normal font-inter">
                         {currentGym.vk}
                       </div>
                     </div>
@@ -541,33 +556,39 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
             )}
             {isContactsEdittingEnabled && (
               <>
-                <TextAndTextButton
+                <TextAndTextButtonContacts
                   text1={"Контакты"}
                   text2={"Сохранить"}
+                  isDisabled={currentGym.phone.length !== 12}
                   onclick={() => {
-                    if (addingTelegram) {
-                      setAddingTelegram(false);
+                    if (currentGym.phone.length == 12) {
+                      if (addingTelegram) {
+                        setAddingTelegram(false);
+                      }
+                      if (addingVk) {
+                        setAddingVk(false);
+                      }
+                      if (hideAdding) {
+                        setHideAdding(false);
+                      }
+                      if (isDropDownOpened) {
+                        openDropDown(false);
+                      }
+                      const { id, phone, telegram, vk } = {
+                        id: currentGym.id,
+                        phone: currentGym.phone,
+                        telegram: currentGym.telegram,
+                        vk: currentGym.vk,
+                      };
+                      if (currentGymState.isChangesOccured) {
+                        dispatch(patchGymContacts({ id, phone, telegram, vk }));
+                        setTimeout(() => {
+                          dispatch(getCurrentGym(currentGym.id));
+                        }, 700);
+                      }
+                      setContactsEditting(false);
+                      dispatch(resetChanges());
                     }
-                    if (addingVk) {
-                      setAddingVk(false);
-                    }
-                    if (hideAdding) {
-                      setAdding(false);
-                    }
-                    const { id, phone, telegram, vk } = {
-                      id: currentGym.id,
-                      phone: currentGym.phone,
-                      telegram: currentGym.telegram,
-                      vk: currentGym.vk,
-                    };
-                    if (currentGymState.isChangesOccured) {
-                      dispatch(patchGymContacts({ id, phone, telegram, vk }));
-                      setTimeout(() => {
-                        dispatch(getCurrentGym(currentGym.id));
-                      }, 700);
-                    }
-                    setContactsEditting(false);
-                    dispatch(resetChanges());
                   }}
                 />
                 <div className="flex flex-col gap-[10px]">
@@ -581,6 +602,11 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       onChange={(e) => {
                         dispatch(changeCurrentGymsPhone(e.target.value));
                       }}
+                      onDeleteClicked={() => {
+                        dispatch(changeCurrentGymsPhone(""));
+                      }}
+                      showDeleting={true}
+                      isPhoneEmpty={currentGym.phone.length !== 12}
                     />
                   )}
 
@@ -596,6 +622,10 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                         onChange={(e) => {
                           dispatch(changeCurrentGymsTelegram(e.target.value));
                         }}
+                        onDeleteClicked={() => {
+                          dispatch(changeCurrentGymsTelegram(""));
+                        }}
+                        showDeleting={true}
                       />
                     )}
 
@@ -615,6 +645,10 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                         onChange={(e) => {
                           dispatch(changeCurrentGymsVk(e.target.value));
                         }}
+                        onDeleteClicked={() => {
+                          dispatch(changeCurrentGymsVk(""));
+                        }}
+                        showDeleting={true}
                       />
                     )}
 
@@ -654,18 +688,40 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     currentGym.vk == null ||
                     currentGym.vk === "") &&
                     !hideAdding && (
-                      <AddContacts
-                        text={"Добавить новый контакт"}
-                        currentGym={currentGym}
-                        setAddingVk={() => {
-                          setAddingVk(true);
-                          setAdding(true);
-                        }}
-                        setAddingTelegram={() => {
-                          setAddingTelegram(true);
-                          setAdding(true);
-                        }}
-                      />
+                      <div className="flex flex-row gap-[10px]">
+                        <img src={plusSvg} alt="" />
+                        <DropDownForAddingContacts
+                          isDropDownOpened={isDropDownOpened}
+                          openCloseDropDown={() => {
+                            openDropDown(!isDropDownOpened);
+                          }}
+                          text={"Добавить контакт"}
+                          phone={
+                            (currentGym.phone === null ||
+                              currentGym.phone === "") &&
+                            "Телефон"
+                          }
+                          tg={
+                            (currentGym.telegram === null ||
+                              currentGym.telegram === "") &&
+                            !addingTelegram &&
+                            "Telegram"
+                          }
+                          vk={
+                            (currentGym.vk === null || currentGym.vk === "") &&
+                            !addingVk &&
+                            "VKontakte"
+                          }
+                          ontapTg={() => {
+                            setAddingTelegram(true);
+                            openDropDown(false);
+                          }}
+                          ontapVk={() => {
+                            setAddingVk(true);
+                            openDropDown(false);
+                          }}
+                        />
+                      </div>
                     )}
                 </div>
               </>
@@ -702,7 +758,7 @@ export function EditableTextfield({
   return (
     <div className="flex flex-row justify-between gap-[10px] items-start">
       <textarea
-        className="textArea"
+        className="textArea text-[13px] font-normal font-inter"
         ref={inputRef}
         value={value}
         onChange={onChange}
@@ -726,6 +782,9 @@ function EditableContacts({
   isPhone,
   isTg,
   isVk,
+  onDeleteClicked,
+  showDeleting,
+  isPhoneEmpty,
 }) {
   /* const inputRef = useRef();
   const handleInfoChange = (event) => {
@@ -752,8 +811,9 @@ function EditableContacts({
             border: "1px solid #77AAF9",
             borderRadius: "8px",
             outline: "none",
-            fontSize: "14px",
-            fontWeight: "500",
+            fontSize: "13px",
+            fontWeight: "300",
+            fontFamily: "Inter, sans-serif",
           }}
         />
         <img
@@ -775,13 +835,14 @@ function EditableContacts({
           style={{
             height: "30px",
             padding: "10px 16px 10px 16px",
-            border: "1px solid #77AAF9",
+            border: isPhoneEmpty ? "1px solid #FF0000" : "1px solid #77AAF9",
             //color : "red",
             borderRadius: "8px",
             outline: "none",
-            fontSize: "14px",
+            fontSize: "13px",
             fontWeight: "400",
             lineHeight: "16px",
+            fontFamily: "Inter, sans-serif",
           }}
         ></ReactInputMask>
       )}
@@ -798,11 +859,13 @@ function EditableContacts({
           }}
         >
           {isTg && (
-            <div className="text-[14px] text-grey-text font-normal">t.me/</div>
+            <div className="text-[13px] text-grey-text font-inter font-normal">
+              t.me/
+            </div>
           )}
 
           {isVk && (
-            <div className="text-[14px] text-grey-text font-normal">
+            <div className="text-[13px] text-grey-text font-inter font-normal">
               vk.com/
             </div>
           )}
@@ -819,8 +882,14 @@ function EditableContacts({
             }}
           />
         </div>
-
-        /* { }*/
+      )}
+      {showDeleting && (
+        <img
+          src={redBasketSvg}
+          className="cursor-pointer"
+          onClick={onDeleteClicked}
+          alt=""
+        />
       )}
     </div>
   );
@@ -1012,6 +1081,69 @@ function AddContacts({ text, currentGym, setAddingTelegram, setAddingVk }) {
           alt=""
           className="absolute right-2 top-1/2 transform -translate-y-1/2" // Выравнивание иконки
         />
+      </div>
+    </div>
+  );
+}
+
+function DropDownForAddingContacts({
+  isDropDownOpened,
+  openCloseDropDown,
+  phone,
+  tg,
+  vk,
+  text,
+  ontapPhone,
+  ontapTg,
+  ontapVk,
+}) {
+  return (
+    <div className="columnForContact">
+      <button
+        className={
+          isDropDownOpened
+            ? "dropdown_header_opened_contacts"
+            : "dropdown_header_contacts"
+        }
+        onClick={openCloseDropDown}
+      >
+        <div className="text-[13px] text-grey-text font-normal font-inter">
+          {text}
+        </div>
+        <div className={isDropDownOpened ? "rotate-icon" : "arrow-icon"}>
+          <img src={arrowDownSvg} alt="" />
+        </div>
+      </button>
+      {isDropDownOpened && (
+        <div className="dropdown_body2">
+          <div className="gym_names" onClick={() => ontapPhone()}>
+            {phone}
+          </div>
+          <div className="gym_names" onClick={() => ontapTg()}>
+            {tg}
+          </div>
+          <div className="gym_names" onClick={() => ontapVk()}>
+            {vk}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TextAndTextButtonContacts({ text1, text2, onclick, isDisabled }) {
+  return (
+    <div className="flex flex-row gap-[10px]">
+      <div className="text-[14px] font-bold ">{text1}:</div>
+      <div
+        className={
+          isDisabled
+            ? "text-[13px] font-medium text-grey-text cursor-not-allowed"
+            : "text-[13px] font-medium text-blue-text cursor-pointer"
+        }
+        onClick={onclick}
+      >
+        {text2}
       </div>
     </div>
   );

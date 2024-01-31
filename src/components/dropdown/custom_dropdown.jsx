@@ -22,7 +22,7 @@ export default function CustomDropdown({
           <img src={arrowDownSvg} alt="" />
         </div>
       </button>
-      {isDropDownOpened && <div className="dropdown_body">{map}</div>}
+      {isDropDownOpened && <div className="dropdownBody">{map}</div>}
     </div>
   );
 }

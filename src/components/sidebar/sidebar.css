@@ -26,8 +26,6 @@
   padding-top: 10px;
   padding-bottom: 10px;
   display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 8px;
   border: 1px solid transparent;
   transition: border-color 0.3s ease;
@@ -43,7 +41,7 @@
 
 .sidebar_opened {
   width: 225px;
-  min-width: 225px;
+  /* min-width: 225px; */
   transition: width 0.3s ease;
 }
 
