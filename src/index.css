@@ -1,19 +1,31 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Raleway;
-    color: rgba(37, 37, 37, 1);
-    font-variant-numeric: lining-nums proportional-nums;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Raleway;
+  color: rgba(37, 37, 37, 1);
+  font-variant-numeric: lining-nums proportional-nums;
+  /* Изменение полосы прокрутки для всего документа */
+  ::-webkit-scrollbar {
+    width: 7px; /* ширина полосы прокрутки */
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; /* цвет дорожки полосы прокрутки */
+    border-radius: 10px; 
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #888; /* цвет ползунка полосы прокрутки */
+    border-radius: 32px; 
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; /* цвет ползунка полосы прокрутки при наведении */
+  }
 }
-
-
-
-
-

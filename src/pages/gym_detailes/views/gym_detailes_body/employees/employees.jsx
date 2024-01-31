@@ -126,7 +126,7 @@ export default function Employees({ listOfEmployees, gymId }) {
             }}
           >
             {/* Refactor employees dialog body */}
-            <div className="ref_employee_dialog">
+            <div className="refEmployeeDialog">
               <div className="flex flex-col gap-[5px]">
                 <div className="text-[16px] font-semibold leading-[16px]">
                   Редактировать сотрудника

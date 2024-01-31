@@ -14,11 +14,13 @@ import { useState, useRef, useEffect } from "react";
 const Sidebar = () => {
   const [isSidebarOpened, openCloseSearchBar] = useState(true);
   const [isMenuCompanyShown, showMenuCompany] = useState(false);
+  const [isTextShown, showText] = useState(false);
   const sidebarHeaderRef = useRef();
 
   const handleClick = () => {
     if (isSidebarOpened) {
       openCloseSearchBar(false);
+      showText(false);
     } else {
       openCloseSearchBar(true);
     }
@@ -28,6 +30,16 @@ const Sidebar = () => {
       showMenuCompany(true);
     }
   };
+
+  useEffect(() => {
+    if (isSidebarOpened) {
+      setTimeout(() => {
+        if (!isTextShown) {
+          showText(true);
+        }
+      }, 200);
+    }
+  }, [isSidebarOpened]);
 
   // This function will be passed to MenuCompany to close it
   const closeMenuCompany = () => showMenuCompany(false);
@@ -48,7 +60,9 @@ const Sidebar = () => {
           <img src={locationIcon} alt="" />
         </div>
 
-        <div className="text-[14px] font-normal">ИП Пасечник</div>
+        {isTextShown && (
+          <div className="text-[14px] font-normal">ИП Пасечник</div>
+        )}
       </button>
       {isMenuCompanyShown && (
         <MenuCompany
@@ -74,7 +88,7 @@ const Sidebar = () => {
             <div className="  bg-bg-color p-[5px] rounded-[6px] ">
               <img src={statsLogo} alt="" />
             </div>
-            <div>Статистика</div>
+            {isTextShown && <div>Статистика</div>}
           </NavLink>
 
           <NavLink
@@ -88,7 +102,7 @@ const Sidebar = () => {
             <div className="bg-bg-color p-[5px] rounded-[6px] ">
               <img src={locationIcon} alt="" />
             </div>
-            <div>Мои заведения</div>
+            {isTextShown && <div>Мои заведения</div>}
           </NavLink>
 
           <NavLink
@@ -102,7 +116,7 @@ const Sidebar = () => {
             <div className="bg-bg-color p-[5px] rounded-[6px] ">
               <img src={calendarLogo} alt="" />
             </div>
-            <div>Расписание</div>
+            {isTextShown && <div>Расписание</div>}
           </NavLink>
         </div>
 
@@ -129,7 +143,7 @@ const Sidebar = () => {
             <div className="bg-bg-color p-[5px] rounded-[6px] ">
               <img src={questionLogo} alt="" />
             </div>
-            <div>Помощь</div>
+            {isTextShown && <div>Помощь</div>}
           </NavLink>
 
           <NavLink
@@ -143,7 +157,7 @@ const Sidebar = () => {
             <div className="bg-bg-color p-[5px] rounded-[6px] ">
               <img src={settingsLogo} alt="" />
             </div>
-            <div>Настройки</div>
+            {isTextShown && <div>Настройки</div>}
           </NavLink>
         </div>
       </div>
