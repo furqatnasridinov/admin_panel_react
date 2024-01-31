@@ -47,9 +47,10 @@
   flex-direction: row;
   flex-wrap: wrap;
   gap: 16px;
-  width: 100%;
   height: fit-content;
+  /* width: fit-content; */
   margin-left: 34px;
+  /* margin-right: 32px; */
 }
 
 .selected_employee_row {

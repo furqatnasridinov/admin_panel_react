@@ -64,6 +64,7 @@ export default function Employees({ listOfEmployees, gymId }) {
   const [phoneNumberTextfield2HasFocus, setPhone2Focus] = useState(false);
   const [isDropDown2Opened, openDropDown2] = useState(false);
   const [isRefEmployeesDialogOpened, openRefEmployeesDialog] = useState(false);
+  const [isFromRef, setIsFromRef] = useState(false);
 
   // snackbar ref
   const deleteEmployeeSnackRef = useRef();
@@ -164,7 +165,6 @@ export default function Employees({ listOfEmployees, gymId }) {
                         onDeleteClicked={async () => {
                           dispatch(resetSelectedEmployee());
                           dispatch(removeEmployeeFromList(employee));
-                          removeDatas();
                           const cancelTimeOut =
                             deleteEmployeeSnackRef.current.show(
                               "Вы удалили сотрудника",
@@ -194,6 +194,17 @@ export default function Employees({ listOfEmployees, gymId }) {
                       />
                     );
                   })}
+                  <div
+                    className="button"
+                    onClick={() => {
+                      openRefEmployeesDialog(false);
+                      setIsFromRef(true);
+                      openAddEmployeesDialog(true);
+                    }}
+                  >
+                    <img src={addSvg} alt="" />
+                    <div className="">Добавить</div>
+                  </div>
                   <CustomSnackbar
                     ref={deleteEmployeeSnackRef}
                     undoAction={() => {
@@ -206,145 +217,152 @@ export default function Employees({ listOfEmployees, gymId }) {
                 </div>
               </div>
               {/* Personal info */}
-              <div className="flex flex-col gap-[16px]">
-                <div className="flex flex-row gap-[10px] items-center">
-                  <img className="w-[24px] h-[24px]" src={docsSvg} alt="" />
-                  <div className="text-[16px] font-semibold leading-[16px]">
-                    Личная информация
+              {employeesSlice.selectedEmployee !== null && (
+                <>
+                  <div className="flex flex-col gap-[16px]">
+                    <div className="flex flex-row gap-[10px] items-center">
+                      <img className="w-[24px] h-[24px]" src={docsSvg} alt="" />
+                      <div className="text-[16px] font-semibold leading-[16px]">
+                        Личная информация
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-[10px] pl-[35px]">
+                      <div className="flex flex-row gap-[32px] ">
+                        {/* Name */}
+                        <TextAndTextfield
+                          value={
+                            employeesSlice.selectedEmployee !== null
+                              ? employeesSlice.selectedEmployee.firstName
+                              : ""
+                          }
+                          onChange={(event) => {
+                            dispatch(
+                              changeSelectedEmployeesName(event.target.value)
+                            );
+                          }}
+                          textfieldHasFocus={nameTextfield2HasFocus}
+                          requestFocus={() => setName2Focus(true)}
+                          removeFocus={() => setName2Focus(false)}
+                          text={"Имя сотрудника"}
+                          placeholder={"Имя"}
+                          logo={userLogo}
+                        />
+                        {/* Surname */}
+                        <TextAndTextfield
+                          value={
+                            employeesSlice.selectedEmployee !== null &&
+                            employeesSlice.selectedEmployee.lastName === null
+                              ? ""
+                              : employeesSlice.selectedEmployee !== null &&
+                                employeesSlice.selectedEmployee.lastName !==
+                                  null
+                              ? employeesSlice.selectedEmployee.lastName
+                              : ""
+                          }
+                          onChange={(event) => {
+                            dispatch(
+                              changeSelectedEmployeesLastname(
+                                event.target.value
+                              )
+                            );
+                          }}
+                          textfieldHasFocus={surnameTextfield2HasFocus}
+                          requestFocus={() => setSurname2Focus(true)}
+                          removeFocus={() => setSurname2Focus(false)}
+                          text={"Фамилия"}
+                          placeholder={"Фамилия"}
+                          logo={userLogo}
+                        />
+                      </div>
+                      <div className="flex flex-row gap-[32px]">
+                        {/* Phone */}
+                        <TextAndTextfield
+                          value={
+                            employeesSlice.selectedEmployee !== null
+                              ? employeesSlice.selectedEmployee.login
+                              : ""
+                          }
+                          onChange={(event) => {
+                            dispatch(
+                              changeSelectedEmployeesPhone(
+                                event.target.value.replace(/\D/g, "")
+                              )
+                            );
+                          }}
+                          textfieldHasFocus={phoneNumberTextfield2HasFocus}
+                          requestFocus={() => setPhone2Focus(true)}
+                          removeFocus={() => setPhone2Focus(false)}
+                          text={"Номер телефона"}
+                          placeholder={"+7 (900) 855 45-58"}
+                          logo={phoneSvg}
+                          isPhoneTextfield={true}
+                        />
+                        {/* Empty space */}
+                        <div className="w-full"></div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="flex flex-col gap-[10px] pl-[35px]">
-                  <div className="flex flex-row gap-[32px] ">
-                    {/* Name */}
-                    <TextAndTextfield
-                      value={
-                        employeesSlice.selectedEmployee !== null
-                          ? employeesSlice.selectedEmployee.firstName
-                          : ""
-                      }
-                      onChange={(event) => {
-                        dispatch(
-                          changeSelectedEmployeesName(event.target.value)
-                        );
-                      }}
-                      textfieldHasFocus={nameTextfield2HasFocus}
-                      requestFocus={() => setName2Focus(true)}
-                      removeFocus={() => setName2Focus(false)}
-                      text={"Имя сотрудника"}
-                      placeholder={"Имя"}
-                      logo={userLogo}
-                    />
-                    {/* Surname */}
-                    <TextAndTextfield
-                      value={
-                        employeesSlice.selectedEmployee !== null &&
-                        employeesSlice.selectedEmployee.lastName === null
-                          ? ""
-                          : employeesSlice.selectedEmployee !== null &&
-                            employeesSlice.selectedEmployee.lastName !== null
-                          ? employeesSlice.selectedEmployee.lastName
-                          : ""
-                      }
-                      onChange={(event) => {
-                        dispatch(
-                          changeSelectedEmployeesLastname(event.target.value)
-                        );
-                      }}
-                      textfieldHasFocus={surnameTextfield2HasFocus}
-                      requestFocus={() => setSurname2Focus(true)}
-                      removeFocus={() => setSurname2Focus(false)}
-                      text={"Фамилия"}
-                      placeholder={"Фамилия"}
-                      logo={userLogo}
-                    />
+                  {/* Dropdown section */}
+                  <div className="flex flex-col gap-[16px]">
+                    <div className="flex flex-row gap-[10px] items-center">
+                      <img src={starSvg} alt="" />
+                      <div className="text-[16px] font-semibold leading-[16px]">
+                        Роль сотрудника
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-[5px] w-fit h-fit ml-[34px]">
+                      <div className="text-[16px] font-medium leading-[16px]">
+                        Уровень доступа сотрудника{" "}
+                      </div>
+                      <CustomDropdown
+                        currentRole={
+                          employeesSlice.selectedRoleName !== null
+                            ? employeesSlice.selectedRoleName
+                            : employeesSlice.selectedEmployee === null
+                            ? ""
+                            : employeesSlice.selectedEmployee.roles.length === 0
+                            ? "Нет роли"
+                            : employeesSlice.selectedEmployee.roles[0].name
+                        }
+                        isDropDownOpened={isDropDown2Opened}
+                        openCloseDropDown={openCloseDropDown2}
+                        bloclClick={employeesSlice.selectedEmployee === null}
+                      />
+                    </div>
                   </div>
-                  <div className="flex flex-row gap-[32px]">
-                    {/* Phone */}
-                    <TextAndTextfield
-                      value={
-                        employeesSlice.selectedEmployee !== null
-                          ? employeesSlice.selectedEmployee.login
-                          : ""
-                      }
-                      onChange={(event) => {
-                        dispatch(
-                          changeSelectedEmployeesPhone(
-                            event.target.value.replace(/\D/g, "")
-                          )
-                        );
-                      }}
-                      textfieldHasFocus={phoneNumberTextfield2HasFocus}
-                      requestFocus={() => setPhone2Focus(true)}
-                      removeFocus={() => setPhone2Focus(false)}
-                      text={"Номер телефона"}
-                      placeholder={"+7 (900) 855 45-58"}
-                      logo={phoneSvg}
-                      isPhoneTextfield={true}
-                    />
-                    {/* Empty space */}
-                    <div className="w-full"></div>
-                  </div>
-                </div>
-              </div>
-              {/* Dropdown section */}
-              <div className="flex flex-col gap-[16px]">
-                <div className="flex flex-row gap-[10px] items-center">
-                  <img src={starSvg} alt="" />
-                  <div className="text-[16px] font-semibold leading-[16px]">
-                    Роль сотрудника
-                  </div>
-                </div>
-                <div className="flex flex-col gap-[5px] w-fit h-fit ml-[34px]">
-                  <div className="text-[16px] font-medium leading-[16px]">
-                    Уровень доступа сотрудника{" "}
-                  </div>
-                  <CustomDropdown
-                    currentRole={
-                      employeesSlice.selectedRoleName !== null
-                        ? employeesSlice.selectedRoleName
-                        : employeesSlice.selectedEmployee === null
-                        ? ""
-                        : employeesSlice.selectedEmployee.roles.length === 0
-                        ? "Нет роли"
-                        : employeesSlice.selectedEmployee.roles[0].name
-                    }
-                    isDropDownOpened={isDropDown2Opened}
-                    openCloseDropDown={openCloseDropDown2}
-                    bloclClick={employeesSlice.selectedEmployee === null}
-                  />
-                </div>
-              </div>
 
-              {/* blue container  */}
-              <div className="big_blue_container">
-                <div className="text-[14px] font-normal leading-[16px]">
-                  Подробная информация о том, какими правами наделена выбранная
-                  вами роль
-                </div>
-                {roles.map((role) => {
-                  return role.available ? (
-                    <div
-                      key={role.id}
-                      className="flex flex-row gap-[10px] items-center"
-                    >
-                      <img src={availableSvg} alt="" />
-                      <div className="text-[14px] font-normal leading-[16px]">
-                        {role.name}
-                      </div>
+                  {/* blue container  */}
+                  <div className="big_blue_container">
+                    <div className="text-[14px] font-normal leading-[16px]">
+                      Подробная информация о том, какими правами наделена
+                      выбранная вами роль
                     </div>
-                  ) : (
-                    <div
-                      key={role.id}
-                      className="flex flex-row gap-[10px] items-center"
-                    >
-                      <img src={notAvailable} alt="" />
-                      <div className="text-[14px] font-normal leading-[16px] text-grey-text">
-                        {role.name}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    {roles.map((role) => {
+                      return role.available ? (
+                        <div
+                          key={role.id}
+                          className="flex flex-row gap-[10px] items-center"
+                        >
+                          <img src={availableSvg} alt="" />
+                          <div className="text-[14px] font-normal leading-[16px]">
+                            {role.name}
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          key={role.id}
+                          className="flex flex-row gap-[10px] items-center"
+                        >
+                          <img src={notAvailable} alt="" />
+                          <div className="text-[14px] font-normal leading-[16px] text-grey-text">
+                            {role.name}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
               <div className="flex flex-col gap-2">
                 <CustomButton
                   width={"100%"}
@@ -402,6 +420,9 @@ export default function Employees({ listOfEmployees, gymId }) {
             className="button"
             onClick={() => {
               openAddEmployeesDialog(true);
+              if (isFromRef) {
+                setIsFromRef(false);
+              }
             }}
           >
             <img src={addSvg} alt="" />
@@ -411,7 +432,12 @@ export default function Employees({ listOfEmployees, gymId }) {
           {isAddEmployeesDialogOpened && (
             <CustomDialog
               isOpened={isAddEmployeesDialogOpened}
-              closeOnTapOutside={() => openAddEmployeesDialog(false)}
+              closeOnTapOutside={() => {
+                openAddEmployeesDialog(false);
+                if (isFromRef) {
+                  openRefEmployeesDialog(true);
+                }
+              }}
             >
               {/* Add employee dialog body */}
               <div className="add_employee_dialog">
@@ -579,6 +605,9 @@ export default function Employees({ listOfEmployees, gymId }) {
                           dispatch(getListOfEmployees(gymId));
                         }, 1000);
                         openAddEmployeesDialog(false);
+                        if (isFromRef) {
+                          openRefEmployeesDialog(true);
+                        }
                         removeDatas();
                       }
                     }}

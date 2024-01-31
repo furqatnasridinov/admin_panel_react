@@ -136,7 +136,12 @@ export default function GymDetailesBodySecondContainer({
             })}
           </div>
           {isActivitiesModalOpened && (
-            <CustomDialog isOpened={isActivitiesModalOpened}>
+            <CustomDialog
+              isOpened={isActivitiesModalOpened}
+              closeOnTapOutside={() => {
+                openActivitiesModal(false);
+              }}
+            >
               {/* Activities modal body */}
               <div className="main_container">
                 <div className="flex flex-col gap-[5px]">
@@ -263,7 +268,7 @@ export default function GymDetailesBodySecondContainer({
                     text2={"Изменить"}
                     onclick={() => setDescribtionEditting(true)}
                   />
-                  <div className="text-[14px] font-normal leading-[14px]">
+                  <div className="text-[13px] font-normal font-inter leading-[14px]">
                     {activityDescribtion}
                   </div>
                 </>
@@ -324,8 +329,8 @@ export default function GymDetailesBodySecondContainer({
                   />
                   {activityPeculiarities &&
                     activityPeculiarities.trim() !== "" && (
-                      <ul className="marked_list">
-                        <li>{activityPeculiarities}</li>
+                      <ul className="marked_list ">
+                        <li className="text-[13px] font-normal font-inter">{activityPeculiarities}</li>
                       </ul>
                     )}
                 </>
@@ -366,8 +371,7 @@ export default function GymDetailesBodySecondContainer({
                     onChanged={(e) => {
                       dispatch(changeActivityPeculiarities(e.target.value));
                     }}
-                    fontsize={"13px"}
-                    lineheight={"14px"}
+                    
                     peculiarities={activityPeculiarities}
                   />
                 </>
@@ -543,8 +547,9 @@ function EditableFeaturesTextfield({
           outline: "none",
           maxHeight: "120px",
           resize: "none",
-          fontSize: fontsize,
-          lineHeight: lineheight,
+          fontSize: "13px",
+          lineHeight: "14px",
+          fontFamily: "Inter, sans-serif",
         }}
       />
       <button onClick={onButtonClicked}>
