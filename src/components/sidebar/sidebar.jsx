@@ -16,6 +16,7 @@ const Sidebar = () => {
   const [isMenuCompanyShown, showMenuCompany] = useState(false);
   const [isTextShown, showText] = useState(false);
   const sidebarHeaderRef = useRef();
+  const sideBarRef = useRef();
 
   const handleClick = () => {
     if (isSidebarOpened) {
@@ -46,7 +47,9 @@ const Sidebar = () => {
   const sidebarWidth = isSidebarOpened ? "sidebar_opened" : "sidebar_closed";
 
   return isSidebarOpened ? (
+    console.log(`sidebarref ${sideBarRef.current}`),
     <div
+      ref={sideBarRef}
       className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}
     >
       {/* Название ИП */}

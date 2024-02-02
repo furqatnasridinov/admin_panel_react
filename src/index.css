@@ -23,6 +23,7 @@
   ::-webkit-scrollbar-thumb {
     background: #888; /* цвет ползунка полосы прокрутки */
     border-radius: 32px; 
+    max-height: 100px;
   }
 
   ::-webkit-scrollbar-thumb:hover {

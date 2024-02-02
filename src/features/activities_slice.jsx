@@ -22,8 +22,7 @@ export const getInfoForType = createAsyncThunk(
       const response = await axiosClient.get(`api/gym/${gymId}/infoForType`);
       if (response.data["operationResult"] === "OK") {
         return response.data["object"];
-      } 
-     
+      }
     } catch (error) {
       alert(`getActivities ${error}`);
     }
@@ -37,8 +36,7 @@ export const getPhotos = createAsyncThunk(
       const response = await axiosClient.get(`api/gym/${gymId}/photo`);
       if (response.data["operationResult"] === "OK") {
         return response.data["object"];
-      } 
-     
+      }
     } catch (error) {
       alert(`getPhotos ${error}`);
     }
@@ -61,7 +59,6 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
           },
         }
       );
-      
     } catch (error) {
       alert(`addPhotoToSelectedActivity ${error}`);
     }
@@ -80,7 +77,6 @@ export const patchDescriptionOfSelectedActivity = createAsyncThunk(
         `api/director/gyms/${id}`,
         dataToSend
       );
-      
     } catch (error) {
       alert(`changeDescriptionOfSelectedActivity ${error}`);
     }
@@ -99,7 +95,6 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
         `api/director/gyms/${id}`,
         dataToSend
       );
-      
     } catch (error) {
       alert(`changeDescriptionOfSelectedActivity ${error}`);
     }
@@ -121,7 +116,6 @@ export const deleteActivityPhoto = createAsyncThunk(
           },
         }
       );
-      
     } catch (error) {
       alert(`changeDescriptionOfSelectedActivity ${error}`);
     }
@@ -135,7 +129,6 @@ export const deleteActivity = createAsyncThunk(
       const response = await axiosClient.delete(
         `api/director/gyms/${id}/lessonType/${lessonType}`
       );
-      
     } catch (error) {
       alert(`deleteActivity ${error}`);
     }
@@ -153,7 +146,6 @@ export const addNewActivity = createAsyncThunk(
         `api/director/gyms/${id}`,
         dataToSend
       );
-      
     } catch (error) {
       alert(`changeDescriptionOfSelectedActivity ${error}`);
     }
@@ -167,8 +159,7 @@ export const getAllAvailableLessonTypes = createAsyncThunk(
       const response = await axiosClient.get("api/main/lessonTypes");
       if (response.data["operationResult"] === "OK") {
         return response.data["object"];
-      } 
-     
+      }
     } catch (error) {
       alert(`getAllAvailableLessonTypes ${error}`);
     }
@@ -203,6 +194,10 @@ const activitiesSlice = createSlice({
 
     selectAnActivity: (state, action) => {
       state.selectedActivity = action.payload;
+    },
+
+    removeSelectedActivity: (state) => {
+      state.selectedActivity = "";
     },
 
     setActivityDescribtion: (state) => {
@@ -321,5 +316,6 @@ export const {
   changeActivityDescribtion,
   changeActivityPeculiarities,
   resetChanges,
+  removeSelectedActivity
 } = activitiesSlice.actions;
 export default activitiesSlice.reducer;

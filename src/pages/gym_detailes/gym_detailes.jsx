@@ -7,7 +7,7 @@ import GymDetailesBodySecondContainer from "./views/gym_detailes_body/second/gym
 import Employees from "./views/gym_detailes_body/employees/employees";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getListOfGyms } from "../../features/list_of_gyms_slice";
+import { getListOfGyms } from "../../features/current_gym_slice";
 import { getCurrentGym } from "../../features/current_gym_slice";
 import { getListOfEmployees } from "../../features/employees_slice";
 import {
@@ -25,8 +25,7 @@ export default function GymDetails() {
   let { gymId } = useParams(); // This hooks allows you to extract params from the URL
 
   const dispatch = useDispatch();
-  const listOfGymsSlice = useSelector((state) => state.listOfGyms);
-  const currentGymSlice = useSelector((state) => state.currentGym);
+  const gymState = useSelector((state) => state.currentGym);
   const employeesSlice = useSelector((state) => state.employees);
   const activitiesSlice = useSelector((state) => state.activities);
 
@@ -56,7 +55,7 @@ export default function GymDetails() {
 
   // here will be functions to get new data`s after selecting another gym from dropdown
   function selectAnotherGym(gym) {
-    if (gym.id !== currentGymSlice.currentGym.id) {
+    if (gym.id !== gymState.currentGym.id) {
       // function to get gymdetailes based on gymnewSelected gymid
       dispatch(getCurrentGym(gym.id));
 
@@ -103,22 +102,22 @@ export default function GymDetails() {
     console.log("selected act ", activitiesSlice.selectedActivity),
     (
       <div className="gym_details">
-        {currentGymSlice.currentGym != null && (
+        {gymState.currentGym != null && (
           <>
             <GymDetailesHeader
-              gym={currentGymSlice.currentGym}
-              listOfGyms={listOfGymsSlice.data}
-              showDropDown={listOfGymsSlice.data.length > 1}
+              gym={gymState.currentGym}
+              listOfGyms={gymState.listOfGyms}
+              showDropDown={gymState.listOfGyms.length > 1}
               selectAnotherGym={selectAnotherGym}
             />
 
             <Employees
               listOfEmployees={employeesSlice.employees}
-              gymId={currentGymSlice.currentGym.id}
+              gymId={gymState.currentGym.id}
             />
 
             <GymDetailesBodyFirstContainer
-              currentGym={currentGymSlice.currentGym}
+              currentGym={gymState.currentGym}
             />
 
             <GymDetailesBodySecondContainer

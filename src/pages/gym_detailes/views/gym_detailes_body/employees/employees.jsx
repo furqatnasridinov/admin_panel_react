@@ -105,10 +105,7 @@ export default function Employees({ listOfEmployees, gymId }) {
   }
 
   return (
-    console.log(`employees ${JSON.stringify(employeesSlice.employees)}`),
-    console.log(
-      `deletedemployees ${JSON.stringify(employeesSlice.deletedEmployess)}`
-    ),
+    console.log(`gymID ${JSON.stringify(gymId)}`),
     (
       <div className="employees_container">
         <TextAndTextButton

@@ -2,16 +2,15 @@ import React from "react";
 import Gym from "../components/gym";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getListOfGyms } from "../../../features/list_of_gyms_slice";
+import { getListOfGyms } from "../../../features/current_gym_slice";
 
 const MyGymsBody = () => {
   const dispatch = useDispatch();
-  const listOfGymsSlice = useSelector((state) => state.listOfGyms); // listOfGymsSlice ==> {isLoading: false, data: Array(8), isError: false}
+  const gymState = useSelector((state) => state.currentGym);
 
   useEffect(() => {
     dispatch(getListOfGyms());
   }, []);
-  console.log(listOfGymsSlice);
 
   return (
     <div className="px-[30px] bg-white rounded-[16px] flex flex-col h-[86vh]">
@@ -26,7 +25,7 @@ const MyGymsBody = () => {
       {/* LIST BUILDER */}
 
       <div className="overflow-y-auto pt-[20px]">
-        {listOfGymsSlice.data.map((gym) => (
+        {gymState.listOfGyms.map((gym) => (
           <Gym
             key={gym.id}
             id={gym.id}

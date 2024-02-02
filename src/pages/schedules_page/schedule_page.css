@@ -1,0 +1,145 @@
+.schedule_page {
+  height: 97vh;
+  margin-left: 10px;
+  overflow-y: auto;
+}
+
+.schedule_page ::-webkit-scrollbar {
+  display: none;
+}
+
+.gym_details::-webkit-scrollbar {
+  display: none;
+}
+
+.schedule_header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: white;
+  height: 82px;
+  width: 100%;
+  padding: 21px 35px 21px 35px;
+  gap: 32px;
+  border-radius: 16px;
+}
+
+.schedule_body {
+  height: 100%;
+  width: 100%;
+  background-color: white;
+  border-radius: 16px;
+  margin-top: 10px;
+}
+
+.leftTopBorder {
+  border-top-left-radius: 16px;
+}
+
+/* Calendar style starts here */
+
+.rbc-time-header-gutter {
+  display: flex;
+  justify-content: center;
+  /* background-color: green; */
+  min-width: 104px !important;
+}
+
+.rbc-toolbar {
+  display: none !important;
+}
+
+.rbc-time-header {
+  height: 82px;
+  display: flex;
+  flex-direction: row;
+  border-top-left-radius: 16px;
+  background-color: #e9f2ff;
+}
+
+.rbc-time-view {
+  border: none !important;
+  /* background-color: red; */
+}
+
+.rbc-time-header-content {
+  display: flex;
+  flex-direction: column;
+  border-left: none;
+  /* background-color: yellow; */
+  width: 100%;
+  min-width: 105px;
+  border: none !important;
+}
+
+.rbc-time-header-cell {
+  display: none !important;
+}
+
+.each_days {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  /* background-color: red; */
+  min-width: 104px !important;
+  height: 100%;
+  border-left: 1px solid #9dc1f5;
+}
+
+.rbc-time-content {
+  border-top: 1px solid #9dc1f5 !important;
+  /* background-color: yellow; */
+}
+
+.rbc-timeslot-group {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 104px !important;
+  border: none !important;
+  min-height: 78px !important;
+  /* background-color: green; */
+}
+
+.rbc-events-container {
+  margin: 0px !important;
+}
+
+.rbc-today {
+  background-color: #d4e5ff !important;
+}
+
+.rbc-day-slot {
+  width: 100%;
+  min-width: 105px !important;
+  /* background-color: red; */
+}
+
+.rbc-time-content > * + * > * {
+  border-left: 1px solid #9dc1f5 !important;
+  border-bottom: 1px solid #9dc1f5 !important;
+}
+
+.rbc-event-label {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+.rbc-event {
+  font-size: 10px !important;
+  font-weight: 500 !important;
+}
+
+.rbc-current-time-indicator {
+  display: none;
+}
+
+
+.rbc-time-header.rbc-overflowing{
+  margin-right: 0px !important;
+  border-right: none !important;
+}
+
+
