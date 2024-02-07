@@ -6,7 +6,23 @@ import { Link } from "react-router-dom";
 function Gym(props) {
   return (
     <Link to={`/myGymsPage/gymDetails/${props.id}`}>
-      <div className="h-[60px] w-[screen] bg-bg-color rounded-[16px] py-[16px] px-[32px] flex flex-row items-center  mb-[16px]">
+      <div
+        style={{
+          height: "60px",
+          width: "100%",
+          backgroundColor: "rgba(252, 252, 252, 1)",
+          borderRadius: "16px",
+          paddingTop: "16px",
+          paddingBottom: "16px",
+          paddingLeft: "32px",
+          paddingRight: "32px",
+          display: "flex",
+          flexDirection : "row",
+          alignItems: "center",
+          marginBottom: "16px",
+          border : "1px solid rgba(244, 244, 244, 1)"
+        }}
+      >
         <div className="flex flex-row items-center  w-full">
           <div className=" flex flex-row gap-[10px] items-center  w-[250px]">
             <img src={locationIcon} alt="" />

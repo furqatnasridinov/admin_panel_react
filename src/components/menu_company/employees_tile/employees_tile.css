@@ -1,9 +1,10 @@
 .container {
-  background-color: #f5f9ff;
+  background-color: rgba(252, 252, 252, 1);
   height: 52px;
   padding: 10px;
   margin-bottom: 5px;
   border-radius: 8px;
+  border: 1px solid rgba(244, 244, 244, 1);
   align-items: center;
   display: flex;
   flex-direction: row;

@@ -8,9 +8,11 @@ export default function CustomDropdown({
   text,
   openCloseDropDown,
   map,
+  maxHeight,
+  zIndex,
 }) {
   return (
-    <div className="column">
+    <div className="column" style={{ zIndex: zIndex }}>
       <button
         className={
           isDropDownOpened ? "dropdown_header_opened" : "dropdown_header"
@@ -22,7 +24,11 @@ export default function CustomDropdown({
           <img src={arrowDownSvg} alt="" />
         </div>
       </button>
-      {isDropDownOpened && <div className="dropdownBody">{map}</div>}
+      {isDropDownOpened && (
+        <div className="dropdownBody" style={{ maxHeight: maxHeight }}>
+          {map}
+        </div>
+      )}
     </div>
   );
 }

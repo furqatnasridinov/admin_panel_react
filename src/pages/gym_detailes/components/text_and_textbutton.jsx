@@ -5,7 +5,6 @@ export default function TextAndTextButton({
   text2,
   onclick,
   isRedText,
-  isDisabled,
 }) {
   return (
     <div className="flex flex-row gap-[10px]">
@@ -13,9 +12,7 @@ export default function TextAndTextButton({
       <div
         className={
           isRedText
-            ? isDisabled
-              ? "text-[13px] font-medium text-red-400 cursor-pointer"
-              : "text-[13px] font-medium text-grey-text cursor-not-allowed"
+            ? "text-[13px] font-medium text-red-400 cursor-pointer"
             : "text-[13px] font-medium text-blue-text cursor-pointer"
         }
         onClick={onclick}

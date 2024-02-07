@@ -1,5 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import AppConstants from "../config/app_constants";
 import axiosClient from "../config/axios_client";
+
+export const getListOfGyms = createAsyncThunk(
+  "listOfGyms/getListOfGyms",
+  async () => {
+    try {
+      const response = await axiosClient.get(AppConstants.getGyms);
+      return response.data["object"];
+    } catch (error) {
+      alert(`getListOfGyms ${error}`);
+    }
+  }
+);
 
 export const getCurrentGym = createAsyncThunk(
   "currentGym/getCurrentGym",
@@ -29,7 +42,6 @@ export const addGymPicture = createAsyncThunk(
           },
         }
       );
-      
     } catch (error) {
       alert(`addGymPicture ${error}`);
     }
@@ -71,7 +83,6 @@ export const addGymLogo = createAsyncThunk(
           },
         }
       );
-      
     } catch (error) {
       alert(`addGymPicture ${error}`);
     }
@@ -90,7 +101,6 @@ export const removeGymLogo = createAsyncThunk(
         "api/director/gyms/",
         dataToSend
       );
-     
     } catch (error) {
       alert(`editGym ${error}`);
       console.log(`${error.massage}`);
@@ -110,7 +120,6 @@ export const patchGymName = createAsyncThunk(
         "api/director/gyms/",
         dataToSend
       );
-     
     } catch (error) {
       alert(`editGym ${error}`);
       console.log(`${error.massage}`);
@@ -130,7 +139,6 @@ export const patchGymDescription = createAsyncThunk(
         "api/director/gyms/",
         dataToSend
       );
-      
     } catch (error) {
       alert(`editGym ${error}`);
     }
@@ -149,7 +157,6 @@ export const patchGymAddress = createAsyncThunk(
         "api/director/gyms/",
         dataToSend
       );
-      
     } catch (error) {
       alert(`editGym ${error}`);
     }
@@ -170,7 +177,6 @@ export const patchGymContacts = createAsyncThunk(
         "api/director/gyms/",
         dataToSend
       );
-      
     } catch (error) {
       alert(`editGym ${error}`);
     }
@@ -181,6 +187,7 @@ const currentGymSlice = createSlice({
   name: "currentGym",
   initialState: {
     isLoading: false,
+    listOfGyms: [],
     currentGym: null,
     gymPictureCopy: "",
     logoCopy: "",
@@ -189,9 +196,17 @@ const currentGymSlice = createSlice({
   },
 
   reducers: {
-    /* setCurrentGym: (state, action) => {
+    setCurrentGym: (state, action) => {
       state.currentGym = action.payload;
-    }, */
+    },
+
+
+
+    setCurrentGymFromFirstItem: (state) => {
+      if (state.listOfGyms.length > 0) {
+        state.currentGym = state.listOfGyms[0];
+      }
+    },
 
     changeCurrentGymsName: (state, action) => {
       state.currentGym.name = action.payload;
@@ -289,6 +304,7 @@ const currentGymSlice = createSlice({
   },
 
   extraReducers: (builder) => {
+    // getCurrentGym
     builder.addCase(getCurrentGym.pending, (state) => {
       state.isLoading = true;
     });
@@ -297,6 +313,19 @@ const currentGymSlice = createSlice({
       state.currentGym = action.payload;
     });
     builder.addCase(getCurrentGym.rejected, (state) => {
+      state.isLoading = false;
+      state.isError = true;
+    });
+
+    // getListOfGyms
+    builder.addCase(getListOfGyms.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getListOfGyms.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.listOfGyms = action.payload;
+    });
+    builder.addCase(getListOfGyms.rejected, (state) => {
       state.isLoading = false;
       state.isError = true;
     });
@@ -318,5 +347,6 @@ export const {
   setEmptyStringToLogo,
   cancelRemovingLogo,
   removeLogoCopy,
+  setCurrentGymFromFirstItem,
 } = currentGymSlice.actions;
 export default currentGymSlice.reducer;
