@@ -1,0 +1,29 @@
+.white_button {
+  background-color: white;
+  border-radius: 8px;
+  border-width: 1px;
+  border-color: rgba(119, 170, 249, 1);
+  color: black;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3 ease;
+}
+
+.white_button:hover {
+  color: white;
+  background-color: rgba(89, 154, 254, 1);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3 ease;
+}
+
+.white_button_with_no_hover {
+  background-color: white;
+  border-radius: 8px;
+  border-width: 1px;
+  border-color: rgba(119, 170, 249, 1);
+  color: black;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3 ease;
+}

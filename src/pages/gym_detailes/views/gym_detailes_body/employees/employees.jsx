@@ -10,8 +10,8 @@ import goggins from "../../../../.././assets/images/goggins.jpg";
 import starSvg from "../../../../../assets/svg/star.svg";
 import docsSvg from "../../../../../assets/svg/docs.svg";
 import garbage from "../../../../../assets/images/garbage.png";
-import { roles, allRoles } from "../../../../../dummy_data/dymmy_data";
-import { useState } from "react";
+import { priveledges, allRoles } from "../../../../../dummy_data/dymmy_data";
+import { useState, useEffect } from "react";
 import CustomButton from "../../../../../components/button/button";
 import TextAndTextButton from "../../../components/text_and_textbutton";
 import CustomDialog from "../../../../../components/dialog/dialog";
@@ -35,6 +35,7 @@ import {
   removeEmployeeFromList,
   returnDeletedEmployee,
   resetSelectedEmployee,
+  selectAPriveledge,
 } from "../../../../../features/employees_slice";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 
@@ -53,6 +54,7 @@ export default function Employees({ listOfEmployees, gymId }) {
   const [roleId, setRoleId] = useState("1");
   const [roleCode, setRoleCode] = useState("ROLE_ADMIN");
   const [roleName, setRoleName] = useState("Администратор");
+  const [priveledgesOfEmployee, setPriveledges] = useState([1, 2, 3, 4]);
   const [nameNotValidated, setNameNotValidated] = useState();
   const [phoneNotValidated, setPhoneNotValidated] = useState();
   const [isAddEmployeesDialogOpened, openAddEmployeesDialog] = useState(false);
@@ -89,6 +91,7 @@ export default function Employees({ listOfEmployees, gymId }) {
     setRoleId("1");
     setRoleCode("ROLE_ADMIN");
     setRoleName("Администратор");
+    setPriveledges([1, 2, 3, 4]);
   }
 
   const changePhone = (event) => {
@@ -104,8 +107,16 @@ export default function Employees({ listOfEmployees, gymId }) {
     openDropDown2(!isDropDown2Opened);
   }
 
+  useEffect(() => {
+    if (employeesSlice.selectedEmployee !== null) {
+      dispatch(
+        selectAPriveledge(employeesSlice.selectedEmployee.roles[0].privilegesId)
+      );
+    }
+  }, [employeesSlice.selectedEmployee]);
+
   return (
-    console.log(`gymID ${JSON.stringify(gymId)}`),
+    console.log(`emp ${JSON.stringify(employeesSlice.selectedEmployee)}`),
     (
       <div className="employees_container">
         <TextAndTextButton
@@ -243,6 +254,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                           text={"Имя сотрудника"}
                           placeholder={"Имя"}
                           logo={userLogo}
+                          showLogo={true}
                         />
                         {/* Surname */}
                         <TextAndTextfield
@@ -269,6 +281,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                           text={"Фамилия"}
                           placeholder={"Фамилия"}
                           logo={userLogo}
+                          showLogo={true}
                         />
                       </div>
                       <div className="flex flex-row gap-[32px]">
@@ -293,6 +306,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                           placeholder={"+7 (900) 855 45-58"}
                           logo={phoneSvg}
                           isPhoneTextfield={true}
+                          showLogo={true}
                         />
                         {/* Empty space */}
                         <div className="w-full"></div>
@@ -311,7 +325,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                       <div className="text-[16px] font-medium leading-[16px]">
                         Уровень доступа сотрудника{" "}
                       </div>
-                      <CustomDropdown
+                      <CustomDropdownForRef
                         currentRole={
                           employeesSlice.selectedRoleName !== null
                             ? employeesSlice.selectedRoleName
@@ -334,28 +348,31 @@ export default function Employees({ listOfEmployees, gymId }) {
                       Подробная информация о том, какими правами наделена
                       выбранная вами роль
                     </div>
-                    {roles.map((role) => {
-                      return role.available ? (
-                        <div
-                          key={role.id}
-                          className="flex flex-row gap-[10px] items-center"
-                        >
-                          <img src={availableSvg} alt="" />
-                          <div className="text-[14px] font-normal leading-[16px]">
-                            {role.name}
+                    {priveledges.map((priveledge) => {
+                      if (employeesSlice.selectedEmployeesPriveledges) {
+                        const isAvailable =
+                          employeesSlice.selectedEmployeesPriveledges.includes(
+                            priveledge.id
+                          );
+                        return (
+                          <div
+                            key={priveledge.id}
+                            className="flex flex-row gap-[10px] items-center"
+                          >
+                            <img
+                              src={isAvailable ? availableSvg : notAvailable}
+                              alt=""
+                            />
+                            <div
+                              className={`text-[14px] font-normal leading-[16px] ${
+                                isAvailable ? "" : "text-grey-text"
+                              }`}
+                            >
+                              {priveledge.name}
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div
-                          key={role.id}
-                          className="flex flex-row gap-[10px] items-center"
-                        >
-                          <img src={notAvailable} alt="" />
-                          <div className="text-[14px] font-normal leading-[16px] text-grey-text">
-                            {role.name}
-                          </div>
-                        </div>
-                      );
+                        );
+                      }
                     })}
                   </div>
                 </>
@@ -461,6 +478,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                     placeholder={"Имя"}
                     logo={userLogo}
                     isError={nameNotValidated}
+                    showLogo={true}
                   />
                   {/* Фамилия */}
                   <TextAndTextfield
@@ -472,6 +490,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                     text={"Фамилия"}
                     placeholder={"Фамилия"}
                     logo={userLogo}
+                    showLogo={true}
                   />
                 </div>
                 <div className="flex flex-row gap-[24px]">
@@ -486,6 +505,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                     placeholder={"+7 (900) 855 45-58"}
                     logo={phoneSvg}
                     isPhoneTextfield={true}
+                    showLogo={true}
                     isError={phoneNotValidated}
                   />
                   {/* Drop down */}
@@ -501,6 +521,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                         setRoleId(role.id);
                         setRoleCode(role.code);
                         setRoleName(role.name);
+                        setPriveledges(role.priveledges);
                         openCloseDropDown();
                       }}
                     />
@@ -512,25 +533,25 @@ export default function Employees({ listOfEmployees, gymId }) {
                     Подробная информация о том, какими правами наделена
                     выбранная вами роль
                   </div>
-                  {roles.map((role) => {
-                    return role.available ? (
+                  {priveledges.map((priveledge) => {
+                    const isAvailable = priveledgesOfEmployee.includes(
+                      priveledge.id
+                    );
+                    return (
                       <div
-                        key={role.id}
+                        key={priveledge.id}
                         className="flex flex-row gap-[10px] items-center"
                       >
-                        <img src={availableSvg} alt="" />
-                        <div className="text-[14px] font-normal leading-[16px]">
-                          {role.name}
-                        </div>
-                      </div>
-                    ) : (
-                      <div
-                        key={role.id}
-                        className="flex flex-row gap-[10px] items-center"
-                      >
-                        <img src={notAvailable} alt="" />
-                        <div className="text-[14px] font-normal leading-[16px] text-grey-text">
-                          {role.name}
+                        <img
+                          src={isAvailable ? availableSvg : notAvailable}
+                          alt=""
+                        />
+                        <div
+                          className={`text-[14px] font-normal leading-[16px] ${
+                            isAvailable ? "" : "text-grey-text"
+                          }`}
+                        >
+                          {priveledge.name}
                         </div>
                       </div>
                     );
@@ -706,6 +727,7 @@ export function TextAndTextfield({
   onChange,
   isPhoneTextfield,
   isError,
+  showLogo,
 }) {
   return (
     <div className="flex flex-col gap-[5px] w-full">
@@ -727,7 +749,7 @@ export function TextAndTextfield({
             : "icon_and_textfield_row"
         }
       >
-        <img src={logo} className="userlogo" alt="" />
+        {showLogo && <img src={logo} className="userlogo" alt="" />}
         {isPhoneTextfield && (
           <ReactInputMask
             className="textfiled"
@@ -757,7 +779,7 @@ export function TextAndTextfield({
   );
 }
 
-function CustomDropdown({
+function CustomDropdownForRef({
   isDropDownOpened,
   currentRole,
   openCloseDropDown,
@@ -780,7 +802,7 @@ function CustomDropdown({
         </div>
       </button>
       {isDropDownOpened && (
-        <div className="dropdown_body">
+        <div className="dropdownBody">
           {allRoles.map((item, index) => (
             <button
               key={index}
@@ -790,6 +812,7 @@ function CustomDropdown({
                 dispatch(selectARoleId(item.id));
                 dispatch(selectARoleCode(item.code));
                 dispatch(changeSelectedEmployeesRole());
+                dispatch(selectAPriveledge(item.priveledges));
                 openCloseDropDown();
               }}
             >
@@ -825,7 +848,7 @@ function CustomDropdownForAddingEmployee({
         </div>
       </button>
       {isDropDownOpened && (
-        <div className="dropdown_body">
+        <div className="dropdownBodyForEmp">
           {allRoles.map((item, index) => (
             <button
               key={index}

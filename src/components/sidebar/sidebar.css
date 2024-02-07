@@ -21,11 +21,15 @@
   margin-top: 16px;
   margin-left: 16px;
   margin-right: 16px;
-  padding-left: 16px;
-  padding-right: 16px;
+/*   padding-left: 16px;
+  padding-right: 16px; */
   padding-top: 10px;
   padding-bottom: 10px;
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   border-radius: 8px;
   border: 1px solid transparent;
   transition: border-color 0.3s ease;
@@ -41,7 +45,7 @@
 
 .sidebar_opened {
   width: 225px;
-  /* min-width: 225px; */
+  min-width: 100px;
   transition: width 0.3s ease;
 }
 
@@ -81,4 +85,16 @@
 
 .text-visible {
   opacity: 1;
+}
+
+.badge {
+  width: 16px;
+  height: 16px;
+  background-color: rgba(255, 136, 136, 1);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 12px;
 }

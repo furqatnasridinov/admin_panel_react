@@ -54,11 +54,16 @@ export default function GymDetailesBodySecondContainer({
   const [isDropDownOpened, openDropDown] = useState(false);
 
   function openCloseDropDown() {
-    openDropDown(!isDropDownOpened);
+    if (isDropDownOpened) {
+      openDropDown(false);
+    } else {
+      openDropDown(!isDropDownOpened);
+    }
   }
 
   // use refs
   const hiddenFileInput = useRef(null);
+  const blueBorderedContainerRef = useRef(null);
 
   // передаем это на кнопку добавления фото,(как бы через ref, нажимаем на саму input file которого скрыли)
   const handleClick = () => {
@@ -107,6 +112,15 @@ export default function GymDetailesBodySecondContainer({
     draggedOverActivityRef.current = null;
     // update the actual array
     dispatch(dragAndDropActivities(dublicatedList));
+  }
+
+  function scrollToOffset(offset) {
+    var container = document.querySelector(".blue_bordered_container");
+    var offset = 200;
+    // Скролл на offset пикселей относительно текущего положения
+    container.scrollBy({ top: offset, behavior: "smooth" });
+    // Если вам нужно скроллить на абсолютное значение, используйте scrollTo
+    //container.scrollTo({ top: offset, behavior: "smooth" });
   }
 
   return (
@@ -160,7 +174,10 @@ export default function GymDetailesBodySecondContainer({
                     <div className="text-[14px] font-bold">
                       Ваши активности:
                     </div>
-                    <div className="blue_bordered_container">
+                    <div
+                      className="blue_bordered_container"
+                      //ref={blueBorderedContainerRef}
+                    >
                       {listOfActivities.map((activity, index) => {
                         return (
                           <EachActivity
@@ -212,7 +229,15 @@ export default function GymDetailesBodySecondContainer({
                         <DropDownSmaller
                           text={"Добавить"}
                           isDropDownOpened={isDropDownOpened}
-                          openCloseDropDown={openCloseDropDown}
+                          openCloseDropDown={() => {
+                            if (isDropDownOpened) {
+                              openDropDown(false);
+                            } else {
+                              scrollToOffset(200);
+                              openDropDown(true);
+                            }
+                          }}
+                          zIndex={"2"}
                           map={activitiesSlice.allAvailableLessonTypes.map(
                             (item, index) => (
                               <button
@@ -330,7 +355,9 @@ export default function GymDetailesBodySecondContainer({
                   {activityPeculiarities &&
                     activityPeculiarities.trim() !== "" && (
                       <ul className="marked_list ">
-                        <li className="text-[13px] font-normal font-inter">{activityPeculiarities}</li>
+                        <li className="text-[13px] font-normal font-inter">
+                          {activityPeculiarities}
+                        </li>
                       </ul>
                     )}
                 </>
@@ -371,7 +398,6 @@ export default function GymDetailesBodySecondContainer({
                     onChanged={(e) => {
                       dispatch(changeActivityPeculiarities(e.target.value));
                     }}
-                    
                     peculiarities={activityPeculiarities}
                   />
                 </>

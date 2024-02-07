@@ -1029,63 +1029,6 @@ function ChangeLogoModal({
   );
 }
 
-function AddContacts({ text, currentGym, setAddingTelegram, setAddingVk }) {
-  return (
-    <div className="flex flex-row gap-[10px] w-fit">
-      <img src={plusSvg} alt="" />
-      {/* first textfield tappable */}
-      <div className="relative">
-        <select
-          defaultValue=""
-          name=""
-          id="sec"
-          onChange={(e) => {
-            if (e.target.value == "vk") {
-              setAddingVk();
-            }
-            if (e.target.value == "telegram") {
-              setAddingTelegram();
-            }
-          }}
-          style={{
-            width: "220px",
-            height: "30px",
-            padding: "0 6px 0 16px",
-            border: "1px solid #77AAF9",
-            borderRadius: "8px",
-            outline: "none",
-            fontSize: "14px",
-            fontWeight: "500",
-            color: "#B0B0B0",
-          }}
-        >
-          <option value="" disabled hidden>
-            {text}
-          </option>
-          {/* phone */}
-          {(currentGym.phone === null || currentGym.phone === "") && (
-            <option value="phone">phone</option>
-          )}
-          {/* telegram */}
-          {(currentGym.telegram === null || currentGym.telegram === "") && (
-            <option value="telegram">telegram</option>
-          )}
-          {/* vk */}
-          {(currentGym.vk === null || currentGym.vk === "") && (
-            <option value="vk">vk</option>
-          )}
-        </select>
-
-        <img
-          src={arrowDownSvg}
-          alt=""
-          className="absolute right-2 top-1/2 transform -translate-y-1/2" // Выравнивание иконки
-        />
-      </div>
-    </div>
-  );
-}
-
 function DropDownForAddingContacts({
   isDropDownOpened,
   openCloseDropDown,

@@ -81,6 +81,7 @@ const employeesSlice = createSlice({
     selectedRoleName: null,
     selectedRoleId: 0,
     selectedRoleCode: null,
+    selectedEmployeesPriveledges: [],
     isError: false,
     isChangesOccured: false,
   },
@@ -163,6 +164,10 @@ const employeesSlice = createSlice({
       state.selectedRoleCode = action.payload;
     },
 
+    selectAPriveledge : (state, action)=>{
+      state.selectedEmployeesPriveledges = action.payload
+    },
+
     resetChanges: (state) => {
       if (state.isChangesOccured) {
         state.isChangesOccured = false;
@@ -213,6 +218,7 @@ export const {
   removeEmployeeFromList,
   returnDeletedEmployee,
   resetSelectedEmployee,
+  selectAPriveledge
 } = employeesSlice.actions;
 
 export default employeesSlice.reducer;

@@ -31,6 +31,10 @@ p {
   background-color: rgba(89, 154, 254, 1);
 }
 
-.with_no_shadow :focus{
+.with_no_shadow :focus {
   outline: none;
 }
+
+
+
+

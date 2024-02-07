@@ -12,7 +12,7 @@
   color: #b0b0b0;
 }
 
-.dropdown_header {
+.dropdown_smaller_header {
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -27,7 +27,7 @@
   justify-content: center;
 }
 
-.dropdown_header_opened {
+.dropdown_smaller_header_opened {
   display: flex;
   flex-direction: row;
   gap: 90px;

@@ -31,7 +31,6 @@
   display: flex;
   flex-direction: row;
   gap: 90px;
-  
   max-width: 1000px;
   width: auto;
   height: 40px;

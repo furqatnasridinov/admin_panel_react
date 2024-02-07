@@ -7,16 +7,20 @@ import settingsLogo from "../../assets/svg/settings.svg";
 import questionLogo from "../../assets/svg/question.svg";
 import sidebarOpenedLogo from "../../assets/svg/sidebar_opened.svg";
 import sidebarClosedLogo from "../../assets/svg/sidebar_closed.svg";
+import userLogoSvg from "../../assets/svg/contacts.svg";
 import MenuCompany from "../menu_company/menu_company";
 import { NavLink } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const Sidebar = () => {
   const [isSidebarOpened, openCloseSearchBar] = useState(true);
   const [isMenuCompanyShown, showMenuCompany] = useState(false);
   const [isTextShown, showText] = useState(false);
+  const [isButtonDisabled, disableButton] = useState(false);
   const sidebarHeaderRef = useRef();
   const sideBarRef = useRef();
+  const gymsState = useSelector((state) => state.currentGym);
 
   const handleClick = () => {
     if (isSidebarOpened) {
@@ -31,6 +35,30 @@ const Sidebar = () => {
       showMenuCompany(true);
     }
   };
+
+  const handleResize = () => {
+    if (isSidebarOpened) {
+      console.log("handleResize called");
+      if (sideBarRef.current && sideBarRef.current.offsetWidth < 225) {
+        openCloseSearchBar(false);
+        showText(false);
+      }
+    }
+    /* if (window.innerWidth < 800 && !isButtonDisabled) {
+      disableButton(true);
+    }  
+    if (window.innerWidth > 800 && isButtonDisabled) {
+      disableButton(false);
+    } */
+  };
+
+  useEffect(() => {
+    // Добавляем обработчик события при монтировании
+    window.addEventListener("resize", handleResize);
+
+    // Удаляем обработчик события при размонтировании
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (isSidebarOpened) {
@@ -47,131 +75,147 @@ const Sidebar = () => {
   const sidebarWidth = isSidebarOpened ? "sidebar_opened" : "sidebar_closed";
 
   return isSidebarOpened ? (
-    console.log(`sidebarref ${sideBarRef.current}`),
-    <div
-      ref={sideBarRef}
-      className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}
-    >
-      {/* Название ИП */}
-      <button
-        ref={sidebarHeaderRef}
-        className="sidebar_header"
-        style={{ backgroundColor: isMenuCompanyShown ? "#F5F9FF" : "white" }}
-        onClick={handleClickMenuCompany}
+    (console.log(`sidebarref ${sideBarRef.current}`),
+    (
+      <div
+        ref={sideBarRef}
+        className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}
       >
-        <div className="p-[5px] rounded-[6px] ">
+        {/* Название ИП */}
+        <button
+          ref={sidebarHeaderRef}
+          className="sidebar_header"
+          style={{ backgroundColor: isMenuCompanyShown ? "#F5F9FF" : "white" }}
+          onClick={
+            gymsState.currentGym !== null ? handleClickMenuCompany : null
+          }
+        >
           <img src={locationIcon} alt="" />
-        </div>
 
-        {isTextShown && (
-          <div className="text-[14px] font-normal">ИП Пасечник</div>
+          {isTextShown && (
+            <div className="text-[14px] font-normal  line-clamp-2 text-ellipsis">
+              {gymsState.currentGym === null
+                ? "Ваше заведение"
+                : gymsState.currentGym.name}{" "}
+            </div>
+          )}
+        </button>
+        {isMenuCompanyShown && (
+          <MenuCompany
+            sidebarHeaderRef={sidebarHeaderRef}
+            onClose={closeMenuCompany}
+          />
         )}
-      </button>
-      {isMenuCompanyShown && (
-        <MenuCompany
-          sidebarHeaderRef={sidebarHeaderRef}
-          onClose={closeMenuCompany}
-        />
-      )}
 
-      <div className="mt-[18px] px-[16px] opacity-50">
-        {!isMenuCompanyShown && <hr />}
-      </div>
-      <div className="flex flex-col justify-between flex-grow">
-        {/* Первые три элемена */}
-        <div className="flex flex-col">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              isActive
-                ? "sidebar_section active_sidebar_section"
-                : "sidebar_section"
-            }
-          >
-            <div className="  bg-bg-color p-[5px] rounded-[6px] ">
-              <img src={statsLogo} alt="" />
-            </div>
-            {isTextShown && <div>Статистика</div>}
-          </NavLink>
-
-          <NavLink
-            to="/myGymsPage"
-            className={({ isActive }) =>
-              isActive
-                ? "sidebar_section active_sidebar_section"
-                : "sidebar_section"
-            }
-          >
-            <div className="bg-bg-color p-[5px] rounded-[6px] ">
-              <img src={locationIcon} alt="" />
-            </div>
-            {isTextShown && <div>Мои заведения</div>}
-          </NavLink>
-
-          <NavLink
-            to="/schedulePage"
-            className={({ isActive }) =>
-              isActive
-                ? "sidebar_section active_sidebar_section"
-                : "sidebar_section"
-            }
-          >
-            <div className="bg-bg-color p-[5px] rounded-[6px] ">
-              <img src={calendarLogo} alt="" />
-            </div>
-            {isTextShown && <div>Расписание</div>}
-          </NavLink>
+        <div className="mt-[18px] px-[16px] opacity-50">
+          {!isMenuCompanyShown && <hr />}
         </div>
+        <div className="flex flex-col justify-between flex-grow">
+          {/* Первые четыре элемена */}
+          <div className="flex flex-col">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "sidebar_section active_sidebar_section"
+                  : "sidebar_section"
+              }
+            >
+              <img src={userLogoSvg} alt="" />
 
-        {/* Две нижние блоки */}
+              {isTextShown && <div>Клиенты</div>}
 
-        <div className="flex flex-col">
-          <div className="flex flex-row relative mb-[37px] px-[16px]">
-            <hr className="w-full opacity-50" />
-            <div className="absolute right-[-20px] top-[-15px] transition-width duration-300 ease-in-out">
-              <button onClick={handleClick}>
-                <img src={sidebarOpenedLogo} alt="" />
-              </button>
-            </div>
+              {isTextShown && <div className="badge">5</div>}
+            </NavLink>
+
+            <NavLink
+              to="/statisticksPage"
+              className={({ isActive }) =>
+                isActive
+                  ? "sidebar_section active_sidebar_section"
+                  : "sidebar_section"
+              }
+            >
+              <img src={statsLogo} alt="" />
+
+              {isTextShown && <div>Статистика</div>}
+            </NavLink>
+
+            <NavLink
+              to="/myGymsPage"
+              className={({ isActive }) =>
+                isActive
+                  ? "sidebar_section active_sidebar_section"
+                  : "sidebar_section"
+              }
+            >
+              <img src={locationIcon} alt="" />
+
+              {isTextShown && <div>Мои заведения</div>}
+            </NavLink>
+
+            <NavLink
+              to="/schedulePage"
+              className={({ isActive }) =>
+                isActive
+                  ? "sidebar_section active_sidebar_section"
+                  : "sidebar_section"
+              }
+            >
+              <img src={calendarLogo} alt="" />
+
+              {isTextShown && <div>Расписание</div>}
+            </NavLink>
           </div>
 
-          <NavLink
-            to="/help"
-            className={({ isActive }) =>
-              isActive
-                ? "sidebar_section active_sidebar_section"
-                : "sidebar_section"
-            }
-          >
-            <div className="bg-bg-color p-[5px] rounded-[6px] ">
-              <img src={questionLogo} alt="" />
-            </div>
-            {isTextShown && <div>Помощь</div>}
-          </NavLink>
+          {/* Две нижние блоки */}
 
-          <NavLink
-            to="/settingsPage"
-            className={({ isActive }) =>
-              isActive
-                ? "sidebar_section active_sidebar_section"
-                : "sidebar_section"
-            }
-          >
-            <div className="bg-bg-color p-[5px] rounded-[6px] ">
-              <img src={settingsLogo} alt="" />
+          <div className="flex flex-col">
+            <div className="flex flex-row relative mb-[37px] px-[16px]">
+              <hr className="w-full opacity-50" />
+              <div className="absolute right-[-20px] top-[-15px] transition-width duration-300 ease-in-out">
+                <button onClick={handleClick}>
+                  <img src={sidebarOpenedLogo} alt="" />
+                </button>
+              </div>
             </div>
-            {isTextShown && <div>Настройки</div>}
-          </NavLink>
+
+            <NavLink
+              to="/help"
+              className={({ isActive }) =>
+                isActive
+                  ? "sidebar_section active_sidebar_section"
+                  : "sidebar_section"
+              }
+            >
+              <img src={questionLogo} alt="" />
+
+              {isTextShown && <div>Помощь</div>}
+            </NavLink>
+
+            <NavLink
+              to="/settingsPage"
+              className={({ isActive }) =>
+                isActive
+                  ? "sidebar_section active_sidebar_section"
+                  : "sidebar_section"
+              }
+            >
+              <img src={settingsLogo} alt="" />
+
+              {isTextShown && <div>Настройки</div>}
+            </NavLink>
+          </div>
         </div>
       </div>
-    </div>
+    ))
   ) : (
     <div
       className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}
     >
       {/* Название ИП */}
       <button
-        onClick={handleClickMenuCompany}
+        onClick={gymsState.currentGym !== null ? handleClickMenuCompany : null}
         ref={sidebarHeaderRef}
         style={{ backgroundColor: isMenuCompanyShown ? "#F5F9FF" : "white" }}
         className="sidebar_header"
@@ -192,7 +236,7 @@ const Sidebar = () => {
       </div>
 
       <div className="flex flex-col justify-between flex-grow">
-        {/* Первые три элемена */}
+        {/* Первые четыре элемена */}
         <div className="flex flex-col">
           <NavLink
             to="/"
@@ -202,9 +246,19 @@ const Sidebar = () => {
                 : "sidebar_section_closed"
             }
           >
-            <div className="  bg-bg-color p-[5px] rounded-[6px] ">
-              <img src={statsLogo} alt="" />
-            </div>
+            <img src={userLogoSvg} alt="" />
+            <div className="badge">5</div>
+          </NavLink>
+
+          <NavLink
+            to="/statisticksPage"
+            className={({ isActive }) =>
+              isActive
+                ? "sidebar_section_closed active_sidebar_section"
+                : "sidebar_section_closed"
+            }
+          >
+            <img src={statsLogo} alt="" />
           </NavLink>
 
           <NavLink
@@ -215,9 +269,7 @@ const Sidebar = () => {
                 : "sidebar_section_closed"
             }
           >
-            <div className="bg-bg-color p-[5px] rounded-[6px] ">
-              <img src={locationIcon} alt="" />
-            </div>
+            <img src={locationIcon} alt="" />
           </NavLink>
 
           <NavLink
@@ -228,9 +280,7 @@ const Sidebar = () => {
                 : "sidebar_section_closed"
             }
           >
-            <div className="bg-bg-color p-[5px] rounded-[6px] ">
-              <img src={calendarLogo} alt="" />
-            </div>
+            <img src={calendarLogo} alt="" />
           </NavLink>
         </div>
 
@@ -240,7 +290,10 @@ const Sidebar = () => {
           <div className="flex flex-row relative mb-[37px] px-[16px]">
             <hr className="w-full opacity-50" />
             <div className="absolute right-[-20px] top-[-15px] transition-width duration-300 ease-in-out">
-              <button onClick={handleClick}>
+              <button
+                onClick={isButtonDisabled ? () => {} : handleClick}
+                style={{ cursor: isButtonDisabled ? "not-allowed" : "pointer" }}
+              >
                 <img src={sidebarClosedLogo} alt="" />
               </button>
             </div>
@@ -254,9 +307,7 @@ const Sidebar = () => {
                 : "sidebar_section_closed"
             }
           >
-            <div className="bg-bg-color p-[5px] rounded-[6px] ">
-              <img src={questionLogo} alt="" />
-            </div>
+            <img src={questionLogo} alt="" />
           </NavLink>
 
           <NavLink
@@ -267,9 +318,7 @@ const Sidebar = () => {
                 : "sidebar_section_closed"
             }
           >
-            <div className="bg-bg-color p-[5px] rounded-[6px] ">
-              <img src={settingsLogo} alt="" />
-            </div>
+            <img src={settingsLogo} alt="" />
           </NavLink>
         </div>
       </div>

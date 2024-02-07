@@ -8,12 +8,13 @@ export default function DropDownSmaller({
   text,
   openCloseDropDown,
   map,
+  zIndex
 }) {
   return (
-    <div className="column">
+    <div className="column" style={{ zIndex: zIndex }}>
       <button
         className={
-          isDropDownOpened ? "dropdown_header_opened" : "dropdown_header"
+          isDropDownOpened ? "dropdown_smaller_header_opened" : "dropdown_smaller_header"
         }
         onClick={openCloseDropDown}
       >
