@@ -164,13 +164,16 @@ const employeesSlice = createSlice({
       state.selectedRoleCode = action.payload;
     },
 
-    selectAPriveledge : (state, action)=>{
-      state.selectedEmployeesPriveledges = action.payload
+    selectAPriveledge: (state, action) => {
+      state.selectedEmployeesPriveledges = action.payload;
     },
 
     resetChanges: (state) => {
       if (state.isChangesOccured) {
         state.isChangesOccured = false;
+        if (state.selectedEmployee !== null) {
+          state.selectedEmployee = null;
+        }
       }
     },
   },
@@ -188,20 +191,6 @@ const employeesSlice = createSlice({
       state.isError = true;
     });
 
-    // for deleting employees
-    /*  builder.addCase(deleteEmployee.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(deleteEmployee.fulfilled, (state, action) => {
-      state.isLoading = false;
-      const index = state.employees.findIndex(
-        (employee) => employee.id === action.payload
-      );
-      state.employees.splice(index, 1);
-    });
-    builder.addCase(deleteEmployee.rejected, (state) => {
-      state.isError = true;
-    }); */
   },
 });
 
@@ -218,7 +207,7 @@ export const {
   removeEmployeeFromList,
   returnDeletedEmployee,
   resetSelectedEmployee,
-  selectAPriveledge
+  selectAPriveledge,
 } = employeesSlice.actions;
 
 export default employeesSlice.reducer;

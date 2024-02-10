@@ -435,24 +435,32 @@ export default function GymDetailesBodySecondContainer({
             {/* Container with photos */}
             <div className="activity_photos_container">
               {!isEdittingPhotosEnabled &&
-                photosOfSelectedActivity.map((item, index) => (
-                  <img
-                    className="activity_each_photo"
-                    key={index}
-                    src={`http://77.222.53.122/image/${item}`}
-                    alt=""
-                    onClick={() => {
-                      showPhotoInDialog(true);
-                      setPhotoToBeShownInDialog(item);
-                    }}
-                    draggable={true}
-                    onDragStart={() => (draggedItemRef.current = index)}
-                    onDragEnter={() => (draggedOverRef.current = index)}
-                    onDragEnd={handleSortingPhotos}
-                    onDragOver={(e) => e.preventDefault()}
-                    //
-                  />
-                ))}
+                photosOfSelectedActivity.map((item, index) => {
+                  // Объявляем переменные в области видимости функции map
+                  const lastDotIndex = item.lastIndexOf(".");
+                  const nameWithoutExtension = item.substring(0, lastDotIndex);
+                  const extension = item.substring(lastDotIndex + 1);
+                  const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
+
+                  // Возвращаем JSX с использованием переменной внутри строки для атрибута src
+                  return (
+                    <img
+                      className="activity_each_photo"
+                      key={index}
+                      src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                      alt=""
+                      onClick={() => {
+                        showPhotoInDialog(true);
+                        setPhotoToBeShownInDialog(item);
+                      }}
+                      draggable={true}
+                      onDragStart={() => (draggedItemRef.current = index)}
+                      onDragEnter={() => (draggedOverRef.current = index)}
+                      onDragEnd={handleSortingPhotos}
+                      onDragOver={(e) => e.preventDefault()}
+                    />
+                  );
+                })}
               {showPhotoInDialog && isPhotoShownInDialog && (
                 <CustomDialog
                   isOpened={isPhotoShownInDialog}
@@ -465,30 +473,41 @@ export default function GymDetailesBodySecondContainer({
                 </CustomDialog>
               )}
               {isEdittingPhotosEnabled &&
-                photosOfSelectedActivity.map((item, index) => (
-                  <button key={index} className="activity_each_photo_editting">
-                    <img
-                      src={`http://77.222.53.122/image/${item}`}
-                      alt=""
-                      className="rounded-[8px] h-full w-full object-cover"
-                      draggable={false}
-                    />
-                    <img
-                      className="delete-icon"
-                      src={deleteSvg}
-                      alt=""
-                      onClick={() => {
-                        // removing photos
-                        const { id, url } = { id: gymId, url: item };
-                        dispatch(deleteActivityPhoto({ id, url, snackbarRef }));
-                        setTimeout(() => {
-                          dispatch(getPhotos(gymId));
-                        }, 1500);
-                      }}
-                      draggable={false}
-                    />
-                  </button>
-                ))}
+                photosOfSelectedActivity.map((item, index) => {
+                  const lastDotIndex = item.lastIndexOf(".");
+                  const nameWithoutExtension = item.substring(0, lastDotIndex);
+                  const extension = item.substring(lastDotIndex + 1);
+                  const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
+                  return (
+                    <button
+                      key={index}
+                      className="activity_each_photo_editting"
+                    >
+                      <img
+                        src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                        alt=""
+                        className="rounded-[8px] h-full w-full object-cover"
+                        draggable={false}
+                      />
+                      <img
+                        className="delete-icon"
+                        src={deleteSvg}
+                        alt=""
+                        onClick={() => {
+                          // removing photos
+                          const { id, url } = { id: gymId, url: item };
+                          dispatch(
+                            deleteActivityPhoto({ id, url, snackbarRef })
+                          );
+                          setTimeout(() => {
+                            dispatch(getPhotos(gymId));
+                          }, 1500);
+                        }}
+                        draggable={false}
+                      />
+                    </button>
+                  );
+                })}
               {!isEdittingPhotosEnabled && (
                 <>
                   <img

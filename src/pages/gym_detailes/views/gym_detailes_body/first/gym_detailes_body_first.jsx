@@ -280,37 +280,58 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
             <SizeOfPicture size={"180x180px"} />
           </div>
           {/* Medium logo */}
-          {currentGym.logoUrl !== "" && currentGym.logoUrl !== null && (
-            <div className="flex flex-col gap-[10px] ml-[10px] justify-end ">
-              <img
-                onClick={() => {
-                  openModalLogo(true);
-                }}
-                className="logo_rounded90"
-                style={{ cursor: "pointer" }}
-                src={`http://77.222.53.122/image/${currentGym.logoUrl}`}
-                alt=""
-              />
-              <SizeOfPicture size={"90x90px"} />
-            </div>
-          )}
+          {currentGym.logoUrl !== "" &&
+            currentGym.logoUrl !== null &&
+            (() => {
+              const lastDotIndex = currentGym.logoUrl.lastIndexOf(".");
+              const nameWithoutExtension = currentGym.logoUrl.substring(
+                0,
+                lastDotIndex
+              );
+              const extension = currentGym.logoUrl.substring(lastDotIndex + 1);
+              const imageToCompressedFormat = `${nameWithoutExtension}_M.${extension}`;
+
+              return (
+                <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
+                  <img
+                    onClick={() => openModalLogo(true)}
+                    className="logo_rounded90"
+                    style={{ cursor: "pointer" }}
+                    src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                    alt=""
+                  />
+                  {/* Предполагаемый компонент SizeOfPicture */}
+                  <SizeOfPicture size="90x90px" />
+                </div>
+              );
+            })()}
 
           {/* Small logo */}
-          {currentGym.logoUrl !== "" && currentGym.logoUrl !== null && (
-            <div className="flex flex-col gap-[10px] ml-[10px] justify-end ">
-              <img
-                className="logo_rounded50"
-                style={{ cursor: "pointer" }}
-                src={`http://77.222.53.122/image/${currentGym.logoUrl}`}
-                onClick={() => {
-                  openModalLogo(true);
-                }}
-                alt=""
-              />
+          {currentGym.logoUrl !== "" &&
+            currentGym.logoUrl !== null &&
+            (() => {
+              const lastDotIndex = currentGym.logoUrl.lastIndexOf(".");
+              const nameWithoutExtension = currentGym.logoUrl.substring(
+                0,
+                lastDotIndex
+              );
+              const extension = currentGym.logoUrl.substring(lastDotIndex + 1);
+              const imageToCompressedFormat = `${nameWithoutExtension}_M.${extension}`;
 
-              <SizeOfPicture size={"50x50px"} />
-            </div>
-          )}
+              return (
+                <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
+                  <img
+                    onClick={() => openModalLogo(true)}
+                    className="logo_rounded50"
+                    style={{ cursor: "pointer" }}
+                    src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                    alt=""
+                  />
+                  {/* Предполагаемый компонент SizeOfPicture */}
+                  <SizeOfPicture size="50x50px" />
+                </div>
+              );
+            })()}
           {isModalLogoOpened && (
             <CustomDialog
               isOpened={isModalLogoOpened}
@@ -796,10 +817,10 @@ function EditableContacts({
   }; */
 
   return (
-    <div className="flex flex-row gap-[10px] w-fit">
+    <div className="flex flex-row gap-[10px] w-fit ">
       <img src={icon} alt="" />
       {/* first textfield readOnly */}
-      <div className="relative">
+      <div className="relative ">
         <input
           type="text"
           value={text}
@@ -856,6 +877,8 @@ function EditableContacts({
             border: "1px solid #77AAF9",
             alignItems: "center",
             borderRadius: "8px",
+            //backgroundColor : "red",
+            width: "180px",
           }}
         >
           {isTg && (
@@ -879,6 +902,7 @@ function EditableContacts({
               fontSize: "14px",
               fontWeight: "400",
               lineHeight: "16px",
+              width: "100%",
             }}
           />
         </div>

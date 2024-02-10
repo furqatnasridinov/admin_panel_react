@@ -116,6 +116,10 @@ export default function Employees({ listOfEmployees, gymId }) {
   }, [employeesSlice.selectedEmployee]);
 
   return (
+    console.log(`priv sel/emp usestate ${priveledgesOfEmployee}`),
+    console.log(
+      `emp priveledges ${employeesSlice.selectedEmployeesPriveledges}`
+    ),
     console.log(`emp ${JSON.stringify(employeesSlice.selectedEmployee)}`),
     (
       <div className="employees_container">
@@ -338,6 +342,12 @@ export default function Employees({ listOfEmployees, gymId }) {
                         isDropDownOpened={isDropDown2Opened}
                         openCloseDropDown={openCloseDropDown2}
                         bloclClick={employeesSlice.selectedEmployee === null}
+                        othetFunctions={(role) => {
+                          setRoleId(role.id);
+                          setRoleCode(role.code);
+                          setRoleName(role.name);
+                          setPriveledges(role.priveledges);
+                        }}
                       />
                     </div>
                   </div>
@@ -352,6 +362,30 @@ export default function Employees({ listOfEmployees, gymId }) {
                       if (employeesSlice.selectedEmployeesPriveledges) {
                         const isAvailable =
                           employeesSlice.selectedEmployeesPriveledges.includes(
+                            priveledge.id
+                          );
+                        return (
+                          <div
+                            key={priveledge.id}
+                            className="flex flex-row gap-[10px] items-center"
+                          >
+                            <img
+                              src={isAvailable ? availableSvg : notAvailable}
+                              alt=""
+                            />
+                            <div
+                              className={`text-[14px] font-normal leading-[16px] ${
+                                isAvailable ? "" : "text-grey-text"
+                              }`}
+                            >
+                              {priveledge.name}
+                            </div>
+                          </div>
+                        );
+                      }
+                      else {
+                        const isAvailable =
+                          priveledgesOfEmployee.includes(
                             priveledge.id
                           );
                         return (
@@ -784,6 +818,7 @@ function CustomDropdownForRef({
   currentRole,
   openCloseDropDown,
   bloclClick,
+  othetFunctions,
 }) {
   const dispatch = useDispatch();
   return (
@@ -814,6 +849,8 @@ function CustomDropdownForRef({
                 dispatch(changeSelectedEmployeesRole());
                 dispatch(selectAPriveledge(item.priveledges));
                 openCloseDropDown();
+                othetFunctions(item);
+
               }}
             >
               {item.name}
