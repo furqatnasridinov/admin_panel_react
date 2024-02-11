@@ -171,6 +171,7 @@ const activitiesSlice = createSlice({
   initialState: {
     isLoading: false,
     listOfActivities: [],
+    deletedActivities: [],
     allAvailableLessonTypes: [],
     isError: false,
     selectedActivity: "",
@@ -213,6 +214,21 @@ const activitiesSlice = createSlice({
         // remove last element from deletedPhotos and add it to photosOfSelectedActivity
         const lastElement = state.deletedPhotos.pop();
         state.photosOfSelectedActivity.push(lastElement);
+      }
+    },
+
+    removeActivityFromListOfActivities: (state, action) => {
+      state.listOfActivities = state.listOfActivities.filter(
+        (activity) => activity !== action.payload
+      );
+      state.deletedActivities.push(action.payload);
+    },
+
+    returnDeletedActivity: (state) => {
+      if (state.deletedActivities.length > 0) {
+        // remove last element from deletedActivities and add it to listOfActivities
+        const lastElement = state.deletedActivities.pop();
+        state.listOfActivities.push(lastElement);
       }
     },
 
@@ -334,6 +350,8 @@ export const {
   resetChanges,
   removeSelectedActivity,
   removePhotoFromSelectedActivityPhotos,
-  returnDeletedPhoto
+  returnDeletedPhoto,
+  removeActivityFromListOfActivities,
+  returnDeletedActivity
 } = activitiesSlice.actions;
 export default activitiesSlice.reducer;
