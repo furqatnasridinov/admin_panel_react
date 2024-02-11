@@ -497,7 +497,7 @@ export default function GymDetailesBodySecondContainer({
                           // removing photos
                           const { id, url } = { id: gymId, url: item };
                           dispatch(
-                            deleteActivityPhoto({ id, url, snackbarRef })
+                            deleteActivityPhoto({ id, url })
                           );
                           setTimeout(() => {
                             dispatch(getPhotos(gymId));

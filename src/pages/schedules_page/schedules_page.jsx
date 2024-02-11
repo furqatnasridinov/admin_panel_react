@@ -62,7 +62,7 @@ export default function SchedulesPage() {
   const [isGymsDropDownOpened, openGymsDropDown] = useState(false);
   const [isActivitiesDropDownOpened, openActivitiesDropDown] = useState(false);
   const [isMoldaOpened, openModal] = useState(false);
-  const [currentDate, setCurrentDate] = useState(new Date("2024-01-01"));
+  const [currentDate, setCurrentDate] = useState(new Date());
   const calendarRef = useRef(); // Ref для доступа к экземпляру календаря
   const [isDropDownOpened, openDropDown] = useState(false);
   const [isStartTimeDropDownOpened, openStartTimeDropDown] = useState(false);
@@ -192,26 +192,28 @@ export default function SchedulesPage() {
   ]);
 
   useEffect(() => {
-    const selectedActivityStartTimeHour =
-      scheduleState.selectedEvent.start.toLocaleString("ru-RU", {
-        hour: "2-digit",
-      });
-    const selectedActivityStartTimeMinutes =
-      scheduleState.selectedEvent.start.toLocaleString("ru-RU", {
-        minute: "2-digit",
-      });
-    const selectedActivityEndTimeHour =
-      scheduleState.selectedEvent.end.toLocaleString("ru-RU", {
-        hour: "2-digit",
-      });
-    const selectedActivityEndTimeMinutes =
-      scheduleState.selectedEvent.end.toLocaleString("ru-RU", {
-        minute: "2-digit",
-      });
-    dispatch(setStartTimeHours(selectedActivityStartTimeHour));
-    dispatch(setStartTimeMinutes(selectedActivityStartTimeMinutes));
-    dispatch(setEndTimeHours(selectedActivityEndTimeHour));
-    dispatch(setEndTimeMinutes(selectedActivityEndTimeMinutes));
+    if (scheduleState.selectedEvent !== null) {
+      const selectedActivityStartTimeHour =
+        scheduleState.selectedEvent.start.toLocaleString("ru-RU", {
+          hour: "2-digit",
+        });
+      const selectedActivityStartTimeMinutes =
+        scheduleState.selectedEvent.start.toLocaleString("ru-RU", {
+          minute: "2-digit",
+        });
+      const selectedActivityEndTimeHour =
+        scheduleState.selectedEvent.end.toLocaleString("ru-RU", {
+          hour: "2-digit",
+        });
+      const selectedActivityEndTimeMinutes =
+        scheduleState.selectedEvent.end.toLocaleString("ru-RU", {
+          minute: "2-digit",
+        });
+      dispatch(setStartTimeHours(selectedActivityStartTimeHour));
+      dispatch(setStartTimeMinutes(selectedActivityStartTimeMinutes));
+      dispatch(setEndTimeHours(selectedActivityEndTimeHour));
+      dispatch(setEndTimeMinutes(selectedActivityEndTimeMinutes));
+    }
   }, [scheduleState.selectedEvent]);
 
   return (

@@ -36,6 +36,7 @@ import {
   returnDeletedEmployee,
   resetSelectedEmployee,
   selectAPriveledge,
+  removeEmployeeFromDeletedEmployeesList,
 } from "../../../../../features/employees_slice";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 
@@ -58,8 +59,8 @@ export default function Employees({ listOfEmployees, gymId }) {
   const [nameNotValidated, setNameNotValidated] = useState();
   const [phoneNotValidated, setPhoneNotValidated] = useState();
   const [isAddEmployeesDialogOpened, openAddEmployeesDialog] = useState(false);
-  const [cancelDeleteTimeoutEmployee, setCancelDeleteTimeoutEmployee] =
-    useState();
+  const [cancelDeleteTimeoutEmployees, setCancelDeleteTimeoutEmployees] =
+    useState([]);
   //use states for refactor employees dialog
   const [nameTextfield2HasFocus, setName2Focus] = useState(false);
   const [surnameTextfield2HasFocus, setSurname2Focus] = useState(false);
@@ -116,11 +117,7 @@ export default function Employees({ listOfEmployees, gymId }) {
   }, [employeesSlice.selectedEmployee]);
 
   return (
-    console.log(`priv sel/emp usestate ${priveledgesOfEmployee}`),
-    console.log(
-      `emp priveledges ${employeesSlice.selectedEmployeesPriveledges}`
-    ),
-    console.log(`emp ${JSON.stringify(employeesSlice.selectedEmployee)}`),
+    console.log(`xz ${JSON.stringify(employeesSlice.deletedEmployess)}`),
     (
       <div className="employees_container">
         <TextAndTextButton
@@ -129,6 +126,22 @@ export default function Employees({ listOfEmployees, gymId }) {
           onclick={() =>
             listOfEmployees.length === 0 ? {} : openRefEmployeesDialog(true)
           }
+        />
+        <CustomSnackbar
+          ref={deleteEmployeeSnackRef}
+          undoAction={() => {
+            dispatch(returnDeletedEmployee());
+            if (cancelDeleteTimeoutEmployees.length > 0) {
+              const lastCancelFunction =
+                cancelDeleteTimeoutEmployees[
+                  cancelDeleteTimeoutEmployees.length - 1
+                ];
+              lastCancelFunction();
+              setCancelDeleteTimeoutEmployees((prevState) =>
+                prevState.slice(0, -1)
+              );
+            }
+          }}
         />
         {listOfEmployees.length !== 0 && isRefEmployeesDialogOpened && (
           <CustomDialog
@@ -158,54 +171,70 @@ export default function Employees({ listOfEmployees, gymId }) {
                   </div>
                 </div>
                 <div className="employees_wrap">
-                  {listOfEmployees.map((employee) => {
-                    return (
-                      <EachEmployee
-                        key={employee.id}
-                        photo={goggins}
-                        lastName={
-                          employee.lastName == null || employee.lastName == ""
-                            ? ""
-                            : employee.lastName
-                        }
-                        name={employee.firstName}
-                        job={
-                          employee.roles.length === 0
-                            ? "Нет роли"
-                            : employee.roles[0].name
-                        }
-                        onDeleteClicked={async () => {
-                          dispatch(resetSelectedEmployee());
-                          dispatch(removeEmployeeFromList(employee));
-                          const cancelTimeOut =
-                            deleteEmployeeSnackRef.current.show(
-                              "Вы удалили сотрудника",
-                              () => {
+                  {listOfEmployees
+                    .filter(
+                      (employee) =>
+                        !employeesSlice.deletedEmployess.some(
+                          (deletedEmployee) => deletedEmployee.id === employee.id
+                        )
+                    )
+                    .map((employee) => {
+                      return (
+                        <EachEmployee
+                          key={employee.id}
+                          photo={goggins}
+                          lastName={
+                            employee.lastName == null || employee.lastName == ""
+                              ? ""
+                              : employee.lastName
+                          }
+                          name={employee.firstName}
+                          job={
+                            employee.roles.length === 0
+                              ? "Нет роли"
+                              : employee.roles[0].name
+                          }
+                          onDeleteClicked={async () => {
+                            dispatch(resetSelectedEmployee());
+                            dispatch(removeEmployeeFromList(employee));
+                            const cancelTimeOut =
+                              deleteEmployeeSnackRef.current.show(
+                                "Вы удалили сотрудника",
                                 // function when time ended
-                                const { employeeId } = {
-                                  employeeId: employee.id,
-                                };
-                                dispatch(deleteEmployee({ employeeId }));
-                                setTimeout(() => {
+                                async () => {
+                                  const { employeeId } = {
+                                    employeeId: employee.id,
+                                  };
+                                  await dispatch(
+                                    deleteEmployee({ employeeId }) // it will work dispise the warning
+                                  );
                                   dispatch(getListOfEmployees(gymId));
-                                }, 1000);
-                              }
-                            );
-                          setCancelDeleteTimeoutEmployee(() => cancelTimeOut);
-                        }}
-                        //isThatYou={localStorage.id === employee.id} <== maybe?
-                        showPointer={true}
-                        onEmployeeClicked={() =>
-                          dispatch(selectAnEmployee(employee))
-                        }
-                        isSelected={
-                          employeesSlice.selectedEmployee !== null
-                            ? employeesSlice.selectedEmployee.id === employee.id
-                            : false
-                        }
-                      />
-                    );
-                  })}
+                                  /* dispatch(
+                                    removeEmployeeFromDeletedEmployeesList(
+                                      employee
+                                    )
+                                  ); */
+                                }
+                              );
+                            setCancelDeleteTimeoutEmployees((prevState) => [
+                              ...prevState,
+                              cancelTimeOut,
+                            ]);
+                          }}
+                          //isThatYou={localStorage.id === employee.id} <== maybe?
+                          showPointer={true}
+                          onEmployeeClicked={() =>
+                            dispatch(selectAnEmployee(employee))
+                          }
+                          isSelected={
+                            employeesSlice.selectedEmployee !== null
+                              ? employeesSlice.selectedEmployee.id ===
+                                employee.id
+                              : false
+                          }
+                        />
+                      );
+                    })}
                   <div
                     className="button"
                     onClick={() => {
@@ -217,15 +246,6 @@ export default function Employees({ listOfEmployees, gymId }) {
                     <img src={addSvg} alt="" />
                     <div className="">Добавить</div>
                   </div>
-                  <CustomSnackbar
-                    ref={deleteEmployeeSnackRef}
-                    undoAction={() => {
-                      dispatch(returnDeletedEmployee());
-                      if (cancelDeleteTimeoutEmployee) {
-                        cancelDeleteTimeoutEmployee();
-                      }
-                    }}
-                  />
                 </div>
               </div>
               {/* Personal info */}
@@ -382,12 +402,10 @@ export default function Employees({ listOfEmployees, gymId }) {
                             </div>
                           </div>
                         );
-                      }
-                      else {
-                        const isAvailable =
-                          priveledgesOfEmployee.includes(
-                            priveledge.id
-                          );
+                      } else {
+                        const isAvailable = priveledgesOfEmployee.includes(
+                          priveledge.id
+                        );
                         return (
                           <div
                             key={priveledge.id}
@@ -447,22 +465,29 @@ export default function Employees({ listOfEmployees, gymId }) {
           </CustomDialog>
         )}
         <div className="employees_list">
-          {listOfEmployees.map((employee) => {
-            return (
-              <EachEmployee
-                key={employee.id}
-                photo={goggins}
-                name={employee.firstName}
-                lastName={employee.lastName}
-                job={
-                  employee.roles.length === 0
-                    ? "Нет роли"
-                    : employee.roles[0].name
-                }
-                //isThatYou={localStorage.id === employee.id} <== maybe?
-              />
-            );
-          })}
+          {listOfEmployees
+            .filter(
+              (employee) =>
+                !employeesSlice.deletedEmployess.some(
+                  (deletedEmployee) => deletedEmployee.id === employee.id
+                )
+            )
+            .map((employee) => {
+              return (
+                <EachEmployee
+                  key={employee.id}
+                  photo={goggins}
+                  name={employee.firstName}
+                  lastName={employee.lastName}
+                  job={
+                    employee.roles.length === 0
+                      ? "Нет роли"
+                      : employee.roles[0].name
+                  }
+                  //isThatYou={localStorage.id === employee.id} <== maybe?
+                />
+              );
+            })}
           {/* Add button */}
           <div
             className="button"
@@ -476,6 +501,7 @@ export default function Employees({ listOfEmployees, gymId }) {
             <img src={addSvg} alt="" />
             <div className="">Добавить</div>
           </div>
+
           {/* Add employee dialog */}
           {isAddEmployeesDialogOpened && (
             <CustomDialog
@@ -850,7 +876,6 @@ function CustomDropdownForRef({
                 dispatch(selectAPriveledge(item.priveledges));
                 openCloseDropDown();
                 othetFunctions(item);
-
               }}
             >
               {item.name}

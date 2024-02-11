@@ -76,6 +76,7 @@ const employeesSlice = createSlice({
   initialState: {
     isLoading: false,
     employees: [],
+    isEmployeesLoadidng: false,
     deletedEmployess: [],
     selectedEmployee: null,
     selectedRoleName: null,
@@ -152,6 +153,12 @@ const employeesSlice = createSlice({
       }
     },
 
+    removeEmployeeFromDeletedEmployeesList: (state, action) => {
+      state.deletedEmployess = state.deletedEmployess.filter(
+        (employee) => employee.id !== action.payload.id
+      );
+    },
+
     selectARoleName: (state, action) => {
       state.selectedRoleName = action.payload;
     },
@@ -181,16 +188,26 @@ const employeesSlice = createSlice({
   extraReducers: (builder) => {
     // for getting employees
     builder.addCase(getListOfEmployees.pending, (state) => {
-      state.isLoading = true;
+      state.isEmployeesLoadidng = true;
     });
     builder.addCase(getListOfEmployees.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isEmployeesLoadidng = false;
       state.employees = action.payload;
     });
     builder.addCase(getListOfEmployees.rejected, (state) => {
-      state.isError = true;
+      state.isEmployeesLoadidng = false;
     });
 
+    // for deleting employees
+    builder.addCase(deleteEmployee.pending, (state) => {
+      state.isEmployeesLoadidng = true;
+    });
+    builder.addCase(deleteEmployee.fulfilled, (state) => {
+      state.isEmployeesLoadidng = false;
+    });
+    builder.addCase(deleteEmployee.rejected, (state) => {
+      state.isEmployeesLoadidng = false;
+    });
   },
 });
 
@@ -208,6 +225,7 @@ export const {
   returnDeletedEmployee,
   resetSelectedEmployee,
   selectAPriveledge,
+  removeEmployeeFromDeletedEmployeesList
 } = employeesSlice.actions;
 
 export default employeesSlice.reducer;

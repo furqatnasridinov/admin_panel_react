@@ -103,7 +103,7 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
 
 export const deleteActivityPhoto = createAsyncThunk(
   "activitiesSlice/deleteActivityPhoto",
-  async ({ id, url, snackbarRef }) => {
+  async ({ id, url }) => {
     try {
       var formData = new FormData();
       formData.append("url", url);

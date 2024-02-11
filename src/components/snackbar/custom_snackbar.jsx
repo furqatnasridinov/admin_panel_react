@@ -9,29 +9,31 @@ import { Circle } from "rc-progress";
 
 const CustomSnackbar = forwardRef((props, ref) => {
   const [snackbars, setSnackbars] = useState([]);
+  const timeouts = {};
 
   useImperativeHandle(ref, () => ({
     show(message, onTimeEnded) {
-      const id = Date.now();
+      const id = props.objectId ? props.objectId : Date.now();
       const newSnackbar = { id, message, countdown: 9 };
       setSnackbars((prevSnackbars) => [...prevSnackbars, newSnackbar]);
-      // Запускаем таймер, который будет вызывать onTimeEnded после истечения времени
-      const timeoutId = setTimeout(() => {
+      // Store the timeout ID
+      timeouts[id] = setTimeout(() => {
         setSnackbars((prevSnackbars) =>
           prevSnackbars.filter((snackbar) => snackbar.id !== id)
         );
-        if (onTimeEnded) onTimeEnded(); // Вызываем onTimeEnded если он был передан
+        if (onTimeEnded) onTimeEnded();
       }, 9000);
 
       // Возвращаем функцию для отмены таймера
-      return () => clearTimeout(timeoutId);
+      return () => clearTimeout(timeouts[id]);
     },
     cancel(id) {
       // Remove the snackbar with the given id
       setSnackbars((prevSnackbars) =>
         prevSnackbars.filter((snackbar) => snackbar.id !== id)
       );
-      
+      // Stop the timeout to prevent onTimeEnded to get called
+      clearTimeout(timeouts[id]);
     },
   }));
 
