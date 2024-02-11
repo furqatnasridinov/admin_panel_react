@@ -85,26 +85,22 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   };
 
   // Обработчик для добавления новой фотографии
-  const handleNewPhoto = (event) => {
+  const handleNewPhoto = async (event) => {
     const file = event.target.files[0];
     const { gymId, image } = { gymId: currentGym.id, image: file };
-    dispatch(addGymPicture({ gymId, image }));
-    setTimeout(() => {
-      dispatch(getCurrentGym(currentGym.id));
-    }, 2500);
+    await dispatch(addGymPicture({ gymId, image }));
+    dispatch(getCurrentGym(currentGym.id));
     if (isModalPhotoOpened) {
       openModalPhoto(false);
     }
   };
 
   // Обработчик для добавления нового логотипа
-  const handleNewLogo = (event) => {
+  const handleNewLogo = async (event) => {
     const file = event.target.files[0];
     const { gymId, image } = { gymId: currentGym.id, image: file };
-    dispatch(addGymLogo({ gymId, image }));
-    setTimeout(() => {
-      dispatch(getCurrentGym(currentGym.id));
-    }, 1000);
+    await dispatch(addGymLogo({ gymId, image }));
+    dispatch(getCurrentGym(currentGym.id));
     if (isModalLogoOpened) {
       openModalLogo(false);
     }
@@ -280,37 +276,58 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
             <SizeOfPicture size={"180x180px"} />
           </div>
           {/* Medium logo */}
-          {currentGym.logoUrl !== "" && currentGym.logoUrl !== null && (
-            <div className="flex flex-col gap-[10px] ml-[10px] justify-end ">
-              <img
-                onClick={() => {
-                  openModalLogo(true);
-                }}
-                className="logo_rounded90"
-                style={{ cursor: "pointer" }}
-                src={`http://77.222.53.122/image/${currentGym.logoUrl}`}
-                alt=""
-              />
-              <SizeOfPicture size={"90x90px"} />
-            </div>
-          )}
+          {currentGym.logoUrl !== "" &&
+            currentGym.logoUrl !== null &&
+            (() => {
+              const lastDotIndex = currentGym.logoUrl.lastIndexOf(".");
+              const nameWithoutExtension = currentGym.logoUrl.substring(
+                0,
+                lastDotIndex
+              );
+              const extension = currentGym.logoUrl.substring(lastDotIndex + 1);
+              const imageToCompressedFormat = `${nameWithoutExtension}_M.${extension}`;
+
+              return (
+                <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
+                  <img
+                    onClick={() => openModalLogo(true)}
+                    className="logo_rounded90"
+                    style={{ cursor: "pointer" }}
+                    src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                    alt=""
+                  />
+                  {/* Предполагаемый компонент SizeOfPicture */}
+                  <SizeOfPicture size="90x90px" />
+                </div>
+              );
+            })()}
 
           {/* Small logo */}
-          {currentGym.logoUrl !== "" && currentGym.logoUrl !== null && (
-            <div className="flex flex-col gap-[10px] ml-[10px] justify-end ">
-              <img
-                className="logo_rounded50"
-                style={{ cursor: "pointer" }}
-                src={`http://77.222.53.122/image/${currentGym.logoUrl}`}
-                onClick={() => {
-                  openModalLogo(true);
-                }}
-                alt=""
-              />
+          {currentGym.logoUrl !== "" &&
+            currentGym.logoUrl !== null &&
+            (() => {
+              const lastDotIndex = currentGym.logoUrl.lastIndexOf(".");
+              const nameWithoutExtension = currentGym.logoUrl.substring(
+                0,
+                lastDotIndex
+              );
+              const extension = currentGym.logoUrl.substring(lastDotIndex + 1);
+              const imageToCompressedFormat = `${nameWithoutExtension}_M.${extension}`;
 
-              <SizeOfPicture size={"50x50px"} />
-            </div>
-          )}
+              return (
+                <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
+                  <img
+                    onClick={() => openModalLogo(true)}
+                    className="logo_rounded50"
+                    style={{ cursor: "pointer" }}
+                    src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                    alt=""
+                  />
+                  {/* Предполагаемый компонент SizeOfPicture */}
+                  <SizeOfPicture size="50x50px" />
+                </div>
+              );
+            })()}
           {isModalLogoOpened && (
             <CustomDialog
               isOpened={isModalLogoOpened}
@@ -384,15 +401,13 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     onChange={(e) => {
                       dispatch(changeCurrentGymsName(e.target.value));
                     }}
-                    onButtonClicked={() => {
+                    onButtonClicked={async () => {
                       const { id, name } = {
                         id: currentGym.id,
                         name: currentGym.name,
                       };
-                      dispatch(patchGymName({ id, name }));
-                      setTimeout(() => {
-                        dispatch(getCurrentGym(currentGym.id));
-                      }, 700);
+                      await dispatch(patchGymName({ id, name }));
+                      dispatch(getCurrentGym(currentGym.id));
                       setNameEditing(false);
                       dispatch(resetChanges());
                     }}
@@ -436,15 +451,13 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     onChange={(e) => {
                       dispatch(changeCurrentGymsDescription(e.target.value));
                     }}
-                    onButtonClicked={() => {
+                    onButtonClicked={async () => {
                       const { id, description } = {
                         id: currentGym.id,
                         description: currentGym.description,
                       };
-                      dispatch(patchGymDescription({ id, description }));
-                      setTimeout(() => {
-                        dispatch(getCurrentGym(currentGym.id));
-                      }, 700);
+                      await dispatch(patchGymDescription({ id, description }));
+                      dispatch(getCurrentGym(currentGym.id));
                       setDescribtionEditing(false);
                       dispatch(resetChanges());
                     }}
@@ -488,15 +501,13 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     onChange={(e) => {
                       dispatch(changeCurrentGymsAddress(e.target.value));
                     }}
-                    onButtonClicked={() => {
+                    onButtonClicked={async () => {
                       const { id, address } = {
                         id: currentGym.id,
                         address: currentGym.address,
                       };
-                      dispatch(patchGymAddress({ id, address }));
-                      setTimeout(() => {
-                        dispatch(getCurrentGym(currentGym.id));
-                      }, 700);
+                      await dispatch(patchGymAddress({ id, address }));
+                      dispatch(getCurrentGym(currentGym.id));
                       setAddressEditting(false);
                       dispatch(resetChanges());
                     }}
@@ -560,7 +571,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   text1={"Контакты"}
                   text2={"Сохранить"}
                   isDisabled={currentGym.phone.length !== 12}
-                  onclick={() => {
+                  onclick={async () => {
                     if (currentGym.phone.length == 12) {
                       if (addingTelegram) {
                         setAddingTelegram(false);
@@ -581,10 +592,10 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                         vk: currentGym.vk,
                       };
                       if (currentGymState.isChangesOccured) {
-                        dispatch(patchGymContacts({ id, phone, telegram, vk }));
-                        setTimeout(() => {
-                          dispatch(getCurrentGym(currentGym.id));
-                        }, 700);
+                        await dispatch(
+                          patchGymContacts({ id, phone, telegram, vk })
+                        );
+                        dispatch(getCurrentGym(currentGym.id));
                       }
                       setContactsEditting(false);
                       dispatch(resetChanges());
@@ -796,10 +807,10 @@ function EditableContacts({
   }; */
 
   return (
-    <div className="flex flex-row gap-[10px] w-fit">
+    <div className="flex flex-row gap-[10px] w-fit ">
       <img src={icon} alt="" />
       {/* first textfield readOnly */}
-      <div className="relative">
+      <div className="relative ">
         <input
           type="text"
           value={text}
@@ -856,6 +867,8 @@ function EditableContacts({
             border: "1px solid #77AAF9",
             alignItems: "center",
             borderRadius: "8px",
+            //backgroundColor : "red",
+            width: "180px",
           }}
         >
           {isTg && (
@@ -879,6 +892,7 @@ function EditableContacts({
               fontSize: "14px",
               fontWeight: "400",
               lineHeight: "16px",
+              width: "100%",
             }}
           />
         </div>

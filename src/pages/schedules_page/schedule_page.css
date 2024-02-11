@@ -55,12 +55,13 @@
   gap: 32px;
   position: fixed;
   top: 185px;
-  right: 0; 
+  right: 0;
   width: 386px;
   padding: 24px;
   border-radius: 16px;
   border: 1px solid rgba(212, 229, 255, 1);
   background-color: white;
+  z-index: 3;
 }
 
 .refSchedule {
@@ -77,11 +78,12 @@
 
 .textArea {
   width: 100%;
+  height: fit-content;
   padding: 10px 16px 10px 8px;
   border: 1px solid #77aaf9;
   border-radius: 8px;
   outline: none;
-  max-height: 120px;
+  max-height: 300px;
   resize: none;
   overflow-y: auto;
   -ms-overflow-style: none; /* IE and Edge */
@@ -224,6 +226,11 @@
   /* background-color: red; */
 }
 
+.react-big-calendar .custom-event-style {
+  background-color: red !important;
+  color: green !important;
+}
+
 .rbc-time-header-content {
   display: flex;
   flex-direction: column;
@@ -252,11 +259,11 @@
 
 .rbc-time-content {
   border-top: 1px solid #9dc1f5 !important;
+  /* margin-top: 20px; */
   /* background-color: yellow; */
 }
 
 .rbc-time-gutter {
-  /* background-color: azure; */
   width: 104px !important;
 }
 
@@ -290,13 +297,14 @@
   /* background-color: red; */
   min-width: 104px !important;
   width: 100% !important;
+  margin-top: 10px;
   /* min-width: 105px !important; каждая клетка в body */
   /* background-color: red; */
 }
 
 .rbc-time-content > * + * > * {
   border-left: 1px solid #9dc1f5 !important;
-  border-bottom: 1px solid #9dc1f5 !important;
+  border-top: 1px solid #9dc1f5 !important;
 }
 
 .rbc-event-label {
@@ -314,15 +322,6 @@
   /* background-color: green !important; */
 }
 
-/* .rbc-event :hover {
-  font-size: 10px !important;
-  font-weight: 500 !important;
-  border: 1px solid #f1d19c;
-  width: 31px !important;
-  background-color: red !important;
-  padding: 0px !important
-} */
-
 .rbc-current-time-indicator {
   display: none;
 }
@@ -332,10 +331,6 @@
   border-right: none !important;
 }
 
-.rbc-selected {
-  border: 1px solid #f1d19c;
-}
-
 .zoomButtons {
   display: flex;
   flex-direction: column;
@@ -343,4 +338,44 @@
   /* right: 2%; */
   bottom: 2.5%;
   gap: 5px;
+}
+
+.overLappingEvents {
+  border-radius: 100px !important;
+  color: black !important;
+  background-color: #ffebcb !important;
+  border: none !important;
+  box-shadow: none !important;
+  /* font-size: 0px !important; */
+  content-visibility: hidden;
+}
+
+.overLappingEvents:hover {
+  background-color: #ffebcb !important;
+  border-radius: 8px !important;
+  width: 100% !important;
+  padding: 10px !important;
+  left: 0% !important;
+  transition: left 0.3s ease;
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.15),
+    0px 15px 18px -15px rgba(109, 150, 212, 1) !important;
+  z-index: 2;
+  content-visibility: visible;
+}
+
+.notOverLappingEvents {
+  border-radius: 8px !important;
+  color: black !important;
+  background-color: #ffebcb !important;
+  padding: 10px !important;
+  border: 1px solid #f1d19c !important;
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.15),
+    0px 15px 18px -15px rgba(109, 150, 212, 1) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+}
+
+.my-calendar-container {
+  margin: 0px !important;
+  padding: 0px !important;
 }

@@ -21,6 +21,11 @@ import {
   removeDayFromSelectedWeekdays,
   selectADayFromCalendar,
   setSelectedEvent,
+  setStartTimeHours,
+  setStartTimeMinutes,
+  setEndTimeHours,
+  setEndTimeMinutes,
+  getSchedules,
 } from "../../features/schedule_slice";
 import { getListOfEmployees } from "../../features/employees_slice";
 import CustomButton from "../../components/button/button";
@@ -48,6 +53,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 import ru from "date-fns/locale/ru";
+import DropdownForHours from "./dropdowm_for_hours";
 
 registerLocale("ru", ru);
 const localizer = momentLocalizer(moment);
@@ -57,7 +63,7 @@ export default function SchedulesPage() {
   const [isActivitiesDropDownOpened, openActivitiesDropDown] = useState(false);
   const [isMoldaOpened, openModal] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const calendarRef = useRef(null); // Ref для доступа к экземпляру календаря
+  const calendarRef = useRef(); // Ref для доступа к экземпляру календаря
   const [isDropDownOpened, openDropDown] = useState(false);
   const [isStartTimeDropDownOpened, openStartTimeDropDown] = useState(false);
   const [isEndTimeDropDownOpened, openEndTimeDropDown] = useState(false);
@@ -71,43 +77,30 @@ export default function SchedulesPage() {
     useState(false);
   const [checkBoxEnabled, setCheckbox] = useState(false);
   const [deleteModalShown, openDeleteModal] = useState(false);
+  const [isNavigationtriggered, setNavigation] = useState(false);
 
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
   const activitiesState = useSelector((state) => state.activities);
   const scheduleState = useSelector((state) => state.schedule);
 
-  // get initial data`s
-  useEffect(() => {
-    dispatch(getListOfGyms());
-    if (gymState.currentGym == null) {
-      dispatch(setCurrentGymFromFirstItem());
-    }
-
-    if (gymState.currentGym !== null) {
-      dispatch(getListOfActivities(gymState.currentGym.id));
-    }
-  }, []);
-
-  // get new infos every time when currentGym changes
-  useEffect(() => {
-    if (gymState.currentGym !== null) {
-      dispatch(getListOfActivities(gymState.currentGym.id));
-    }
-    if (activitiesState.selectedActivity !== "") {
-      dispatch(removeSelectedActivity());
-    }
-  }, [gymState.currentGym]);
-
-  const events = DUMMY_LESSONS.map((item) => {
+  /* const events = DUMMY_LESSONS.map((item) => {
     return {
       id: item.id,
       title: item.title,
       start: new Date(item.start),
       end: new Date(item.end),
     };
-  });
+  }); */
 
+  const events = scheduleState.allSchedules.map((item) => {
+    return {
+      id: item.id,
+      start: item.startTime,
+      end: item.endTime,
+      title: item.title,
+    };
+  });
   moment.locale("ru");
   const localizer = momentLocalizer(moment);
 
@@ -144,15 +137,84 @@ export default function SchedulesPage() {
     }
   }
 
+  // get initial data`s
   useEffect(() => {
-    dispatch(selectADayFromCalendar(new Date()));
+    dispatch(getListOfGyms());
+    if (gymState.currentGym == null) {
+      dispatch(setCurrentGymFromFirstItem());
+    }
+
+    if (gymState.currentGym !== null) {
+      dispatch(getListOfActivities(gymState.currentGym.id));
+    }
   }, []);
 
+  // get new infos every time when currentGym changes
   useEffect(() => {
     if (gymState.currentGym !== null) {
+      dispatch(getSchedules(gymState.currentGym.id));
       dispatch(getListOfEmployees(gymState.currentGym.id));
+      dispatch(getListOfActivities(gymState.currentGym.id));
+    }
+    if (activitiesState.selectedActivity !== "") {
+      dispatch(removeSelectedActivity());
     }
   }, [gymState.currentGym]);
+
+  // styles to each events
+  useEffect(() => {
+    const calendarElement = document.querySelector(".my-calendar-container");
+    if (calendarElement) {
+      if (scheduleState.allSchedules.length > 0) {
+        const events = calendarElement.querySelectorAll(".rbc-event");
+        if (events.length > 0) {
+          events.forEach((event) => {
+            const eventWidth = event.offsetWidth;
+            const containerWidth = event.offsetParent.offsetWidth;
+            if (eventWidth < containerWidth - 5) {
+              if (!event.classList.contains("overLappingEvents")) {
+                event.classList.add("overLappingEvents");
+              }
+            } else {
+              if (!event.classList.contains("notOverLappingEvents")) {
+                event.classList.add("notOverLappingEvents");
+              }
+            }
+          });
+        }
+      }
+    }
+  }, [
+    activitiesState.selectedActivity,
+    scheduleState.selectedEvent,
+    //scheduleState.allSchedules,
+    isNavigationtriggered,
+  ]);
+
+  useEffect(() => {
+    if (scheduleState.selectedEvent !== null) {
+      const selectedActivityStartTimeHour =
+        scheduleState.selectedEvent.start.toLocaleString("ru-RU", {
+          hour: "2-digit",
+        });
+      const selectedActivityStartTimeMinutes =
+        scheduleState.selectedEvent.start.toLocaleString("ru-RU", {
+          minute: "2-digit",
+        });
+      const selectedActivityEndTimeHour =
+        scheduleState.selectedEvent.end.toLocaleString("ru-RU", {
+          hour: "2-digit",
+        });
+      const selectedActivityEndTimeMinutes =
+        scheduleState.selectedEvent.end.toLocaleString("ru-RU", {
+          minute: "2-digit",
+        });
+      dispatch(setStartTimeHours(selectedActivityStartTimeHour));
+      dispatch(setStartTimeMinutes(selectedActivityStartTimeMinutes));
+      dispatch(setEndTimeHours(selectedActivityEndTimeHour));
+      dispatch(setEndTimeMinutes(selectedActivityEndTimeMinutes));
+    }
+  }, [scheduleState.selectedEvent]);
 
   return (
     console.log(
@@ -291,48 +353,38 @@ export default function SchedulesPage() {
                       Время проведения:
                     </div>
                     <div className="flex flex-row gap-[10px] items-center">
-                      <CustomDropdown
-                        text={scheduleState.startTime}
+                      <DropdownForHours
+                        text={`${scheduleState.startTimeHoursTmp}:${scheduleState.startTimeMinutesTmp}`}
                         isDropDownOpened={isStartTimeDropDownOpened}
                         openCloseDropDown={() => {
                           openStartTimeDropDown(!isStartTimeDropDownOpened);
                         }}
-                        map={times.map((item, index) => (
-                          <button
-                            key={index}
-                            className="gym_names"
-                            onClick={() => {
-                              dispatch(setStartTime(item));
-                              openStartTimeDropDown(false);
-                            }}
-                          >
-                            {item}
-                          </button>
-                        ))}
-                        maxHeight={"200px"}
+                        setHours={(hours) => {
+                          dispatch(setStartTimeHours(hours));
+                        }}
+                        setMinutes={(minute) =>
+                          dispatch(setStartTimeMinutes(minute))
+                        }
+                        selectedHour={scheduleState.startTimeHoursTmp}
+                        selectedMinute={scheduleState.startTimeMinutesTmp}
                       />
 
                       <div className="">-</div>
 
-                      <CustomDropdown
-                        text={scheduleState.endTime}
+                      <DropdownForHours
+                        text={`${scheduleState.endTimeHoursTmp}:${scheduleState.endTimeMinutesTmp}`}
                         isDropDownOpened={isEndTimeDropDownOpened}
                         openCloseDropDown={() => {
                           openEndTimeDropDown(!isEndTimeDropDownOpened);
                         }}
-                        map={times.map((item, index) => (
-                          <button
-                            key={index}
-                            className="gym_names"
-                            onClick={() => {
-                              dispatch(setEndTime(item));
-                              openEndTimeDropDown(false);
-                            }}
-                          >
-                            {item}
-                          </button>
-                        ))}
-                        maxHeight={"200px"}
+                        setHours={(hours) => {
+                          dispatch(setEndTimeHours(hours));
+                        }}
+                        setMinutes={(minute) =>
+                          dispatch(setEndTimeMinutes(minute))
+                        }
+                        selectedHour={scheduleState.endTimeHoursTmp}
+                        selectedMinute={scheduleState.endTimeMinutesTmp}
                       />
                     </div>
                   </div>
@@ -487,6 +539,8 @@ export default function SchedulesPage() {
           {gymState.currentGym !== null &&
             activitiesState.selectedActivity !== "" && (
               <Calendar
+                className="my-calendar-container"
+                dayLayoutAlgorithm={"no-overlap"}
                 date={currentDate}
                 ref={calendarRef}
                 localizer={localizer}
@@ -507,18 +561,6 @@ export default function SchedulesPage() {
                     alert(error);
                   }
                 }}
-                eventPropGetter={(event) => {
-                  let newStyle = {
-                    backgroundColor: "#FFEBCB",
-                    color: "black",
-                    borderRadius: "8px",
-                    padding: "10px",
-                    border: "1px solid #F1D19C",
-                    boxShadow:
-                      "0px 2px 5px 0px rgba(0, 0, 0, 0.15), 0px 15px 18px -15px rgba(109, 150, 212, 1)",
-                  };
-                  return { style: newStyle };
-                }}
                 slotGroupPropGetter={(slot) => {
                   let newStyle = {
                     minHeight: minHeight,
@@ -528,8 +570,14 @@ export default function SchedulesPage() {
                 components={{
                   timeGutterHeader: () => (
                     <Navigation
-                      onPreviousClick={() => handleNavigate("PREV")}
-                      onNextClick={() => handleNavigate("NEXT")}
+                      onPreviousClick={() => {
+                        handleNavigate("PREV");
+                        setNavigation(!isNavigationtriggered); //to apply events style from useEffect
+                      }}
+                      onNextClick={() => {
+                        handleNavigate("NEXT");
+                        setNavigation(!isNavigationtriggered); //to apply events style from useEffect
+                      }}
                     />
                   ),
                   dateCellWrapper: (props) => <Header date={props.value} />,
@@ -541,6 +589,7 @@ export default function SchedulesPage() {
         {gymState.currentGym !== null &&
           scheduleState.selectedEvent !== null &&
           isEdittingContainerShown && (
+            // right container for editting events
             <div className={`edittingContainer h-[76vh]`}>
               {/*  */}
               <div className="flex flex-row items-center justify-between">
@@ -552,7 +601,10 @@ export default function SchedulesPage() {
                     onClick={() => setEdittingContainer(false)}
                   />
                   <div className="text-[14px] font-bold">
-                    Детали занятия 27 сентября
+                    {`Детали занятия ${scheduleState.selectedEvent.start.toLocaleString(
+                      "ru-RU",
+                      { day: "numeric", month: "long" }
+                    )}`}
                   </div>
                 </div>
 
@@ -628,15 +680,23 @@ export default function SchedulesPage() {
                   {!isScheduleEdittingEnabled && (
                     <>
                       <div className="text-[14px] font-medium">
-                        11:00 - 13:00
+                        {scheduleState.selectedEvent.start.toLocaleTimeString(
+                          "ru-RU",
+                          { hour: "2-digit", minute: "2-digit" }
+                        )}{" "}
+                        -{" "}
+                        {scheduleState.selectedEvent.end.toLocaleTimeString(
+                          "ru-RU",
+                          { hour: "2-digit", minute: "2-digit" }
+                        )}
                       </div>
                     </>
                   )}
 
                   {isScheduleEdittingEnabled && (
                     <div className="flex flex-row items-center gap-[5px]">
-                      <CustomDropdown
-                        text={scheduleState.startTime}
+                      <DropdownForHours
+                        text={`${scheduleState.startTimeHoursTmp}:${scheduleState.startTimeMinutesTmp}`}
                         isDropDownOpened={isStartTimeDropDownOpened}
                         openCloseDropDown={() => {
                           if (isEndTimeDropDownOpened) {
@@ -644,28 +704,20 @@ export default function SchedulesPage() {
                           }
                           openStartTimeDropDown(!isStartTimeDropDownOpened);
                         }}
-                        map={times.map((item, index) => (
-                          <button
-                            key={index}
-                            className="gym_names"
-                            onClick={() => {
-                              if (isEndTimeDropDownOpened) {
-                                openEndTimeDropDown(false);
-                              }
-                              dispatch(setStartTime(item));
-                              openStartTimeDropDown(false);
-                            }}
-                          >
-                            {item}
-                          </button>
-                        ))}
-                        maxHeight={"200px"}
+                        setHours={(hours) => {
+                          dispatch(setStartTimeHours(hours));
+                        }}
+                        setMinutes={(minute) =>
+                          dispatch(setStartTimeMinutes(minute))
+                        }
+                        selectedHour={scheduleState.startTimeHoursTmp}
+                        selectedMinute={scheduleState.startTimeMinutesTmp}
                       />
 
                       <div className="">-</div>
 
-                      <CustomDropdown
-                        text={scheduleState.endTime}
+                      <DropdownForHours
+                        text={`${scheduleState.endTimeHoursTmp}:${scheduleState.endTimeMinutesTmp}`}
                         isDropDownOpened={isEndTimeDropDownOpened}
                         openCloseDropDown={() => {
                           if (isStartTimeDropDownOpened) {
@@ -673,22 +725,14 @@ export default function SchedulesPage() {
                           }
                           openEndTimeDropDown(!isEndTimeDropDownOpened);
                         }}
-                        map={times.map((item, index) => (
-                          <button
-                            key={index}
-                            className="gym_names"
-                            onClick={() => {
-                              if (isStartTimeDropDownOpened) {
-                                openStartTimeDropDown(false);
-                              }
-                              dispatch(setEndTime(item));
-                              openEndTimeDropDown(false);
-                            }}
-                          >
-                            {item}
-                          </button>
-                        ))}
-                        maxHeight={"200px"}
+                        setHours={(hours) => {
+                          dispatch(setEndTimeHours(hours));
+                        }}
+                        setMinutes={(minute) =>
+                          dispatch(setEndTimeMinutes(minute))
+                        }
+                        selectedHour={scheduleState.endTimeHoursTmp}
+                        selectedMinute={scheduleState.endTimeMinutesTmp}
                       />
                     </div>
                   )}
@@ -770,24 +814,26 @@ export default function SchedulesPage() {
                 )}
               </div>
 
-              <div className="text-[14px] font-bold">
-                В какие дни повторяется:
-              </div>
+              <div className="flex flex-col gap-[5px]">
+                <div className="text-[14px] font-bold">
+                  В какие дни повторяется:
+                </div>
 
-              <div className="flex flex-row gap-[5px]">
-                {WEEK_DAYS.map((weekday) => (
-                  <div
-                    key={weekday.id}
-                    className={
-                      scheduleState.selectedWeekdays.includes(weekday.name)
-                        ? "roundedWeekdaysSelected"
-                        : "roundedWeekdays"
-                    }
-                    onClick={() => {}}
-                  >
-                    {weekday.name}
-                  </div>
-                ))}
+                <div className="flex flex-row gap-[5px]">
+                  {WEEK_DAYS.map((weekday) => (
+                    <div
+                      key={weekday.id}
+                      className={
+                        scheduleState.selectedWeekdays.includes(weekday.name)
+                          ? "roundedWeekdaysSelected"
+                          : "roundedWeekdays"
+                      }
+                      onClick={() => {}}
+                    >
+                      {weekday.name}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -797,8 +843,8 @@ export default function SchedulesPage() {
             <div
               className={
                 isEdittingContainerShown
-                  ? "zoomButtons right-[26%]"
-                  : "zoomButtons right-[2%]"
+                  ? "zoomButtons right-[400px]"
+                  : "zoomButtons right-[1.5%]"
               }
             >
               <img

@@ -103,7 +103,7 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
 
 export const deleteActivityPhoto = createAsyncThunk(
   "activitiesSlice/deleteActivityPhoto",
-  async ({ id, url, snackbarRef }) => {
+  async ({ id, url }) => {
     try {
       var formData = new FormData();
       formData.append("url", url);
@@ -171,6 +171,7 @@ const activitiesSlice = createSlice({
   initialState: {
     isLoading: false,
     listOfActivities: [],
+    deletedActivities: [],
     allAvailableLessonTypes: [],
     isError: false,
     selectedActivity: "",
@@ -179,6 +180,7 @@ const activitiesSlice = createSlice({
     activityPeculiarities: "", // maybe list in future
     photosOfAllActivities: [],
     photosOfSelectedActivity: [],
+    deletedPhotos: [],
     isChangesOcurred: false,
   },
   reducers: {
@@ -198,6 +200,36 @@ const activitiesSlice = createSlice({
 
     removeSelectedActivity: (state) => {
       state.selectedActivity = "";
+    },
+
+    removePhotoFromSelectedActivityPhotos: (state, action) => {
+      state.photosOfSelectedActivity = state.photosOfSelectedActivity.filter(
+        (photo) => photo !== action.payload
+      );
+      state.deletedPhotos.push(action.payload);
+    },
+
+    returnDeletedPhoto: (state) => {
+      if (state.deletedPhotos.length > 0) {
+        // remove last element from deletedPhotos and add it to photosOfSelectedActivity
+        const lastElement = state.deletedPhotos.pop();
+        state.photosOfSelectedActivity.push(lastElement);
+      }
+    },
+
+    removeActivityFromListOfActivities: (state, action) => {
+      state.listOfActivities = state.listOfActivities.filter(
+        (activity) => activity !== action.payload
+      );
+      state.deletedActivities.push(action.payload);
+    },
+
+    returnDeletedActivity: (state) => {
+      if (state.deletedActivities.length > 0) {
+        // remove last element from deletedActivities and add it to listOfActivities
+        const lastElement = state.deletedActivities.pop();
+        state.listOfActivities.push(lastElement);
+      }
     },
 
     setActivityDescribtion: (state) => {
@@ -316,6 +348,10 @@ export const {
   changeActivityDescribtion,
   changeActivityPeculiarities,
   resetChanges,
-  removeSelectedActivity
+  removeSelectedActivity,
+  removePhotoFromSelectedActivityPhotos,
+  returnDeletedPhoto,
+  removeActivityFromListOfActivities,
+  returnDeletedActivity
 } = activitiesSlice.actions;
 export default activitiesSlice.reducer;

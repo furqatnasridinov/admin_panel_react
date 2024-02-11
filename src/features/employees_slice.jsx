@@ -76,6 +76,7 @@ const employeesSlice = createSlice({
   initialState: {
     isLoading: false,
     employees: [],
+    isEmployeesLoadidng: false,
     deletedEmployess: [],
     selectedEmployee: null,
     selectedRoleName: null,
@@ -101,9 +102,7 @@ const employeesSlice = createSlice({
       }
     },
 
-    resetSelectedEmployee: (state) => {
-      state.selectedEmployee = null;
-    },
+
 
     changeSelectedEmployeesLastname: (state, action) => {
       state.selectedEmployee.lastName = action.payload;
@@ -145,11 +144,16 @@ const employeesSlice = createSlice({
 
     returnDeletedEmployee: (state) => {
       if (state.deletedEmployess.length > 0) {
-        // Используйте pop() для удаления и возврата последнего элемента массива
         const lastElement = state.deletedEmployess.pop();
-        // Добавьте элемент обратно в массив employees
+        // Добавь элемент обратно в массив employees
         state.employees.push(lastElement);
       }
+    },
+
+    removeEmployeeFromDeletedEmployeesList: (state, action) => {
+      state.deletedEmployess = state.deletedEmployess.filter(
+        (employee) => employee.id !== action.payload.id
+      );
     },
 
     selectARoleName: (state, action) => {
@@ -164,13 +168,16 @@ const employeesSlice = createSlice({
       state.selectedRoleCode = action.payload;
     },
 
-    selectAPriveledge : (state, action)=>{
-      state.selectedEmployeesPriveledges = action.payload
+    selectAPriveledge: (state, action) => {
+      state.selectedEmployeesPriveledges = action.payload;
     },
 
     resetChanges: (state) => {
       if (state.isChangesOccured) {
         state.isChangesOccured = false;
+        if (state.selectedEmployee !== null) {
+          state.selectedEmployee = null;
+        }
       }
     },
   },
@@ -178,30 +185,26 @@ const employeesSlice = createSlice({
   extraReducers: (builder) => {
     // for getting employees
     builder.addCase(getListOfEmployees.pending, (state) => {
-      state.isLoading = true;
+      state.isEmployeesLoadidng = true;
     });
     builder.addCase(getListOfEmployees.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isEmployeesLoadidng = false;
       state.employees = action.payload;
     });
     builder.addCase(getListOfEmployees.rejected, (state) => {
-      state.isError = true;
+      state.isEmployeesLoadidng = false;
     });
 
     // for deleting employees
-    /*  builder.addCase(deleteEmployee.pending, (state) => {
-      state.isLoading = true;
+    builder.addCase(deleteEmployee.pending, (state) => {
+      state.isEmployeesLoadidng = true;
     });
-    builder.addCase(deleteEmployee.fulfilled, (state, action) => {
-      state.isLoading = false;
-      const index = state.employees.findIndex(
-        (employee) => employee.id === action.payload
-      );
-      state.employees.splice(index, 1);
+    builder.addCase(deleteEmployee.fulfilled, (state) => {
+      state.isEmployeesLoadidng = false;
     });
     builder.addCase(deleteEmployee.rejected, (state) => {
-      state.isError = true;
-    }); */
+      state.isEmployeesLoadidng = false;
+    });
   },
 });
 
@@ -218,7 +221,8 @@ export const {
   removeEmployeeFromList,
   returnDeletedEmployee,
   resetSelectedEmployee,
-  selectAPriveledge
+  selectAPriveledge,
+  removeEmployeeFromDeletedEmployeesList
 } = employeesSlice.actions;
 
 export default employeesSlice.reducer;
