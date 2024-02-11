@@ -175,7 +175,8 @@ export default function Employees({ listOfEmployees, gymId }) {
                     .filter(
                       (employee) =>
                         !employeesSlice.deletedEmployess.some(
-                          (deletedEmployee) => deletedEmployee.id === employee.id
+                          (deletedEmployee) =>
+                            deletedEmployee.id === employee.id
                         )
                     )
                     .map((employee) => {
@@ -195,7 +196,6 @@ export default function Employees({ listOfEmployees, gymId }) {
                               : employee.roles[0].name
                           }
                           onDeleteClicked={async () => {
-                            dispatch(resetSelectedEmployee());
                             dispatch(removeEmployeeFromList(employee));
                             const cancelTimeOut =
                               deleteEmployeeSnackRef.current.show(
@@ -209,11 +209,6 @@ export default function Employees({ listOfEmployees, gymId }) {
                                     deleteEmployee({ employeeId }) // it will work dispise the warning
                                   );
                                   dispatch(getListOfEmployees(gymId));
-                                  /* dispatch(
-                                    removeEmployeeFromDeletedEmployeesList(
-                                      employee
-                                    )
-                                  ); */
                                 }
                               );
                             setCancelDeleteTimeoutEmployees((prevState) => [
@@ -442,7 +437,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                     if (employeesSlice.isChangesOccured) {
                       const { id, roles, firstName, lastName, login } =
                         employeesSlice.selectedEmployee;
-                      dispatch(
+                      await dispatch(
                         editEmployee({
                           gymId,
                           id,
@@ -452,9 +447,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                           login,
                         })
                       );
-                      setTimeout(() => {
-                        dispatch(getListOfEmployees(gymId));
-                      }, 1000);
+                      dispatch(getListOfEmployees(gymId));
                     }
                     dispatch(resetChanges());
                     openRefEmployeesDialog(false);
@@ -634,7 +627,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                     width={"100%"}
                     height={"40px"}
                     title={"Добавить сотрудника"}
-                    onСlick={() => {
+                    onСlick={async () => {
                       // Assume both fields are valid to start with
                       let isPhoneValid = true;
                       let isNameValid = true;
@@ -670,7 +663,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                           ],
                         };
 
-                        dispatch(
+                        await dispatch(
                           addEmployee({
                             gymId,
                             firstName,
@@ -679,9 +672,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                             roles,
                           })
                         );
-                        setTimeout(() => {
-                          dispatch(getListOfEmployees(gymId));
-                        }, 1000);
+                        dispatch(getListOfEmployees(gymId));
                         openAddEmployeesDialog(false);
                         if (isFromRef) {
                           openRefEmployeesDialog(true);

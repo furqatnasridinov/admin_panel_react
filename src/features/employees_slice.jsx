@@ -102,9 +102,7 @@ const employeesSlice = createSlice({
       }
     },
 
-    resetSelectedEmployee: (state) => {
-      state.selectedEmployee = null;
-    },
+
 
     changeSelectedEmployeesLastname: (state, action) => {
       state.selectedEmployee.lastName = action.payload;
@@ -146,9 +144,8 @@ const employeesSlice = createSlice({
 
     returnDeletedEmployee: (state) => {
       if (state.deletedEmployess.length > 0) {
-        // Используйте pop() для удаления и возврата последнего элемента массива
         const lastElement = state.deletedEmployess.pop();
-        // Добавьте элемент обратно в массив employees
+        // Добавь элемент обратно в массив employees
         state.employees.push(lastElement);
       }
     },

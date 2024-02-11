@@ -26,9 +26,12 @@ import {
   deleteActivity,
   getListOfActivities,
   addNewActivity,
+  removePhotoFromSelectedActivityPhotos,
+  returnDeletedPhoto,
 } from "../../../../../features/activities_slice";
 import { addPhotoToSelectedActivity } from "../../../../../features/activities_slice";
 import DropDownSmaller from "../../../../../components/dropdown/dropdown_smaller";
+import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 
 export default function GymDetailesBodySecondContainer({
   gymId,
@@ -52,6 +55,9 @@ export default function GymDetailesBodySecondContainer({
   const [photoToShowInDialog, setPhotoToBeShownInDialog] = useState("");
   const [isDropDrownShown, showDropDown] = useState(false);
   const [isDropDownOpened, openDropDown] = useState(false);
+  const [cancelDeleteTimeoutPhotos, setCancelDeleteTimeoutPhotos] = useState(
+    []
+  );
 
   function openCloseDropDown() {
     if (isDropDownOpened) {
@@ -63,6 +69,7 @@ export default function GymDetailesBodySecondContainer({
 
   // use refs
   const hiddenFileInput = useRef(null);
+  const deletePhotosSnackRef = useRef();
   const blueBorderedContainerRef = useRef(null);
 
   // передаем это на кнопку добавления фото,(как бы через ref, нажимаем на саму input file которого скрыли)
@@ -187,16 +194,16 @@ export default function GymDetailesBodySecondContainer({
                               dispatch(selectAnActivity(activity));
                             }}
                             onEditClicked={() => {}}
-                            onRemoveClicked={() => {
+                            onRemoveClicked={async () => {
                               // function to delete activity
                               const { id, lessonType } = {
                                 id: gymId,
                                 lessonType: activitiesSlice.selectedActivity,
                               };
-                              dispatch(deleteActivity({ id, lessonType }));
-                              setTimeout(() => {
-                                dispatch(getListOfActivities(gymId));
-                              }, 1500);
+                              await dispatch(
+                                deleteActivity({ id, lessonType })
+                              );
+                              dispatch(getListOfActivities(gymId));
                             }}
                             isActive={
                               activity === activitiesSlice.selectedActivity
@@ -243,15 +250,15 @@ export default function GymDetailesBodySecondContainer({
                               <button
                                 key={index}
                                 className="gym_names"
-                                onClick={() => {
+                                onClick={async () => {
                                   const { id, lessonType } = {
                                     id: gymId,
                                     lessonType: item,
                                   };
-                                  dispatch(addNewActivity({ id, lessonType }));
-                                  setTimeout(() => {
-                                    dispatch(getListOfActivities(gymId));
-                                  }, 1000);
+                                  await dispatch(
+                                    addNewActivity({ id, lessonType })
+                                  );
+                                  dispatch(getListOfActivities(gymId));
                                   showDropDown(false);
                                 }}
                               >
@@ -316,22 +323,20 @@ export default function GymDetailesBodySecondContainer({
                     onChange={(e) => {
                       dispatch(changeActivityDescribtion(e.target.value));
                     }}
-                    onButtonClicked={() => {
+                    onButtonClicked={async () => {
                       const { id, lessonType, typeDescription } = {
                         id: gymId,
                         lessonType: activitiesSlice.selectedActivity,
                         typeDescription: activityDescribtion,
                       };
-                      dispatch(
+                      await dispatch(
                         patchDescriptionOfSelectedActivity({
                           id,
                           lessonType,
                           typeDescription,
                         })
                       );
-                      setTimeout(() => {
-                        dispatch(getInfoForType(gymId));
-                      }, 1500);
+                      dispatch(getInfoForType(gymId));
                       setDescribtionEditting(false);
                       dispatch(resetChanges());
                     }}
@@ -376,22 +381,20 @@ export default function GymDetailesBodySecondContainer({
                     }}
                   />
                   <EditableFeaturesTextfield
-                    onButtonClicked={() => {
+                    onButtonClicked={async() => {
                       const { id, lessonType, peculiarities } = {
                         id: gymId,
                         lessonType: activitiesSlice.selectedActivity,
                         peculiarities: activityPeculiarities,
                       };
-                      dispatch(
+                     await  dispatch(
                         patchPeculiaritiesOfSelectedActivity({
                           id,
                           lessonType,
                           peculiarities,
                         })
                       );
-                      setTimeout(() => {
                         dispatch(getInfoForType(gymId));
-                      }, 1500);
                       setFeaturesEditting(false);
                       dispatch(resetChanges());
                     }}
@@ -431,36 +434,57 @@ export default function GymDetailesBodySecondContainer({
               <p>Рекомендуемые форматы для загрузки: jpeg, png</p>
               <p>Минимально допустимая сторона фотографии: 1080px</p>
             </div>
+            <CustomSnackbar
+              ref={deletePhotosSnackRef}
+              undoAction={() => {
+                dispatch(returnDeletedPhoto());
+                if (cancelDeleteTimeoutPhotos.length > 0) {
+                  const lastCancelFunction =
+                    cancelDeleteTimeoutPhotos[
+                      cancelDeleteTimeoutPhotos.length - 1
+                    ];
+                  lastCancelFunction();
+                  setCancelDeleteTimeoutPhotos((prevState) =>
+                    prevState.slice(0, -1)
+                  );
+                }
+              }}
+            />
 
             {/* Container with photos */}
             <div className="activity_photos_container">
               {!isEdittingPhotosEnabled &&
-                photosOfSelectedActivity.map((item, index) => {
-                  // Объявляем переменные в области видимости функции map
-                  const lastDotIndex = item.lastIndexOf(".");
-                  const nameWithoutExtension = item.substring(0, lastDotIndex);
-                  const extension = item.substring(lastDotIndex + 1);
-                  const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
+                photosOfSelectedActivity
+                  .filter((el) => !activitiesSlice.deletedPhotos.includes(el))
+                  .map((item, index) => {
+                    // Объявляем переменные в области видимости функции map
+                    const lastDotIndex = item.lastIndexOf(".");
+                    const nameWithoutExtension = item.substring(
+                      0,
+                      lastDotIndex
+                    );
+                    const extension = item.substring(lastDotIndex + 1);
+                    const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
 
-                  // Возвращаем JSX с использованием переменной внутри строки для атрибута src
-                  return (
-                    <img
-                      className="activity_each_photo"
-                      key={index}
-                      src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
-                      alt=""
-                      onClick={() => {
-                        showPhotoInDialog(true);
-                        setPhotoToBeShownInDialog(item);
-                      }}
-                      draggable={true}
-                      onDragStart={() => (draggedItemRef.current = index)}
-                      onDragEnter={() => (draggedOverRef.current = index)}
-                      onDragEnd={handleSortingPhotos}
-                      onDragOver={(e) => e.preventDefault()}
-                    />
-                  );
-                })}
+                    // Возвращаем JSX с использованием переменной внутри строки для атрибута src
+                    return (
+                      <img
+                        className="activity_each_photo"
+                        key={index}
+                        src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                        alt=""
+                        onClick={() => {
+                          showPhotoInDialog(true);
+                          setPhotoToBeShownInDialog(item);
+                        }}
+                        draggable={true}
+                        onDragStart={() => (draggedItemRef.current = index)}
+                        onDragEnter={() => (draggedOverRef.current = index)}
+                        onDragEnd={handleSortingPhotos}
+                        onDragOver={(e) => e.preventDefault()}
+                      />
+                    );
+                  })}
               {showPhotoInDialog && isPhotoShownInDialog && (
                 <CustomDialog
                   isOpened={isPhotoShownInDialog}
@@ -472,42 +496,59 @@ export default function GymDetailesBodySecondContainer({
                   />
                 </CustomDialog>
               )}
+
               {isEdittingPhotosEnabled &&
-                photosOfSelectedActivity.map((item, index) => {
-                  const lastDotIndex = item.lastIndexOf(".");
-                  const nameWithoutExtension = item.substring(0, lastDotIndex);
-                  const extension = item.substring(lastDotIndex + 1);
-                  const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
-                  return (
-                    <button
-                      key={index}
-                      className="activity_each_photo_editting"
-                    >
-                      <img
-                        src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
-                        alt=""
-                        className="rounded-[8px] h-full w-full object-cover"
-                        draggable={false}
-                      />
-                      <img
-                        className="delete-icon"
-                        src={deleteSvg}
-                        alt=""
-                        onClick={() => {
-                          // removing photos
-                          const { id, url } = { id: gymId, url: item };
-                          dispatch(
-                            deleteActivityPhoto({ id, url })
-                          );
-                          setTimeout(() => {
-                            dispatch(getPhotos(gymId));
-                          }, 1500);
-                        }}
-                        draggable={false}
-                      />
-                    </button>
-                  );
-                })}
+                photosOfSelectedActivity
+                  .filter((el) => !activitiesSlice.deletedPhotos.includes(el))
+                  .map((item, index) => {
+                    const lastDotIndex = item.lastIndexOf(".");
+                    const nameWithoutExtension = item.substring(
+                      0,
+                      lastDotIndex
+                    );
+                    const extension = item.substring(lastDotIndex + 1);
+                    const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
+                    return (
+                      <button
+                        key={index}
+                        className="activity_each_photo_editting"
+                      >
+                        <img
+                          src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                          alt=""
+                          className="rounded-[8px] h-full w-full object-cover"
+                          draggable={false}
+                        />
+                        <img
+                          className="delete-icon"
+                          src={deleteSvg}
+                          alt=""
+                          onClick={async () => {
+                            dispatch(
+                              removePhotoFromSelectedActivityPhotos(item)
+                            );
+                            const cancelTimeOut =
+                              deletePhotosSnackRef.current.show(
+                                "Вы удалили фото",
+                                // function when time ended
+                                async () => {
+                                  const { id, url } = { id: gymId, url: item };
+                                  await dispatch(
+                                    deleteActivityPhoto({ id, url })
+                                  );
+                                  dispatch(getPhotos(gymId));
+                                }
+                              );
+                            setCancelDeleteTimeoutPhotos((prevState) => [
+                              ...prevState,
+                              cancelTimeOut,
+                            ]);
+                          }}
+                          draggable={false}
+                        />
+                      </button>
+                    );
+                  })}
               {!isEdittingPhotosEnabled && (
                 <>
                   <img
@@ -519,7 +560,7 @@ export default function GymDetailesBodySecondContainer({
                   <input
                     type="file"
                     ref={hiddenFileInput}
-                    onChange={(event) => {
+                    onChange={async (event) => {
                       // Обработчик для добавления новой фотографии
                       const file = event.target.files[0];
                       const { id, files, type } = {
@@ -527,15 +568,20 @@ export default function GymDetailesBodySecondContainer({
                         files: file,
                         type: activitiesSlice.selectedActivity,
                       };
-                      dispatch(addPhotoToSelectedActivity({ id, files, type }));
-                      setTimeout(() => {
-                        dispatch(getPhotos(gymId));
-                      }, 2500);
+                      await dispatch(
+                        addPhotoToSelectedActivity({ id, files, type })
+                      );
+                      dispatch(getPhotos(gymId));
                     }}
                     style={{ display: "none" }} // Скрываем input
                   />
                 </>
               )}
+
+              {isEdittingPhotosEnabled &&
+                photosOfSelectedActivity.length === 0 &&
+                // Если режим редактирования включен и нет фотографий, то показываем кнопку добавления
+                setPhotosEditting(false)}
             </div>
           </div>
         </div>

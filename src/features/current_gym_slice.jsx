@@ -200,8 +200,6 @@ const currentGymSlice = createSlice({
       state.currentGym = action.payload;
     },
 
-
-
     setCurrentGymFromFirstItem: (state) => {
       if (state.listOfGyms.length > 0) {
         state.currentGym = state.listOfGyms[0];

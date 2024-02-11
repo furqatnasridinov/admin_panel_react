@@ -85,26 +85,22 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   };
 
   // Обработчик для добавления новой фотографии
-  const handleNewPhoto = (event) => {
+  const handleNewPhoto = async (event) => {
     const file = event.target.files[0];
     const { gymId, image } = { gymId: currentGym.id, image: file };
-    dispatch(addGymPicture({ gymId, image }));
-    setTimeout(() => {
-      dispatch(getCurrentGym(currentGym.id));
-    }, 2500);
+    await dispatch(addGymPicture({ gymId, image }));
+    dispatch(getCurrentGym(currentGym.id));
     if (isModalPhotoOpened) {
       openModalPhoto(false);
     }
   };
 
   // Обработчик для добавления нового логотипа
-  const handleNewLogo = (event) => {
+  const handleNewLogo = async (event) => {
     const file = event.target.files[0];
     const { gymId, image } = { gymId: currentGym.id, image: file };
-    dispatch(addGymLogo({ gymId, image }));
-    setTimeout(() => {
-      dispatch(getCurrentGym(currentGym.id));
-    }, 1000);
+    await dispatch(addGymLogo({ gymId, image }));
+    dispatch(getCurrentGym(currentGym.id));
     if (isModalLogoOpened) {
       openModalLogo(false);
     }
@@ -405,15 +401,13 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     onChange={(e) => {
                       dispatch(changeCurrentGymsName(e.target.value));
                     }}
-                    onButtonClicked={() => {
+                    onButtonClicked={async () => {
                       const { id, name } = {
                         id: currentGym.id,
                         name: currentGym.name,
                       };
-                      dispatch(patchGymName({ id, name }));
-                      setTimeout(() => {
-                        dispatch(getCurrentGym(currentGym.id));
-                      }, 700);
+                      await dispatch(patchGymName({ id, name }));
+                      dispatch(getCurrentGym(currentGym.id));
                       setNameEditing(false);
                       dispatch(resetChanges());
                     }}
@@ -457,15 +451,13 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     onChange={(e) => {
                       dispatch(changeCurrentGymsDescription(e.target.value));
                     }}
-                    onButtonClicked={() => {
+                    onButtonClicked={async () => {
                       const { id, description } = {
                         id: currentGym.id,
                         description: currentGym.description,
                       };
-                      dispatch(patchGymDescription({ id, description }));
-                      setTimeout(() => {
-                        dispatch(getCurrentGym(currentGym.id));
-                      }, 700);
+                      await dispatch(patchGymDescription({ id, description }));
+                      dispatch(getCurrentGym(currentGym.id));
                       setDescribtionEditing(false);
                       dispatch(resetChanges());
                     }}
@@ -509,15 +501,13 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     onChange={(e) => {
                       dispatch(changeCurrentGymsAddress(e.target.value));
                     }}
-                    onButtonClicked={() => {
+                    onButtonClicked={async () => {
                       const { id, address } = {
                         id: currentGym.id,
                         address: currentGym.address,
                       };
-                      dispatch(patchGymAddress({ id, address }));
-                      setTimeout(() => {
-                        dispatch(getCurrentGym(currentGym.id));
-                      }, 700);
+                      await dispatch(patchGymAddress({ id, address }));
+                      dispatch(getCurrentGym(currentGym.id));
                       setAddressEditting(false);
                       dispatch(resetChanges());
                     }}
@@ -581,7 +571,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   text1={"Контакты"}
                   text2={"Сохранить"}
                   isDisabled={currentGym.phone.length !== 12}
-                  onclick={() => {
+                  onclick={async () => {
                     if (currentGym.phone.length == 12) {
                       if (addingTelegram) {
                         setAddingTelegram(false);
@@ -602,10 +592,10 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                         vk: currentGym.vk,
                       };
                       if (currentGymState.isChangesOccured) {
-                        dispatch(patchGymContacts({ id, phone, telegram, vk }));
-                        setTimeout(() => {
-                          dispatch(getCurrentGym(currentGym.id));
-                        }, 700);
+                        await dispatch(
+                          patchGymContacts({ id, phone, telegram, vk })
+                        );
+                        dispatch(getCurrentGym(currentGym.id));
                       }
                       setContactsEditting(false);
                       dispatch(resetChanges());

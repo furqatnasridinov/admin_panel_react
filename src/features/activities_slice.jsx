@@ -179,6 +179,7 @@ const activitiesSlice = createSlice({
     activityPeculiarities: "", // maybe list in future
     photosOfAllActivities: [],
     photosOfSelectedActivity: [],
+    deletedPhotos: [],
     isChangesOcurred: false,
   },
   reducers: {
@@ -198,6 +199,21 @@ const activitiesSlice = createSlice({
 
     removeSelectedActivity: (state) => {
       state.selectedActivity = "";
+    },
+
+    removePhotoFromSelectedActivityPhotos: (state, action) => {
+      state.photosOfSelectedActivity = state.photosOfSelectedActivity.filter(
+        (photo) => photo !== action.payload
+      );
+      state.deletedPhotos.push(action.payload);
+    },
+
+    returnDeletedPhoto: (state) => {
+      if (state.deletedPhotos.length > 0) {
+        // remove last element from deletedPhotos and add it to photosOfSelectedActivity
+        const lastElement = state.deletedPhotos.pop();
+        state.photosOfSelectedActivity.push(lastElement);
+      }
     },
 
     setActivityDescribtion: (state) => {
@@ -316,6 +332,8 @@ export const {
   changeActivityDescribtion,
   changeActivityPeculiarities,
   resetChanges,
-  removeSelectedActivity
+  removeSelectedActivity,
+  removePhotoFromSelectedActivityPhotos,
+  returnDeletedPhoto
 } = activitiesSlice.actions;
 export default activitiesSlice.reducer;
