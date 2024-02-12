@@ -84,15 +84,6 @@ export default function SchedulesPage() {
   const activitiesState = useSelector((state) => state.activities);
   const scheduleState = useSelector((state) => state.schedule);
 
-  /* const events = DUMMY_LESSONS.map((item) => {
-    return {
-      id: item.id,
-      title: item.title,
-      start: new Date(item.start),
-      end: new Date(item.end),
-    };
-  }); */
-
   const events = scheduleState.allSchedules.map((item) => {
     return {
       id: item.id,
@@ -250,6 +241,8 @@ export default function SchedulesPage() {
                   {item.name}
                 </button>
               ))}
+              isLoading={scheduleState.isGymsLoading}
+              loadingText={"Загружаем список заведений..."}
             />
           </div>
           {gymState.currentGym !== null && (
@@ -276,6 +269,8 @@ export default function SchedulesPage() {
                   ? "Выберите активность"
                   : activitiesState.selectedActivity
               }
+              isLoading={activitiesState.isActivitiesLoading}
+              loadingText={"Загружаем список активностей..."}
             />
           )}
 

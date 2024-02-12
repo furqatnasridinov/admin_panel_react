@@ -9,6 +9,7 @@ import { Circle } from "rc-progress";
 
 const CustomSnackbar = forwardRef((props, ref) => {
   const [snackbars, setSnackbars] = useState([]);
+  const [isHideForced, setIsHideForced] = useState(false);
   const timeouts = {};
 
   useImperativeHandle(ref, () => ({
@@ -35,6 +36,13 @@ const CustomSnackbar = forwardRef((props, ref) => {
       // Stop the timeout to prevent onTimeEnded to get called
       clearTimeout(timeouts[id]);
     },
+
+    hideSnackbars() {
+      setIsHideForced(true);
+    },
+    showSnackbars() {
+      setIsHideForced(false);
+    },
   }));
 
   useEffect(() => {
@@ -51,6 +59,8 @@ const CustomSnackbar = forwardRef((props, ref) => {
     // Clear interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
+
+  if (isHideForced) return null;
 
   return (
     <div className="snackbar-container">

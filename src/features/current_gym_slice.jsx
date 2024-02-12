@@ -68,7 +68,7 @@ export const removeGymMainPic = createAsyncThunk(
 );
 
 export const addGymLogo = createAsyncThunk(
-  "currentGym/addGymPictures",
+  "currentGym/addGymLogo",
   async ({ gymId, image }) => {
     try {
       var formData = new FormData();
@@ -188,6 +188,9 @@ const currentGymSlice = createSlice({
   initialState: {
     isLoading: false,
     listOfGyms: [],
+    isGymsLoading: false,
+    isMainPicLoading: false,
+    isLogoLoading: false,
     currentGym: null,
     gymPictureCopy: "",
     logoCopy: "",
@@ -317,15 +320,37 @@ const currentGymSlice = createSlice({
 
     // getListOfGyms
     builder.addCase(getListOfGyms.pending, (state) => {
-      state.isLoading = true;
+      state.isGymsLoading = true;
     });
     builder.addCase(getListOfGyms.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isGymsLoading = false;
       state.listOfGyms = action.payload;
     });
     builder.addCase(getListOfGyms.rejected, (state) => {
-      state.isLoading = false;
+      state.isGymsLoading = false;
       state.isError = true;
+    });
+
+    // addGymLogo
+    builder.addCase(addGymLogo.pending, (state) => {
+      state.isLogoLoading = true;
+    });
+    builder.addCase(addGymLogo.fulfilled, (state) => {
+      state.isLogoLoading = false;
+    });
+    builder.addCase(addGymLogo.rejected, (state) => {
+      state.isLogoLoading = false;
+    });
+
+    // addGymPicture
+    builder.addCase(addGymPicture.pending, (state) => {
+      state.isMainPicLoading = true;
+    });
+    builder.addCase(addGymPicture.fulfilled, (state) => {
+      state.isMainPicLoading = false;
+    });
+    builder.addCase(addGymPicture.rejected, (state) => {
+      state.isMainPicLoading = false;
     });
   },
 });

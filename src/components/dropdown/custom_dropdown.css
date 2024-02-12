@@ -65,6 +65,7 @@
   max-width: 1000px;
   height: fit-content;
   max-height: 600px;
+  min-height: 60px;
   background-color: white;
   padding-left: 16px;
   padding-right: 16px;
@@ -73,4 +74,10 @@
   border-radius: 8px;
   border: 1px solid #77aaf9;
   overflow-y: auto;
+}
+
+.loadingText{
+  color: rgba(176, 176, 176, 1);
+  font-size: 14px;
+  font-weight: 500;
 }

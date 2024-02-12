@@ -1,9 +1,6 @@
 
-
 export default function ClientsPage() {
-  return (
-    <div className="flex flex-col items-center gap-[50px] p-[20px]">
-      <h1>Clients Page</h1>
-    </div>
-  );
+  return <div className="flex flex-col items-center gap-[50px] p-[20px]">
+    ClientsPage
+  </div>;
 }

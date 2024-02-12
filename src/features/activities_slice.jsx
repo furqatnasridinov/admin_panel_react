@@ -171,6 +171,8 @@ const activitiesSlice = createSlice({
   initialState: {
     isLoading: false,
     listOfActivities: [],
+    isActivitiesLoding: false,
+    isActivityPhotosLoading: false,
     deletedActivities: [],
     allAvailableLessonTypes: [],
     isError: false,
@@ -286,14 +288,14 @@ const activitiesSlice = createSlice({
   extraReducers: (builder) => {
     // for getListOfActivities
     builder.addCase(getListOfActivities.pending, (state) => {
-      state.isLoading = true;
+      state.isActivitiesLoding = true;
     });
     builder.addCase(getListOfActivities.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isActivitiesLoding = false;
       state.listOfActivities = action.payload;
     });
     builder.addCase(getListOfActivities.rejected, (state) => {
-      state.isLoading = false;
+      state.isActivitiesLoding = false;
       state.isError = true;
     });
 
@@ -335,6 +337,18 @@ const activitiesSlice = createSlice({
       state.isLoading = false;
       state.isError = true;
     });
+
+    // for adding photo to selected activity
+    builder.addCase(addPhotoToSelectedActivity.pending, (state) => {
+      state.isActivityPhotosLoading = true;
+    });
+    builder.addCase(addPhotoToSelectedActivity.fulfilled, (state) => {
+      state.isActivityPhotosLoading = false;
+    });
+    builder.addCase(addPhotoToSelectedActivity.rejected, (state) => {
+      state.isActivityPhotosLoading = false;
+      state.isError = true;
+    });
   },
 });
 
@@ -352,6 +366,6 @@ export const {
   removePhotoFromSelectedActivityPhotos,
   returnDeletedPhoto,
   removeActivityFromListOfActivities,
-  returnDeletedActivity
+  returnDeletedActivity,
 } = activitiesSlice.actions;
 export default activitiesSlice.reducer;

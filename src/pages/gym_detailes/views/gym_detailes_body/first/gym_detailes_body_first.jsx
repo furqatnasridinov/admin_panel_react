@@ -16,6 +16,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import CustomButton from "../../../../../components/button/button";
 import { useDispatch, useSelector } from "react-redux";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
+import ProgressSnackbar from "../../../../../components/snackbar/progress_snackbar";
 import {
   addGymPicture,
   changeCurrentGymsName,
@@ -46,10 +47,6 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const dispatch = useDispatch();
   const currentGymState = useSelector((state) => state.currentGym);
 
-  // refs of snackbars
-  const deleteMainPicSnackbarRef = useRef(null);
-  const deleteLogoSnackbarRef = useRef(null);
-
   // use states
   const [isNameEditingEnabled, setNameEditing] = useState(false);
   const [isDescribtionEdittingEnabled, setDescribtionEditing] = useState(false);
@@ -65,6 +62,10 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const [isDropDownOpened, openDropDown] = useState(false);
 
   // use refs
+  const deleteMainPicSnackbarRef = useRef(null);
+  const deleteLogoSnackbarRef = useRef(null);
+  const progressSnackbarRef = useRef(null);
+  const progressSnackForLogo = useRef(null);
   const fileInputMainPhotoRef = useRef();
   const fileInputLogoRef = useRef();
 
@@ -88,6 +89,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const handleNewPhoto = async (event) => {
     const file = event.target.files[0];
     const { gymId, image } = { gymId: currentGym.id, image: file };
+    deleteMainPicSnackbarRef.current.hideSnackbars();
+    progressSnackbarRef.current.show("Идет загрузка фото");
     await dispatch(addGymPicture({ gymId, image }));
     dispatch(getCurrentGym(currentGym.id));
     if (isModalPhotoOpened) {
@@ -99,6 +102,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const handleNewLogo = async (event) => {
     const file = event.target.files[0];
     const { gymId, image } = { gymId: currentGym.id, image: file };
+    deleteLogoSnackbarRef.current.hideSnackbars();
+    progressSnackForLogo.current.show("Идет загрузка логотипа");
     await dispatch(addGymLogo({ gymId, image }));
     dispatch(getCurrentGym(currentGym.id));
     if (isModalLogoOpened) {
@@ -140,6 +145,14 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
 
         <div className="photos_row">
           {/* Main picture  */}
+          <ProgressSnackbar
+            isLoading={currentGymState.isMainPicLoading}
+            ref={progressSnackbarRef}
+          />
+          <ProgressSnackbar
+            isLoading={currentGymState.isLogoLoading}
+            ref={progressSnackForLogo}
+          />
           <div className="gym_main_photo_column">
             <TextAndTextButton
               text1={"Фоновая фотография"}
@@ -201,6 +214,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   onDeleteClicked={() => {
                     dispatch(setEmptyStringToMainPic());
                     openModalPhoto(false);
+                    deleteMainPicSnackbarRef.current.showSnackbars();
                     const cancelTimeout = deleteMainPicSnackbarRef.current.show(
                       "Вы удалили фото",
                       () => {
@@ -210,6 +224,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                         dispatch(removePhotoCopy());
                       }
                     );
+
                     setCancelDeleteTimeoutPhoto(() => cancelTimeout);
                   }}
                   openFilePicker={openFilePickerForMainPhoto}
@@ -340,6 +355,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                 onDeleteClicked={() => {
                   dispatch(setEmptyStringToLogo());
                   openModalLogo(false);
+                  deleteLogoSnackbarRef.current.showSnackbars();
                   const cancelTimeout = deleteLogoSnackbarRef.current.show(
                     "Вы удалили логотип",
                     () => {
