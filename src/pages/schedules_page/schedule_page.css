@@ -341,12 +341,15 @@
 }
 
 .overLappingEvents {
+  width: auto !important;
+  min-width: 40px !important;
   border-radius: 100px !important;
   color: black !important;
   background-color: #ffebcb !important;
-  border: none !important;
+  border: 1px solid #f1d19c !important;
   box-shadow: none !important;
-  /* font-size: 0px !important; */
+  margin-left: 4px !important;
+  margin-right: 4px !important;
   content-visibility: hidden;
 }
 
@@ -373,6 +376,8 @@
     0px 15px 18px -15px rgba(109, 150, 212, 1) !important;
   font-size: 10px !important;
   font-weight: 500 !important;
+  margin-left: 2px !important;
+  margin-right: 2px !important;
 }
 
 .my-calendar-container {

@@ -8,10 +8,11 @@ export default function CustomButton({
   height,
   showShadow,
   fontSize,
+  isDidsabled,
 }) {
   return (
     <button
-      onClick={onСlick}
+      onClick={isDidsabled ? null : onСlick}
       style={{
         width: width,
         height: height,
@@ -21,6 +22,7 @@ export default function CustomButton({
       <p
         style={{
           fontSize: fontSize,
+          cursor: isDidsabled ? "not-allowed" : "pointer",
         }}
       >
         {title}

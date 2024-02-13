@@ -26,6 +26,18 @@ import {
   setEndTimeHours,
   setEndTimeMinutes,
   getSchedules,
+  resetStateAfterSubmitting,
+  getDuration,
+  getStartTimeToSendToServer,
+  createSchedule,
+  setDeleteAll,
+  reSetDeleteAll,
+  deleteSchedule,
+  resetSelectedEvent,
+  updateSchedule,
+  selectedEventSetTitle,
+  getSchedulesOfSelectedActivity,
+  resetScheduleOfSelectedActivity,
 } from "../../features/schedule_slice";
 import { getListOfEmployees } from "../../features/employees_slice";
 import CustomButton from "../../components/button/button";
@@ -78,18 +90,22 @@ export default function SchedulesPage() {
   const [checkBoxEnabled, setCheckbox] = useState(false);
   const [deleteModalShown, openDeleteModal] = useState(false);
   const [isNavigationtriggered, setNavigation] = useState(false);
+  const [updateStyle, setUpdateStyle] = useState(false);
 
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
   const activitiesState = useSelector((state) => state.activities);
   const scheduleState = useSelector((state) => state.schedule);
 
-  const events = scheduleState.allSchedules.map((item) => {
+  const events = scheduleState.schedulesOfSelectedActivity.map((item) => {
     return {
       id: item.id,
       start: item.startTime,
       end: item.endTime,
       title: item.title,
+      owner: item.owner,
+      lessonType: item.lessonType,
+      repeat: item.repeat,
     };
   });
   moment.locale("ru");
@@ -131,20 +147,19 @@ export default function SchedulesPage() {
   // get initial data`s
   useEffect(() => {
     dispatch(getListOfGyms());
-    if (gymState.currentGym == null) {
+  }, []);
+
+  useEffect(() => {
+    if (gymState.listOfGyms.length === 1) {
       dispatch(setCurrentGymFromFirstItem());
     }
-
-    if (gymState.currentGym !== null) {
-      dispatch(getListOfActivities(gymState.currentGym.id));
-    }
-  }, []);
+  }, [gymState.listOfGyms]);
 
   // get new infos every time when currentGym changes
   useEffect(() => {
     if (gymState.currentGym !== null) {
       dispatch(getSchedules(gymState.currentGym.id));
-      dispatch(getListOfEmployees(gymState.currentGym.id));
+      dispatch(getListOfEmployees(gymState.currentGym.id)); // to show in sidebar top
       dispatch(getListOfActivities(gymState.currentGym.id));
     }
     if (activitiesState.selectedActivity !== "") {
@@ -178,7 +193,9 @@ export default function SchedulesPage() {
   }, [
     activitiesState.selectedActivity,
     scheduleState.selectedEvent,
-    //scheduleState.allSchedules,
+    scheduleState.schedulesOfSelectedActivity,
+    scheduleState.allSchedules,
+    updateStyle,
     isNavigationtriggered,
   ]);
 
@@ -201,15 +218,43 @@ export default function SchedulesPage() {
           minute: "2-digit",
         });
       dispatch(setStartTimeHours(selectedActivityStartTimeHour));
-      dispatch(setStartTimeMinutes(selectedActivityStartTimeMinutes));
+      dispatch(
+        setStartTimeMinutes(
+          selectedActivityStartTimeMinutes === "0"
+            ? "00"
+            : selectedActivityStartTimeMinutes
+        )
+      );
       dispatch(setEndTimeHours(selectedActivityEndTimeHour));
-      dispatch(setEndTimeMinutes(selectedActivityEndTimeMinutes));
+      dispatch(
+        setEndTimeMinutes(
+          selectedActivityEndTimeMinutes === "0"
+            ? "00"
+            : selectedActivityEndTimeMinutes
+        )
+      );
     }
   }, [scheduleState.selectedEvent]);
 
+  useEffect(() => {
+    dispatch(getDuration());
+    dispatch(getStartTimeToSendToServer());
+  }, [
+    scheduleState.startTimeHoursTmp,
+    scheduleState.startTimeMinutesTmp,
+    scheduleState.endTimeHoursTmp,
+    scheduleState.endTimeMinutesTmp,
+    scheduleState.selectedDay,
+  ]);
+
+  useEffect(() => {
+    dispatch(resetScheduleOfSelectedActivity());
+    dispatch(getSchedulesOfSelectedActivity(activitiesState.selectedActivity));
+  }, [activitiesState.selectedActivity, scheduleState.allSchedules]);
+
   return (
     console.log(
-      `selected event ${JSON.stringify(scheduleState.selectedEvent)}`
+      `selectedSchedule: ${JSON.stringify(scheduleState.selectedEvent)}`
     ),
     (
       <div className="schedule_page">
@@ -218,32 +263,38 @@ export default function SchedulesPage() {
             <div className="">Расписание</div>
             <div className="slash"> / </div>
 
-            <CustomDropdown
-              isDropDownOpened={isGymsDropDownOpened}
-              zIndex={"2"}
-              openCloseDropDown={() => {
-                openGymsDropDown(!isGymsDropDownOpened);
-              }}
-              text={
-                gymState.currentGym === null
-                  ? "Выберите заведение"
-                  : gymState.currentGym.name
-              }
-              map={gymState.listOfGyms.map((item, index) => (
-                <button
-                  key={index}
-                  className="gym_names"
-                  onClick={() => {
-                    dispatch(setCurrentGym(item));
-                    openGymsDropDown(false);
-                  }}
-                >
-                  {item.name}
-                </button>
-              ))}
-              isLoading={scheduleState.isGymsLoading}
-              loadingText={"Загружаем список заведений..."}
-            />
+            {gymState.listOfGyms.length === 1 &&
+              gymState.currentGym !== null && (
+                <div className=""> {gymState.currentGym.name} </div>
+              )}
+            {gymState.listOfGyms.length > 1 && (
+              <CustomDropdown
+                isDropDownOpened={isGymsDropDownOpened}
+                zIndex={"2"}
+                openCloseDropDown={() => {
+                  openGymsDropDown(!isGymsDropDownOpened);
+                }}
+                text={
+                  gymState.currentGym === null
+                    ? "Выберите заведение"
+                    : gymState.currentGym.name
+                }
+                map={gymState.listOfGyms.map((item, index) => (
+                  <button
+                    key={index}
+                    className="gym_names"
+                    onClick={() => {
+                      dispatch(setCurrentGym(item));
+                      openGymsDropDown(false);
+                    }}
+                  >
+                    {item.name}
+                  </button>
+                ))}
+                isLoading={scheduleState.isGymsLoading}
+                loadingText={"Загружаем список заведений..."}
+              />
+            )}
           </div>
           {gymState.currentGym !== null && (
             <CustomDropdown
@@ -335,7 +386,11 @@ export default function SchedulesPage() {
                       Дата проведения:
                     </div>
                     <CustomDropdown
-                      text={scheduleState.selectedDay}
+                      text={
+                        scheduleState.selectedDay === ""
+                          ? "Выберите дату"
+                          : scheduleState.selectedDay
+                      }
                       isDropDownOpened={false}
                       openCloseDropDown={() => {
                         setDatePickerShown(true);
@@ -461,7 +516,7 @@ export default function SchedulesPage() {
                       <div
                         key={weekday.id}
                         className={
-                          scheduleState.selectedWeekdays.includes(weekday.name)
+                          scheduleState.selectedWeekdays.includes(weekday.id)
                             ? "roundedWeekdaysSelected"
                             : "roundedWeekdays"
                         }
@@ -471,11 +526,9 @@ export default function SchedulesPage() {
                               weekday.name
                             )
                           ) {
-                            dispatch(
-                              removeDayFromSelectedWeekdays(weekday.name)
-                            );
+                            dispatch(removeDayFromSelectedWeekdays(weekday.id));
                           } else {
-                            dispatch(addDaysToSelectedWeekdays(weekday.name));
+                            dispatch(addDaysToSelectedWeekdays(weekday.id));
                           }
                         }}
                       >
@@ -500,14 +553,48 @@ export default function SchedulesPage() {
                       width={"100%"}
                       height={"40px"}
                       title={"Добавить Занятие"}
-                      onСlick={() => {
+                      onСlick={async () => {
                         if (scheduleState.description === "") {
                           setFormNotValidated(true);
                         } else {
-                          // add new schedule
+                          // post lesson
+                          const {
+                            id,
+                            date,
+                            duration,
+                            description,
+                            lessonType,
+                            selectedWeekdays,
+                          } = {
+                            id: gymState.currentGym.id,
+                            date: scheduleState.lessonStartTimeSendToServer,
+                            duration: scheduleState.lessonDurationSendToServer,
+                            description: scheduleState.description,
+                            lessonType: activitiesState.selectedActivity,
+                            selectedWeekdays: scheduleState.selectedWeekdays,
+                          };
+                          await dispatch(
+                            createSchedule({
+                              id,
+                              date,
+                              duration,
+                              description,
+                              lessonType,
+                              selectedWeekdays,
+                            })
+                          );
+                          //resetdatas
+                          dispatch(getSchedules(gymState.currentGym.id));
+                          dispatch(resetStateAfterSubmitting());
+                          setUpdateStyle(!updateStyle);
                           openModal(false);
                         }
                       }}
+                      isDidsabled={
+                        scheduleState.description === "" ||
+                        scheduleState.selectedDay === "" ||
+                        activitiesState.selectedActivity === ""
+                      }
                     />
                   </div>
                   {isFormNotValidated && (
@@ -522,7 +609,7 @@ export default function SchedulesPage() {
           )}
         </div>
         <div className="schedule_body">
-          {gymState.currentGym === null && (
+          {gymState.currentGym === null && !gymState.isGymsLoading && (
             <div className="centeredGreyText">Выберите заведение</div>
           )}
 
@@ -530,6 +617,10 @@ export default function SchedulesPage() {
             activitiesState.selectedActivity === "" && (
               <div className="centeredGreyText">Выберите активность</div>
             )}
+
+          {gymState.isGymsLoading && (
+            <div className="centeredGreyText">Загружаем данные</div>
+          )}
 
           {gymState.currentGym !== null &&
             activitiesState.selectedActivity !== "" && (
@@ -607,7 +698,24 @@ export default function SchedulesPage() {
                   src={roundedGarbage}
                   alt=""
                   className="cursor-pointer"
-                  onClick={() => openDeleteModal(true)}
+                  onClick={async () => {
+                    // if event is repeating show modal
+                    if (scheduleState.selectedEvent.repeat.length > 1) {
+                      openDeleteModal(true);
+                    } else {
+                      // else delete event
+                      const { gymId, lessonId, all } = {
+                        gymId: gymState.currentGym.id,
+                        lessonId: scheduleState.selectedEvent.id,
+                        all: false,
+                      };
+                      await dispatch(deleteSchedule({ gymId, lessonId, all }));
+                      dispatch(resetSelectedEvent());
+                      setEdittingContainer(false);
+                      dispatch(getSchedules(gymState.currentGym.id));
+                      setUpdateStyle(!updateStyle);
+                    }
+                  }}
                 />
               </div>
 
@@ -632,13 +740,42 @@ export default function SchedulesPage() {
                       height={"40px"}
                       width={"40%"}
                       title={"Удалить только его"}
-                      onСlick={() => openDeleteModal(false)}
+                      onСlick={async () => {
+                        const { gymId, lessonId, all } = {
+                          gymId: gymState.currentGym.id,
+                          lessonId: scheduleState.selectedEvent.id,
+                          all: false,
+                        };
+                        await dispatch(
+                          deleteSchedule({ gymId, lessonId, all })
+                        );
+                        dispatch(resetSelectedEvent());
+                        setEdittingContainer(false);
+                        dispatch(getSchedules(gymState.currentGym.id));
+                        setUpdateStyle(!updateStyle);
+                        openDeleteModal(false);
+                      }}
                     />
                     <CustomButton
                       height={"40px"}
                       width={"60%"}
                       title={"Удалить занятие и все его копии"}
                       fontSize={"14px"}
+                      onСlick={async () => {
+                        const { gymId, lessonId, all } = {
+                          gymId: gymState.currentGym.id,
+                          lessonId: scheduleState.selectedEvent.id,
+                          all: true,
+                        };
+                        await dispatch(
+                          deleteSchedule({ gymId, lessonId, all })
+                        );
+                        dispatch(resetSelectedEvent());
+                        setEdittingContainer(false);
+                        dispatch(getSchedules(gymState.currentGym.id));
+                        setUpdateStyle(!updateStyle);
+                        openDeleteModal(false);
+                      }}
                     />
                   </div>
                 </div>
@@ -660,11 +797,11 @@ export default function SchedulesPage() {
                   </div>
                   <div className="flex flex-col">
                     <div className="text-[13px] font-medium leading-[15px]">
-                      Владислав Туйнов
+                      {`${scheduleState.selectedEvent.owner.firstName} ${scheduleState.selectedEvent.owner.lastName}`}
                     </div>
-                    <div className="text-[13px] font-medium leading-[15px]">
+                    {/* <div className="text-[13px] font-medium leading-[15px]">
                       Директор
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -678,8 +815,8 @@ export default function SchedulesPage() {
                         {scheduleState.selectedEvent.start.toLocaleTimeString(
                           "ru-RU",
                           { hour: "2-digit", minute: "2-digit" }
-                        )}{" "}
-                        -{" "}
+                        )}
+                        -
                         {scheduleState.selectedEvent.end.toLocaleTimeString(
                           "ru-RU",
                           { hour: "2-digit", minute: "2-digit" }
@@ -747,7 +884,9 @@ export default function SchedulesPage() {
                         className="textArea text-[13px] font-normal font-inter"
                         //ref={inputRef}
                         value={scheduleState.selectedEvent.title}
-                        onChange={() => {}}
+                        onChange={(e) => {
+                          dispatch(selectedEventSetTitle(e.target.value));
+                        }}
                         style={{
                           fontSize: "13px",
                           lineHeight: "14px",
@@ -768,25 +907,26 @@ export default function SchedulesPage() {
                   />
                 )}
 
-                {isScheduleEdittingEnabled && (
-                  <div className="flex flex-row gap-[10px] ">
-                    <img
-                      src={
-                        checkBoxEnabled
-                          ? checkboxEnabledSvg
-                          : checkboxDisabledSvg
-                      }
-                      alt=""
-                      className="cursor-pointer w-[24px] h-[24px]"
-                      onClick={() => {
-                        setCheckbox(!checkBoxEnabled);
-                      }}
-                    />
-                    <div className="text-[13px] font-medium leading-[15px]">
-                      Применить ко всем повторяющимся событиям
+                {isScheduleEdittingEnabled &&
+                  scheduleState.selectedEvent.repeat.length > 1 && (
+                    <div className="flex flex-row gap-[10px] ">
+                      <img
+                        src={
+                          checkBoxEnabled
+                            ? checkboxEnabledSvg
+                            : checkboxDisabledSvg
+                        }
+                        alt=""
+                        className="cursor-pointer w-[24px] h-[24px]"
+                        onClick={() => {
+                          setCheckbox(!checkBoxEnabled);
+                        }}
+                      />
+                      <div className="text-[13px] font-medium leading-[15px]">
+                        Применить ко всем повторяющимся событиям
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {isScheduleEdittingEnabled && (
                   <div className="flex flex-row gap-[10px] ">
@@ -802,7 +942,35 @@ export default function SchedulesPage() {
                       width={"100%"}
                       height={"40px"}
                       title={"Сохранить"}
-                      onСlick={() => {}}
+                      onСlick={async () => {
+                        // send update request
+                        const {
+                          gymId,
+                          lessonId,
+                          date,
+                          duration,
+                          description,
+                          all,
+                        } = {
+                          gymId: gymState.currentGym.id,
+                          lessonId: scheduleState.selectedEvent.id,
+                          duration: scheduleState.lessonDurationSendToServer,
+                          description: scheduleState.selectedEvent.title,
+                          all: checkBoxEnabled,
+                        };
+                        await dispatch(
+                          updateSchedule({
+                            gymId,
+                            lessonId,
+                            date,
+                            duration,
+                            description,
+                            all,
+                          })
+                        );
+                        setScheduleEdittingEnabled(false);
+                        dispatch(getSchedules(gymState.currentGym.id));
+                      }}
                       fontSize={"14px"}
                     />
                   </div>
@@ -821,7 +989,7 @@ export default function SchedulesPage() {
                       className={
                         scheduleState.selectedWeekdays.includes(weekday.name)
                           ? "roundedWeekdaysSelected"
-                          : "roundedWeekdays"
+                          : "roundedWeekdays "
                       }
                       onClick={() => {}}
                     >

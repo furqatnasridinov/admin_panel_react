@@ -16,10 +16,10 @@ export const getListOfEmployees = createAsyncThunk(
 
 export const deleteEmployee = createAsyncThunk(
   "employess/deleteEmployee",
-  async ({ employeeId }) => {
+  async ({ gymid, employeeId }) => {
     try {
       const response = await axiosClient.delete(
-        `api/admin/workers/${employeeId}`
+        `api/admin/gyms/${gymid}/workers/${employeeId}`
       );
     } catch (error) {
       alert(`deleteEmployee ${error}`);
@@ -40,7 +40,7 @@ export const editEmployee = createAsyncThunk(
         login: login,
       };
       const response = await axiosClient.patch(
-        `api/director/gyms/${gymId}/workers`,
+        `api/admin/gyms/${gymId}/workers`,
         dataToSend
       );
     } catch (error) {
@@ -61,7 +61,7 @@ export const addEmployee = createAsyncThunk(
       };
 
       const response = await axiosClient.post(
-        `api/director/gyms/${gymId}/workers`,
+        `api/admin/gyms/${gymId}/workers`,
         dataToSend
       );
       getListOfEmployees(gymId);
@@ -101,8 +101,6 @@ const employeesSlice = createSlice({
         state.isChangesOccured = true;
       }
     },
-
-
 
     changeSelectedEmployeesLastname: (state, action) => {
       state.selectedEmployee.lastName = action.payload;
@@ -222,7 +220,7 @@ export const {
   returnDeletedEmployee,
   resetSelectedEmployee,
   selectAPriveledge,
-  removeEmployeeFromDeletedEmployeesList
+  removeEmployeeFromDeletedEmployeesList,
 } = employeesSlice.actions;
 
 export default employeesSlice.reducer;

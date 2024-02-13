@@ -6,7 +6,7 @@ export const getListOfActivities = createAsyncThunk(
   async (gymId) => {
     try {
       const response = await axiosClient.get(
-        `api/director/gyms/${gymId}/lessonTypes`
+        `api/admin/gyms/${gymId}/lessonTypes`
       );
       return response.data["object"];
     } catch (error) {
@@ -51,7 +51,7 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
     formData.append("type", type);
     try {
       const response = await axiosClient.post(
-        `api/director/gyms/${id}/pictures`,
+        `api/admin/gyms/${id}/pictures`,
         formData,
         {
           headers: {
@@ -74,7 +74,7 @@ export const patchDescriptionOfSelectedActivity = createAsyncThunk(
         typeDescription: typeDescription,
       };
       const response = await axiosClient.patch(
-        `api/director/gyms/${id}`,
+        `api/admin/gyms/${id}`,
         dataToSend
       );
     } catch (error) {
@@ -92,7 +92,7 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
         peculiarities: peculiarities,
       };
       const response = await axiosClient.patch(
-        `api/director/gyms/${id}`,
+        `api/admin/gyms/${id}`,
         dataToSend
       );
     } catch (error) {
@@ -108,7 +108,7 @@ export const deleteActivityPhoto = createAsyncThunk(
       var formData = new FormData();
       formData.append("url", url);
       const response = await axiosClient.delete(
-        `api/director/gyms/${id}/pictures`,
+        `api/admin/gyms/${id}/pictures`,
         {
           data: formData,
           headers: {
@@ -127,7 +127,7 @@ export const deleteActivity = createAsyncThunk(
   async ({ id, lessonType }) => {
     try {
       const response = await axiosClient.delete(
-        `api/director/gyms/${id}/lessonType/${lessonType}`
+        `api/admin/gyms/${id}/lessonType/${lessonType}`
       );
     } catch (error) {
       alert(`deleteActivity ${error}`);
@@ -143,7 +143,7 @@ export const addNewActivity = createAsyncThunk(
         lessonType: lessonType,
       };
       const response = await axiosClient.patch(
-        `api/director/gyms/${id}`,
+        `api/admin/gyms/${id}`,
         dataToSend
       );
     } catch (error) {
@@ -275,9 +275,6 @@ const activitiesSlice = createSlice({
         const notModifiedList = [
           ...state.photosOfAllActivities[state.selectedActivity],
         ];
-        /* const modifiedList = notModifiedList.map((element) => {
-          return `http://77.222.53.122/image/${element}`;
-        }); */
         state.photosOfSelectedActivity = notModifiedList;
       } else {
         state.photosOfSelectedActivity = [];

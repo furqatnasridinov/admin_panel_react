@@ -127,22 +127,7 @@ export default function Employees({ listOfEmployees, gymId }) {
             listOfEmployees.length === 0 ? {} : openRefEmployeesDialog(true)
           }
         />
-        <CustomSnackbar
-          ref={deleteEmployeeSnackRef}
-          undoAction={() => {
-            dispatch(returnDeletedEmployee());
-            if (cancelDeleteTimeoutEmployees.length > 0) {
-              const lastCancelFunction =
-                cancelDeleteTimeoutEmployees[
-                  cancelDeleteTimeoutEmployees.length - 1
-                ];
-              lastCancelFunction();
-              setCancelDeleteTimeoutEmployees((prevState) =>
-                prevState.slice(0, -1)
-              );
-            }
-          }}
-        />
+
         {listOfEmployees.length !== 0 && isRefEmployeesDialogOpened && (
           <CustomDialog
             isOpened={isRefEmployeesDialogOpened}
@@ -202,11 +187,12 @@ export default function Employees({ listOfEmployees, gymId }) {
                                 "Вы удалили сотрудника",
                                 // function when time ended
                                 async () => {
-                                  const { employeeId } = {
+                                  const { gymid, employeeId } = {
+                                    gymid: gymId,
                                     employeeId: employee.id,
                                   };
                                   await dispatch(
-                                    deleteEmployee({ employeeId }) // it will work dispise the warning
+                                    deleteEmployee({ gymid, employeeId }) // it will work dispise the warning
                                   );
                                   dispatch(getListOfEmployees(gymId));
                                 }
@@ -494,6 +480,22 @@ export default function Employees({ listOfEmployees, gymId }) {
             <img src={addSvg} alt="" />
             <div className="">Добавить</div>
           </div>
+          <CustomSnackbar
+            ref={deleteEmployeeSnackRef}
+            undoAction={() => {
+              dispatch(returnDeletedEmployee());
+              if (cancelDeleteTimeoutEmployees.length > 0) {
+                const lastCancelFunction =
+                  cancelDeleteTimeoutEmployees[
+                    cancelDeleteTimeoutEmployees.length - 1
+                  ];
+                lastCancelFunction();
+                setCancelDeleteTimeoutEmployees((prevState) =>
+                  prevState.slice(0, -1)
+                );
+              }
+            }}
+          />
 
           {/* Add employee dialog */}
           {isAddEmployeesDialogOpened && (

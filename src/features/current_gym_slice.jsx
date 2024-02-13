@@ -34,7 +34,7 @@ export const addGymPicture = createAsyncThunk(
       formData.append("file", image);
       formData.append("mainPicture", true);
       const response = await axiosClient.post(
-        `api/director/gyms/${gymId}/addGymPicture`,
+        `api/admin/gyms/${gymId}/addGymPicture`,
         formData,
         {
           headers: {
@@ -57,7 +57,7 @@ export const removeGymMainPic = createAsyncThunk(
         mainPictureUrl: "",
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
@@ -75,7 +75,7 @@ export const addGymLogo = createAsyncThunk(
       formData.append("file", image);
       formData.append("mainPicture", false);
       const response = await axiosClient.post(
-        `api/director/gyms/${gymId}/addGymPicture`,
+        `api/admin/gyms/${gymId}/addGymPicture`,
         formData,
         {
           headers: {
@@ -98,7 +98,7 @@ export const removeGymLogo = createAsyncThunk(
         logoUrl: "",
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
@@ -117,7 +117,7 @@ export const patchGymName = createAsyncThunk(
         name: name,
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
@@ -136,7 +136,7 @@ export const patchGymDescription = createAsyncThunk(
         description: description,
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
@@ -154,7 +154,7 @@ export const patchGymAddress = createAsyncThunk(
         address: address,
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
@@ -174,7 +174,7 @@ export const patchGymContacts = createAsyncThunk(
         vk: vk,
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
