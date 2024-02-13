@@ -8,6 +8,21 @@
   cursor: pointer;
 }
 
+.scrollableMinutes {
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.scrollableMinutes::-webkit-scrollbar {
+  display: none;
+}
+
 .scrollableHours::-webkit-scrollbar {
   display: none;
 }
@@ -35,7 +50,7 @@
 }
 
 .dropDownForHoursBody {
-  max-height: 170px;
+  max-height: 174px;
   display: flex;
   flex-direction: row;
   gap: 10px;

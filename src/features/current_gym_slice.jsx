@@ -34,7 +34,7 @@ export const addGymPicture = createAsyncThunk(
       formData.append("file", image);
       formData.append("mainPicture", true);
       const response = await axiosClient.post(
-        `api/director/gyms/${gymId}/addGymPicture`,
+        `api/admin/gyms/${gymId}/addGymPicture`,
         formData,
         {
           headers: {
@@ -57,7 +57,7 @@ export const removeGymMainPic = createAsyncThunk(
         mainPictureUrl: "",
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
@@ -68,14 +68,14 @@ export const removeGymMainPic = createAsyncThunk(
 );
 
 export const addGymLogo = createAsyncThunk(
-  "currentGym/addGymPictures",
+  "currentGym/addGymLogo",
   async ({ gymId, image }) => {
     try {
       var formData = new FormData();
       formData.append("file", image);
       formData.append("mainPicture", false);
       const response = await axiosClient.post(
-        `api/director/gyms/${gymId}/addGymPicture`,
+        `api/admin/gyms/${gymId}/addGymPicture`,
         formData,
         {
           headers: {
@@ -98,7 +98,7 @@ export const removeGymLogo = createAsyncThunk(
         logoUrl: "",
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
@@ -117,7 +117,7 @@ export const patchGymName = createAsyncThunk(
         name: name,
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
@@ -136,7 +136,7 @@ export const patchGymDescription = createAsyncThunk(
         description: description,
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
@@ -154,7 +154,7 @@ export const patchGymAddress = createAsyncThunk(
         address: address,
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
@@ -174,7 +174,7 @@ export const patchGymContacts = createAsyncThunk(
         vk: vk,
       };
       const response = await axiosClient.patch(
-        "api/director/gyms/",
+        "api/admin/gyms/",
         dataToSend
       );
     } catch (error) {
@@ -188,6 +188,9 @@ const currentGymSlice = createSlice({
   initialState: {
     isLoading: false,
     listOfGyms: [],
+    isGymsLoading: false,
+    isMainPicLoading: false,
+    isLogoLoading: false,
     currentGym: null,
     gymPictureCopy: "",
     logoCopy: "",
@@ -317,15 +320,37 @@ const currentGymSlice = createSlice({
 
     // getListOfGyms
     builder.addCase(getListOfGyms.pending, (state) => {
-      state.isLoading = true;
+      state.isGymsLoading = true;
     });
     builder.addCase(getListOfGyms.fulfilled, (state, action) => {
-      state.isLoading = false;
+      state.isGymsLoading = false;
       state.listOfGyms = action.payload;
     });
     builder.addCase(getListOfGyms.rejected, (state) => {
-      state.isLoading = false;
+      state.isGymsLoading = false;
       state.isError = true;
+    });
+
+    // addGymLogo
+    builder.addCase(addGymLogo.pending, (state) => {
+      state.isLogoLoading = true;
+    });
+    builder.addCase(addGymLogo.fulfilled, (state) => {
+      state.isLogoLoading = false;
+    });
+    builder.addCase(addGymLogo.rejected, (state) => {
+      state.isLogoLoading = false;
+    });
+
+    // addGymPicture
+    builder.addCase(addGymPicture.pending, (state) => {
+      state.isMainPicLoading = true;
+    });
+    builder.addCase(addGymPicture.fulfilled, (state) => {
+      state.isMainPicLoading = false;
+    });
+    builder.addCase(addGymPicture.rejected, (state) => {
+      state.isMainPicLoading = false;
     });
   },
 });

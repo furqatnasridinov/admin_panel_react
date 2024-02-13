@@ -6,7 +6,7 @@ const axiosClient = axios.create({
   headers: {
     //Authorization: `Bearer ${localStorage.getItem(AppConstants.keyToken)}`,
     Authorization:
-      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIrNzk5OTIxNzI0OTQiLCJleHAiOjE3MDc4NDUwNDZ9.1U7hhJ3L4xFTFl6vtG1xQw1CjW2WTzb6yzaI4AU2eg-y60x_pIcnoolhStiBVyfNKp1BImWV4EHuea99WqO5oA",
+      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIrNzk5OTIxNzI0OTQiLCJleHAiOjE3MTAzNTIzNjF9.xvxomjefo77p82FmLKHZ8bnmDEWSZB_M7nig3ntacLQVIlinAfIikDaq8uZbyK8OjUbQFA8wJ57QYMoRtjd7eQ",
     "Content-Type": "application/json",
   },
 });

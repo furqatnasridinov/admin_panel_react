@@ -11,6 +11,7 @@ import AddActivitySvg from "../../../../../assets/svg/add_activity.svg";
 import addPhotoSvg from "../../../../../assets/svg/add_photo.svg";
 import CustomButton from "../../../../../components/button/button";
 import CustomDialog from "../../../../../components/dialog/dialog";
+import ProgressSnackbar from "../../../../../components/snackbar/progress_snackbar";
 import { useDispatch, useSelector } from "react-redux";
 import {
   dragAndDropActivities,
@@ -42,7 +43,6 @@ export default function GymDetailesBodySecondContainer({
   activityPeculiarities,
   photosOfSelectedActivity,
   setPhotosOfSelectedActivity,
-  snackbarRef,
 }) {
   const dispatch = useDispatch();
   const activitiesSlice = useSelector((state) => state.activities);
@@ -68,6 +68,7 @@ export default function GymDetailesBodySecondContainer({
   const deletePhotosSnackRef = useRef();
   const deleteActivitiesSnackRef = useRef();
   const blueBorderedContainerRef = useRef(null);
+  const progressSnackbarRef = useRef(null);
 
   // передаем это на кнопку добавления фото,(как бы через ref, нажимаем на саму input file которого скрыли)
   const handleClick = () => {
@@ -480,6 +481,12 @@ export default function GymDetailesBodySecondContainer({
             }}
           />
 
+          {/* Progress snackbar */}
+          <ProgressSnackbar
+            isLoading={activitiesSlice.isActivityPhotosLoading}
+            ref={progressSnackbarRef}
+          />
+
           {/* Container with photos */}
           <div className="activity_photos_container">
             {!isEdittingPhotosEnabled &&
@@ -548,6 +555,7 @@ export default function GymDetailesBodySecondContainer({
                         alt=""
                         onClick={async () => {
                           dispatch(removePhotoFromSelectedActivityPhotos(item));
+                          deletePhotosSnackRef.current.showSnackbars();
                           const cancelTimeOut =
                             deletePhotosSnackRef.current.show(
                               "Вы удалили фото",
@@ -589,6 +597,8 @@ export default function GymDetailesBodySecondContainer({
                       files: file,
                       type: activitiesSlice.selectedActivity,
                     };
+                    deletePhotosSnackRef.current.hideSnackbars();
+                    progressSnackbarRef.current.show("Идет загрузка фото");
                     await dispatch(
                       addPhotoToSelectedActivity({ id, files, type })
                     );

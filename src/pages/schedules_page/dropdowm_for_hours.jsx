@@ -79,7 +79,7 @@ export default function DropdownForHours({
 
           <hr className="flex justify-center w-[2px] h-[80%]  bg-gray-200 " />
 
-          <div className="scrollableHours" ref={minutesContainerRef}>
+          <div className="scrollableMinutes" ref={minutesContainerRef}>
             <div className="">
               {MINUTES.map((item, index) => {
                 return (

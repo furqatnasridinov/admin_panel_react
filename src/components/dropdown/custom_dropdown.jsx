@@ -10,6 +10,8 @@ export default function CustomDropdown({
   map,
   maxHeight,
   zIndex,
+  isLoading,
+  loadingText,
 }) {
   return (
     <div className="column" style={{ zIndex: zIndex }}>
@@ -26,7 +28,8 @@ export default function CustomDropdown({
       </button>
       {isDropDownOpened && (
         <div className="dropdownBody" style={{ maxHeight: maxHeight }}>
-          {map}
+          {isLoading && <div className="loadingText">{loadingText}</div>}
+          {!isLoading && map}
         </div>
       )}
     </div>
