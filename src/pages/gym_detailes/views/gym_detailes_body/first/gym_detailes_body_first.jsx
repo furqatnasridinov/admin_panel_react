@@ -843,11 +843,11 @@ function EditableContacts({
             fontFamily: "Inter, sans-serif",
           }}
         />
-        <img
+        {/* <img
           src={arrowDownSvg}
           alt=""
           className="absolute right-2 top-1/2 transform -translate-y-1/2" // Выравнивание иконки
-        />
+        /> */}
       </div>
 
       {/* second textfield (editable) */}

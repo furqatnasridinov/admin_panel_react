@@ -12,10 +12,14 @@ export default function CustomDropdown({
   zIndex,
   isLoading,
   loadingText,
+  isError,
 }) {
   return (
     <div className="column" style={{ zIndex: zIndex }}>
       <button
+        style={{
+          border: isError ? "1px solid rgba(255, 136, 136, 1)" : null,
+        }}
         className={
           isDropDownOpened ? "dropdown_header_opened" : "dropdown_header"
         }

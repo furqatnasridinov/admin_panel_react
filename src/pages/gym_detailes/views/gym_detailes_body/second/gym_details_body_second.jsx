@@ -592,17 +592,19 @@ export default function GymDetailesBodySecondContainer({
                   onChange={async (event) => {
                     // Обработчик для добавления новой фотографии
                     const file = event.target.files[0];
-                    const { id, files, type } = {
-                      id: gymId,
-                      files: file,
-                      type: activitiesSlice.selectedActivity,
-                    };
-                    deletePhotosSnackRef.current.hideSnackbars();
-                    progressSnackbarRef.current.show("Идет загрузка фото");
-                    await dispatch(
-                      addPhotoToSelectedActivity({ id, files, type })
-                    );
-                    dispatch(getPhotos(gymId));
+                    if (file) {
+                      const { id, files, type } = {
+                        id: gymId,
+                        files: file,
+                        type: activitiesSlice.selectedActivity,
+                      };
+                      deletePhotosSnackRef.current.hideSnackbars();
+                      progressSnackbarRef.current.show("Идет загрузка фото");
+                      await dispatch(
+                        addPhotoToSelectedActivity({ id, files, type })
+                      );
+                      dispatch(getPhotos(gymId));
+                    }
                   }}
                   style={{ display: "none" }} // Скрываем input
                 />
