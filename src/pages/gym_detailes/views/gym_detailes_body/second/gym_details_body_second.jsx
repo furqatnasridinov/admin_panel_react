@@ -632,43 +632,44 @@ function Chip({ name, onclick, isActive }) {
 
 function EditableFeaturesTextfield({
   onChanged,
-  fontsize,
-  lineheight,
   peculiarities,
   onButtonClicked,
 }) {
-  // Join the array with newline and bullet point for display in textarea
-
-  // Set this string as the initial value for  textarea
   const inputRef = useRef(null);
-  // for autofocus calls when component first renders
+
   useEffect(() => {
     const input = inputRef.current;
     if (input) {
       input.focus();
-      // Set the cursor to the end of the text
       const length = input.value.length;
       input.setSelectionRange(length, length);
-      // set the height relatively textfields content
-      input.style.height = "inherit"; // Reset height to recalculate
-      input.style.height = `${input.scrollHeight}px`; // Set new height based on scroll height
+      input.style.height = "inherit";
+      input.style.height = `${input.scrollHeight}px`;
     }
   }, []);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Предотвратить создание новой строки по умолчанию
+      const lineNumber = (peculiarities.match(/\n/g) || []).length + 1;
+      onChanged(peculiarities + `${lineNumber}. `);
+    }
+  };
 
   return (
     <div className="flex flex-row justify-between gap-[10px] items-start">
       <textarea
         ref={inputRef}
         value={peculiarities}
-        //className="textarea-transition"
         onChange={onChanged}
+        onKeyDown={handleKeyDown}
         style={{
           width: "100%",
           padding: "10px 16px 10px 8px",
           border: "1px solid #77AAF9",
           borderRadius: "8px",
           outline: "none",
-          maxHeight: "120px",
+          maxHeight: "200px",
           resize: "none",
           fontSize: "13px",
           lineHeight: "14px",
