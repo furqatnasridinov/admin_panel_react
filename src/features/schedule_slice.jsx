@@ -116,6 +116,7 @@ const scheduleSlice = createSlice({
     allSchedules: [],
     schedulesOfSelectedActivity: [],
     isCurrentEventHasRepeats: false,
+    endTimeIsBeforeStartTime: false,
   },
 
   reducers: {
@@ -239,7 +240,9 @@ const scheduleSlice = createSlice({
 
       // If end time is before start time, add one day to end time
       if (end < start) {
-        end = new Date(end.getTime() + 24 * 60 * 60 * 1000);
+        state.endTimeIsBeforeStartTime = true;
+      } else {
+        state.endTimeIsBeforeStartTime = false;
       }
 
       let diff = end - start;
@@ -253,8 +256,6 @@ const scheduleSlice = createSlice({
       const duration = `${hours}:${minutes}`;
       state.lessonDurationSendToServer = duration;
     },
-
-
 
     // getting schedules of selected activity
     getSchedulesOfSelectedActivity: (state, action) => {
@@ -312,7 +313,7 @@ export const {
   getSchedulesOfSelectedActivity,
   resetScheduleOfSelectedActivity,
   setSchedulesLoading,
-  resetDatasAfterSubmitting
+  resetDatasAfterSubmitting,
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

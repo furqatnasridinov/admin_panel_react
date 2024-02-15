@@ -551,6 +551,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       mask="+7 (999) 999 99-99"
                       placeholder="+7 (900) 855 45-58"
                       style={{
+                        height: "30px",
                         width: "fit-content",
                         outline: "none",
                         fontSize: "13px",
@@ -813,42 +814,28 @@ function EditableContacts({
   showDeleting,
   isPhoneEmpty,
 }) {
-  /* const inputRef = useRef();
-  const handleInfoChange = (event) => {
-    const input = event.target; // Получаем текущий элемент input
-    setInfoValue(input.value);
-    // Обновляем ширину input в зависимости от содержимого
-    input.style.width = "inherit"; // Сбрасываем ширину, чтобы пересчитать
-    input.style.width = `${input.scrollWidth}px`; // Устанавливаем новую ширину на основе scrollWidth
-  }; */
-
   return (
     <div className="flex flex-row gap-[10px] w-fit ">
       <img src={icon} alt="" />
       {/* first textfield readOnly */}
-      <div className="relative ">
-        <input
-          type="text"
-          value={text}
-          readOnly={true}
-          style={{
-            width: "115px",
-            height: "30px",
-            padding: "10px 6px 10px 16px",
-            border: "1px solid #77AAF9",
-            borderRadius: "8px",
-            outline: "none",
-            fontSize: "13px",
-            fontWeight: "300",
-            fontFamily: "Inter, sans-serif",
-          }}
-        />
-        {/* <img
-          src={arrowDownSvg}
-          alt=""
-          className="absolute right-2 top-1/2 transform -translate-y-1/2" // Выравнивание иконки
-        /> */}
-      </div>
+
+      <input
+        type="text"
+        value={text}
+        readOnly={true}
+        style={{
+          width: "100px",
+          height: "30px",
+          textAlign: "center",
+          //padding: "10px 6px 10px 16px",
+          border: "1px solid #77AAF9",
+          borderRadius: "8px",
+          outline: "none",
+          fontSize: "13px",
+          fontWeight: "300",
+          fontFamily: "Inter, sans-serif",
+        }}
+      />
 
       {/* second textfield (editable) */}
       {isPhone && (

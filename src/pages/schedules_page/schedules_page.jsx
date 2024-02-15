@@ -595,7 +595,8 @@ export default function SchedulesPage() {
 
                         if (
                           scheduleState.description !== "" &&
-                          scheduleState.selectedDay !== ""
+                          scheduleState.selectedDay !== "" &&
+                          !scheduleState.endTimeIsBeforeStartTime
                         ) {
                           // post lesson
                           const {
@@ -636,6 +637,12 @@ export default function SchedulesPage() {
                     <div className="text-[14px] text-red-400 ">
                       Чтобы продолжить - необходимо заполнить все обязательные
                       поля, выделенные красным
+                    </div>
+                  )}
+                  {scheduleState.endTimeIsBeforeStartTime && (
+                    <div className="text-[14px] text-red-400 ">
+                      Время начала должно быть раньше, чем время окончания
+                      активности
                     </div>
                   )}
                 </div>
@@ -963,56 +970,69 @@ export default function SchedulesPage() {
                     </div>
                   )}
 
-                {isScheduleEdittingEnabled && (
-                  <div className="flex flex-row gap-[10px] ">
-                    <BackButton
-                      width={"100%"}
-                      height={"40px"}
-                      title={"Отменить"}
-                      onСlick={() => {
-                        setScheduleEdittingEnabled(false);
-                        // reset times
-                      }}
-                    />
-                    <CustomButton
-                      width={"100%"}
-                      height={"40px"}
-                      title={"Сохранить"}
-                      onСlick={async () => {
-                        // send update request
-                        const {
-                          gymId,
-                          lessonId,
-                          date,
-                          duration,
-                          description,
-                          all,
-                        } = {
-                          gymId: gymState.currentGym.id,
-                          lessonId: scheduleState.selectedEvent.id,
-                          date: scheduleState.lessonStartTimeSendToServer,
-                          duration: scheduleState.lessonDurationSendToServer,
-                          description: scheduleState.selectedEvent.title,
-                          all: checkBoxEnabled,
-                        };
-                        await dispatch(
-                          updateSchedule({
-                            gymId,
-                            lessonId,
-                            date,
-                            duration,
-                            description,
-                            all,
-                          })
-                        );
-                        setScheduleEdittingEnabled(false);
-                        dispatch(getSchedules(gymState.currentGym.id));
-                        dispatch(resetDatasAfterSubmitting());
-                      }}
-                      fontSize={"14px"}
-                    />
-                  </div>
-                )}
+                <div className="flex flex-col gap-[16px]">
+                  {isScheduleEdittingEnabled && (
+                    <div className="flex flex-row gap-[10px] ">
+                      <BackButton
+                        width={"100%"}
+                        height={"40px"}
+                        title={"Отменить"}
+                        onСlick={() => {
+                          setScheduleEdittingEnabled(false);
+                          // reset times
+                        }}
+                      />
+                      <CustomButton
+                        width={"100%"}
+                        height={"40px"}
+                        title={"Сохранить"}
+                        onСlick={async () => {
+                          // send update request
+
+                          if (!scheduleState.endTimeIsBeforeStartTime) {
+                            const {
+                              gymId,
+                              lessonId,
+                              date,
+                              duration,
+                              description,
+                              all,
+                            } = {
+                              gymId: gymState.currentGym.id,
+                              lessonId: scheduleState.selectedEvent.id,
+                              date: scheduleState.lessonStartTimeSendToServer,
+                              duration:
+                                scheduleState.lessonDurationSendToServer,
+                              description: scheduleState.selectedEvent.title,
+                              all: checkBoxEnabled,
+                            };
+                            await dispatch(
+                              updateSchedule({
+                                gymId,
+                                lessonId,
+                                date,
+                                duration,
+                                description,
+                                all,
+                              })
+                            );
+                            setScheduleEdittingEnabled(false);
+                            dispatch(getSchedules(gymState.currentGym.id));
+                            dispatch(resetDatasAfterSubmitting());
+                          }
+                        }}
+                        fontSize={"14px"}
+                      />
+                    </div>
+                  )}
+                  {isScheduleEdittingEnabled &&
+                    scheduleState.endTimeIsBeforeStartTime && (
+                      <div className="text-[14px] text-red-400 ">
+                        Время начала должно быть раньше, чем время окончания
+                        активности
+                      </div>
+                    )}
+                </div>
               </div>
 
               <div className="flex flex-col gap-[5px]">
@@ -1025,7 +1045,8 @@ export default function SchedulesPage() {
                     <div
                       key={weekday.id}
                       className={
-                        scheduleState.selectedWeekdays.includes(weekday.name)
+                        scheduleState.selectedEvent.repeat.length > 1 &&
+                        scheduleState.selectedEvent.repeat.includes(weekday.id)
                           ? "roundedWeekdaysSelected"
                           : "roundedWeekdays "
                       }
