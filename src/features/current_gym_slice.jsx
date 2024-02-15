@@ -56,17 +56,10 @@ export const removeGymMainPic = createAsyncThunk(
         id: gymId,
         mainPictureUrl: "",
       };
-      // Convert the data to a string
-      const dataString = JSON.stringify(dataToSend);
-      // Create a Blob object with the data
-      const dataBlob = new Blob([dataString], { type: "application/json" });
-      // Send the data
-      navigator.sendBeacon("api/admin/gyms/", dataBlob);
-
-      /* const response = await axiosClient.patch(
+      const response = await axiosClient.patch(
         "api/admin/gyms/",
         dataToSend
-      ); */
+      );
     } catch (error) {
       alert(`editGym ${error}`);
       console.log(`${error.massage}`);
@@ -104,7 +97,10 @@ export const removeGymLogo = createAsyncThunk(
         id: gymId,
         logoUrl: "",
       };
-      const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
+      const response = await axiosClient.patch(
+        "api/admin/gyms/",
+        dataToSend
+      );
     } catch (error) {
       alert(`editGym ${error}`);
       console.log(`${error.massage}`);
@@ -120,7 +116,10 @@ export const patchGymName = createAsyncThunk(
         id: id,
         name: name,
       };
-      const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
+      const response = await axiosClient.patch(
+        "api/admin/gyms/",
+        dataToSend
+      );
     } catch (error) {
       alert(`editGym ${error}`);
       console.log(`${error.massage}`);
@@ -136,7 +135,10 @@ export const patchGymDescription = createAsyncThunk(
         id: id,
         description: description,
       };
-      const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
+      const response = await axiosClient.patch(
+        "api/admin/gyms/",
+        dataToSend
+      );
     } catch (error) {
       alert(`editGym ${error}`);
     }
@@ -151,7 +153,10 @@ export const patchGymAddress = createAsyncThunk(
         id: id,
         address: address,
       };
-      const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
+      const response = await axiosClient.patch(
+        "api/admin/gyms/",
+        dataToSend
+      );
     } catch (error) {
       alert(`editGym ${error}`);
     }
@@ -168,7 +173,10 @@ export const patchGymContacts = createAsyncThunk(
         telegram: telegram,
         vk: vk,
       };
-      const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
+      const response = await axiosClient.patch(
+        "api/admin/gyms/",
+        dataToSend
+      );
     } catch (error) {
       alert(`editGym ${error}`);
     }

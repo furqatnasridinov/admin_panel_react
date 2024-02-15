@@ -32,6 +32,7 @@ const CustomSnackbar = forwardRef((props, ref) => {
           prevSnackbars.filter((snackbar) => snackbar.id !== id)
         );
         if (onTimeEnded) onTimeEnded();
+        window.removeEventListener("beforeunload", handleUnload);
       }, 9000);
 
       // Return a cleanup function that removes the event listener and cancels the timeout
