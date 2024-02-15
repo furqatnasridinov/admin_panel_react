@@ -158,24 +158,24 @@ export const allRoles = [
     name: "Администратор",
     priveledges: [1, 2, 3, 4],
   },
-  {
+  /* {
     id: 2,
     code: "ROLE_USER",
     name: "Пользователь",
     priveledges: [1],
-  },
+  }, */
   {
     id: 3,
     code: "ROLE_DIRECTOR",
     name: "Директор",
     priveledges: [1, 2, 3, 4, 5, 6],
   },
-  {
+  /* {
     id: 4,
     code: "ROLE_MANAGER",
     name: "Менеджер",
     priveledges: [1, 2, 3, 4],
-  },
+  }, */
   {
     id: 5,
     code: "ROLE_WORKER",

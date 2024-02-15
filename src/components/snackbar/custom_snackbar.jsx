@@ -17,6 +17,15 @@ const CustomSnackbar = forwardRef((props, ref) => {
       const id = props.objectId ? props.objectId : Date.now();
       const newSnackbar = { id, message, countdown: 9 };
       setSnackbars((prevSnackbars) => [...prevSnackbars, newSnackbar]);
+
+      const handleUnload = (event) => {
+        event.preventDefault();
+        event.returnValue =
+          "You have unsaved changes. Are you sure you want to leave?";
+      };
+
+      window.addEventListener("beforeunload", handleUnload);
+
       // Store the timeout ID
       timeouts[id] = setTimeout(() => {
         setSnackbars((prevSnackbars) =>
@@ -25,9 +34,13 @@ const CustomSnackbar = forwardRef((props, ref) => {
         if (onTimeEnded) onTimeEnded();
       }, 9000);
 
-      // Возвращаем функцию для отмены таймера
-      return () => clearTimeout(timeouts[id]);
+      // Return a cleanup function that removes the event listener and cancels the timeout
+      return () => {
+        window.removeEventListener("beforeunload", handleUnload);
+        clearTimeout(timeouts[id]);
+      };
     },
+
     cancel(id) {
       // Remove the snackbar with the given id
       setSnackbars((prevSnackbars) =>
@@ -40,13 +53,13 @@ const CustomSnackbar = forwardRef((props, ref) => {
     hideSnackbars() {
       setIsHideForced(true);
     },
+
     showSnackbars() {
       setIsHideForced(false);
     },
   }));
 
   useEffect(() => {
-    // Decrease countdown for each snackbar every second
     const intervalId = setInterval(() => {
       setSnackbars((prevSnackbars) =>
         prevSnackbars.map((snackbar) => ({
@@ -58,7 +71,7 @@ const CustomSnackbar = forwardRef((props, ref) => {
 
     // Clear interval on component unmount
     return () => clearInterval(intervalId);
-  }, []);
+  }, []); // Decrease countdown for each snackbar every second
 
   if (isHideForced) return null;
 

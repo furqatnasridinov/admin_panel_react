@@ -14,8 +14,6 @@ import {
   removeSelectedActivity,
 } from "../../features/activities_slice";
 import {
-  setStartTime,
-  setEndTime,
   setDescription,
   addDaysToSelectedWeekdays,
   removeDayFromSelectedWeekdays,
@@ -26,18 +24,17 @@ import {
   setEndTimeHours,
   setEndTimeMinutes,
   getSchedules,
-  resetStateAfterSubmitting,
   getDuration,
   getStartTimeToSendToServer,
   createSchedule,
-  setDeleteAll,
-  reSetDeleteAll,
+  resetDatasAfterSubmitting,
   deleteSchedule,
   resetSelectedEvent,
   updateSchedule,
   selectedEventSetTitle,
   getSchedulesOfSelectedActivity,
   resetScheduleOfSelectedActivity,
+  setSchedulesLoading,
 } from "../../features/schedule_slice";
 import { getListOfEmployees } from "../../features/employees_slice";
 import CustomButton from "../../components/button/button";
@@ -45,7 +42,6 @@ import previousSvg from "../../assets/svg/previous.svg";
 import nextSvg from "../../assets/svg/next.svg";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
-import { times } from "../../dummy_data/dymmy_data";
 import "moment/locale/ru";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import ZoomINSvg from "../../assets/svg/zoomIn.svg";
@@ -57,13 +53,13 @@ import checkboxEnabledSvg from "../../assets/svg/done.svg";
 import checkboxDisabledSvg from "../../assets/svg/checkbox_disabled.svg";
 import previousMoth from "../../assets/svg/navigate_prev_month.svg";
 import psych from "../../assets/images/american_psycho.jpg";
-import { DUMMY_LESSONS, WEEK_DAYS } from "../../dummy_data/dymmy_data";
+import { WEEK_DAYS } from "../../dummy_data/dymmy_data";
 import CustomDialog from "../../components/dialog/dialog";
 import { TextAndTextfield } from "../gym_detailes/views/gym_detailes_body/employees/employees";
 import BackButton from "../../components/button/back_button";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale, setDefaultLocale } from "react-datepicker";
+import { registerLocale } from "react-datepicker";
 import ru from "date-fns/locale/ru";
 import DropdownForHours from "./dropdowm_for_hours";
 
@@ -91,6 +87,7 @@ export default function SchedulesPage() {
   const [deleteModalShown, openDeleteModal] = useState(false);
   const [isNavigationtriggered, setNavigation] = useState(false);
   const [updateStyle, setUpdateStyle] = useState(false);
+  const [isDateNotSelected, setDateNotSelected] = useState(false);
 
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
@@ -175,17 +172,25 @@ export default function SchedulesPage() {
         const events = calendarElement.querySelectorAll(".rbc-event");
         if (events.length > 0) {
           events.forEach((event) => {
+            dispatch(setSchedulesLoading(true));
             const eventWidth = event.offsetWidth;
             const containerWidth = event.offsetParent.offsetWidth;
             if (eventWidth < containerWidth - 5) {
+              if (event.classList.contains("notOverLappingEvents")) {
+                event.classList.remove("notOverLappingEvents");
+              }
               if (!event.classList.contains("overLappingEvents")) {
                 event.classList.add("overLappingEvents");
               }
             } else {
+              if (event.classList.contains("overLappingEvents")) {
+                event.classList.remove("overLappingEvents");
+              }
               if (!event.classList.contains("notOverLappingEvents")) {
                 event.classList.add("notOverLappingEvents");
               }
             }
+            dispatch(setSchedulesLoading(false));
           });
         }
       }
@@ -254,8 +259,21 @@ export default function SchedulesPage() {
 
   return (
     console.log(
-      `selectedSchedule: ${JSON.stringify(scheduleState.selectedEvent)}`
+      `hamahe selectedSchedule: ${JSON.stringify(scheduleState.selectedEvent)}`
     ),
+    console.log(
+      `hamahe start ${scheduleState.startTimeHoursTmp}:${scheduleState.startTimeMinutesTmp}`
+    ),
+    console.log(
+      `hamahe end ${scheduleState.endTimeHoursTmp}:${scheduleState.endTimeMinutesTmp}`
+    ),
+    console.log(
+      `hamahe lessonStartTimeSendToServer: ${scheduleState.lessonStartTimeSendToServer}`
+    ),
+    console.log(
+      `hamahe lessonDurationSendToServer: ${scheduleState.lessonDurationSendToServer}`
+    ),
+    console.log(`hamahe -----------------------------`),
     (
       <div className="schedule_page">
         <div className="schedule_header">
@@ -270,7 +288,7 @@ export default function SchedulesPage() {
             {gymState.listOfGyms.length > 1 && (
               <CustomDropdown
                 isDropDownOpened={isGymsDropDownOpened}
-                zIndex={"2"}
+                zIndex={"5"}
                 openCloseDropDown={() => {
                   openGymsDropDown(!isGymsDropDownOpened);
                 }}
@@ -280,16 +298,16 @@ export default function SchedulesPage() {
                     : gymState.currentGym.name
                 }
                 map={gymState.listOfGyms.map((item, index) => (
-                  <button
+                  <div
                     key={index}
-                    className="gym_names"
+                    className="gymNames"
                     onClick={() => {
                       dispatch(setCurrentGym(item));
                       openGymsDropDown(false);
                     }}
                   >
                     {item.name}
-                  </button>
+                  </div>
                 ))}
                 isLoading={scheduleState.isGymsLoading}
                 loadingText={"Загружаем список заведений..."}
@@ -299,21 +317,21 @@ export default function SchedulesPage() {
           {gymState.currentGym !== null && (
             <CustomDropdown
               isDropDownOpened={isActivitiesDropDownOpened}
-              zIndex={"2"}
+              zIndex={"5"}
               openCloseDropDown={() => {
                 openActivitiesDropDown(!isActivitiesDropDownOpened);
               }}
               map={activitiesState.listOfActivities.map((item, index) => (
-                <button
+                <div
                   key={index}
-                  className="gym_names"
+                  className="gymNames"
                   onClick={() => {
                     dispatch(selectAnActivity(item));
                     openActivitiesDropDown(false);
                   }}
                 >
                   {item}
-                </button>
+                </div>
               ))}
               text={
                 activitiesState.selectedActivity == ""
@@ -328,11 +346,19 @@ export default function SchedulesPage() {
           {gymState.currentGym !== null &&
             activitiesState.selectedActivity !== "" && (
               <CustomButton
+                zIndex={"2"}
                 title={"Добавить занятие в расписание"}
                 height={"40px"}
                 width={"294px"}
                 fontSize={"14px"}
                 onСlick={() => {
+                  if (isEdittingContainerShown) {
+                    setEdittingContainer(false);
+                  }
+                  if (isScheduleEdittingEnabled) {
+                    setScheduleEdittingEnabled(false);
+                  }
+                  dispatch(resetSelectedEvent());
                   openModal(true);
                 }}
               />
@@ -382,7 +408,14 @@ export default function SchedulesPage() {
 
                 <div className="flex flex-row gap-[32px]">
                   <div className="flex flex-col gap-[5px]">
-                    <div className="text-[16px] font-semibold leading-[16px]">
+                    <div
+                      className="text-[16px] font-semibold leading-[16px]"
+                      style={{
+                        color: isDateNotSelected
+                          ? "rgba(255, 136, 136, 1)"
+                          : null,
+                      }}
+                    >
                       Дата проведения:
                     </div>
                     <CustomDropdown
@@ -395,6 +428,7 @@ export default function SchedulesPage() {
                       openCloseDropDown={() => {
                         setDatePickerShown(true);
                       }}
+                      isError={isDateNotSelected}
                     />
                   </div>
 
@@ -517,14 +551,12 @@ export default function SchedulesPage() {
                         key={weekday.id}
                         className={
                           scheduleState.selectedWeekdays.includes(weekday.id)
-                            ? "roundedWeekdaysSelected"
-                            : "roundedWeekdays"
+                            ? "roundedWeekdaysSelected cursor-pointer"
+                            : "roundedWeekdays cursor-pointer"
                         }
                         onClick={() => {
                           if (
-                            scheduleState.selectedWeekdays.includes(
-                              weekday.name
-                            )
+                            scheduleState.selectedWeekdays.includes(weekday.id)
                           ) {
                             dispatch(removeDayFromSelectedWeekdays(weekday.id));
                           } else {
@@ -556,7 +588,15 @@ export default function SchedulesPage() {
                       onСlick={async () => {
                         if (scheduleState.description === "") {
                           setFormNotValidated(true);
-                        } else {
+                        }
+                        if (scheduleState.selectedDay === "") {
+                          setDateNotSelected(true);
+                        }
+
+                        if (
+                          scheduleState.description !== "" &&
+                          scheduleState.selectedDay !== ""
+                        ) {
                           // post lesson
                           const {
                             id,
@@ -584,17 +624,12 @@ export default function SchedulesPage() {
                             })
                           );
                           //resetdatas
-                          dispatch(getSchedules(gymState.currentGym.id));
-                          dispatch(resetStateAfterSubmitting());
+                          await dispatch(getSchedules(gymState.currentGym.id));
+                          dispatch(resetDatasAfterSubmitting());
                           setUpdateStyle(!updateStyle);
                           openModal(false);
                         }
                       }}
-                      isDidsabled={
-                        scheduleState.description === "" ||
-                        scheduleState.selectedDay === "" ||
-                        activitiesState.selectedActivity === ""
-                      }
                     />
                   </div>
                   {isFormNotValidated && (
@@ -618,7 +653,7 @@ export default function SchedulesPage() {
               <div className="centeredGreyText">Выберите активность</div>
             )}
 
-          {gymState.isGymsLoading && (
+          {(gymState.isGymsLoading || scheduleState.isSchedulesLoading) && (
             <div className="centeredGreyText">Загружаем данные</div>
           )}
 
@@ -936,6 +971,7 @@ export default function SchedulesPage() {
                       title={"Отменить"}
                       onСlick={() => {
                         setScheduleEdittingEnabled(false);
+                        // reset times
                       }}
                     />
                     <CustomButton
@@ -954,6 +990,7 @@ export default function SchedulesPage() {
                         } = {
                           gymId: gymState.currentGym.id,
                           lessonId: scheduleState.selectedEvent.id,
+                          date: scheduleState.lessonStartTimeSendToServer,
                           duration: scheduleState.lessonDurationSendToServer,
                           description: scheduleState.selectedEvent.title,
                           all: checkBoxEnabled,
@@ -970,6 +1007,7 @@ export default function SchedulesPage() {
                         );
                         setScheduleEdittingEnabled(false);
                         dispatch(getSchedules(gymState.currentGym.id));
+                        dispatch(resetDatasAfterSubmitting());
                       }}
                       fontSize={"14px"}
                     />

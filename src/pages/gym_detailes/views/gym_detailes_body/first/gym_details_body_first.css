@@ -208,7 +208,7 @@ select {
   position: relative;
   justify-content: space-between;
   width: fit-content;
-  height: 24px;
+  height: 30px;
 }
 
 .slash {
@@ -220,6 +220,7 @@ select {
 .dropdown_header_contacts {
   display: flex;
   flex-direction: row;
+  height: 30px !important;
   gap: 10px;
   max-width: 400px;
   transition: max-width 0.5s ease;
@@ -237,7 +238,7 @@ select {
   gap: 20px;
   max-width: 250px;
   width: auto;
-  height: 24px;
+  height: 30px !important;
   transition: max-width 0.5s ease;
   padding-left: 16px;
   padding-right: 16px;
@@ -262,7 +263,7 @@ select {
   flex-direction: column;
   gap: 5px;
   position: absolute;
-  top: 27px;
+  top: 32px;
   width: 100%;
   max-width: 1000px;
   height: fit-content;

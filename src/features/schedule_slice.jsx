@@ -79,11 +79,12 @@ export const deleteSchedule = createAsyncThunk(
 
 export const updateSchedule = createAsyncThunk(
   "scheduleSlice/updateSchedule",
-  async ({ gymId, lessonId, duration, description, all }) => {
+  async ({ gymId, lessonId, date, duration, description, all }) => {
     try {
       const dataToSend = {
         id: lessonId,
-        //duration: duration,
+        date: date,
+        duration: duration,
         description: description,
       };
       const response = await axiosClient.patch(
@@ -108,6 +109,7 @@ const scheduleSlice = createSlice({
     description: "",
     selectedEvent: null,
     deleteAll: false,
+    isSchedulesLoading: false,
     lessonStartTimeSendToServer: "",
     lessonDurationSendToServer: "",
     selectedWeekdays: [],
@@ -115,8 +117,24 @@ const scheduleSlice = createSlice({
     schedulesOfSelectedActivity: [],
     isCurrentEventHasRepeats: false,
   },
+
   reducers: {
+    resetDatasAfterSubmitting: (state) => {
+      state.selectedDay = "";
+      state.startTimeHoursTmp = "11";
+      state.startTimeMinutesTmp = "00";
+      state.endTimeHoursTmp = "13";
+      state.endTimeMinutesTmp = "00";
+      state.description = "";
+      state.selectedWeekdays = [];
+      state.lessonDurationSendToServer = "";
+      state.lessonStartTimeSendToServer = "";
+    },
     getFormattedMonthFromSwitching: (state, action) => {},
+
+    setSchedulesLoading: (state, action) => {
+      state.isSchedulesLoading = action.payload;
+    },
 
     setSelectedEvent: (state, action) => {
       state.selectedEvent = action.payload;
@@ -199,6 +217,15 @@ const scheduleSlice = createSlice({
         const start = `${newDate}@${state.startTimeHoursTmp}:${state.startTimeMinutesTmp}`;
         state.lessonStartTimeSendToServer = start;
       }
+      if (state.selectedEvent !== null) {
+        // getStartTimeToSendToServer for ref event
+        const date = state.selectedEvent.start;
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed in JavaScript
+        const day = date.getDate().toString().padStart(2, "0");
+        const formattedDate = `${year}-${month}-${day}`;
+        state.lessonStartTimeSendToServer = `${formattedDate}@${state.startTimeHoursTmp}:${state.startTimeMinutesTmp}`;
+      }
     },
 
     getDuration: (state) => {
@@ -227,15 +254,7 @@ const scheduleSlice = createSlice({
       state.lessonDurationSendToServer = duration;
     },
 
-    resetStateAfterSubmitting: (state) => {
-      state.selectedDay = "";
-      state.startTimeHoursTmp = "11";
-      state.startTimeMinutesTmp = "00";
-      state.endTimeHoursTmp = "13";
-      state.endTimeMinutesTmp = "00";
-      state.description = "";
-      state.selectedWeekdays = [];
-    },
+
 
     // getting schedules of selected activity
     getSchedulesOfSelectedActivity: (state, action) => {
@@ -291,7 +310,9 @@ export const {
   resetSelectedEvent,
   selectedEventSetTitle,
   getSchedulesOfSelectedActivity,
-  resetScheduleOfSelectedActivity
+  resetScheduleOfSelectedActivity,
+  setSchedulesLoading,
+  resetDatasAfterSubmitting
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

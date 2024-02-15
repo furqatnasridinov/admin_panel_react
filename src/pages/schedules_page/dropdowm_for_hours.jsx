@@ -25,6 +25,25 @@ export default function DropdownForHours({
     }
   }, [isDropDownOpened, selectedHour]);
 
+  // close dropdown when clicked outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        hoursContainerRef.current &&
+        !hoursContainerRef.current.contains(event.target) &&
+        minutesContainerRef.current &&
+        !minutesContainerRef.current.contains(event.target)
+      ) {
+        openCloseDropDown();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [hoursContainerRef, minutesContainerRef, openCloseDropDown]);
+
   // Функция для центрирования выбранного элемента
   function centerSelectedItem(container, selectedItem) {
     if (container && selectedItem != null) {

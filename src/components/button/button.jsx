@@ -9,6 +9,7 @@ export default function CustomButton({
   showShadow,
   fontSize,
   isDidsabled,
+  zIndex,
 }) {
   return (
     <button
@@ -16,6 +17,7 @@ export default function CustomButton({
       style={{
         width: width,
         height: height,
+        zIndex: zIndex,
       }}
       className={showShadow ? "with_shadow" : "with_no_shadow"}
     >
