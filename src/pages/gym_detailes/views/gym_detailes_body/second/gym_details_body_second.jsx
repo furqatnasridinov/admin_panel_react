@@ -648,11 +648,18 @@ function EditableFeaturesTextfield({
     }
   }, []);
 
+  useEffect(() => {
+    // Если peculiarities пуст, установить его значение на "1. "
+    if (peculiarities === "") {
+      onChanged("1. ");
+    }
+  }, [peculiarities, onChanged]);
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Предотвратить создание новой строки по умолчанию
       const lineNumber = (peculiarities.match(/\n/g) || []).length + 1;
-      onChanged(peculiarities + `${lineNumber}. `);
+      onChanged(peculiarities + `\n${lineNumber}. `);
     }
   };
 

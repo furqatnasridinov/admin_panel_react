@@ -9,7 +9,8 @@ import SettingsPage from "./pages/settings_page";
 import GymDetails from "./pages/gym_detailes/gym_detailes";
 import MyGymsPageLayout from "./pages/my_gyms_page/my_gyms_page_layout";
 import AppConstants from "./config/app_constants";
-import ClientsPage from "./pages/clients";
+import BookingPage from "./pages/booking_page/injex";
+import WaitingClientsPage from "./pages/waiting_clients";
 
 function App() {
   return (
@@ -24,7 +25,9 @@ function App() {
 
         <div className="flex-1 h-full">
           <Routes>
-            <Route path="/" element={<ClientsPage />}></Route>
+            <Route path="/bookingPage" element={<BookingPage />}></Route>
+            <Route path="/bookingPage" element={<BookingPage />}></Route>
+            <Route path="/waitingClientsPage" element={<WaitingClientsPage />}></Route>
             <Route path="/statisticksPage" element={<StatisticksPage />}></Route>
             <Route path="/myGymsPage" element={<MyGymsPageLayout />}>
               {/* we declare nested navigation because MyGymsPage has two screens */}

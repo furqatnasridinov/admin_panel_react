@@ -592,7 +592,6 @@ export default function SchedulesPage() {
                         if (scheduleState.selectedDay === "") {
                           setDateNotSelected(true);
                         }
-
                         if (
                           scheduleState.description !== "" &&
                           scheduleState.selectedDay !== "" &&
