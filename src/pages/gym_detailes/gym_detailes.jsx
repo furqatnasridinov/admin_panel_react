@@ -116,9 +116,7 @@ export default function GymDetails() {
               gymId={gymState.currentGym.id}
             />
 
-            <GymDetailesBodyFirstContainer
-              currentGym={gymState.currentGym}
-            />
+            <GymDetailesBodyFirstContainer currentGym={gymState.currentGym} />
 
             <GymDetailesBodySecondContainer
               gymId={gymId}
