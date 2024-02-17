@@ -7,7 +7,7 @@ export default function BookingHeader() {
       <div className="text-[14px] font-medium leading-[16px]">
         Работа с клиентами
       </div>
-      <div className="redContainer">
+     {/*  <div className="redContainer">
         <div className="text-[14px] font-medium text-white">
           Ждут подтверждения записи:
         </div>
@@ -18,7 +18,7 @@ export default function BookingHeader() {
         Хотят пройти на занятие:
         </div>
         <div className="text-[14px] font-medium text-white">1</div>
-      </div>
+      </div> */}
     </div>
   );
 }

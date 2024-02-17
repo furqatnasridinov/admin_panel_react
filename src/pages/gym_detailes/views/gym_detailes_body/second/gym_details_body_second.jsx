@@ -13,6 +13,8 @@ import CustomButton from "../../../../../components/button/button";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import ProgressSnackbar from "../../../../../components/snackbar/progress_snackbar";
 import { useDispatch, useSelector } from "react-redux";
+import { FeaturesTextField } from "../features_textfield";
+
 import {
   dragAndDropActivities,
   selectAnActivity,
@@ -371,11 +373,12 @@ export default function GymDetailesBodySecondContainer({
                 />
                 {activityPeculiarities &&
                   activityPeculiarities.trim() !== "" && (
-                    <ul className="marked_list ">
-                      <li className="text-[13px] font-normal font-inter">
-                        {activityPeculiarities}
-                      </li>
-                    </ul>
+                    <div
+                      className="text-[13px] font-normal font-inter"
+                      style={{ whiteSpace: "pre-wrap" }}
+                    >
+                      {activityPeculiarities}
+                    </div>
                   )}
               </>
             )}
@@ -392,7 +395,7 @@ export default function GymDetailesBodySecondContainer({
                     setFeaturesEditting(false);
                   }}
                 />
-                <EditableFeaturesTextfield
+                <FeaturesTextField
                   onButtonClicked={async () => {
                     const { id, lessonType, peculiarities } = {
                       id: gymId,
@@ -666,66 +669,6 @@ function Chip({ name, onclick, isActive }) {
     <button className={isActive ? "chip_active" : "chip"} onClick={onclick}>
       {name}
     </button>
-  );
-}
-
-function EditableFeaturesTextfield({
-  onChanged,
-  peculiarities,
-  onButtonClicked,
-}) {
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    const input = inputRef.current;
-    if (input) {
-      input.focus();
-      const length = input.value.length;
-      input.setSelectionRange(length, length);
-      input.style.height = "inherit";
-      input.style.height = `${input.scrollHeight}px`;
-    }
-  }, []);
-
-  useEffect(() => {
-    // Если peculiarities пуст, установить его значение на "1. "
-    if (peculiarities === "") {
-      onChanged("1. ");
-    }
-  }, [peculiarities, onChanged]);
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault(); // Предотвратить создание новой строки по умолчанию
-      const lineNumber = (peculiarities.match(/\n/g) || []).length + 1;
-      onChanged(peculiarities + `\n${lineNumber}. `);
-    }
-  };
-
-  return (
-    <div className="flex flex-row justify-between gap-[10px] items-start">
-      <textarea
-        ref={inputRef}
-        value={peculiarities}
-        onChange={onChanged}
-        onKeyDown={handleKeyDown}
-        style={{
-          width: "100%",
-          padding: "10px 16px 10px 8px",
-          border: "1px solid #77AAF9",
-          borderRadius: "8px",
-          outline: "none",
-          maxHeight: "200px",
-          resize: "none",
-          fontSize: "13px",
-          lineHeight: "14px",
-          fontFamily: "Inter, sans-serif",
-        }}
-      />
-      <button onClick={onButtonClicked}>
-        <img src={doneSvg} alt="" />
-      </button>
-    </div>
   );
 }
 

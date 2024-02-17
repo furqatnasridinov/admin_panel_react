@@ -420,7 +420,7 @@ export const DUMMY_CLIENTS = [
   },
 ];
 
-export const WAITING_TO_ENTER = [
+export const RECENTLY_ATTENDENT = [
   {
     id: 1,
     name: "Иванов Иван",

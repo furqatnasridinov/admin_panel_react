@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../config/axios_client";
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";
 
 export const getListOfActivities = createAsyncThunk(
   "activities/getListOfActivities",
@@ -90,6 +90,9 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
   "activitiesSlice/changePeculiaritiesOfSelectedActivity",
   async ({ id, lessonType, peculiarities }) => {
     try {
+      if (peculiarities === "1" || peculiarities === "1." || peculiarities === "1. ") {
+        peculiarities = "";
+      }
       const dataToSend = {
         lessonType: lessonType,
         peculiarities: peculiarities,

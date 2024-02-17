@@ -147,7 +147,7 @@ const Sidebar = () => {
                   }
                 >
                   <li>
-                    <span>Ждут у входа</span>
+                    <span>Посещения сегодня</span>
                   </li>
 
                   <div className="badge">1</div>
