@@ -589,22 +589,61 @@ export default function GymDetailesBodySecondContainer({
                 <input
                   type="file"
                   ref={hiddenFileInput}
+                  multiple={true}
                   onChange={async (event) => {
-                    // Обработчик для добавления новой фотографии
-                    const file = event.target.files[0];
-                    if (file) {
-                      const { id, files, type } = {
+                    var files = event.target.files;
+                    var convertedFiles = [];
+                    if (files.length > 0) {
+                      for (let i = 0; i < files.length; i++) {
+                        var file = files[i];
+                        if (file.type === "image/png") {
+                          // convert to jpeg
+                          const originalFileName = file.name.replace(
+                            ".png",
+                            ".jpeg"
+                          );
+                          const image = await new Promise((resolve) => {
+                            const img = new Image();
+                            img.onload = () => resolve(img);
+                            img.src = URL.createObjectURL(file);
+                          });
+
+                          const canvas = document.createElement("canvas");
+                          canvas.width = image.width;
+                          canvas.height = image.height;
+                          const context = canvas.getContext("2d");
+                          context.drawImage(
+                            image,
+                            0,
+                            0,
+                            image.width,
+                            image.height
+                          );
+                          const jpegURL = canvas.toDataURL("image/jpeg");
+                          file = await (await fetch(jpegURL)).blob();
+                          file = new File([file], originalFileName, {
+                            type: "image/jpeg",
+                          });
+                        }
+                        convertedFiles.push(file);
+                      }
+
+                      const { id, type } = {
                         id: gymId,
-                        files: file,
                         type: activitiesSlice.selectedActivity,
                       };
                       deletePhotosSnackRef.current.hideSnackbars();
                       progressSnackbarRef.current.show("Идет загрузка фото");
                       await dispatch(
-                        addPhotoToSelectedActivity({ id, files, type })
+                        addPhotoToSelectedActivity({
+                          id,
+                          files: convertedFiles,
+                          type,
+                        })
                       );
                       dispatch(getPhotos(gymId));
                     }
+                    event.target.value = null; // Очистить значение элемента ввода файла
                   }}
                   style={{ display: "none" }} // Скрываем input
                 />

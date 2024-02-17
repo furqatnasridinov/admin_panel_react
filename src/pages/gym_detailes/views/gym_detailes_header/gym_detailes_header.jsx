@@ -2,6 +2,7 @@ import React from "react";
 import "./gym_detailes.css";
 import { useState } from "react";
 import CustomDropdown from "../../../../components/dropdown/custom_dropdown";
+import { toast } from "react-toastify";
 
 export default function GymDetailesHeader({
   gym,
@@ -20,7 +21,7 @@ export default function GymDetailesHeader({
       selectAnotherGym(gym);
       openCloseDropDown();
     } catch (error) {
-      alert(`setCurrentGymAndPop ${error}`);
+      toast(`setCurrentGymAndPop ${error}`);
     }
   }
 

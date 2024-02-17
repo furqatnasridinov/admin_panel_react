@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AppConstants from "../config/app_constants";
 import axiosClient from "../config/axios_client";
+import { toast } from "react-toastify";
 
 export const getListOfGyms = createAsyncThunk(
   "listOfGyms/getListOfGyms",
@@ -9,7 +10,7 @@ export const getListOfGyms = createAsyncThunk(
       const response = await axiosClient.get(AppConstants.getGyms);
       return response.data["object"];
     } catch (error) {
-      alert(`getListOfGyms ${error}`);
+      toast(error);
     }
   }
 );
@@ -21,7 +22,7 @@ export const getCurrentGym = createAsyncThunk(
       const response = await axiosClient.get(`api/admin/gyms/${gymId}`);
       return response.data["object"];
     } catch (error) {
-      alert(`getGymDetails ${error}`);
+      toast(error);
     }
   }
 );
@@ -43,7 +44,7 @@ export const addGymPicture = createAsyncThunk(
         }
       );
     } catch (error) {
-      alert(`addGymPicture ${error}`);
+      toast(error);
     }
   }
 );
@@ -58,7 +59,7 @@ export const removeGymMainPic = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      alert(`editGym ${error}`);
+      toast(error);
       console.log(`${error.massage}`);
     }
   }
@@ -81,7 +82,7 @@ export const addGymLogo = createAsyncThunk(
         }
       );
     } catch (error) {
-      alert(`addGymPicture ${error}`);
+      toast(error);
     }
   }
 );
@@ -96,7 +97,7 @@ export const removeGymLogo = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      alert(`editGym ${error}`);
+      toast(error);
       console.log(`${error.massage}`);
     }
   }
@@ -112,7 +113,7 @@ export const patchGymName = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      alert(`editGym ${error}`);
+      toast(error);
       console.log(`${error.massage}`);
     }
   }
@@ -128,7 +129,7 @@ export const patchGymDescription = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      alert(`editGym ${error}`);
+      toast(error);
     }
   }
 );
@@ -145,7 +146,7 @@ export const patchGymAddress = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      alert(`editGym ${error}`);
+      toast(error);
     }
   }
 );
@@ -162,7 +163,7 @@ export const patchGymContacts = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      alert(`editGym ${error}`);
+      toast(error);
     }
   }
 );
@@ -170,6 +171,7 @@ export const patchGymContacts = createAsyncThunk(
 export const searchingForAddress = createAsyncThunk(
   "currentGymSlice/searchingForAddress",
   async (address) => {
+    console.log("searchingForAddress called");
     try {
       const response = await axiosClient.get(
         `https://geocode-maps.yandex.ru/1.x/?apikey=${AppConstants.yandexApiKey}&format=json&geocode=${address}`
@@ -180,7 +182,7 @@ export const searchingForAddress = createAsyncThunk(
         return featureMember;
       }
     } catch (error) {
-      alert(`searchingForAddress ${error}`);
+      toast(error);
     }
   }
 );

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../config/axios_client";
+import { toast } from "react-toastify";
 
 export const getListOfEmployees = createAsyncThunk(
   "employess/getListOfEmployees",
@@ -9,7 +10,7 @@ export const getListOfEmployees = createAsyncThunk(
       const response = await axiosClient.get(`api/admin/gyms/${gymId}/workers`);
       return response.data["object"];
     } catch (error) {
-      alert(`getListOfEmployees ${error}`);
+      toast(error);
     }
   }
 );
@@ -22,7 +23,7 @@ export const deleteEmployee = createAsyncThunk(
         `api/admin/gyms/${gymid}/workers/${employeeId}`
       );
     } catch (error) {
-      alert(`deleteEmployee ${error}`);
+      toast(error);
     }
   }
 );
@@ -44,7 +45,7 @@ export const editEmployee = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      alert(`editEmployee error: ${error.message}`);
+      toast(error);
     }
   }
 );
@@ -66,7 +67,7 @@ export const addEmployee = createAsyncThunk(
       );
       getListOfEmployees(gymId);
     } catch (error) {
-      alert(`addEmployee error: ${error.message}`);
+      toast(error);
     }
   }
 );

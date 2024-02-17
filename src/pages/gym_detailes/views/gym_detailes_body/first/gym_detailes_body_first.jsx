@@ -44,6 +44,8 @@ import {
   patchGymAddress,
 } from "../../../../../features/current_gym_slice";
 import ReactInputMask from "react-input-mask";
+import { toast } from "react-toastify";
+
 
 export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const dispatch = useDispatch();
@@ -76,40 +78,86 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
     try {
       fileInputMainPhotoRef.current.click();
     } catch (error) {
-      alert(error);
+      toast(error);
     }
   };
   const openFilePickerForLogo = () => {
     try {
       fileInputLogoRef.current.click();
     } catch (error) {
-      alert(error);
+      toast(error);
     }
   };
 
   // Обработчик для добавления новой фотографии
   const handleNewPhoto = async (event) => {
-    const file = event.target.files[0];
+    let file = event.target.files[0]; // image/jpeg && image/png
+    if (file.type === "image/png") {
+      // convert to jpeg
+      const originalFileName = file.name.replace(".png", ".jpeg");
+      const image = await new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.src = URL.createObjectURL(file);
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width;
+      canvas.height = image.height;
+      const context = canvas.getContext("2d");
+      context.drawImage(image, 0, 0, image.width, image.height);
+      const jpegURL = canvas.toDataURL("image/jpeg");
+      file = await (await fetch(jpegURL)).blob();
+      file = new File([file], originalFileName, { type: "image/jpeg" });
+    }
+
     const { gymId, image } = { gymId: currentGym.id, image: file };
-    deleteMainPicSnackbarRef.current.hideSnackbars();
-    progressSnackbarRef.current.show("Идет загрузка фото");
-    await dispatch(addGymPicture({ gymId, image }));
-    dispatch(getCurrentGym(currentGym.id));
-    if (isModalPhotoOpened) {
-      openModalPhoto(false);
+    if (image.type === "image/jpeg") {
+      deleteMainPicSnackbarRef.current.hideSnackbars();
+      progressSnackbarRef.current.show("Идет загрузка фото");
+      await dispatch(addGymPicture({ gymId, image }));
+      dispatch(getCurrentGym(currentGym.id));
+      if (isModalPhotoOpened) {
+        openModalPhoto(false);
+      }
+    } else {
+      toast("Неподдерживаемый формат файла");
     }
   };
 
   // Обработчик для добавления нового логотипа
   const handleNewLogo = async (event) => {
-    const file = event.target.files[0];
+    let file = event.target.files[0];
+    if (file.type === "image/png") {
+      // convert to jpeg
+      const originalFileName = file.name.replace(".png", ".jpeg");
+      const image = await new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.src = URL.createObjectURL(file);
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width;
+      canvas.height = image.height;
+      const context = canvas.getContext("2d");
+      context.drawImage(image, 0, 0, image.width, image.height);
+      const jpegURL = canvas.toDataURL("image/jpeg");
+      file = await (await fetch(jpegURL)).blob();
+      file = new File([file], originalFileName, { type: "image/jpeg" });
+    }
+
     const { gymId, image } = { gymId: currentGym.id, image: file };
-    deleteLogoSnackbarRef.current.hideSnackbars();
-    progressSnackForLogo.current.show("Идет загрузка логотипа");
-    await dispatch(addGymLogo({ gymId, image }));
-    dispatch(getCurrentGym(currentGym.id));
-    if (isModalLogoOpened) {
-      openModalLogo(false);
+    if (image.type === "image/jpeg") {
+      deleteLogoSnackbarRef.current.hideSnackbars();
+      progressSnackForLogo.current.show("Идет загрузка логотипа");
+      await dispatch(addGymLogo({ gymId, image }));
+      dispatch(getCurrentGym(currentGym.id));
+      if (isModalLogoOpened) {
+        openModalLogo(false);
+      }
+    } else {
+      toast("Неподдерживаемый формат файла");
     }
   };
 

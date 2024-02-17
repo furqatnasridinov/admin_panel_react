@@ -36,6 +36,7 @@ import {
   resetScheduleOfSelectedActivity,
   setSchedulesLoading,
 } from "../../features/schedule_slice";
+import { toast } from "react-toastify";
 import { getListOfEmployees } from "../../features/employees_slice";
 import CustomButton from "../../components/button/button";
 import previousSvg from "../../assets/svg/previous.svg";
@@ -685,7 +686,7 @@ export default function SchedulesPage() {
                     dispatch(setSelectedEvent(event));
                     setEdittingContainer(true);
                   } catch (error) {
-                    alert(error);
+                    toast(error);
                   }
                 }}
                 slotGroupPropGetter={(slot) => {

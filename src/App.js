@@ -11,7 +11,8 @@ import MyGymsPageLayout from "./pages/my_gyms_page/my_gyms_page_layout";
 import AppConstants from "./config/app_constants";
 import BookingPage from "./pages/booking_page/injex";
 import WaitingClientsPage from "./pages/waiting_clients";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     // console.log(localStorage.getItem(AppConstants.keyToken)),
@@ -27,8 +28,14 @@ function App() {
           <Routes>
             <Route path="/bookingPage" element={<BookingPage />}></Route>
             <Route path="/bookingPage" element={<BookingPage />}></Route>
-            <Route path="/waitingClientsPage" element={<WaitingClientsPage />}></Route>
-            <Route path="/statisticksPage" element={<StatisticksPage />}></Route>
+            <Route
+              path="/waitingClientsPage"
+              element={<WaitingClientsPage />}
+            ></Route>
+            <Route
+              path="/statisticksPage"
+              element={<StatisticksPage />}
+            ></Route>
             <Route path="/myGymsPage" element={<MyGymsPageLayout />}>
               {/* we declare nested navigation because MyGymsPage has two screens */}
               <Route index element={<MyGymsPage />} />
@@ -44,6 +51,7 @@ function App() {
               {" "}
             </Route>
           </Routes>
+          <ToastContainer autoClose={2500} hideProgressBar />
         </div>
       </div>
     </BrowserRouter>
