@@ -118,6 +118,8 @@ const scheduleSlice = createSlice({
     schedulesOfSelectedActivity: [],
     isCurrentEventHasRepeats: false,
     endTimeIsBeforeStartTime: false,
+    isScheduleEdittingEnabled: false,
+    isEdittingContainerShown: false,
   },
 
   reducers: {
@@ -164,6 +166,22 @@ const scheduleSlice = createSlice({
 
     reSetDeleteAll: (state) => {
       state.deleteAll = false;
+    },
+
+    hideEdittingContainer: (state) => {
+      state.isEdittingContainerShown = false;
+    },
+
+    showEdittingContainer: (state) => {
+      state.isEdittingContainerShown = true;
+    },
+
+    enableScheduleEditting: (state) => {
+      state.isScheduleEdittingEnabled = true;
+    },
+
+    disableScheduleEditting: (state) => {
+      state.isScheduleEdittingEnabled = false;
     },
 
     setDescription: (state, action) => {
@@ -315,6 +333,10 @@ export const {
   resetScheduleOfSelectedActivity,
   setSchedulesLoading,
   resetDatasAfterSubmitting,
+  hideEdittingContainer,
+  showEdittingContainer,
+  enableScheduleEditting,
+  disableScheduleEditting
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;
