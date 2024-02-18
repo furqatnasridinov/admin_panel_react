@@ -37,6 +37,7 @@ import {
 import { addPhotoToSelectedActivity } from "../../../../../features/activities_slice";
 import DropDownSmaller from "../../../../../components/dropdown/dropdown_smaller";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
+import { toast } from "react-toastify";
 
 export default function GymDetailesBodySecondContainer({
   gymId,
@@ -628,27 +629,38 @@ export default function GymDetailesBodySecondContainer({
                             type: "image/jpeg",
                           });
                         }
-                        convertedFiles.push(file);
+                        if (file.type === "image/jpeg") {
+                          convertedFiles.push(file);
+                        }
+
+                        if (file.type !== "image/jpeg") {
+                          toast("Неподдерживаемый формат файла");
+                        }
                       }
 
                       const { id, type } = {
                         id: gymId,
                         type: activitiesSlice.selectedActivity,
                       };
-                      deletePhotosSnackRef.current.hideSnackbars();
-                      progressSnackbarRef.current.show("Идет загрузка фото");
-                      await dispatch(
-                        addPhotoToSelectedActivity({
-                          id,
-                          files: convertedFiles,
-                          type,
-                        })
-                      );
-                      dispatch(getPhotos(gymId));
+
+                      // if convertedFiles includes only jpeg files
+                      if (convertedFiles.length > 0) {
+                        deletePhotosSnackRef.current.hideSnackbars();
+                        progressSnackbarRef.current.show("Идет загрузка фото");
+                        await dispatch(
+                          addPhotoToSelectedActivity({
+                            id,
+                            files: convertedFiles,
+                            type,
+                          })
+                        );
+                        dispatch(getPhotos(gymId));
+                      }
                     }
                     event.target.value = null; // Очистить значение элемента ввода файла
                   }}
                   style={{ display: "none" }} // Скрываем input
+                  accept="image/png, image/jpeg"
                 />
               </>
             )}

@@ -63,6 +63,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
 import ru from "date-fns/locale/ru";
 import DropdownForHours from "./dropdowm_for_hours";
+import MessageLikeTopContainer from "../booking_page/message_like_top_container";
 
 registerLocale("ru", ru);
 const localizer = momentLocalizer(moment);
@@ -94,6 +95,7 @@ export default function SchedulesPage() {
   const gymState = useSelector((state) => state.currentGym);
   const activitiesState = useSelector((state) => state.activities);
   const scheduleState = useSelector((state) => state.schedule);
+  const clientsSlice = useSelector((state) => state.clients);
 
   const events = scheduleState.schedulesOfSelectedActivity.map((item) => {
     return {
@@ -277,6 +279,9 @@ export default function SchedulesPage() {
     console.log(`hamahe -----------------------------`),
     (
       <div className="schedule_page">
+        {/* {clientsSlice.waitingForAccept.length > 0 && (
+          <MessageLikeTopContainer />
+        )} */}
         <div className="schedule_header">
           <div className="flex flow-row gap-[10px] items-center">
             <div className="">Расписание</div>

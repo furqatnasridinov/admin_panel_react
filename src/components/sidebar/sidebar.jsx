@@ -129,7 +129,7 @@ const Sidebar = () => {
               <div>
                 {/* Additional content to be shown when Клиенты is active */}
                 <NavLink
-                  to="/bookingPage"
+                  to="/"
                   className={({ isActive }) =>
                     isActive ? "active_additional_block" : "additional_block"
                   }
@@ -176,7 +176,7 @@ const Sidebar = () => {
             <NavLink
               to="/myGymsPage"
               className={({ isActive }) =>
-              isActive && !isClientsActive
+                isActive && !isClientsActive
                   ? "sidebar_section active_sidebar_section"
                   : "sidebar_section"
               }
@@ -194,7 +194,7 @@ const Sidebar = () => {
             <NavLink
               to="/schedulePage"
               className={({ isActive }) =>
-              isActive && !isClientsActive
+                isActive && !isClientsActive
                   ? "sidebar_section active_sidebar_section"
                   : "sidebar_section"
               }
@@ -225,7 +225,7 @@ const Sidebar = () => {
             <NavLink
               to="/help"
               className={({ isActive }) =>
-              isActive && !isClientsActive
+                isActive && !isClientsActive
                   ? "sidebar_section active_sidebar_section"
                   : "sidebar_section"
               }
@@ -243,7 +243,7 @@ const Sidebar = () => {
             <NavLink
               to="/settingsPage"
               className={({ isActive }) =>
-              isActive && !isClientsActive
+                isActive && !isClientsActive
                   ? "sidebar_section active_sidebar_section"
                   : "sidebar_section"
               }
@@ -291,7 +291,7 @@ const Sidebar = () => {
         {/* Первые четыре элемена */}
         <div className="flex flex-col">
           <NavLink
-            to="/bookingPage"
+            to="/"
             className={({ isActive }) =>
               isActive || isClientsActive
                 ? "sidebar_section_closed active_sidebar_section"

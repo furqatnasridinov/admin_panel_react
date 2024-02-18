@@ -46,7 +46,6 @@ import {
 import ReactInputMask from "react-input-mask";
 import { toast } from "react-toastify";
 
-
 export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const dispatch = useDispatch();
   const currentGymState = useSelector((state) => state.currentGym);
@@ -110,6 +109,9 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
       file = await (await fetch(jpegURL)).blob();
       file = new File([file], originalFileName, { type: "image/jpeg" });
     }
+    if (isModalPhotoOpened) {
+      openModalPhoto(false);
+    }
 
     const { gymId, image } = { gymId: currentGym.id, image: file };
     if (image.type === "image/jpeg") {
@@ -117,9 +119,6 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
       progressSnackbarRef.current.show("Идет загрузка фото");
       await dispatch(addGymPicture({ gymId, image }));
       dispatch(getCurrentGym(currentGym.id));
-      if (isModalPhotoOpened) {
-        openModalPhoto(false);
-      }
     } else {
       toast("Неподдерживаемый формат файла");
     }
@@ -128,24 +127,28 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   // Обработчик для добавления нового логотипа
   const handleNewLogo = async (event) => {
     let file = event.target.files[0];
-    if (file.type === "image/png") {
-      // convert to jpeg
-      const originalFileName = file.name.replace(".png", ".jpeg");
-      const image = await new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.src = URL.createObjectURL(file);
-      });
+    if (file) {
+      if (file.type === "image/png") {
+        // convert to jpeg
+        const originalFileName = file.name.replace(".png", ".jpeg");
+        const image = await new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.src = URL.createObjectURL(file);
+        });
 
-      const canvas = document.createElement("canvas");
-      canvas.width = image.width;
-      canvas.height = image.height;
-      const context = canvas.getContext("2d");
-      context.drawImage(image, 0, 0, image.width, image.height);
-      const jpegURL = canvas.toDataURL("image/jpeg");
-      file = await (await fetch(jpegURL)).blob();
-      file = new File([file], originalFileName, { type: "image/jpeg" });
+        const canvas = document.createElement("canvas");
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const context = canvas.getContext("2d");
+        context.drawImage(image, 0, 0, image.width, image.height);
+        const jpegURL = canvas.toDataURL("image/jpeg");
+        file = await (await fetch(jpegURL)).blob();
+        file = new File([file], originalFileName, { type: "image/jpeg" });
+      }
     }
+
+    openModalLogo(false);
 
     const { gymId, image } = { gymId: currentGym.id, image: file };
     if (image.type === "image/jpeg") {
@@ -153,9 +156,6 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
       progressSnackForLogo.current.show("Идет загрузка логотипа");
       await dispatch(addGymLogo({ gymId, image }));
       dispatch(getCurrentGym(currentGym.id));
-      if (isModalLogoOpened) {
-        openModalLogo(false);
-      }
     } else {
       toast("Неподдерживаемый формат файла");
     }
@@ -254,6 +254,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   onChange={handleNewPhoto}
                   type="file"
                   style={{ display: "none" }} //hiding input
+                  accept="image/jpeg, image/png"
                 />
               </>
             )}
@@ -340,6 +341,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   onChange={handleNewLogo}
                   type="file"
                   style={{ display: "none" }}
+                  accept="image/jpeg, image/png"
                 />
               </>
             )}
@@ -1067,6 +1069,7 @@ function ChangeMainPhotoModal({
             type="file"
             style={{ display: "none" }}
             onChange={uploadNewPhoto}
+            accept="image/jpeg, image/png"
           />
         </div>
       </div>
@@ -1129,6 +1132,7 @@ function ChangeLogoModal({
             type="file"
             style={{ display: "none" }}
             onChange={uploadNewLogo}
+            accept="image/jpeg, image/png"
           />
         </div>
       </div>

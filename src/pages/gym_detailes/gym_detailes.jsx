@@ -20,6 +20,7 @@ import {
   setPhotosOfSelectedActivity,
   getAllAvailableLessonTypes,
 } from "../../features/activities_slice";
+import MessageLikeTopContainer from "../booking_page/message_like_top_container";
 
 export default function GymDetails() {
   let { gymId } = useParams(); // This hooks allows you to extract params from the URL
@@ -28,6 +29,7 @@ export default function GymDetails() {
   const gymState = useSelector((state) => state.currentGym);
   const employeesSlice = useSelector((state) => state.employees);
   const activitiesSlice = useSelector((state) => state.activities);
+  const clientsSlice = useSelector((state) => state.clients);
 
   // this useeffect will trigger only once at the beginning
   useEffect(() => {
@@ -102,6 +104,10 @@ export default function GymDetails() {
     console.log("selected act ", activitiesSlice.selectedActivity),
     (
       <div className="gym_details">
+        {clientsSlice.waitingForAccept.length > 0 && (
+          <MessageLikeTopContainer />
+        )}
+
         {gymState.currentGym != null && (
           <>
             <GymDetailesHeader

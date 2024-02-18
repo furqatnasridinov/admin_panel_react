@@ -26,8 +26,8 @@ function App() {
 
         <div className="flex-1 h-full">
           <Routes>
-            <Route path="/bookingPage" element={<BookingPage />}></Route>
-            <Route path="/bookingPage" element={<BookingPage />}></Route>
+            <Route path="/" element={<BookingPage />}></Route>
+            <Route path="/" element={<BookingPage />}></Route>
             <Route
               path="/waitingClientsPage"
               element={<WaitingClientsPage />}

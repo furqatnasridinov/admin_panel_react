@@ -26,7 +26,7 @@ export default function GymDetailesHeader({
   }
 
   return (
-    <div className="h-fit mb-[10px] pl-[35px] pr-[19px] py-[21px] bg-white flex flex-row items-center rounded-[16px] ">
+    <div className="h-[82px] mb-[10px] pl-[35px] pr-[19px] py-[21px] bg-white flex flex-row items-center rounded-[16px] ">
       <div className="text-[14px] font-normal">Ваши заведения</div>
 
       <div className="slash"> / </div>

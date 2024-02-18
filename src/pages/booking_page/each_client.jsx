@@ -1,10 +1,18 @@
 import React from "react";
 import cancelSvg from "../../assets/svg/cancel.svg";
 import done from "../../assets/svg/done_white.svg";
-import goggins from "../../assets/images/goggins.jpg"
+import goggins from "../../assets/images/goggins.jpg";
 import "./styles.css";
 
-export default function EachClient({ name, day, time, gym, event }) {
+export default function EachClient({
+  name,
+  day,
+  time,
+  gym,
+  event,
+  onAccept,
+  onDecline,
+}) {
   return (
     <div className="eachClient">
       <div className="flex flex-row items-center w-[70%] h-full">
@@ -29,11 +37,11 @@ export default function EachClient({ name, day, time, gym, event }) {
         </div>
       </div>
       <div className="w-[260px] h-full gap-[5px] flex flex-row items-center">
-        <div className="acceptButton" onClick={() => {}}>
+        <div className="acceptButton" onClick={onAccept}>
           <div className="defaultText text-white">Одобрить</div>
           <img className="w-[15px] h-[15px]" src={done} alt="" />
         </div>
-        <div className="declineButton" onClick={() => {}}>
+        <div className="declineButton" onClick={onAccept}>
           <div className="defaultText">Отклонить</div>
           <img className="w-[15px] h-[15px]" src={cancelSvg} alt="" />
         </div>

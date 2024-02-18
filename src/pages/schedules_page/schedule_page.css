@@ -1,6 +1,7 @@
 .schedule_page {
   height: 97vh;
   margin-left: 10px;
+  overflow-y: auto;
 }
 
 .schedule_page ::-webkit-scrollbar {
