@@ -2,8 +2,20 @@ import React from "react";
 import "./styles.css";
 import { DUMMY_CLIENTS } from "../../dummy_data/dymmy_data";
 import EachClient from "./each_client";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getNewClients,
+  acceptClient,
+  rejectClient,
+} from "../../features/clients_slice";
 
-export default function BookingBody() {
+export default function BookingBody({ clientsList, doNotShowBlock }) {
+  // redux
+  const dispatch = useDispatch();
+  const gymState = useSelector((state) => state.currentGym);
+  if (doNotShowBlock) {
+    return null;
+  }
   return (
     <div className="bookingBody">
       <div className="flex flex-col gap-1">
@@ -17,18 +29,73 @@ export default function BookingBody() {
         </div>
       </div>
 
-      {DUMMY_CLIENTS.map((client) => {
-        return (
-          <EachClient
-            key={client.id}
-            name={client.name}
-            day={client.day}
-            time={client.time}
-            gym={client.gym}
-            event={client.event}
-          />
-        );
-      })}
+      {clientsList &&
+        clientsList.length > 0 &&
+        [...clientsList] // Создаем копию массива перед сортировкой
+          .sort((a, b) => a.startTime - b.startTime)
+          .map((client) => {
+            let day = client.startTime.getDate();
+            let month = client.startTime.getMonth() + 1;
+            let startHours = client.startTime.getHours();
+            let startMinutes = client.startTime.getMinutes();
+            let endHours = client.endTime.getHours();
+            let endMinutes = client.endTime.getMinutes();
+            let options = { weekday: "short" };
+            let weekday = client.startTime.toLocaleString("ru-RU", options);
+            const today = new Date();
+            // Если день совпадает с сегодняшним, то выводим "Сегодня", если с завтрашним, то "Завтра"
+            if (
+              today.getDate() === day &&
+              today.getMonth() === client.startTime.getMonth()
+            ) {
+              weekday = "Сегодня";
+            }
+            if (
+              today.getDate() + 1 === day &&
+              today.getMonth() === client.startTime.getMonth()
+            ) {
+              weekday = "Завтра";
+            }
+
+            // Добавляем ведущие нули, если необходимо
+            day = day < 10 ? "0" + day : day;
+            month = month < 10 ? "0" + month : month;
+            startHours = startHours < 10 ? "0" + startHours : startHours;
+            startMinutes =
+              startMinutes < 10 ? "0" + startMinutes : startMinutes;
+            endHours = endHours < 10 ? "0" + endHours : endHours;
+            endMinutes = endMinutes < 10 ? "0" + endMinutes : endMinutes;
+
+            return (
+              <EachClient
+                key={client.id}
+                day={`${day}.${month}`}
+                weekDay={weekday}
+                startTime={`${startHours}:${startMinutes}`}
+                endTIme={`${endHours}:${endMinutes}`}
+                gym={client.gymName}
+                event={client.lessonType}
+                onAccept={async () => {
+                  const request = {
+                    gymId: client.gymId,
+                    waitingId: client.id,
+                  };
+                  await dispatch(acceptClient(request));
+                  // getting new data
+                  dispatch(getNewClients(gymState.currentGym.id));
+                }}
+                onDecline={async () => {
+                  const request = {
+                    gymId: client.gymId,
+                    waitingId: client.id,
+                  };
+                  await dispatch(rejectClient(request));
+                  // getting new data
+                  dispatch(getNewClients(gymState.currentGym.id));
+                }}
+              />
+            );
+          })}
     </div>
   );
 }

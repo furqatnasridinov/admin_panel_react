@@ -10,7 +10,7 @@ import GymDetails from "./pages/gym_detailes/gym_detailes";
 import MyGymsPageLayout from "./pages/my_gyms_page/my_gyms_page_layout";
 import AppConstants from "./config/app_constants";
 import BookingPage from "./pages/booking_page/injex";
-import WaitingClientsPage from "./pages/waiting_clients";
+import ClientsPage from "./pages/clients";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 function App() {
@@ -28,10 +28,7 @@ function App() {
           <Routes>
             <Route path="/" element={<BookingPage />}></Route>
             <Route path="/" element={<BookingPage />}></Route>
-            <Route
-              path="/waitingClientsPage"
-              element={<WaitingClientsPage />}
-            ></Route>
+            <Route path="/waitingClientsPage" element={<ClientsPage />}></Route>
             <Route
               path="/statisticksPage"
               element={<StatisticksPage />}

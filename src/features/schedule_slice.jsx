@@ -336,7 +336,7 @@ export const {
   hideEdittingContainer,
   showEdittingContainer,
   enableScheduleEditting,
-  disableScheduleEditting
+  disableScheduleEditting,
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

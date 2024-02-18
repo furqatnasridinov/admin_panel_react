@@ -5,9 +5,10 @@ import goggins from "../../assets/images/goggins.jpg";
 import "./styles.css";
 
 export default function EachClient({
-  name,
   day,
-  time,
+  weekDay,
+  startTime,
+  endTIme,
   gym,
   event,
   onAccept,
@@ -17,12 +18,14 @@ export default function EachClient({
     <div className="eachClient">
       <div className="flex flex-row items-center w-[70%] h-full">
         <div className="flex flex-row items-center gap-[10px] ">
-          <img className="image28" src={goggins} alt="" />
-          <div className="defaultText w-[240px]">{name}</div>
+          {/* <img className="image28" src={goggins} alt="" /> */}
+          <div className="defaultText w-[240px]">Посетитель</div>
         </div>
         <div className="flex flex-col items-center justify-center bg-grey-container w-[135px] h-full ml-[32px]">
-          <div className="defaultText">{day}</div>
-          <div className="defaultText">{time}</div>
+          <div className="defaultText">{`${day} (${weekDay})`}</div>
+          <div className="defaultText">
+            {startTime}-{endTIme}
+          </div>
         </div>
         <div className="flex flex-col gap-[5px] ml-[60px]">
           <div className="flex flex-row gap-[5px]">
@@ -41,7 +44,7 @@ export default function EachClient({
           <div className="defaultText text-white">Одобрить</div>
           <img className="w-[15px] h-[15px]" src={done} alt="" />
         </div>
-        <div className="declineButton" onClick={onAccept}>
+        <div className="declineButton" onClick={onDecline}>
           <div className="defaultText">Отклонить</div>
           <img className="w-[15px] h-[15px]" src={cancelSvg} alt="" />
         </div>

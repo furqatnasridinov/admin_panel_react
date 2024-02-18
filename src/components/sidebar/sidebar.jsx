@@ -22,6 +22,7 @@ const Sidebar = () => {
   const sidebarHeaderRef = useRef();
   const sideBarRef = useRef();
   const gymsState = useSelector((state) => state.currentGym);
+  const clientsSlice = useSelector((state) => state.clients);
 
   const handleClick = () => {
     if (isSidebarOpened) {
@@ -122,7 +123,11 @@ const Sidebar = () => {
 
               {isTextShown && <div>Клиенты</div>}
 
-              {isTextShown && <div className="badge">5</div>}
+              {isTextShown && clientsSlice.waitingForAccept.length > 0 && (
+                <div className="badge">
+                  {clientsSlice.waitingForAccept.length}
+                </div>
+              )}
             </NavLink>
 
             {isClientsActive && isTextShown && (
@@ -137,7 +142,11 @@ const Sidebar = () => {
                   <li>
                     <span>Бронирование</span>
                   </li>
-                  <div className="badge">5</div>
+                  {clientsSlice.waitingForAccept.length > 0 && (
+                    <div className="badge">
+                      {clientsSlice.waitingForAccept.length}
+                    </div>
+                  )}
                 </NavLink>
 
                 <NavLink
@@ -149,8 +158,6 @@ const Sidebar = () => {
                   <li>
                     <span>Посещения сегодня</span>
                   </li>
-
-                  <div className="badge">1</div>
                 </NavLink>
               </div>
             )}
@@ -299,7 +306,12 @@ const Sidebar = () => {
             }
           >
             <img src={userLogoSvg} alt="" />
-            <div className="badge">5</div>
+
+            {clientsSlice.waitingForAccept.length > 0 && (
+              <div className="badge">
+                {clientsSlice.waitingForAccept.length}
+              </div>
+            )}
           </NavLink>
 
           <NavLink

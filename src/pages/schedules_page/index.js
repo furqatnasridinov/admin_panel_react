@@ -43,16 +43,18 @@ import EdittingContainer from "./editting_container";
 
 registerLocale("ru", ru);
 export default function SchedulesPage() {
-  // usestates
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const calendarRef = useRef(); // Ref для доступа к экземпляру календаря
-  const [minHeight, setMinHeight] = useState(80);
-  const [isNavigationtriggered, setNavigation] = useState(false);
+  // redux
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
   const activitiesState = useSelector((state) => state.activities);
   const scheduleState = useSelector((state) => state.schedule);
   const clientsSlice = useSelector((state) => state.clients);
+
+  // usestates
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const calendarRef = useRef(); // Ref для доступа к экземпляру календаря
+  const [minHeight, setMinHeight] = useState(80);
+  const [isNavigationtriggered, setNavigation] = useState(false);
 
   const events = scheduleState.schedulesOfSelectedActivity.map((item) => {
     return {
