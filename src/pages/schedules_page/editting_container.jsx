@@ -1,0 +1,364 @@
+import React from "react";
+import "./styles.css";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { hideEdittingContainer } from "../../features/schedule_slice";
+import roundedGarbage from "../../assets/svg/rounded_garbage.svg";
+import {
+  deleteSchedule,
+  resetSelectedEvent,
+  setStartTimeHours,
+  setStartTimeMinutes,
+  setEndTimeHours,
+  setEndTimeMinutes,
+  selectedEventSetTitle,
+  enableScheduleEditting,
+  disableScheduleEditting,
+  updateSchedule,
+  resetDatasAfterSubmitting,
+} from "../../features/schedule_slice";
+import { getSchedules } from "../../features/schedule_slice";
+import CustomDialog from "../../components/dialog/dialog";
+import BackButton from "../../components/button/back_button";
+import CustomButton from "../../components/button/button";
+import DropdownForHours from "./dropdowm_for_hours";
+import checkboxEnabledSvg from "../../assets/svg/done.svg";
+import checkboxDisabledSvg from "../../assets/svg/checkbox_disabled.svg";
+import backButton from "../../assets/svg/back_button.svg";
+import psych from "../../assets/images/american_psycho.jpg";
+import { WEEK_DAYS } from "../../dummy_data/dymmy_data";
+
+export default function EdittingContainer() {
+  // redux
+  const dispatch = useDispatch();
+  const gymState = useSelector((state) => state.currentGym);
+  const scheduleState = useSelector((state) => state.schedule);
+  const [checkBoxEnabled, setCheckbox] = useState(false);
+
+  // use state
+  const [deleteModalShown, openDeleteModal] = useState(false);
+  const [isStartTimeDropDownOpened, openStartTimeDropDown] = useState(false);
+  const [isEndTimeDropDownOpened, openEndTimeDropDown] = useState(false);
+
+  return (
+    <div className={`edittingContainer h-[76vh]`}>
+      {/*  */}
+      <div className="flex flex-row items-center justify-between">
+        <div className="flex flex-row items-center gap-[10px]">
+          <img
+            src={backButton}
+            alt=""
+            className="cursor-pointer"
+            onClick={() => {
+              if (scheduleState.isScheduleEdittingEnabled) {
+                dispatch(disableScheduleEditting());
+              }
+              dispatch(hideEdittingContainer());
+            }}
+          />
+          <div className="text-[14px] font-bold">
+            {`Детали занятия ${scheduleState.selectedEvent.start.toLocaleString(
+              "ru-RU",
+              { day: "numeric", month: "long" }
+            )}`}
+          </div>
+        </div>
+
+        <img
+          src={roundedGarbage}
+          alt=""
+          className="cursor-pointer"
+          onClick={async () => {
+            // if event is repeating show modal
+            if (scheduleState.selectedEvent.repeat.length > 1) {
+              openDeleteModal(true);
+            } else {
+              // else delete event
+              const { gymId, lessonId, all } = {
+                gymId: gymState.currentGym.id,
+                lessonId: scheduleState.selectedEvent.id,
+                all: false,
+              };
+              await dispatch(deleteSchedule({ gymId, lessonId, all }));
+              dispatch(resetSelectedEvent());
+              dispatch(hideEdittingContainer());
+              dispatch(getSchedules(gymState.currentGym.id));
+            }
+          }}
+        />
+      </div>
+
+      <CustomDialog
+        isOpened={deleteModalShown}
+        closeOnTapOutside={() => openDeleteModal(false)}
+      >
+        <div className="deleteModalContainer">
+          <div className="flex flex-col gap-[5px]">
+            <div className="text-[16px] font-semibold">Удаление занятия</div>
+            <div className="text-[14px] font-normal leading-[16px]">
+              Это занятие было скопировано на несколько недель вперёд. Вы хотите
+              удалить только это занятие, или так же все его копии?
+            </div>
+          </div>
+
+          <div className="flex flex-row gap-[10px]">
+            <BackButton
+              height={"40px"}
+              width={"40%"}
+              title={"Удалить только его"}
+              onСlick={async () => {
+                const { gymId, lessonId, all } = {
+                  gymId: gymState.currentGym.id,
+                  lessonId: scheduleState.selectedEvent.id,
+                  all: false,
+                };
+                await dispatch(deleteSchedule({ gymId, lessonId, all }));
+                dispatch(resetSelectedEvent());
+                dispatch(hideEdittingContainer());
+                dispatch(getSchedules(gymState.currentGym.id));
+                openDeleteModal(false);
+              }}
+            />
+            <CustomButton
+              height={"40px"}
+              width={"60%"}
+              title={"Удалить занятие и все его копии"}
+              fontSize={"14px"}
+              onСlick={async () => {
+                const { gymId, lessonId, all } = {
+                  gymId: gymState.currentGym.id,
+                  lessonId: scheduleState.selectedEvent.id,
+                  all: true,
+                };
+                await dispatch(deleteSchedule({ gymId, lessonId, all }));
+                dispatch(resetSelectedEvent());
+                dispatch(hideEdittingContainer());
+                dispatch(getSchedules(gymState.currentGym.id));
+                openDeleteModal(false);
+              }}
+            />
+          </div>
+        </div>
+      </CustomDialog>
+
+      {/*  */}
+      <div className="flex flex-col gap-[5px]">
+        <div className="text-[14px] font-bold">Кем добавлено:</div>
+        <div className="flex flex-row gap-[10px]">
+          <div
+            className="w-[32px] h-[32px] rounded-[50%] p-[2px]"
+            style={{ backgroundColor: "rgba(119, 170, 249, 1)" }}
+          >
+            <img className="w-full h-full rounded-[50%] " src={psych} alt="" />
+          </div>
+          <div className="flex flex-col">
+            <div className="text-[13px] font-medium leading-[15px]">
+              {`${scheduleState.selectedEvent.owner.firstName} ${scheduleState.selectedEvent.owner.lastName}`}
+            </div>
+            {/* <div className="text-[13px] font-medium leading-[15px]">
+                      Директор
+                    </div> */}
+          </div>
+        </div>
+      </div>
+      {/*  */}
+      <div className="refSchedule">
+        <div className="flex flex-col gap-[5p]">
+          <div className="text-[14px] font-bold">Время проведения:</div>
+          {!scheduleState.isScheduleEdittingEnabled && (
+            <>
+              <div className="text-[14px] font-medium">
+                {scheduleState.selectedEvent.start.toLocaleTimeString("ru-RU", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+                -
+                {scheduleState.selectedEvent.end.toLocaleTimeString("ru-RU", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
+            </>
+          )}
+
+          {scheduleState.isScheduleEdittingEnabled && (
+            <div className="flex flex-row items-center gap-[5px]">
+              <DropdownForHours
+                text={`${scheduleState.startTimeHoursTmp}:${scheduleState.startTimeMinutesTmp}`}
+                isDropDownOpened={isStartTimeDropDownOpened}
+                openCloseDropDown={() => {
+                  if (isEndTimeDropDownOpened) {
+                    openEndTimeDropDown(false);
+                  }
+                  openStartTimeDropDown(!isStartTimeDropDownOpened);
+                }}
+                setHours={(hours) => {
+                  dispatch(setStartTimeHours(hours));
+                }}
+                setMinutes={(minute) => dispatch(setStartTimeMinutes(minute))}
+                selectedHour={scheduleState.startTimeHoursTmp}
+                selectedMinute={scheduleState.startTimeMinutesTmp}
+              />
+
+              <div className="">-</div>
+
+              <DropdownForHours
+                text={`${scheduleState.endTimeHoursTmp}:${scheduleState.endTimeMinutesTmp}`}
+                isDropDownOpened={isEndTimeDropDownOpened}
+                openCloseDropDown={() => {
+                  if (isStartTimeDropDownOpened) {
+                    openStartTimeDropDown(false);
+                  }
+                  openEndTimeDropDown(!isEndTimeDropDownOpened);
+                }}
+                setHours={(hours) => {
+                  dispatch(setEndTimeHours(hours));
+                }}
+                setMinutes={(minute) => dispatch(setEndTimeMinutes(minute))}
+                selectedHour={scheduleState.endTimeHoursTmp}
+                selectedMinute={scheduleState.endTimeMinutesTmp}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-[5px]">
+          <div className="text-[14px] font-bold">Описание занятия:</div>
+          {!scheduleState.isScheduleEdittingEnabled && (
+            <div className="text-[13px] font-medium leading-[15px]">
+              {scheduleState.selectedEvent.title}
+            </div>
+          )}
+
+          {scheduleState.isScheduleEdittingEnabled && (
+            <div className="">
+              <textarea
+                className="textArea text-[13px] font-normal font-inter"
+                //ref={inputRef}
+                value={scheduleState.selectedEvent.title}
+                onChange={(e) => {
+                  dispatch(selectedEventSetTitle(e.target.value));
+                }}
+                style={{
+                  fontSize: "13px",
+                  lineHeight: "14px",
+                }}
+              />
+            </div>
+          )}
+        </div>
+
+        {!scheduleState.isScheduleEdittingEnabled && (
+          <BackButton
+            title={"Редактировать"}
+            height={"40px"}
+            onСlick={() => {
+              dispatch(enableScheduleEditting());
+            }}
+            hideHover={true}
+          />
+        )}
+
+        {scheduleState.isScheduleEdittingEnabled &&
+          scheduleState.selectedEvent.repeat.length > 1 && (
+            <div className="flex flex-row gap-[10px] ">
+              <img
+                src={checkBoxEnabled ? checkboxEnabledSvg : checkboxDisabledSvg}
+                alt=""
+                className="cursor-pointer w-[24px] h-[24px]"
+                onClick={() => {
+                  setCheckbox(!checkBoxEnabled);
+                }}
+              />
+              <div className="text-[13px] font-medium leading-[15px]">
+                Применить ко всем повторяющимся событиям
+              </div>
+            </div>
+          )}
+
+        <div className="flex flex-col gap-[16px]">
+          {scheduleState.isScheduleEdittingEnabled && (
+            <div className="flex flex-row gap-[10px] ">
+              <BackButton
+                width={"100%"}
+                height={"40px"}
+                title={"Отменить"}
+                onСlick={() => {
+                  dispatch(disableScheduleEditting());
+                  // reset times
+                }}
+              />
+              <CustomButton
+                width={"100%"}
+                height={"40px"}
+                title={"Сохранить"}
+                onСlick={async () => {
+                  // send update request
+
+                  if (!scheduleState.endTimeIsBeforeStartTime) {
+                    const {
+                      gymId,
+                      lessonId,
+                      date,
+                      duration,
+                      description,
+                      all,
+                    } = {
+                      gymId: gymState.currentGym.id,
+                      lessonId: scheduleState.selectedEvent.id,
+                      date: scheduleState.lessonStartTimeSendToServer,
+                      duration: scheduleState.lessonDurationSendToServer,
+                      description: scheduleState.selectedEvent.title,
+                      all: checkBoxEnabled,
+                    };
+                    await dispatch(
+                      updateSchedule({
+                        gymId,
+                        lessonId,
+                        date,
+                        duration,
+                        description,
+                        all,
+                      })
+                    );
+                    dispatch(disableScheduleEditting());
+                    dispatch(getSchedules(gymState.currentGym.id));
+                    dispatch(resetDatasAfterSubmitting());
+                  }
+                }}
+                fontSize={"14px"}
+              />
+            </div>
+          )}
+          {scheduleState.isScheduleEdittingEnabled &&
+            scheduleState.endTimeIsBeforeStartTime && (
+              <div className="text-[14px] text-red-400 ">
+                Время начала должно быть раньше, чем время окончания активности
+              </div>
+            )}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-[5px]">
+        <div className="text-[14px] font-bold">В какие дни повторяется:</div>
+
+        <div className="flex flex-row gap-[5px]">
+          {WEEK_DAYS.map((weekday) => (
+            <div
+              key={weekday.id}
+              className={
+                scheduleState.selectedEvent.repeat.length > 1 &&
+                scheduleState.selectedEvent.repeat.includes(weekday.id)
+                  ? "roundedWeekdaysSelected"
+                  : "roundedWeekdays "
+              }
+              onClick={() => {}}
+            >
+              {weekday.name}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

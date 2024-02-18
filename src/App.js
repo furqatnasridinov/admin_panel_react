@@ -3,7 +3,7 @@ import Sidebar from "./components/sidebar/sidebar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MyGymsPage from "./pages/my_gyms_page/my_gyms_page";
 import StatisticksPage from "./pages/statisticks_page/statisticks_page";
-import SchedulesPage from "./pages/schedules_page/schedules_page";
+import SchedulesPage from "./pages/schedules_page";
 import Help from "./pages/help";
 import SettingsPage from "./pages/settings_page";
 import GymDetails from "./pages/gym_detailes/gym_detailes";
