@@ -574,11 +574,15 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   {/* address searching dropdown */}
                   <AddressSearching
                     value={currentGym.address}
-                    notFound={currentGymState.addressesFromSearch.length === 0}
+                    notFound={
+                      currentGymState.addressesFromSearch &&
+                      currentGymState.addressesFromSearch.length === 0
+                    }
                     onChange={(e) => {
                       dispatch(changeCurrentGymsAddress(e.target.value));
                     }}
                     map={
+                      currentGymState.addressesFromSearch &&
                       currentGymState.addressesFromSearch.length > 0 &&
                       currentGymState.addressesFromSearch.map((geocode) => {
                         return (

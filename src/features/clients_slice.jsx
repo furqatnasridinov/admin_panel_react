@@ -86,11 +86,12 @@ export const getWillComeToday = createAsyncThunk(
             startTime.getTime() + parseDuration(item.duration)
           );
           const today = new Date();
-          // добавим только сегодняшние
+          // добавим только сегодняшние и те что еще не пришли
           if (
             startTime.getDate() === today.getDate() &&
             startTime.getMonth() === today.getMonth() &&
-            startTime.getFullYear() === today.getFullYear()
+            startTime.getFullYear() === today.getFullYear() &&
+            startTime > today
           ) {
             listToCollect.push(
               new BookingData(

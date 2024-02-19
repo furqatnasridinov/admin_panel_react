@@ -174,7 +174,7 @@ export const searchingForAddress = createAsyncThunk(
     console.log("searchingForAddress called");
     try {
       const response = await axiosClient.get(
-        `https://geocode-maps.yandex.ru/1.x/?apikey=${AppConstants.yandexApiKey}&format=json&bbox=52.429381,31.690772~75.301636&geocode=${address}`
+        `https://geocode-maps.yandex.ru/1.x/?apikey=${AppConstants.yandexApiKey}&format=json&rspn=1&bbox=31.298086,51.490842~129.732582,62.026915&geocode=${address}`
       );
       if (response.status === 200) {
         const featureMember =
