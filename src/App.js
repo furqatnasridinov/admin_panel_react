@@ -3,14 +3,16 @@ import Sidebar from "./components/sidebar/sidebar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MyGymsPage from "./pages/my_gyms_page/my_gyms_page";
 import StatisticksPage from "./pages/statisticks_page/statisticks_page";
-import SchedulesPage from "./pages/schedules_page/schedules_page";
+import SchedulesPage from "./pages/schedules_page";
 import Help from "./pages/help";
 import SettingsPage from "./pages/settings_page";
 import GymDetails from "./pages/gym_detailes/gym_detailes";
 import MyGymsPageLayout from "./pages/my_gyms_page/my_gyms_page_layout";
 import AppConstants from "./config/app_constants";
+import BookingPage from "./pages/booking_page/injex";
 import ClientsPage from "./pages/clients";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     // console.log(localStorage.getItem(AppConstants.keyToken)),
@@ -24,8 +26,13 @@ function App() {
 
         <div className="flex-1 h-full">
           <Routes>
-            <Route path="/" element={<ClientsPage />}></Route>
-            <Route path="/statisticksPage" element={<StatisticksPage />}></Route>
+            <Route path="/" element={<BookingPage />}></Route>
+            <Route path="/" element={<BookingPage />}></Route>
+            <Route path="/waitingClientsPage" element={<ClientsPage />}></Route>
+            <Route
+              path="/statisticksPage"
+              element={<StatisticksPage />}
+            ></Route>
             <Route path="/myGymsPage" element={<MyGymsPageLayout />}>
               {/* we declare nested navigation because MyGymsPage has two screens */}
               <Route index element={<MyGymsPage />} />
@@ -41,6 +48,7 @@ function App() {
               {" "}
             </Route>
           </Routes>
+          <ToastContainer autoClose={2500} hideProgressBar />
         </div>
       </div>
     </BrowserRouter>

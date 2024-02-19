@@ -1,23 +1,21 @@
 import React from "react";
 import "./styles.css";
-import BookingHeader from "../booking_page/booking_header";
-import AlreadyCame from "./already_came";
-import WillCome from "./will_come";
+import BookingHeader from "./booking_header";
+import BookingBody from "./booking_body";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import {
   getListOfGyms,
   setCurrentGymFromFirstItem,
 } from "../../features/current_gym_slice";
-import {
-  getAlreadyCameToday,
-  getWillComeToday,
-} from "../../features/clients_slice";
+import { getNewClients } from "../../features/clients_slice";
 
-export default function ClientsPage() {
+export default function BookingPage() {
   // redux
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
+  const activitiesState = useSelector((state) => state.activities);
+  const scheduleState = useSelector((state) => state.schedule);
   const clientsSlice = useSelector((state) => state.clients);
 
   // get initial data`s
@@ -33,14 +31,12 @@ export default function ClientsPage() {
 
   useEffect(() => {
     if (gymState.currentGym !== null) {
-      //dispatch(getNewClients(gymState.currentGym.id));
-      dispatch(getWillComeToday(gymState.currentGym.id));
-      dispatch(getAlreadyCameToday(gymState.currentGym.id));
+      dispatch(getNewClients(gymState.currentGym.id));
     }
   }, [gymState.currentGym]);
 
   return (
-    <div className="waitingPage">
+    <div className="bookingPage">
       {gymState.currentGym !== null && (
         <>
           <BookingHeader
@@ -48,21 +44,14 @@ export default function ClientsPage() {
             listOfGyms={gymState.listOfGyms}
             showDropDown={gymState.listOfGyms.length > 1}
           />
-
-          <AlreadyCame
-            doNotShowBlock={clientsSlice.alreadyCameToday.length === 0}
-            clientsList={clientsSlice.alreadyCameToday}
+          <BookingBody
+            clientsList={clientsSlice.waitingForAccept}
+            doNotShowBlock={clientsSlice.waitingForAccept.length === 0}
           />
 
-          <WillCome
-            clientsList={clientsSlice.willComeToday}
-            doNotShowBlock={clientsSlice.willComeToday.length === 0}
-          />
-
-          {clientsSlice.alreadyCameToday.length === 0 &&
-            clientsSlice.willComeToday.length === 0 && (
-              <div className="centeredGreyText">Сегодня у вас нет событий</div>
-            )}
+          {clientsSlice.waitingForAccept.length === 0 && (
+            <div className="centeredGreyText">В ближайшее время у вас нет заявок</div>
+          )}
         </>
       )}
     </div>

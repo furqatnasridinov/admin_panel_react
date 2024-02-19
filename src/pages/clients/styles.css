@@ -1,0 +1,64 @@
+.waitingPage {
+  height: 97vh;
+  margin-left: 10px;
+  overflow-y: auto;
+}
+
+.waitingPage::-webkit-scrollbar {
+  display: none;
+}
+
+.recentlyAttended{
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  padding: 32px;
+  background-color: white;
+  border-radius: 16px;
+  gap: 16px;
+}
+
+.comeLaterClients {
+  display: flex;
+  flex-direction: column;
+  height:  fit-content;
+  padding: 32px;
+  margin-top: 10px;
+  background-color: white;
+  border-radius: 16px;
+  gap: 16px;
+}
+
+.eachWaitingClient {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 66px;
+  border-radius: 16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  background-color: rgba(252, 252, 252, 1);
+  border: 1px solid rgba(244, 244, 244, 1);
+}
+
+.eachClientWhoWillCome {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 66px;
+  border-radius: 16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  background-color: rgba(252, 252, 252, 1);
+  border: 1px solid rgba(244, 244, 244, 1);
+}
+
+.image28 {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}

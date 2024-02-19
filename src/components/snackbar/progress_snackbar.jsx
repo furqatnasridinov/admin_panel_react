@@ -45,11 +45,6 @@ const ProgressSnackbar = forwardRef(({ isLoading }, ref) => {
         setShown(false);
         // visually show done
       }, 2000);
-    }
-  }, [isLoading]);
-
-  useEffect(() => {
-    if (!isLoading) {
       setPercent(0);
     }
   }, [isLoading]);
@@ -82,6 +77,7 @@ const ProgressSnackbar = forwardRef(({ isLoading }, ref) => {
               </>
             )}
             {!isLoading && <img src={doneSvg} alt="done" />}
+            {!isLoading && percent !== 0 && setPercent(0)}
           </div>
         </div>
       </div>

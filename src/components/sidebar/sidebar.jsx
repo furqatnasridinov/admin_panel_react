@@ -16,11 +16,13 @@ import { useSelector } from "react-redux";
 const Sidebar = () => {
   const [isSidebarOpened, openCloseSearchBar] = useState(true);
   const [isMenuCompanyShown, showMenuCompany] = useState(false);
+  const [isClientsActive, setClientsActive] = useState(false);
   const [isTextShown, showText] = useState(false);
   const [isButtonDisabled, disableButton] = useState(false);
   const sidebarHeaderRef = useRef();
   const sideBarRef = useRef();
   const gymsState = useSelector((state) => state.currentGym);
+  const clientsSlice = useSelector((state) => state.clients);
 
   const handleClick = () => {
     if (isSidebarOpened) {
@@ -44,12 +46,6 @@ const Sidebar = () => {
         showText(false);
       }
     }
-    /* if (window.innerWidth < 800 && !isButtonDisabled) {
-      disableButton(true);
-    }  
-    if (window.innerWidth > 800 && isButtonDisabled) {
-      disableButton(false);
-    } */
   };
 
   useEffect(() => {
@@ -114,27 +110,70 @@ const Sidebar = () => {
           {/* Первые четыре элемена */}
           <div className="flex flex-col">
             <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
+              className={
+                isClientsActive
                   ? "sidebar_section active_sidebar_section"
                   : "sidebar_section"
               }
+              onClick={() => {
+                setClientsActive(true);
+              }}
             >
               <img src={userLogoSvg} alt="" />
 
               {isTextShown && <div>Клиенты</div>}
 
-              {isTextShown && <div className="badge">5</div>}
+              {isTextShown && clientsSlice.waitingForAccept.length > 0 && (
+                <div className="badge">
+                  {clientsSlice.waitingForAccept.length}
+                </div>
+              )}
             </NavLink>
+
+            {isClientsActive && isTextShown && (
+              <div>
+                {/* Additional content to be shown when Клиенты is active */}
+                <NavLink
+                  to="/"
+                  className={({ isActive }) =>
+                    isActive ? "active_additional_block" : "additional_block"
+                  }
+                >
+                  <li>
+                    <span>Бронирование</span>
+                  </li>
+                  {clientsSlice.waitingForAccept.length > 0 && (
+                    <div className="badge">
+                      {clientsSlice.waitingForAccept.length}
+                    </div>
+                  )}
+                </NavLink>
+
+                <NavLink
+                  to="/waitingClientsPage"
+                  className={({ isActive }) =>
+                    isActive ? "active_additional_block" : "additional_block"
+                  }
+                >
+                  <li>
+                    <span>Посещения сегодня</span>
+                  </li>
+                </NavLink>
+              </div>
+            )}
 
             <NavLink
               to="/statisticksPage"
               className={({ isActive }) =>
-                isActive
+                isActive && !isClientsActive
                   ? "sidebar_section active_sidebar_section"
                   : "sidebar_section"
               }
+              onClick={() => {
+                if (isClientsActive) {
+                  setClientsActive(false);
+                }
+              }}
             >
               <img src={statsLogo} alt="" />
 
@@ -144,10 +183,15 @@ const Sidebar = () => {
             <NavLink
               to="/myGymsPage"
               className={({ isActive }) =>
-                isActive
+                isActive && !isClientsActive
                   ? "sidebar_section active_sidebar_section"
                   : "sidebar_section"
               }
+              onClick={() => {
+                if (isClientsActive) {
+                  setClientsActive(false);
+                }
+              }}
             >
               <img src={locationIcon} alt="" />
 
@@ -157,10 +201,15 @@ const Sidebar = () => {
             <NavLink
               to="/schedulePage"
               className={({ isActive }) =>
-                isActive
+                isActive && !isClientsActive
                   ? "sidebar_section active_sidebar_section"
                   : "sidebar_section"
               }
+              onClick={() => {
+                if (isClientsActive) {
+                  setClientsActive(false);
+                }
+              }}
             >
               <img src={calendarLogo} alt="" />
 
@@ -183,10 +232,15 @@ const Sidebar = () => {
             <NavLink
               to="/help"
               className={({ isActive }) =>
-                isActive
+                isActive && !isClientsActive
                   ? "sidebar_section active_sidebar_section"
                   : "sidebar_section"
               }
+              onClick={() => {
+                if (isClientsActive) {
+                  setClientsActive(false);
+                }
+              }}
             >
               <img src={questionLogo} alt="" />
 
@@ -196,10 +250,15 @@ const Sidebar = () => {
             <NavLink
               to="/settingsPage"
               className={({ isActive }) =>
-                isActive
+                isActive && !isClientsActive
                   ? "sidebar_section active_sidebar_section"
                   : "sidebar_section"
               }
+              onClick={() => {
+                if (isClientsActive) {
+                  setClientsActive(false);
+                }
+              }}
             >
               <img src={settingsLogo} alt="" />
 
@@ -241,13 +300,18 @@ const Sidebar = () => {
           <NavLink
             to="/"
             className={({ isActive }) =>
-              isActive
+              isActive || isClientsActive
                 ? "sidebar_section_closed active_sidebar_section"
                 : "sidebar_section_closed"
             }
           >
             <img src={userLogoSvg} alt="" />
-            <div className="badge">5</div>
+
+            {clientsSlice.waitingForAccept.length > 0 && (
+              <div className="badge">
+                {clientsSlice.waitingForAccept.length}
+              </div>
+            )}
           </NavLink>
 
           <NavLink
@@ -257,6 +321,11 @@ const Sidebar = () => {
                 ? "sidebar_section_closed active_sidebar_section"
                 : "sidebar_section_closed"
             }
+            onClick={() => {
+              if (isClientsActive) {
+                setClientsActive(false);
+              }
+            }}
           >
             <img src={statsLogo} alt="" />
           </NavLink>
@@ -268,6 +337,11 @@ const Sidebar = () => {
                 ? "sidebar_section_closed active_sidebar_section"
                 : "sidebar_section_closed"
             }
+            onClick={() => {
+              if (isClientsActive) {
+                setClientsActive(false);
+              }
+            }}
           >
             <img src={locationIcon} alt="" />
           </NavLink>
@@ -279,6 +353,11 @@ const Sidebar = () => {
                 ? "sidebar_section_closed active_sidebar_section"
                 : "sidebar_section_closed"
             }
+            onClick={() => {
+              if (isClientsActive) {
+                setClientsActive(false);
+              }
+            }}
           >
             <img src={calendarLogo} alt="" />
           </NavLink>
@@ -306,6 +385,11 @@ const Sidebar = () => {
                 ? "sidebar_section_closed active_sidebar_section"
                 : "sidebar_section_closed"
             }
+            onClick={() => {
+              if (isClientsActive) {
+                setClientsActive(false);
+              }
+            }}
           >
             <img src={questionLogo} alt="" />
           </NavLink>
@@ -317,6 +401,11 @@ const Sidebar = () => {
                 ? "sidebar_section_closed active_sidebar_section"
                 : "sidebar_section_closed"
             }
+            onClick={() => {
+              if (isClientsActive) {
+                setClientsActive(false);
+              }
+            }}
           >
             <img src={settingsLogo} alt="" />
           </NavLink>

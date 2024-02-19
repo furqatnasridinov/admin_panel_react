@@ -195,6 +195,18 @@
   display: none;
 }
 
+.textAreaForAddress {
+  padding: 5px;
+  width: 100%;
+  border: 1px solid #77aaf9;
+  border-radius: 8px;
+  outline: none;
+  max-height: 120px;
+  resize: none;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 select {
   text-indent: 1px;
   text-overflow: "";

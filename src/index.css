@@ -15,8 +15,6 @@
     width: 7px; /* ширина полосы прокрутки */
   }
 
-
-
   ::-webkit-scrollbar-thumb {
     background: #888; /* цвет ползунка полосы прокрутки */
     border-radius: 32px;
@@ -26,4 +24,14 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #555; /* цвет ползунка полосы прокрутки при наведении */
   }
+}
+
+.Toastify__toast-theme--light {
+  background-color: rgba(255, 136, 136, 1) !important;
+}
+
+.Toastify__toast-theme--light div {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
 }

@@ -17,6 +17,7 @@ import CustomButton from "../../../../../components/button/button";
 import { useDispatch, useSelector } from "react-redux";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 import ProgressSnackbar from "../../../../../components/snackbar/progress_snackbar";
+import { AddressSearching } from "./address_searching";
 import {
   addGymPicture,
   changeCurrentGymsName,
@@ -27,7 +28,7 @@ import {
   changeCurrentGymsVk,
   patchGymName,
   patchGymDescription,
-  patchGymAddress,
+  searchingForAddress,
   patchGymContacts,
   getCurrentGym,
   resetChanges,
@@ -40,8 +41,10 @@ import {
   cancelRemovingLogo,
   removeLogoCopy,
   removeGymLogo,
+  patchGymAddress,
 } from "../../../../../features/current_gym_slice";
 import ReactInputMask from "react-input-mask";
+import { toast } from "react-toastify";
 
 export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const dispatch = useDispatch();
@@ -74,40 +77,87 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
     try {
       fileInputMainPhotoRef.current.click();
     } catch (error) {
-      alert(error);
+      toast(error);
     }
   };
   const openFilePickerForLogo = () => {
     try {
       fileInputLogoRef.current.click();
     } catch (error) {
-      alert(error);
+      toast(error);
     }
   };
 
   // Обработчик для добавления новой фотографии
   const handleNewPhoto = async (event) => {
-    const file = event.target.files[0];
-    const { gymId, image } = { gymId: currentGym.id, image: file };
-    deleteMainPicSnackbarRef.current.hideSnackbars();
-    progressSnackbarRef.current.show("Идет загрузка фото");
-    await dispatch(addGymPicture({ gymId, image }));
-    dispatch(getCurrentGym(currentGym.id));
+    let file = event.target.files[0]; // image/jpeg && image/png
+    if (file.type === "image/png") {
+      // convert to jpeg
+      const originalFileName = file.name.replace(".png", ".jpeg");
+      const image = await new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.src = URL.createObjectURL(file);
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width;
+      canvas.height = image.height;
+      const context = canvas.getContext("2d");
+      context.drawImage(image, 0, 0, image.width, image.height);
+      const jpegURL = canvas.toDataURL("image/jpeg");
+      file = await (await fetch(jpegURL)).blob();
+      file = new File([file], originalFileName, { type: "image/jpeg" });
+    }
     if (isModalPhotoOpened) {
       openModalPhoto(false);
+    }
+
+    const { gymId, image } = { gymId: currentGym.id, image: file };
+    if (image.type === "image/jpeg") {
+      deleteMainPicSnackbarRef.current.hideSnackbars();
+      progressSnackbarRef.current.show("Идет загрузка фото");
+      await dispatch(addGymPicture({ gymId, image }));
+      dispatch(getCurrentGym(currentGym.id));
+    } else {
+      toast("Неподдерживаемый формат файла");
     }
   };
 
   // Обработчик для добавления нового логотипа
   const handleNewLogo = async (event) => {
-    const file = event.target.files[0];
+    let file = event.target.files[0];
+    if (file) {
+      if (file.type === "image/png") {
+        // convert to jpeg
+        const originalFileName = file.name.replace(".png", ".jpeg");
+        const image = await new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.src = URL.createObjectURL(file);
+        });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const context = canvas.getContext("2d");
+        context.drawImage(image, 0, 0, image.width, image.height);
+        const jpegURL = canvas.toDataURL("image/jpeg");
+        file = await (await fetch(jpegURL)).blob();
+        file = new File([file], originalFileName, { type: "image/jpeg" });
+      }
+    }
+
+    openModalLogo(false);
+
     const { gymId, image } = { gymId: currentGym.id, image: file };
-    deleteLogoSnackbarRef.current.hideSnackbars();
-    progressSnackForLogo.current.show("Идет загрузка логотипа");
-    await dispatch(addGymLogo({ gymId, image }));
-    dispatch(getCurrentGym(currentGym.id));
-    if (isModalLogoOpened) {
-      openModalLogo(false);
+    if (image.type === "image/jpeg") {
+      deleteLogoSnackbarRef.current.hideSnackbars();
+      progressSnackForLogo.current.show("Идет загрузка логотипа");
+      await dispatch(addGymLogo({ gymId, image }));
+      dispatch(getCurrentGym(currentGym.id));
+    } else {
+      toast("Неподдерживаемый формат файла");
     }
   };
 
@@ -136,6 +186,12 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
       setHideAdding(true);
     }
   }, [addingTelegram, addingVk]);
+
+  useEffect(() => {
+    if (currentGym.address.length > 2) {
+      dispatch(searchingForAddress(currentGym.address));
+    }
+  }, [currentGym.address]);
 
   return (
     console.log(`currentgym ${currentGym.phone.length}`),
@@ -198,6 +254,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   onChange={handleNewPhoto}
                   type="file"
                   style={{ display: "none" }} //hiding input
+                  accept="image/jpeg, image/png"
                 />
               </>
             )}
@@ -284,6 +341,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   onChange={handleNewLogo}
                   type="file"
                   style={{ display: "none" }}
+                  accept="image/jpeg, image/png"
                 />
               </>
             )}
@@ -327,7 +385,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                 lastDotIndex
               );
               const extension = currentGym.logoUrl.substring(lastDotIndex + 1);
-              const imageToCompressedFormat = `${nameWithoutExtension}_M.${extension}`;
+              const imageToCompressedFormat = `${nameWithoutExtension}_S.${extension}`;
 
               return (
                 <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
@@ -512,21 +570,59 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       setAddressEditting(false);
                     }}
                   />
-                  <EditableTextfield
+
+                  {/* address searching dropdown */}
+                  <AddressSearching
                     value={currentGym.address}
+                    notFound={
+                      currentGymState.addressesFromSearch &&
+                      currentGymState.addressesFromSearch.length === 0
+                    }
                     onChange={(e) => {
                       dispatch(changeCurrentGymsAddress(e.target.value));
                     }}
-                    onButtonClicked={async () => {
-                      const { id, address } = {
-                        id: currentGym.id,
-                        address: currentGym.address,
-                      };
-                      await dispatch(patchGymAddress({ id, address }));
-                      dispatch(getCurrentGym(currentGym.id));
-                      setAddressEditting(false);
-                      dispatch(resetChanges());
-                    }}
+                    map={
+                      currentGymState.addressesFromSearch &&
+                      currentGymState.addressesFromSearch.length > 0 &&
+                      currentGymState.addressesFromSearch.map((geocode) => {
+                        return (
+                          <div
+                            className="gym_names"
+                            key={geocode.GeoObject.Point}
+                            onClick={async () => {
+                              const position =
+                                geocode.GeoObject.Point.pos.split(" ");
+                              const lat = position[1];
+                              const lon = position[0];
+                              const { id, address, latitude, longitude } = {
+                                id: currentGym.id,
+                                address:
+                                  geocode.GeoObject.metaDataProperty
+                                    .GeocoderMetaData.text,
+                                latitude: lat,
+                                longitude: lon,
+                              };
+                              await dispatch(
+                                patchGymAddress({
+                                  id,
+                                  address,
+                                  latitude,
+                                  longitude,
+                                })
+                              );
+                              dispatch(getCurrentGym(currentGym.id));
+                              setAddressEditting(false);
+                              dispatch(resetChanges());
+                            }}
+                          >
+                            {
+                              geocode.GeoObject.metaDataProperty
+                                .GeocoderMetaData.text
+                            }
+                          </div>
+                        );
+                      })
+                    }
                   />
                 </>
               )}
@@ -977,6 +1073,7 @@ function ChangeMainPhotoModal({
             type="file"
             style={{ display: "none" }}
             onChange={uploadNewPhoto}
+            accept="image/jpeg, image/png"
           />
         </div>
       </div>
@@ -1039,6 +1136,7 @@ function ChangeLogoModal({
             type="file"
             style={{ display: "none" }}
             onChange={uploadNewLogo}
+            accept="image/jpeg, image/png"
           />
         </div>
       </div>

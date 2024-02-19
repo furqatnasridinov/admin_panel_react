@@ -1,16 +1,14 @@
 import React from "react";
-import "./gym_detailes.css";
-import { useState } from "react";
-import CustomDropdown from "../../../../components/dropdown/custom_dropdown";
+import "./styles.css";
+import CustomDropdown from "../../components/dropdown/custom_dropdown";
 import { toast } from "react-toastify";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setCurrentGym } from "../../features/current_gym_slice";
 
-export default function GymDetailesHeader({
-  gym,
-  listOfGyms,
-  showDropDown,
-  selectAnotherGym,
-}) {
+export default function BookingHeader({ gym, listOfGyms, showDropDown }) {
   const [isDropDownOpened, openDropDown] = useState(false);
+  const dispatch = useDispatch();
 
   function openCloseDropDown() {
     openDropDown(!isDropDownOpened);
@@ -18,7 +16,7 @@ export default function GymDetailesHeader({
 
   function setCurrentGymAndPop(gym) {
     try {
-      selectAnotherGym(gym);
+      dispatch(setCurrentGym(gym));
       openCloseDropDown();
     } catch (error) {
       toast(`setCurrentGymAndPop ${error}`);
@@ -27,7 +25,7 @@ export default function GymDetailesHeader({
 
   return (
     <div className="h-[82px] mb-[10px] pl-[35px] pr-[19px] py-[21px] bg-white flex flex-row items-center rounded-[16px] ">
-      <div className="text-[14px] font-normal">Ваши заведения</div>
+      <div className="text-[14px] font-normal">Работа с клиентами</div>
 
       <div className="slash"> / </div>
       {showDropDown && (

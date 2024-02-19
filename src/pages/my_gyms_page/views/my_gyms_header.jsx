@@ -1,5 +1,6 @@
 import React from "react";
 import CustomButton from "../../../components/button/button";
+import { toast } from "react-toastify";
 
 const MyGymsHeader = () => {
   return (
@@ -9,7 +10,7 @@ const MyGymsHeader = () => {
       <CustomButton
         title="Добавить"
         onСlick={() => {
-          console.log(localStorage.getItem("token"));
+          toast("This is a custom toast Notification!");
         }}
         width={"203px"}
         height={"46px"}

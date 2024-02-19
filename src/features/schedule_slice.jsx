@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ScheduleEvent } from "../models/schedule";
 import axiosClient from "../config/axios_client";
+import { toast } from "react-toastify";
 
 export const getSchedules = createAsyncThunk(
   "scheduleSlice/getSchedules",
@@ -38,7 +39,7 @@ export const getSchedules = createAsyncThunk(
       }
     } catch (error) {
       console.log(`getSchedules ${error}`);
-      alert(error);
+      toast(error);
     }
   }
 );
@@ -59,7 +60,7 @@ export const createSchedule = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      alert(`scheduleSlice/createSchedule ${error}`);
+      toast(error);
     }
   }
 );
@@ -72,7 +73,7 @@ export const deleteSchedule = createAsyncThunk(
         `api/admin/gyms/${gymId}/lessons/${lessonId}/${all}`
       );
     } catch (error) {
-      alert(`scheduleSlice/deleteSchedule ${error}`);
+      toast(error);
     }
   }
 );
@@ -92,7 +93,7 @@ export const updateSchedule = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      alert(`scheduleSlice/updateSchedule ${error}`);
+      toast(error);
     }
   }
 );
@@ -117,6 +118,8 @@ const scheduleSlice = createSlice({
     schedulesOfSelectedActivity: [],
     isCurrentEventHasRepeats: false,
     endTimeIsBeforeStartTime: false,
+    isScheduleEdittingEnabled: false,
+    isEdittingContainerShown: false,
   },
 
   reducers: {
@@ -163,6 +166,22 @@ const scheduleSlice = createSlice({
 
     reSetDeleteAll: (state) => {
       state.deleteAll = false;
+    },
+
+    hideEdittingContainer: (state) => {
+      state.isEdittingContainerShown = false;
+    },
+
+    showEdittingContainer: (state) => {
+      state.isEdittingContainerShown = true;
+    },
+
+    enableScheduleEditting: (state) => {
+      state.isScheduleEdittingEnabled = true;
+    },
+
+    disableScheduleEditting: (state) => {
+      state.isScheduleEdittingEnabled = false;
     },
 
     setDescription: (state, action) => {
@@ -314,6 +333,10 @@ export const {
   resetScheduleOfSelectedActivity,
   setSchedulesLoading,
   resetDatasAfterSubmitting,
+  hideEdittingContainer,
+  showEdittingContainer,
+  enableScheduleEditting,
+  disableScheduleEditting,
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

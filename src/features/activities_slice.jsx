@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../config/axios_client";
+import { toast } from "react-toastify";
 
 export const getListOfActivities = createAsyncThunk(
   "activities/getListOfActivities",
@@ -10,7 +11,7 @@ export const getListOfActivities = createAsyncThunk(
       );
       return response.data["object"];
     } catch (error) {
-      alert(`getListOfActivities ${error}`);
+      toast(error);
     }
   }
 );
@@ -24,7 +25,7 @@ export const getInfoForType = createAsyncThunk(
         return response.data["object"];
       }
     } catch (error) {
-      alert(`getActivities ${error}`);
+      toast(error);
     }
   }
 );
@@ -38,7 +39,7 @@ export const getPhotos = createAsyncThunk(
         return response.data["object"];
       }
     } catch (error) {
-      alert(`getPhotos ${error}`);
+      toast(error);
     }
   }
 );
@@ -47,7 +48,9 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
   "activitiesSlice/addPhotoToSelectedActivity",
   async ({ id, files, type }) => {
     var formData = new FormData();
-    formData.append("files", files);
+    for (let i = 0; i < files.length; i++) {
+      formData.append("files", files[i]);
+    }
     formData.append("type", type);
     try {
       const response = await axiosClient.post(
@@ -60,7 +63,7 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
         }
       );
     } catch (error) {
-      alert(`addPhotoToSelectedActivity ${error}`);
+      toast(error);
     }
   }
 );
@@ -78,7 +81,7 @@ export const patchDescriptionOfSelectedActivity = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      alert(`changeDescriptionOfSelectedActivity ${error}`);
+      toast(error);
     }
   }
 );
@@ -87,6 +90,9 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
   "activitiesSlice/changePeculiaritiesOfSelectedActivity",
   async ({ id, lessonType, peculiarities }) => {
     try {
+      if (peculiarities === "1" || peculiarities === "1." || peculiarities === "1. ") {
+        peculiarities = "";
+      }
       const dataToSend = {
         lessonType: lessonType,
         peculiarities: peculiarities,
@@ -96,7 +102,7 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      alert(`changeDescriptionOfSelectedActivity ${error}`);
+      toast(error);
     }
   }
 );
@@ -117,7 +123,7 @@ export const deleteActivityPhoto = createAsyncThunk(
         }
       );
     } catch (error) {
-      alert(`changeDescriptionOfSelectedActivity ${error}`);
+      toast(error);
     }
   }
 );
@@ -130,7 +136,7 @@ export const deleteActivity = createAsyncThunk(
         `api/admin/gyms/${id}/lessonType/${lessonType}`
       );
     } catch (error) {
-      alert(`deleteActivity ${error}`);
+      toast(error);
     }
   }
 );
@@ -147,7 +153,7 @@ export const addNewActivity = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      alert(`changeDescriptionOfSelectedActivity ${error}`);
+      toast(error);
     }
   }
 );
@@ -161,7 +167,7 @@ export const getAllAvailableLessonTypes = createAsyncThunk(
         return response.data["object"];
       }
     } catch (error) {
-      alert(`getAllAvailableLessonTypes ${error}`);
+      toast(error);
     }
   }
 );

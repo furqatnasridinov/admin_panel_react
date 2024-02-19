@@ -15,6 +15,7 @@ module.exports = {
         "blue-text": "rgba(62, 134, 245, 1)",
         "grey-text": "rgba(176, 176, 176, 1)",
         "red-text": "rgba(255, 136, 136, 1)",
+        "grey-container" : "rgba(244, 244, 244, 1)"
       },
     },
   },

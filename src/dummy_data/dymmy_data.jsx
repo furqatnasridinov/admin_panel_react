@@ -365,7 +365,7 @@ export const WEEK_DAYS = [
 ];
 
 export const HOURS = [
-  "00", 
+  "00",
   "01",
   "02",
   "03",
@@ -389,8 +389,67 @@ export const HOURS = [
   "21",
   "22",
   "23",
-  
 ];
 
 export const MINUTES = ["00", "10", "20", "30", "40", "50"];
 
+export const DUMMY_CLIENTS = [
+  {
+    id: 1,
+    name: "Иванов Иван",
+    time: "10:00 - 13:00",
+    day: "07.02 (Сегодня)",
+    gym: "Ленинград",
+    event: "Спортивный зал",
+  },
+  {
+    id: 2,
+    name: "Kizma Balls",
+    time: "10:00 - 12:00",
+    day: "08.02 (Завтра)",
+    gym: "Ленинград",
+    event: "Массаж",
+  },
+  {
+    id: 3,
+    name: "Алена Ивановна",
+    time: "10:00 - 14:00",
+    day: "09.02 (Пт)",
+    gym: "Ленинград",
+    event: "Бокс",
+  },
+];
+
+export const RECENTLY_ATTENDENT = [
+  {
+    id: 1,
+    name: "Иванов Иван",
+    time: "10:00 - 13:00",
+    event: "Смешанные единоборства",
+    gym: "Ленинград",
+  },
+  {
+    id: 2,
+    name: "Евгений Петров",
+    time: "10:00 - 12:00",
+    event: "Спортивный зал",
+    gym: "Ленинград",
+  },
+];
+
+export const COME_LATER = [
+  {
+    id: 1,
+    name: "Kizma Balls",
+    time: "10:00 - 12:00",
+    event: "Массаж",
+    gym: "Ленинград",
+  },
+  {
+    id: 2,
+    name: "Алена Ивановна",
+    time: "10:00 - 14:00",
+    event: "Бокс",
+    gym: "Ленинград",
+  },
+];

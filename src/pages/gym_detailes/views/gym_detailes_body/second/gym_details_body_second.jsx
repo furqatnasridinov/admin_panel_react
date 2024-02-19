@@ -13,6 +13,8 @@ import CustomButton from "../../../../../components/button/button";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import ProgressSnackbar from "../../../../../components/snackbar/progress_snackbar";
 import { useDispatch, useSelector } from "react-redux";
+import { FeaturesTextField } from "../features_textfield";
+
 import {
   dragAndDropActivities,
   selectAnActivity,
@@ -35,6 +37,7 @@ import {
 import { addPhotoToSelectedActivity } from "../../../../../features/activities_slice";
 import DropDownSmaller from "../../../../../components/dropdown/dropdown_smaller";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
+import { toast } from "react-toastify";
 
 export default function GymDetailesBodySecondContainer({
   gymId,
@@ -371,11 +374,12 @@ export default function GymDetailesBodySecondContainer({
                 />
                 {activityPeculiarities &&
                   activityPeculiarities.trim() !== "" && (
-                    <ul className="marked_list ">
-                      <li className="text-[13px] font-normal font-inter">
-                        {activityPeculiarities}
-                      </li>
-                    </ul>
+                    <div
+                      className="text-[13px] font-normal font-inter"
+                      style={{ whiteSpace: "pre-wrap" }}
+                    >
+                      {activityPeculiarities}
+                    </div>
                   )}
               </>
             )}
@@ -392,7 +396,7 @@ export default function GymDetailesBodySecondContainer({
                     setFeaturesEditting(false);
                   }}
                 />
-                <EditableFeaturesTextfield
+                <FeaturesTextField
                   onButtonClicked={async () => {
                     const { id, lessonType, peculiarities } = {
                       id: gymId,
@@ -589,24 +593,74 @@ export default function GymDetailesBodySecondContainer({
                 <input
                   type="file"
                   ref={hiddenFileInput}
+                  multiple={true}
                   onChange={async (event) => {
-                    // Обработчик для добавления новой фотографии
-                    const file = event.target.files[0];
-                    if (file) {
-                      const { id, files, type } = {
+                    var files = event.target.files;
+                    var convertedFiles = [];
+                    if (files.length > 0) {
+                      for (let i = 0; i < files.length; i++) {
+                        var file = files[i];
+                        if (file.type === "image/png") {
+                          // convert to jpeg
+                          const originalFileName = file.name.replace(
+                            ".png",
+                            ".jpeg"
+                          );
+                          const image = await new Promise((resolve) => {
+                            const img = new Image();
+                            img.onload = () => resolve(img);
+                            img.src = URL.createObjectURL(file);
+                          });
+
+                          const canvas = document.createElement("canvas");
+                          canvas.width = image.width;
+                          canvas.height = image.height;
+                          const context = canvas.getContext("2d");
+                          context.drawImage(
+                            image,
+                            0,
+                            0,
+                            image.width,
+                            image.height
+                          );
+                          const jpegURL = canvas.toDataURL("image/jpeg");
+                          file = await (await fetch(jpegURL)).blob();
+                          file = new File([file], originalFileName, {
+                            type: "image/jpeg",
+                          });
+                        }
+                        if (file.type === "image/jpeg") {
+                          convertedFiles.push(file);
+                        }
+
+                        if (file.type !== "image/jpeg") {
+                          toast("Неподдерживаемый формат файла");
+                        }
+                      }
+
+                      const { id, type } = {
                         id: gymId,
-                        files: file,
                         type: activitiesSlice.selectedActivity,
                       };
-                      deletePhotosSnackRef.current.hideSnackbars();
-                      progressSnackbarRef.current.show("Идет загрузка фото");
-                      await dispatch(
-                        addPhotoToSelectedActivity({ id, files, type })
-                      );
-                      dispatch(getPhotos(gymId));
+
+                      // if convertedFiles includes only jpeg files
+                      if (convertedFiles.length > 0) {
+                        deletePhotosSnackRef.current.hideSnackbars();
+                        progressSnackbarRef.current.show("Идет загрузка фото");
+                        await dispatch(
+                          addPhotoToSelectedActivity({
+                            id,
+                            files: convertedFiles,
+                            type,
+                          })
+                        );
+                        dispatch(getPhotos(gymId));
+                      }
                     }
+                    event.target.value = null; // Очистить значение элемента ввода файла
                   }}
                   style={{ display: "none" }} // Скрываем input
+                  accept="image/png, image/jpeg"
                 />
               </>
             )}
@@ -627,59 +681,6 @@ function Chip({ name, onclick, isActive }) {
     <button className={isActive ? "chip_active" : "chip"} onClick={onclick}>
       {name}
     </button>
-  );
-}
-
-function EditableFeaturesTextfield({
-  onChanged,
-  peculiarities,
-  onButtonClicked,
-}) {
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    const input = inputRef.current;
-    if (input) {
-      input.focus();
-      const length = input.value.length;
-      input.setSelectionRange(length, length);
-      input.style.height = "inherit";
-      input.style.height = `${input.scrollHeight}px`;
-    }
-  }, []);
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault(); // Предотвратить создание новой строки по умолчанию
-      const lineNumber = (peculiarities.match(/\n/g) || []).length + 1;
-      onChanged(peculiarities + `${lineNumber}. `);
-    }
-  };
-
-  return (
-    <div className="flex flex-row justify-between gap-[10px] items-start">
-      <textarea
-        ref={inputRef}
-        value={peculiarities}
-        onChange={onChanged}
-        onKeyDown={handleKeyDown}
-        style={{
-          width: "100%",
-          padding: "10px 16px 10px 8px",
-          border: "1px solid #77AAF9",
-          borderRadius: "8px",
-          outline: "none",
-          maxHeight: "200px",
-          resize: "none",
-          fontSize: "13px",
-          lineHeight: "14px",
-          fontFamily: "Inter, sans-serif",
-        }}
-      />
-      <button onClick={onButtonClicked}>
-        <img src={doneSvg} alt="" />
-      </button>
-    </div>
   );
 }
 

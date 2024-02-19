@@ -21,7 +21,7 @@
   margin-top: 16px;
   margin-left: 16px;
   margin-right: 16px;
-/*   padding-left: 16px;
+  /*   padding-left: 16px;
   padding-right: 16px; */
   padding-top: 10px;
   padding-bottom: 10px;
@@ -97,4 +97,50 @@
   align-items: center;
   color: white;
   font-size: 12px;
+}
+
+.additional_block {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 16px;
+  margin-left: 26px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.additional_block li span {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  color: black;
+  position: relative;
+  left: -12px;
+}
+
+.active_additional_block {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 16px;
+  margin-left: 26px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.active_additional_block li span {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+  color: rgba(62, 134, 245, 1);
+  position: relative;
+  left: -12px;
+}
+
+.active_additional_block li {
+  color: rgba(62, 134, 245, 1);
+}
+
+.additional_block li  {
+  color: transparent;
 }
