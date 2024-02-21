@@ -8,14 +8,21 @@ import {
   acceptClient,
   rejectClient,
 } from "../../features/clients_slice";
+import {
+  setNavigationFromBooking,
+  setEventFromBooking,
+} from "../../features/schedule_slice";
 
 export default function BookingBody({ clientsList, doNotShowBlock }) {
   // redux
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
+  const scheduleState = useSelector((state) => state.schedule);
+
   if (doNotShowBlock) {
     return null;
   }
+
   return (
     <div className="bookingBody">
       <div className="flex flex-col gap-1">
@@ -92,6 +99,10 @@ export default function BookingBody({ clientsList, doNotShowBlock }) {
                   await dispatch(rejectClient(request));
                   // getting new data
                   dispatch(getNewClients(gymState.currentGym.id));
+                }}
+                onNavigation={() => {
+                  dispatch(setNavigationFromBooking(true));
+                  dispatch(setEventFromBooking(client));
                 }}
               />
             );

@@ -78,8 +78,12 @@ const CustomSnackbar = forwardRef((props, ref) => {
 
   return (
     <div className="snackbar-container">
-      {snackbars.map((snackbar) => (
-        <div key={snackbar.id} className="snackbar">
+      {snackbars.map((snackbar, index) => (
+        <div
+          key={snackbar.id}
+          className="snackbar"
+          style={{ bottom: `${69 * (index + 1)}px` }}
+        >
           <div className="text-[14px] font-medium">{snackbar.message}</div>
           <div className="flex flex-row gap-[18px] items-center h-full w-fit">
             <div

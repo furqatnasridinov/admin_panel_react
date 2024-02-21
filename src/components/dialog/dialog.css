@@ -2,18 +2,20 @@ dialog {
   display: block;
   background-color: transparent;
   border-radius: 16px;
+  position: fixed;
   margin: auto;
   opacity: 0; /* Начальное состояние: полностью прозрачный */
   transition: opacity 0.5s ease;
   overflow-y: auto;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+  z-index: 5;
 }
 
 dialog::backdrop {
-  background-color: rgba(0, 0, 0, 0.8); /* Set the opacity as you like */
+  background-color: rgba(0, 0, 0, 0.8); 
 }
 
 dialog::-webkit-scrollbar {
-  display: none;
+  display: block;
 }

@@ -46,7 +46,15 @@ export const getSchedules = createAsyncThunk(
 
 export const createSchedule = createAsyncThunk(
   "scheduleSlice/createSchedule",
-  async ({ id, date, duration, description, lessonType, selectedWeekdays }) => {
+  async ({
+    id,
+    date,
+    duration,
+    description,
+    lessonType,
+    selectedWeekdays,
+    autoAccept,
+  }) => {
     try {
       const dataToSend = {
         date: date,
@@ -54,6 +62,7 @@ export const createSchedule = createAsyncThunk(
         description: description,
         lessonTypeString: lessonType,
         repeat: selectedWeekdays,
+        autoAccept: autoAccept,
       };
       const response = await axiosClient.post(
         `api/admin/gyms/${id}/lessons`,
@@ -111,6 +120,7 @@ const scheduleSlice = createSlice({
     selectedEvent: null,
     deleteAll: false,
     isSchedulesLoading: false,
+    isloading: false,
     lessonStartTimeSendToServer: "",
     lessonDurationSendToServer: "",
     selectedWeekdays: [],
@@ -120,6 +130,8 @@ const scheduleSlice = createSlice({
     endTimeIsBeforeStartTime: false,
     isScheduleEdittingEnabled: false,
     isEdittingContainerShown: false,
+    isNavigationFromBooking: false,
+    eventFromBooking: null,
   },
 
   reducers: {
@@ -150,6 +162,12 @@ const scheduleSlice = createSlice({
 
     selectedEventSetTitle: (state, action) => {
       state.selectedEvent.title = action.payload;
+    },
+    setIsloading: (state) => {
+      state.isloading = true;
+    },
+    removeLoading: (state) => {
+      state.isloading = false;
     },
 
     setStartTime: (state, action) => {
@@ -292,6 +310,14 @@ const scheduleSlice = createSlice({
     resetScheduleOfSelectedActivity: (state) => {
       state.schedulesOfSelectedActivity = [];
     },
+
+    setNavigationFromBooking: (state, action) => {
+      state.isNavigationFromBooking = action.payload;
+    },
+
+    setEventFromBooking: (state, action) => {
+      state.eventFromBooking = action.payload;
+    },
   },
 
   extraReducers: (builder) => {
@@ -337,6 +363,10 @@ export const {
   showEdittingContainer,
   enableScheduleEditting,
   disableScheduleEditting,
+  removeLoading,
+  setIsloading,
+  setNavigationFromBooking,
+  setEventFromBooking,
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

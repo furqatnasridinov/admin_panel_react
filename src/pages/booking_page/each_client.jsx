@@ -3,6 +3,7 @@ import cancelSvg from "../../assets/svg/cancel.svg";
 import done from "../../assets/svg/done_white.svg";
 import goggins from "../../assets/images/goggins.jpg";
 import "./styles.css";
+import { NavLink } from "react-router-dom";
 
 export default function EachClient({
   day,
@@ -13,6 +14,7 @@ export default function EachClient({
   event,
   onAccept,
   onDecline,
+  onNavigation,
 }) {
   return (
     <div className="eachClient">
@@ -34,9 +36,16 @@ export default function EachClient({
               {event}
             </div>
           </div>
-          <div className="defaultText text-blue-text cursor-pointer">
+          <NavLink
+            to={{
+              pathname: "/schedulePage",
+              
+            }}
+            onClick={onNavigation}
+            className="defaultText text-blue-text cursor-pointer"
+          >
             Открыть расписание
-          </div>
+          </NavLink>
         </div>
       </div>
       <div className="w-[260px] h-full gap-[5px] flex flex-row items-center">

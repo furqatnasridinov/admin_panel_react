@@ -5,5 +5,5 @@
 }
 
 .gym_details::-webkit-scrollbar {
-  display: none;
+  display: block;
 }

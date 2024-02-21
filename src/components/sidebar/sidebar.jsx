@@ -11,9 +11,11 @@ import userLogoSvg from "../../assets/svg/contacts.svg";
 import MenuCompany from "../menu_company/menu_company";
 import { NavLink } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setNavigationFromBooking } from "../../features/schedule_slice";
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
   const [isSidebarOpened, openCloseSearchBar] = useState(true);
   const [isMenuCompanyShown, showMenuCompany] = useState(false);
   const [isClientsActive, setClientsActive] = useState(false);
@@ -23,6 +25,7 @@ const Sidebar = () => {
   const sideBarRef = useRef();
   const gymsState = useSelector((state) => state.currentGym);
   const clientsSlice = useSelector((state) => state.clients);
+  const scheduleState = useSelector((state) => state.schedule);
 
   const handleClick = () => {
     if (isSidebarOpened) {
@@ -209,6 +212,9 @@ const Sidebar = () => {
                 if (isClientsActive) {
                   setClientsActive(false);
                 }
+                if (scheduleState.isNavigationFromBooking) {
+                  dispatch(setNavigationFromBooking(false));
+                }
               }}
             >
               <img src={calendarLogo} alt="" />
@@ -356,6 +362,9 @@ const Sidebar = () => {
             onClick={() => {
               if (isClientsActive) {
                 setClientsActive(false);
+              }
+              if (scheduleState.isNavigationFromBooking) {
+                dispatch(setNavigationFromBooking(false));
               }
             }}
           >

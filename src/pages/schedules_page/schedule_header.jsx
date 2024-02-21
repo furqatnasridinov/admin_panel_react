@@ -18,6 +18,7 @@ import {
   resetDatasAfterSubmitting,
   disableScheduleEditting,
   hideEdittingContainer,
+  setNavigationFromBooking,
 } from "../../features/schedule_slice";
 import { useDispatch, useSelector } from "react-redux";
 import CustomDropdown from "../../components/dropdown/custom_dropdown";
@@ -30,6 +31,18 @@ import { TextAndTextfield } from "../gym_detailes/views/gym_detailes_body/employ
 import { WEEK_DAYS } from "../../dummy_data/dymmy_data";
 import nextMoth from "../../assets/svg/navigate_next_month.svg";
 import previousMoth from "../../assets/svg/navigate_prev_month.svg";
+import checkboxEnabled from "../../assets/svg/done.svg";
+import checkboxDisabled from "../../assets/svg/checkbox_disabled.svg";
+import questionLogo from "../../assets/svg/questionModal.svg";
+import ReactDOM from "react-dom";
+
+const TooltipOverlay = ({ children, visible }) => {
+  if (!visible) return null;
+
+  // Элемент, куда будет рендериться оверлей.
+  const overlayRoot = document.getElementById("overlay-root");
+  return ReactDOM.createPortal(children, overlayRoot);
+};
 
 export default function ScheduleHeader() {
   // redux
@@ -51,6 +64,18 @@ export default function ScheduleHeader() {
   const [hasFocus, setFocus] = useState(false);
   const [isFormNotValidated, setFormNotValidated] = useState(false);
   const [updateStyle, setUpdateStyle] = useState(false);
+  const [checkboxAutoAcceptEnabled, setCheckboxAutoAccept] = useState(false);
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+
+  const handleMouseEnter = (event) => {
+    const rect = event.target.getBoundingClientRect();
+    setTooltipPosition({
+      top: rect.top + window.scrollY + rect.height - 70, // Центрируем по вертикали относительно иконки
+      left: rect.left + window.scrollX + 70, // Сдвигаем на 50px правее от иконки
+    });
+    setIsTooltipVisible(true);
+  };
 
   return (
     <div className="schedule_header">
@@ -102,7 +127,9 @@ export default function ScheduleHeader() {
               key={index}
               className="gymNames"
               onClick={() => {
+                dispatch(setNavigationFromBooking(false)); // to make select acvity work
                 dispatch(selectAnActivity(item));
+                sessionStorage.setItem("selectedActivity", item);
                 openActivitiesDropDown(false);
               }}
             >
@@ -139,6 +166,7 @@ export default function ScheduleHeader() {
             }}
           />
         )}
+
       {isMoldaOpened && (
         <CustomDialog
           isOpened={isMoldaOpened}
@@ -309,6 +337,58 @@ export default function ScheduleHeader() {
               isError={isFormNotValidated}
             />
 
+            <div className="flex flex-row justify-between items-center">
+              <div className="flex flex-row gap-[5px] items-center">
+                <img
+                  className="cursor-pointer w-[24px] h-[24px]"
+                  src={
+                    checkboxAutoAcceptEnabled
+                      ? checkboxEnabled
+                      : checkboxDisabled
+                  }
+                  alt="checkbox"
+                  onClick={() => {
+                    setCheckboxAutoAccept(!checkboxAutoAcceptEnabled);
+                  }}
+                />
+                <div className="text-[13px] font-medium">
+                  Автоматически одобрять бронирование пользователей на занятия
+                </div>
+              </div>
+              <div className="relative">
+                <img
+                  className="cursor-pointer"
+                  src={questionLogo}
+                  alt=""
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={() => setIsTooltipVisible(false)}
+                />
+              </div>
+            </div>
+            <TooltipOverlay visible={isTooltipVisible}>
+              <div
+                className="overlay"
+                style={{
+                  top: tooltipPosition.top + "px",
+                  left: tooltipPosition.left + "px",
+                }}
+              >
+                <div className="text-[16px] font-semibold">
+                  Автоматическое бронирование
+                </div>
+                <div className="text-[14px] font-normal">
+                  Когда вы создаёте активность, пользователь в приложении может
+                  на неё записаться. В стандартном сценарии вам необходимо будет
+                  свериться с расписанием и одобрить запись клиента.
+                </div>
+                <div className="text-[14px] font-normal">
+                  Если поставить галочку - одобрение бронирования для этой
+                  активности будет происходить автоматически, без вашего
+                  участия.
+                </div>
+              </div>
+            </TooltipOverlay>
+
             <div className="flex flex-col gap-[5px]">
               <div className="text-[16px] font-semibold leading-[16px]">
                 В какие дни повторять событие:
@@ -371,6 +451,7 @@ export default function ScheduleHeader() {
                         description,
                         lessonType,
                         selectedWeekdays,
+                        autoAccept,
                       } = {
                         id: gymState.currentGym.id,
                         date: scheduleState.lessonStartTimeSendToServer,
@@ -378,6 +459,7 @@ export default function ScheduleHeader() {
                         description: scheduleState.description,
                         lessonType: activitiesState.selectedActivity,
                         selectedWeekdays: scheduleState.selectedWeekdays,
+                        autoAccept: checkboxAutoAcceptEnabled,
                       };
                       await dispatch(
                         createSchedule({
@@ -387,12 +469,12 @@ export default function ScheduleHeader() {
                           description,
                           lessonType,
                           selectedWeekdays,
+                          autoAccept,
                         })
                       );
                       //resetdatas
                       await dispatch(getSchedules(gymState.currentGym.id));
                       dispatch(resetDatasAfterSubmitting());
-                      setUpdateStyle(!updateStyle);
                       openModal(false);
                     }
                   }}
