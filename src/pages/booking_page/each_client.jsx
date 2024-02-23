@@ -15,6 +15,7 @@ export default function EachClient({
   onAccept,
   onDecline,
   onNavigation,
+  hideOpenSchedule,
 }) {
   return (
     <div className="eachClient">
@@ -36,26 +37,27 @@ export default function EachClient({
               {event}
             </div>
           </div>
-          <NavLink
-            to={{
-              pathname: "/schedulePage",
-              
-            }}
-            onClick={onNavigation}
-            className="defaultText text-blue-text cursor-pointer"
-          >
-            Открыть расписание
-          </NavLink>
+          {!hideOpenSchedule && (
+            <NavLink
+              to={{
+                pathname: "/schedulePage",
+              }}
+              onClick={onNavigation}
+              className="defaultText text-blue-text cursor-pointer"
+            >
+              Открыть расписание
+            </NavLink>
+          )}
         </div>
       </div>
       <div className="w-[260px] h-full gap-[5px] flex flex-row items-center">
-        <div className="acceptButton" onClick={onAccept}>
-          <div className="defaultText text-white">Одобрить</div>
-          <img className="w-[15px] h-[15px]" src={done} alt="" />
-        </div>
         <div className="declineButton" onClick={onDecline}>
           <div className="defaultText">Отклонить</div>
           <img className="w-[15px] h-[15px]" src={cancelSvg} alt="" />
+        </div>
+        <div className="acceptButton" onClick={onAccept}>
+          <div className="defaultText text-white">Одобрить</div>
+          <img className="w-[15px] h-[15px]" src={done} alt="" />
         </div>
       </div>
     </div>

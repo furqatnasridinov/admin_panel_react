@@ -247,7 +247,16 @@ const scheduleSlice = createSlice({
       state.selectedDay = formatted;
     },
 
-    getStartTimeToSendToServer: (state) => {
+    getStartTimeToSendToServer: (state, action) => {
+      if (state.selectedDay === "") {
+        const date = action.payload;
+        if (date) {
+          const [day, month, year] = date?.split(".");
+          const newDate = `${year}-${month}-${day}`;
+          const start = `${newDate}@${state.startTimeHoursTmp}:${state.startTimeMinutesTmp}`;
+          state.lessonStartTimeSendToServer = start;
+        }
+      }
       if (state.selectedDay !== "") {
         const date = state.selectedDay;
         const [day, month, year] = date.split(".");

@@ -13,6 +13,7 @@ export default function DropdownForHours({
   setMinutes,
   selectedMinute,
   selectedHour,
+  backgroundColor,
 }) {
   const hoursContainerRef = useRef(null);
   const minutesContainerRef = useRef(null);
@@ -63,6 +64,7 @@ export default function DropdownForHours({
   return (
     <div className="column" style={{ zIndex: zIndex }}>
       <button
+        style={{ backgroundColor: backgroundColor }}
         className={
           isDropDownOpened
             ? "dropdownHeaderOpenedForHours"

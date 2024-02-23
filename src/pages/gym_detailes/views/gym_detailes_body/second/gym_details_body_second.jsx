@@ -161,7 +161,7 @@ export default function GymDetailesBodySecondContainer({
             }}
           >
             {/* Activities modal body */}
-            <div className="main_container">
+            <div className="mainContainerActivitiesModal">
               <div className="flex flex-col gap-[5px]">
                 <div className="text-[16px] font-semibold leading-[16px]">
                   Редактирование активностей
@@ -285,12 +285,13 @@ export default function GymDetailesBodySecondContainer({
                     )}
                   </div>
                 </div>
-                <div className="podactivities_col">
+
+                {/*  <div className="podactivities_col">
                   <div className="text-[14px] font-bold">
                     Доп. занятия внутри активности:
                   </div>
                   <div className="blue_bordered_container"></div>
-                </div>
+                </div> */}
               </div>
               <CustomButton
                 height={"40px"}

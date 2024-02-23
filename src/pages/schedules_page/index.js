@@ -151,9 +151,11 @@ export default function SchedulesPage() {
       dispatch(getListOfEmployees(gymState.currentGym.id)); // to show in sidebar top
       dispatch(getListOfActivities(gymState.currentGym.id));
     }
+
     if (activitiesState.selectedActivity !== "") {
       dispatch(removeSelectedActivity());
     }
+
     if (sessionStorage.getItem("selectedActivity") !== null) {
       dispatch(selectAnActivity(sessionStorage.getItem("selectedActivity")));
     }
@@ -252,7 +254,6 @@ export default function SchedulesPage() {
       container.scrollTop = container.scrollHeight;
     }
   }, [scheduleState.selectedEvent]);
-  
 
   useEffect(() => {
     dispatch(resetScheduleOfSelectedActivity());
@@ -262,9 +263,9 @@ export default function SchedulesPage() {
   return (
     console.log("isFromBooking", scheduleState.isNavigationFromBooking),
     (
-      <div  ref={pageRef} className="schedule_page">
+      <div ref={pageRef} className="schedule_page">
         {clientsSlice.waitingForAccept.length > 0 && (
-          <MessageLikeTopContainer />
+          <MessageLikeTopContainer hideOpenSchedule={true} />
         )}
         <ScheduleHeader />
         <div className="schedule_body">

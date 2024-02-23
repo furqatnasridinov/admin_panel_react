@@ -28,7 +28,10 @@ export const getNewClients = createAsyncThunk(
               item.gymName,
               startTime,
               endTime,
-              item.lessonType
+              item.lessonType,
+              item.lessonId,
+              item.repeat,
+              item.usersCount
             )
           );
         });
@@ -166,6 +169,7 @@ const clientsSlice = createSlice({
     willComeTodayLoading: false,
     alreadyCameToday: [],
     alreadyCameTodayLoading: false,
+    decliningEvent: null,
     loading: false,
     error: null,
   },
@@ -175,6 +179,10 @@ const clientsSlice = createSlice({
       state.waitingForAccept = state.waitingForAccept.filter(
         (client) => client.id !== action.payload
       );
+    },
+
+    setDecliningEvent(state, action) {
+      state.decliningEvent = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -219,5 +227,5 @@ const clientsSlice = createSlice({
   },
 });
 
-export const { removeClient } = clientsSlice.actions;
+export const { removeClient, setDecliningEvent } = clientsSlice.actions;
 export default clientsSlice.reducer;
