@@ -16,12 +16,6 @@ export default function CustomDialog({
       if (event.toElement.localName == "dialog") {
         closeOnTapOutside();
       }
-      /* if (dialogRef.current && !dialogRef.current.contains(event.target)) {
-        if (typeof closeOnTapOutside === "function") {
-          console.log("Clicked outside the modal. Closing...");
-          closeOnTapOutside();
-        }
-      } */
     };
     const dialog = dialogRef.current;
     if (isOpened) {

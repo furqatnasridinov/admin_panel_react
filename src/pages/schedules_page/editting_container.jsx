@@ -27,6 +27,16 @@ import checkboxDisabledSvg from "../../assets/svg/checkbox_disabled.svg";
 import backButton from "../../assets/svg/back_button.svg";
 import psych from "../../assets/images/american_psycho.jpg";
 import { WEEK_DAYS } from "../../dummy_data/dymmy_data";
+import questionLogo from "../../assets/svg/questionModal.svg";
+import ReactDOM from "react-dom";
+
+const TooltipOverlay = ({ children, visible }) => {
+  if (!visible) return null;
+
+  // Элемент, куда будет рендериться оверлей.
+  const overlayRoot = document.getElementById("overlay-root");
+  return ReactDOM.createPortal(children, overlayRoot);
+};
 
 export default function EdittingContainer() {
   // redux
@@ -34,11 +44,23 @@ export default function EdittingContainer() {
   const gymState = useSelector((state) => state.currentGym);
   const scheduleState = useSelector((state) => state.schedule);
   const [checkBoxEnabled, setCheckbox] = useState(false);
+  const [checkboxForAutoApprove, setCheckboxEnabledState] = useState(false);
 
   // use state
   const [deleteModalShown, openDeleteModal] = useState(false);
   const [isStartTimeDropDownOpened, openStartTimeDropDown] = useState(false);
   const [isEndTimeDropDownOpened, openEndTimeDropDown] = useState(false);
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+
+  const handleMouseEnter = (event) => {
+    const rect = event.target.getBoundingClientRect();
+    setTooltipPosition({
+      top: rect.top + window.scrollY + rect.height - 60, // Центрируем по вертикали относительно иконки
+      left: rect.left + window.scrollX - 320, // Сдвигаем на 50px левее от иконки
+    });
+    setIsTooltipVisible(true);
+  };
 
   return (
     <div className={`edittingContainer h-[76vh]`}>
@@ -257,6 +279,61 @@ export default function EdittingContainer() {
             }}
             hideHover={true}
           />
+        )}
+
+        {scheduleState.isScheduleEdittingEnabled && (
+          <div className="flex flex-row justify-between items-center">
+            <div className="flex flex-row gap-[5px] items-center">
+              <img
+                className="cursor-pointer w-[24px] h-[24px]"
+                src={
+                  checkboxForAutoApprove
+                    ? checkboxEnabledSvg
+                    : checkboxDisabledSvg
+                }
+                alt="checkbox"
+                onClick={() => {
+                  setCheckboxEnabledState(!checkboxForAutoApprove);
+                }}
+              />
+              <div className="text-[13px] font-medium">
+                Автоматически одобрять бронирование пользователей на занятия
+              </div>
+            </div>
+            <div className="relative ml-1">
+              <img
+                className="cursor-pointer max-w-7"
+                src={questionLogo}
+                alt=""
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={() => setIsTooltipVisible(false)}
+              />
+              <TooltipOverlay visible={isTooltipVisible}>
+                <div
+                  className="overlay"
+                  style={{
+                    top: tooltipPosition.top + "px",
+                    left: tooltipPosition.left + "px",
+                  }}
+                >
+                  <div className="text-[16px] font-semibold">
+                    Автоматическое бронирование
+                  </div>
+                  <div className="text-[14px] font-normal">
+                    Когда вы создаёте активность, пользователь в приложении
+                    может на неё записаться. В стандартном сценарии вам
+                    необходимо будет свериться с расписанием и одобрить запись
+                    клиента.
+                  </div>
+                  <div className="text-[14px] font-normal">
+                    Если поставить галочку - одобрение бронирования для этой
+                    активности будет происходить автоматически, без вашего
+                    участия.
+                  </div>
+                </div>
+              </TooltipOverlay>
+            </div>
+          </div>
         )}
 
         {scheduleState.isScheduleEdittingEnabled &&

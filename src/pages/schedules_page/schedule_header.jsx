@@ -18,6 +18,7 @@ import {
   resetDatasAfterSubmitting,
   disableScheduleEditting,
   hideEdittingContainer,
+  setNavigationFromBooking,
 } from "../../features/schedule_slice";
 import { useDispatch, useSelector } from "react-redux";
 import CustomDropdown from "../../components/dropdown/custom_dropdown";
@@ -30,6 +31,9 @@ import { TextAndTextfield } from "../gym_detailes/views/gym_detailes_body/employ
 import { WEEK_DAYS } from "../../dummy_data/dymmy_data";
 import nextMoth from "../../assets/svg/navigate_next_month.svg";
 import previousMoth from "../../assets/svg/navigate_prev_month.svg";
+import checkboxEnabled from "../../assets/svg/done.svg";
+import checkboxDisabled from "../../assets/svg/checkbox_disabled.svg";
+import questionLogo from "../../assets/svg/questionModal.svg";
 
 export default function ScheduleHeader() {
   // redux
@@ -50,7 +54,34 @@ export default function ScheduleHeader() {
   const [startDate, setStartDate] = useState(new Date());
   const [hasFocus, setFocus] = useState(false);
   const [isFormNotValidated, setFormNotValidated] = useState(false);
-  const [updateStyle, setUpdateStyle] = useState(false);
+  const [checkboxAutoAcceptEnabled, setCheckboxAutoAccept] = useState(false);
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+  const [checkboxLimitEnabled, setIsCheckboxLimitEnabled] = useState(false);
+  const [limit, setLimit] = useState(20);
+  const [isLimitDropDownOpened, setIsLimitDropDownOpened] = useState(false);
+  const [isTooltip2Visible, setIsTooltip2Visible] = useState(false);
+  const [tooltip2Position, setTooltip2Position] = useState({ top: 0, left: 0 });
+
+  const handleMouseEnter = (event) => {
+    const rect = event.target.getBoundingClientRect();
+    setTooltipPosition({
+      top: rect.top + window.scrollY + rect.height - 70, // Центрируем по вертикали относительно иконки
+      left: rect.left + window.scrollX + 70, // Сдвигаем на 50px правее от иконки
+    });
+    setIsTooltipVisible(true);
+  };
+
+  const handleMouseEnter2 = (event) => {
+    const rect = event.target.getBoundingClientRect();
+    setTooltip2Position({
+      top: rect.top + window.scrollY + rect.height - 130,
+      left: rect.left + window.scrollX + 70,
+    });
+    setIsTooltip2Visible(true);
+  };
+
+  let numbers = Array.from({ length: 100 }, (_, i) => i + 1);
 
   return (
     <div className="schedule_header">
@@ -97,18 +128,23 @@ export default function ScheduleHeader() {
           openCloseDropDown={() => {
             openActivitiesDropDown(!isActivitiesDropDownOpened);
           }}
-          map={activitiesState.listOfActivities.map((item, index) => (
-            <div
-              key={index}
-              className="gymNames"
-              onClick={() => {
-                dispatch(selectAnActivity(item));
-                openActivitiesDropDown(false);
-              }}
-            >
-              {item}
-            </div>
-          ))}
+          map={
+            activitiesState.listOfActivities &&
+            activitiesState.listOfActivities.map((item, index) => (
+              <div
+                key={index}
+                className="gymNames"
+                onClick={() => {
+                  dispatch(setNavigationFromBooking(false)); // to make select acvity work
+                  dispatch(selectAnActivity(item));
+                  sessionStorage.setItem("selectedActivity", item);
+                  openActivitiesDropDown(false);
+                }}
+              >
+                {item}
+              </div>
+            ))
+          }
           text={
             activitiesState.selectedActivity == ""
               ? "Выберите активность"
@@ -139,6 +175,7 @@ export default function ScheduleHeader() {
             }}
           />
         )}
+
       {isMoldaOpened && (
         <CustomDialog
           isOpened={isMoldaOpened}
@@ -309,6 +346,155 @@ export default function ScheduleHeader() {
               isError={isFormNotValidated}
             />
 
+            <div className="flex flex-row justify-between items-center">
+              <div className="flex flex-row gap-[5px] items-center">
+                <img
+                  className="cursor-pointer w-[24px] h-[24px]"
+                  src={
+                    checkboxAutoAcceptEnabled
+                      ? checkboxEnabled
+                      : checkboxDisabled
+                  }
+                  alt="checkbox"
+                  onClick={() => {
+                    setCheckboxAutoAccept(!checkboxAutoAcceptEnabled);
+                  }}
+                />
+                <div className="text-[13px] font-medium">
+                  Автоматически одобрять бронирование пользователей на занятия
+                </div>
+              </div>
+              <div className="relative w-[24px] h-[24px] bg-white flex items-center justify-center rounded-[50%]">
+                <img
+                  className="cursor-pointer"
+                  src={questionLogo}
+                  alt=""
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={() => setIsTooltipVisible(false)}
+                />
+              </div>
+            </div>
+
+            {isTooltipVisible && (
+              <div
+                className="overlay"
+                style={{
+                  top: tooltipPosition.top + "px",
+                  left: tooltipPosition.left + "px",
+                }}
+              >
+                <div className="text-[16px] font-semibold">
+                  Автоматическое бронирование
+                </div>
+                <div className="text-[14px] font-normal">
+                  Когда вы создаёте активность, пользователь в приложении может
+                  на неё записаться. В стандартном сценарии вам необходимо будет
+                  свериться с расписанием и одобрить запись клиента.
+                </div>
+                <div className="text-[14px] font-normal">
+                  Если поставить галочку - одобрение бронирования для этой
+                  активности будет происходить автоматически, без вашего
+                  участия.
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-row items-center justify-between">
+              <div className="flex flex-row gap-[10px] items-center">
+                <img
+                  className="w-[24px] h-[24px]"
+                  src={
+                    checkboxLimitEnabled ? checkboxEnabled : checkboxDisabled
+                  }
+                  alt="checkbox"
+                  onClick={() => {
+                    setIsCheckboxLimitEnabled(!checkboxLimitEnabled);
+                  }}
+                />
+                <div className="flex flex-row gap-[4px]">
+                  <div className="text-[13px] font-medium leading-[15px]">
+                    Ограничение на количество записей в день.
+                  </div>
+                  {checkboxLimitEnabled && (
+                    <div className="text-[13px] font-medium leading-[15px]">
+                      Не более
+                    </div>
+                  )}
+                </div>
+
+                {checkboxLimitEnabled && (
+                  <div className="flex flex-row items-center gap-[33px] ">
+                    <CustomDropdown
+                      isDropDownOpened={isLimitDropDownOpened}
+                      text={limit}
+                      maxHeight={150}
+                      maxWidth={"80px"}
+                      gap={"0px"}
+                      backgroundColor={"white"}
+                      padding={"10px"}
+                      openCloseDropDown={() => {
+                        setIsLimitDropDownOpened(!isLimitDropDownOpened);
+                      }}
+                      map={numbers.map((number) => {
+                        return (
+                          <div
+                            className="numbers"
+                            onClick={() => {
+                              setLimit(number);
+                              setIsLimitDropDownOpened(false);
+                            }}
+                          >
+                            {number}
+                          </div>
+                        );
+                      })}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {checkboxLimitEnabled && (
+                <>
+                  <div className="relative w-[24px] h-[24px] bg-white flex items-center justify-center rounded-[50%]">
+                    <img
+                      className="cursor-pointer"
+                      src={questionLogo}
+                      alt=""
+                      onMouseEnter={handleMouseEnter2}
+                      onMouseLeave={() => setIsTooltip2Visible(false)}
+                    />
+                  </div>
+                  {isTooltip2Visible && (
+                    <div
+                      className="overlay"
+                      style={{
+                        top: tooltip2Position.top + "px",
+                        left: tooltip2Position.left + "px",
+                      }}
+                    >
+                      <div className="text-[16px] font-semibold">
+                        Ограничение записи в день
+                      </div>
+                      <div className="text-[14px] font-normal">
+                        Если вы хотите ограничить количество потенциальных
+                        записей в день - то выберите и настройте этот параметр.
+                      </div>
+                      <div className="text-[14px] font-normal">
+                        Например, вы знаете, что ваш зал вмещает не больше 30
+                        человек, при этом у вас есть 10 постоянных посетителей.
+                        Тогда имеет смысл выбрать данный параметр и поставить
+                        ограничение на 20 записей в день.Когда значение в 20
+                        записей будет достигнуто - занятие перестанет появляться
+                        у пользователей именно в те дни, когда значение будет
+                        достигать 20. Если кто то отменит занятие, или вы
+                        увеличите ограничение - занятие снова отобразится.
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
             <div className="flex flex-col gap-[5px]">
               <div className="text-[16px] font-semibold leading-[16px]">
                 В какие дни повторять событие:
@@ -371,6 +557,7 @@ export default function ScheduleHeader() {
                         description,
                         lessonType,
                         selectedWeekdays,
+                        autoAccept,
                       } = {
                         id: gymState.currentGym.id,
                         date: scheduleState.lessonStartTimeSendToServer,
@@ -378,6 +565,7 @@ export default function ScheduleHeader() {
                         description: scheduleState.description,
                         lessonType: activitiesState.selectedActivity,
                         selectedWeekdays: scheduleState.selectedWeekdays,
+                        autoAccept: checkboxAutoAcceptEnabled,
                       };
                       await dispatch(
                         createSchedule({
@@ -387,12 +575,12 @@ export default function ScheduleHeader() {
                           description,
                           lessonType,
                           selectedWeekdays,
+                          autoAccept,
                         })
                       );
                       //resetdatas
                       await dispatch(getSchedules(gymState.currentGym.id));
                       dispatch(resetDatasAfterSubmitting());
-                      setUpdateStyle(!updateStyle);
                       openModal(false);
                     }
                   }}

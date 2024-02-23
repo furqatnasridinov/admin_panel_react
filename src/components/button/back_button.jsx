@@ -15,7 +15,11 @@ export default function BackButton({
         width: width,
         height: height,
       }}
-      className={hideHover ? "white_button_with_no_hover" : "white_button"}
+      className={
+        hideHover
+          ? "white_button_with_no_hover outline-none"
+          : "white_button outline-none"
+      }
     >
       {title}
     </button>

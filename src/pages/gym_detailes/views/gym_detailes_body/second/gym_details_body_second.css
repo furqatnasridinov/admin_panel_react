@@ -116,10 +116,10 @@
   bottom: -20px;
 }
 
-.main_container {
+.mainContainerActivitiesModal {
   background-color: white;
   display: flex;
-  width: 700px;
+  width: 600px;
   flex-direction: column;
   border-radius: 16px;
   padding: 32px;

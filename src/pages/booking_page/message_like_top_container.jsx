@@ -9,8 +9,12 @@ import {
   acceptClient,
   rejectClient,
 } from "../../features/clients_slice";
+import {
+  setNavigationFromBooking,
+  setEventFromBooking,
+} from "../../features/schedule_slice";
 
-export default function MessageLikeTopContainer() {
+export default function MessageLikeTopContainer({ hideOpenSchedule }) {
   const dispatch = useDispatch();
   const [showAll, setShowAll] = useState(false);
   const clientsSlice = useSelector((state) => state.clients);
@@ -95,11 +99,12 @@ export default function MessageLikeTopContainer() {
                   // getting new data
                   dispatch(getNewClients(gymState.currentGym.id));
                 }}
+                hideOpenSchedule={hideOpenSchedule}
               />
             );
           })}
 
-      {!showAll && (
+      {!showAll && clientsSlice.waitingForAccept.length > 1 && (
         <>
           <div
             className="text-[10px] text-blue-text font-medium leading-[11px] cursor-pointer text-center"
@@ -159,6 +164,11 @@ export default function MessageLikeTopContainer() {
                 event={client.lessonType}
                 onAccept={() => {}}
                 onDecline={() => {}}
+                onNavigation={() => {
+                  dispatch(setNavigationFromBooking(true));
+                  dispatch(setEventFromBooking(client));
+                }}
+                hideOpenSchedule={hideOpenSchedule}
               />
             );
           })}

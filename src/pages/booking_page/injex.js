@@ -14,8 +14,6 @@ export default function BookingPage() {
   // redux
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
-  const activitiesState = useSelector((state) => state.activities);
-  const scheduleState = useSelector((state) => state.schedule);
   const clientsSlice = useSelector((state) => state.clients);
 
   // get initial data`s
@@ -50,7 +48,9 @@ export default function BookingPage() {
           />
 
           {clientsSlice.waitingForAccept.length === 0 && (
-            <div className="centeredGreyText">В ближайшее время у вас нет заявок</div>
+            <div className="centeredGreyText">
+              В ближайшее время у вас нет заявок
+            </div>
           )}
         </>
       )}

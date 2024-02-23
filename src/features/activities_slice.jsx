@@ -90,7 +90,11 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
   "activitiesSlice/changePeculiaritiesOfSelectedActivity",
   async ({ id, lessonType, peculiarities }) => {
     try {
-      if (peculiarities === "1" || peculiarities === "1." || peculiarities === "1. ") {
+      if (
+        peculiarities === "1" ||
+        peculiarities === "1." ||
+        peculiarities === "1. "
+      ) {
         peculiarities = "";
       }
       const dataToSend = {

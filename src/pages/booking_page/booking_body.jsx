@@ -1,21 +1,33 @@
 import React from "react";
 import "./styles.css";
-import { DUMMY_CLIENTS } from "../../dummy_data/dymmy_data";
 import EachClient from "./each_client";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getNewClients,
   acceptClient,
-  rejectClient,
+  setDecliningEvent,
 } from "../../features/clients_slice";
+import {
+  setNavigationFromBooking,
+  setEventFromBooking,
+} from "../../features/schedule_slice";
+import { useState } from "react";
+import CustomDialog from "../../components/dialog/dialog";
+import RejectingDialog from "./rejecting_dialog";
 
 export default function BookingBody({ clientsList, doNotShowBlock }) {
   // redux
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
+  const scheduleState = useSelector((state) => state.schedule);
+
+  // use states
+  const [dialogOpened, openDialog] = useState(false);
+
   if (doNotShowBlock) {
     return null;
   }
+
   return (
     <div className="bookingBody">
       <div className="flex flex-col gap-1">
@@ -85,17 +97,34 @@ export default function BookingBody({ clientsList, doNotShowBlock }) {
                   dispatch(getNewClients(gymState.currentGym.id));
                 }}
                 onDecline={async () => {
-                  const request = {
+                  openDialog(true);
+                  dispatch(setDecliningEvent(client));
+
+                  /* const request = {
                     gymId: client.gymId,
                     waitingId: client.id,
                   };
                   await dispatch(rejectClient(request));
                   // getting new data
-                  dispatch(getNewClients(gymState.currentGym.id));
+                  dispatch(getNewClients(gymState.currentGym.id)); */
+                }}
+                onNavigation={() => {
+                  dispatch(setNavigationFromBooking(true));
+                  dispatch(setEventFromBooking(client));
                 }}
               />
             );
           })}
+      {dialogOpened && (
+        <CustomDialog
+          isOpened={dialogOpened}
+          closeOnTapOutside={() => {
+            openDialog(false);
+          }}
+        >
+          <RejectingDialog onPop={() => openDialog(false)} />
+        </CustomDialog>
+      )}
     </div>
   );
 }
