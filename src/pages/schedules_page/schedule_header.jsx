@@ -550,15 +550,7 @@ export default function ScheduleHeader() {
                       !scheduleState.endTimeIsBeforeStartTime
                     ) {
                       // post lesson
-                      const {
-                        id,
-                        date,
-                        duration,
-                        description,
-                        lessonType,
-                        selectedWeekdays,
-                        autoAccept,
-                      } = {
+                      const request = {
                         id: gymState.currentGym.id,
                         date: scheduleState.lessonStartTimeSendToServer,
                         duration: scheduleState.lessonDurationSendToServer,
@@ -566,18 +558,10 @@ export default function ScheduleHeader() {
                         lessonType: activitiesState.selectedActivity,
                         selectedWeekdays: scheduleState.selectedWeekdays,
                         autoAccept: checkboxAutoAcceptEnabled,
+                        limitCountUser: checkboxLimitEnabled,
+                        maxCount: checkboxLimitEnabled ? limit : null,
                       };
-                      await dispatch(
-                        createSchedule({
-                          id,
-                          date,
-                          duration,
-                          description,
-                          lessonType,
-                          selectedWeekdays,
-                          autoAccept,
-                        })
-                      );
+                      await dispatch(createSchedule(request));
                       //resetdatas
                       await dispatch(getSchedules(gymState.currentGym.id));
                       dispatch(resetDatasAfterSubmitting());

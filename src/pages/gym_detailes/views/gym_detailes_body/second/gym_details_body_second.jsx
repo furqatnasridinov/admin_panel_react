@@ -1,9 +1,8 @@
 import React from "react";
 import "./gym_details_body_second.css";
 import TextAndTextButton from "../../../components/text_and_textbutton";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { EditableTextfield } from "../first/gym_detailes_body_first";
-import doneSvg from "../../../../../assets/svg/done.svg";
 import deleteSvg from "../../../../../assets/svg/delete.svg";
 import removeActivitySvg from "../../../../../assets/svg/remove_activities.svg";
 import editActivitySvg from "../../../../../assets/svg/edit_activities.svg";
@@ -14,7 +13,7 @@ import CustomDialog from "../../../../../components/dialog/dialog";
 import ProgressSnackbar from "../../../../../components/snackbar/progress_snackbar";
 import { useDispatch, useSelector } from "react-redux";
 import { FeaturesTextField } from "../features_textfield";
-
+import { dragAndDropGymPictures } from "../../../../../features/current_gym_slice";
 import {
   dragAndDropActivities,
   selectAnActivity,
@@ -33,8 +32,8 @@ import {
   returnDeletedPhoto,
   removeActivityFromListOfActivities,
   returnDeletedActivity,
+  addPhotoToSelectedActivity,
 } from "../../../../../features/activities_slice";
-import { addPhotoToSelectedActivity } from "../../../../../features/activities_slice";
 import DropDownSmaller from "../../../../../components/dropdown/dropdown_smaller";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 import { toast } from "react-toastify";
@@ -65,6 +64,7 @@ export default function GymDetailesBodySecondContainer({
   );
   const [cancelDeleteTimeoutActivities, setCancelDeleteTimeoutActivities] =
     useState([]);
+  const [positionOfPhoto, setPositionOfPhoto] = useState(0);
 
   // use refs
   const hiddenFileInput = useRef(null);
@@ -80,22 +80,23 @@ export default function GymDetailesBodySecondContainer({
 
   // drad & drop functions for photos
   const draggedItemRef = useRef(null);
-  const draggedOverRef = useRef(null);
-  function handleSortingPhotos() {
-    // creating duplicate of list
+
+  async function handleSortingPhotos() {
     const dublicatedList = [...photosOfSelectedActivity];
     //remove and save dragged item
     const draggedItemContent = dublicatedList.splice(
       draggedItemRef.current,
       1
     )[0];
-    //switch the position
-    dublicatedList.splice(draggedOverRef.current, 0, draggedItemContent);
+    const request = {
+      gymId: gymId,
+      url: draggedItemContent,
+      orderNumber: positionOfPhoto,
+    };
+    await dispatch(dragAndDropGymPictures(request));
+    dispatch(getPhotos(gymId));
     // reset the position ref
     draggedItemRef.current = null;
-    draggedOverRef.current = null;
-    // update the actual array
-    setPhotosOfSelectedActivity(dublicatedList);
   }
 
   // drag & drop for activities
@@ -429,7 +430,11 @@ export default function GymDetailesBodySecondContainer({
           {!isEdittingPhotosEnabled && (
             <TextAndTextButton
               text1={"Фотографии"}
-              text2={photosOfSelectedActivity.length > 0 ? "Удалить фото" : ""}
+              text2={
+                photosOfSelectedActivity.length > 0
+                  ? "Удалить фото и редактировать порядок"
+                  : ""
+              }
               isRedText={isEdittingPhotosEnabled}
               onclick={() =>
                 photosOfSelectedActivity.length > 0
@@ -515,11 +520,7 @@ export default function GymDetailesBodySecondContainer({
                         showPhotoInDialog(true);
                         setPhotoToBeShownInDialog(item);
                       }}
-                      draggable={true}
-                      onDragStart={() => (draggedItemRef.current = index)}
-                      onDragEnter={() => (draggedOverRef.current = index)}
-                      onDragEnd={handleSortingPhotos}
-                      onDragOver={(e) => e.preventDefault()}
+                      draggable={false}
                     />
                   );
                 })}
@@ -544,15 +545,18 @@ export default function GymDetailesBodySecondContainer({
                   const extension = item.substring(lastDotIndex + 1);
                   const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
                   return (
-                    <button
-                      key={index}
-                      className="activity_each_photo_editting"
-                    >
+                    <div key={index} className="activity_each_photo_editting">
                       <img
                         src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
                         alt=""
                         className="rounded-[8px] h-full w-full object-cover"
-                        draggable={false}
+                        draggable={true}
+                        onDragStart={() => (draggedItemRef.current = index)}
+                        onDragEnter={() => {
+                          setPositionOfPhoto(index + 1);
+                        }}
+                        onDragEnd={handleSortingPhotos}
+                        onDragOver={(e) => e.preventDefault()}
                       />
                       <img
                         className="delete-icon"
@@ -580,7 +584,7 @@ export default function GymDetailesBodySecondContainer({
                         }}
                         draggable={false}
                       />
-                    </button>
+                    </div>
                   );
                 })}
             {!isEdittingPhotosEnabled && (

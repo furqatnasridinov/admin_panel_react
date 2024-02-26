@@ -9,6 +9,7 @@ import questionLogo from "../../assets/svg/questionModal.svg";
 import BackButton from "../../components/button/back_button";
 import CustomButton from "../../components/button/button";
 import { rejectClient, getNewClients } from "../../features/clients_slice";
+import { restrictLesson } from "../../features/schedule_slice";
 
 export default function NoPlacesBlueContainer({ event, onPop }) {
   // redux
@@ -189,7 +190,11 @@ export default function NoPlacesBlueContainer({ event, onPop }) {
           title="Отклонить запись клиента и уведомить его об отсутствии мест"
           onСlick={async () => {
             // отправляяем запрос на ограничение записи
-            //
+            const requestForRestriction = {
+              gymId: event.gymId,
+              lessonId: event.lessonId,
+            };
+            dispatch(restrictLesson(requestForRestriction));
 
             // отклоняем запись клиента
             const request = {

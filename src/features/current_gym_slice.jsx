@@ -168,6 +168,29 @@ export const patchGymContacts = createAsyncThunk(
   }
 );
 
+export const dragAndDropGymPictures = createAsyncThunk(
+  "currentGymSlice/dragAndDropGymPictures",
+  async ({ gymId, url, orderNumber }) => {
+    try {
+      const formData = new FormData();
+      formData.append("url", url);
+      formData.append("orderNumber", orderNumber);
+
+      const response = await axiosClient.patch(
+        `api/admin/gyms/${gymId}/pictures`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+    } catch (error) {
+      toast(`Ошибка при изменении порядка фотографий ${error}`);
+    }
+  }
+);
+
 export const searchingForAddress = createAsyncThunk(
   "currentGymSlice/searchingForAddress",
   async (address) => {

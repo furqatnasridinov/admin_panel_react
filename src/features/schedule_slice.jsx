@@ -30,7 +30,8 @@ export const getSchedules = createAsyncThunk(
                 item.description,
                 item.lessonType,
                 item.owner,
-                item.repeat
+                item.repeat,
+                item.usersCount
               )
             );
           });
@@ -54,6 +55,8 @@ export const createSchedule = createAsyncThunk(
     lessonType,
     selectedWeekdays,
     autoAccept,
+    limitCountUser,
+    maxCount,
   }) => {
     try {
       const dataToSend = {
@@ -63,6 +66,9 @@ export const createSchedule = createAsyncThunk(
         lessonTypeString: lessonType,
         repeat: selectedWeekdays,
         autoAccept: autoAccept,
+        canSignUp: true,
+        limitCountUser: limitCountUser,
+        maxCount: maxCount,
       };
       const response = await axiosClient.post(
         `api/admin/gyms/${id}/lessons`,
@@ -89,16 +95,35 @@ export const deleteSchedule = createAsyncThunk(
 
 export const updateSchedule = createAsyncThunk(
   "scheduleSlice/updateSchedule",
-  async ({ gymId, lessonId, date, duration, description, all }) => {
+  async ({ gymId, lessonId, date, duration, description, all, autoAccept }) => {
     try {
       const dataToSend = {
         id: lessonId,
         date: date,
         duration: duration,
         description: description,
+        autoAccept: autoAccept,
       };
       const response = await axiosClient.patch(
         `api/admin/gyms/${gymId}/lessons/${all}`,
+        dataToSend
+      );
+    } catch (error) {
+      toast(error);
+    }
+  }
+);
+
+export const restrictLesson = createAsyncThunk(
+  "scheduleSlice/updateSchedule",
+  async ({ gymId, lessonId }) => {
+    try {
+      const dataToSend = {
+        id: lessonId,
+        canSignUp: false,
+      };
+      const response = await axiosClient.patch(
+        `api/admin/gyms/${gymId}/lessons/${false}`,
         dataToSend
       );
     } catch (error) {

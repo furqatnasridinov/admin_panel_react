@@ -1,6 +1,6 @@
 import React from "react";
 import "./styles.css";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { hideEdittingContainer } from "../../features/schedule_slice";
 import roundedGarbage from "../../assets/svg/rounded_garbage.svg";
@@ -46,12 +46,17 @@ export default function EdittingContainer() {
   const [checkBoxEnabled, setCheckbox] = useState(false);
   const [checkboxForAutoApprove, setCheckboxEnabledState] = useState(false);
 
+  // use ref
+  const edittingButtonRef = useRef(null);
+
   // use state
   const [deleteModalShown, openDeleteModal] = useState(false);
   const [isStartTimeDropDownOpened, openStartTimeDropDown] = useState(false);
   const [isEndTimeDropDownOpened, openEndTimeDropDown] = useState(false);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+  const [isTooltip2Visible, setIsTooltip2Visible] = useState(false);
+  const [tooltip2Position, setTooltip2Position] = useState({ top: 0, left: 0 });
 
   const handleMouseEnter = (event) => {
     const rect = event.target.getBoundingClientRect();
@@ -60,6 +65,17 @@ export default function EdittingContainer() {
       left: rect.left + window.scrollX - 320, // Сдвигаем на 50px левее от иконки
     });
     setIsTooltipVisible(true);
+  };
+
+  const handleMouseEnter2 = () => {
+    const ref = edittingButtonRef.current;
+    const rect = ref.getBoundingClientRect();
+
+    setTooltip2Position({
+      top: rect.top + 60,
+      left: rect.left + 10,
+    });
+    setIsTooltip2Visible(true);
   };
 
   return (
@@ -94,7 +110,11 @@ export default function EdittingContainer() {
             // if event is repeating show modal
             if (scheduleState.selectedEvent.repeat.length > 1) {
               openDeleteModal(true);
-            } else {
+            }
+            if (
+              !scheduleState.selectedEvent.repeat.length > 1 &&
+              !scheduleState.selectedEvent.usersCount > 0
+            ) {
               // else delete event
               const { gymId, lessonId, all } = {
                 gymId: gymState.currentGym.id,
@@ -122,12 +142,33 @@ export default function EdittingContainer() {
               удалить только это занятие, или так же все его копии?
             </div>
           </div>
+          <div className="blueContainer">
+            <div className="text-[14px] font-medium leading-[16px]">
+              Внимание: На это занятие записано:{" "}
+              <strong>{scheduleState.selectedEvent.usersCount}</strong>{" "}
+              пользователей! {/* А на все повторяющиеся - <strong>57</strong>! */}
+            </div>
+            <div className="text-[14px] font-normal leading-[16px]">
+              Удаление приведёт к отмене всех записей. Если вы хотите перенести
+              занятие на другое время или дату, то воспользуйтесь
+              редактированием вместо удаления, это позволит сохранить часть
+              записей и уведомит пользователей о переносе.
+            </div>
+          </div>
 
           <div className="flex flex-row gap-[10px]">
             <BackButton
               height={"40px"}
+              width={"15%"}
+              title={"Назад"}
+              onСlick={async () => {
+                openDeleteModal(false);
+              }}
+            />
+            <BackButton
+              height={"40px"}
               width={"40%"}
-              title={"Удалить только его"}
+              title={"Удалить только выбранное занятие"}
               onСlick={async () => {
                 const { gymId, lessonId, all } = {
                   gymId: gymState.currentGym.id,
@@ -143,7 +184,7 @@ export default function EdittingContainer() {
             />
             <CustomButton
               height={"40px"}
-              width={"60%"}
+              width={"40%"}
               title={"Удалить занятие и все его копии"}
               fontSize={"14px"}
               onСlick={async () => {
@@ -184,7 +225,7 @@ export default function EdittingContainer() {
         </div>
       </div>
       {/*  */}
-      <div className="refSchedule">
+      <div ref={edittingButtonRef} className="refSchedule">
         <div className="flex flex-col gap-[5p]">
           <div className="text-[14px] font-bold">Время проведения:</div>
           {!scheduleState.isScheduleEdittingEnabled && (
@@ -256,7 +297,6 @@ export default function EdittingContainer() {
             <div className="">
               <textarea
                 className="textArea text-[13px] font-normal font-inter"
-                //ref={inputRef}
                 value={scheduleState.selectedEvent.title}
                 onChange={(e) => {
                   dispatch(selectedEventSetTitle(e.target.value));
@@ -275,10 +315,53 @@ export default function EdittingContainer() {
             title={"Редактировать"}
             height={"40px"}
             onСlick={() => {
-              dispatch(enableScheduleEditting());
+              handleMouseEnter2();
+              /* if (
+                scheduleState.selectedEvent.usersCount &&
+                scheduleState.selectedEvent.usersCount > 0
+              ) {
+                handleMouseEnter2();
+              } else {
+                dispatch(enableScheduleEditting());
+              } */
             }}
             hideHover={true}
           />
+        )}
+        {isTooltip2Visible && (
+          <div
+            className="overlay"
+            style={{
+              top: tooltip2Position.top + "px",
+              left: tooltip2Position.left + "px",
+            }}
+          >
+            <div className="text-[16px] font-semibold">Внимание</div>
+            <div className="text-[14px] font-normal">
+              {`На это занятие записано ${scheduleState.selectedEvent.usersCount} человек. Если вы измените время или
+              дату - то пользователям придётся перезаписаться заново и часть из
+              них откажется от записи.`}
+            </div>
+            <div className="flex flex-row gap-2 mt-3">
+              <BackButton
+                height={"40px"}
+                onСlick={() => {
+                  setIsTooltip2Visible(false);
+                }}
+                title={"Назад"}
+              />
+              <CustomButton
+                width={"100%"}
+                height={"40px"}
+                fontSize={"14px"}
+                title="Редактировать"
+                onСlick={() => {
+                  dispatch(enableScheduleEditting());
+                  setIsTooltip2Visible(false);
+                }}
+              />
+            </div>
+          </div>
         )}
 
         {scheduleState.isScheduleEdittingEnabled && (
@@ -379,6 +462,7 @@ export default function EdittingContainer() {
                       date,
                       duration,
                       description,
+                      autoAccept,
                       all,
                     } = {
                       gymId: gymState.currentGym.id,
@@ -386,6 +470,7 @@ export default function EdittingContainer() {
                       date: scheduleState.lessonStartTimeSendToServer,
                       duration: scheduleState.lessonDurationSendToServer,
                       description: scheduleState.selectedEvent.title,
+                      autoAccept: checkboxForAutoApprove,
                       all: checkBoxEnabled,
                     };
                     await dispatch(
@@ -395,6 +480,7 @@ export default function EdittingContainer() {
                         date,
                         duration,
                         description,
+                        autoAccept,
                         all,
                       })
                     );

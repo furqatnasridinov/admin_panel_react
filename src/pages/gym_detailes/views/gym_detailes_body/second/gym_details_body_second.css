@@ -100,12 +100,13 @@
   height: 70px;
   object-fit: cover;
   border-radius: 8px;
-  cursor: grab;
+  cursor: pointer;
 }
 
 .activity_each_photo_editting {
   position: relative;
   object-fit: cover;
+  cursor: grab;
   width: 70px;
   height: 70px;
 }
@@ -114,6 +115,7 @@
   position: absolute;
   left: 53px;
   bottom: -20px;
+  cursor: pointer;
 }
 
 .mainContainerActivitiesModal {

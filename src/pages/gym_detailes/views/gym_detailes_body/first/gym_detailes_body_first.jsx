@@ -258,7 +258,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                 />
               </>
             )}
-            <SizeOfPicture size={"375x210px"} />
+            {/* <SizeOfPicture size={"375x210px"} /> */}
             {isModalPhotoOpened && (
               <CustomDialog
                 isOpened={isModalPhotoOpened}
@@ -281,7 +281,6 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                         dispatch(removePhotoCopy());
                       }
                     );
-
                     setCancelDeleteTimeoutPhoto(() => cancelTimeout);
                   }}
                   openFilePicker={openFilePickerForMainPhoto}
@@ -346,7 +345,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
               </>
             )}
 
-            <SizeOfPicture size={"180x180px"} />
+            {/* <SizeOfPicture size={"180x180px"} /> */}
           </div>
           {/* Medium logo */}
           {currentGym.logoUrl !== "" &&
@@ -369,8 +368,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
                     alt=""
                   />
-                  {/* Предполагаемый компонент SizeOfPicture */}
-                  <SizeOfPicture size="90x90px" />
+
+                  {/* <SizeOfPicture size="90x90px" /> */}
                 </div>
               );
             })()}
@@ -396,8 +395,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
                     alt=""
                   />
-                  {/* Предполагаемый компонент SizeOfPicture */}
-                  <SizeOfPicture size="50x50px" />
+
+                  {/*  <SizeOfPicture size="50x50px" /> */}
                 </div>
               );
             })()}

@@ -18,10 +18,9 @@ const CustomSnackbar = forwardRef((props, ref) => {
       const newSnackbar = { id, message, countdown: 9 };
       setSnackbars((prevSnackbars) => [...prevSnackbars, newSnackbar]);
 
-      const handleUnload = (event) => {
+      const handleUnload = async (event) => {
+        await onTimeEnded();
         event.preventDefault();
-        event.returnValue =
-          "You have unsaved changes. Are you sure you want to leave?";
       };
 
       window.addEventListener("beforeunload", handleUnload);

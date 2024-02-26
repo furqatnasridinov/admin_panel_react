@@ -63,7 +63,7 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
         }
       );
     } catch (error) {
-      toast(error);
+      toast(`ощибка при добавлении фото: ${error}`);
     }
   }
 );
