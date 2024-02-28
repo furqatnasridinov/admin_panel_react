@@ -71,6 +71,7 @@ export default function SchedulesPage() {
       owner: item.owner,
       lessonType: item.lessonType,
       repeat: item.repeat,
+      usersCount: item.usersCount,
     };
   });
 

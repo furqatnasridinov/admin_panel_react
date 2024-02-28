@@ -31,7 +31,8 @@ export const getNewClients = createAsyncThunk(
               item.lessonType,
               item.lessonId,
               item.repeat,
-              item.usersCount
+              item.usersCount,
+              item.description
             )
           );
         });
@@ -184,6 +185,10 @@ const clientsSlice = createSlice({
     setDecliningEvent(state, action) {
       state.decliningEvent = action.payload;
     },
+
+    addClientToList(state, action) {
+      state.waitingForAccept.push(action.payload);
+    },
   },
   extraReducers: (builder) => {
     // getNewClients
@@ -227,5 +232,6 @@ const clientsSlice = createSlice({
   },
 });
 
-export const { removeClient, setDecliningEvent } = clientsSlice.actions;
+export const { removeClient, setDecliningEvent, addClientToList } =
+  clientsSlice.actions;
 export default clientsSlice.reducer;

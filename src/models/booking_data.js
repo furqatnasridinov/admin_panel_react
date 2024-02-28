@@ -8,7 +8,8 @@ export class BookingData {
     lessonType,
     lessonId,
     repeat,
-    usersCounts
+    usersCounts,
+    title,
   ) {
     this.id = id;
     this.gymId = gymId;
@@ -19,5 +20,6 @@ export class BookingData {
     this.lessonId = lessonId;
     this.repeat = repeat;
     this.usersCounts = usersCounts;
+    this.title = title;
   }
 }

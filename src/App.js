@@ -13,7 +13,20 @@ import BookingPage from "./pages/booking_page/injex";
 import ClientsPage from "./pages/clients";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
+import NewClientsWebSocket from "./features/web_sockets";
+import { useDispatch } from "react-redux";
+import { getNewClients } from "./features/clients_slice";
+
 function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    // подключение к веб-сокету
+    NewClientsWebSocket(dispatch);
+    localStorage.getItem(AppConstants.keyGymId) &&
+      dispatch(getNewClients(localStorage.getItem(AppConstants.keyGymId)));
+  }, []);
+
   return (
     // console.log(localStorage.getItem(AppConstants.keyToken)),
     /* localStorage.setItem(

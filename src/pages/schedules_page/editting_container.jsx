@@ -92,6 +92,7 @@ export default function EdittingContainer() {
                 dispatch(disableScheduleEditting());
               }
               dispatch(hideEdittingContainer());
+              dispatch(resetSelectedEvent());
             }}
           />
           <div className="text-[14px] font-bold">
@@ -108,12 +109,15 @@ export default function EdittingContainer() {
           className="cursor-pointer"
           onClick={async () => {
             // if event is repeating show modal
-            if (scheduleState.selectedEvent.repeat.length > 1) {
+            if (
+              scheduleState.selectedEvent.repeat.length > 1 ||
+              scheduleState.selectedEvent.usersCount > 0
+            ) {
               openDeleteModal(true);
             }
             if (
-              !scheduleState.selectedEvent.repeat.length > 1 &&
-              !scheduleState.selectedEvent.usersCount > 0
+              scheduleState.selectedEvent.repeat.length < 1 &&
+              scheduleState.selectedEvent.usersCount < 1
             ) {
               // else delete event
               const { gymId, lessonId, all } = {
@@ -146,7 +150,8 @@ export default function EdittingContainer() {
             <div className="text-[14px] font-medium leading-[16px]">
               Внимание: На это занятие записано:{" "}
               <strong>{scheduleState.selectedEvent.usersCount}</strong>{" "}
-              пользователей! {/* А на все повторяющиеся - <strong>57</strong>! */}
+              пользователей!{" "}
+              {/* А на все повторяющиеся - <strong>57</strong>! */}
             </div>
             <div className="text-[14px] font-normal leading-[16px]">
               Удаление приведёт к отмене всех записей. Если вы хотите перенести

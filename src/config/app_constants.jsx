@@ -13,6 +13,9 @@ class AppConstants {
   static get keyToken() {
     return "token";
   }
+  static get keyGymId() {
+    return "gymId";
+  }
 
   // yandex geocoding api key
   static get yandexApiKey() {
