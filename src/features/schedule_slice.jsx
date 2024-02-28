@@ -40,7 +40,7 @@ export const getSchedules = createAsyncThunk(
       }
     } catch (error) {
       console.log(`getSchedules ${error}`);
-      toast(error);
+      toast(`getSchedules ${error}`);
     }
   }
 );
@@ -75,7 +75,7 @@ export const createSchedule = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      toast(error);
+      toast(`createSchedule ${error}`);
     }
   }
 );
@@ -88,7 +88,7 @@ export const deleteSchedule = createAsyncThunk(
         `api/admin/gyms/${gymId}/lessons/${lessonId}/${all}`
       );
     } catch (error) {
-      toast(error);
+      toast(`deleteSchedule ${error}`);
     }
   }
 );
@@ -109,7 +109,7 @@ export const updateSchedule = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      toast(error);
+      toast(`updateSchedule ${error}`);
     }
   }
 );
@@ -127,7 +127,7 @@ export const restrictLesson = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      toast(error);
+      toast(`updateSchedule ${error}`);
     }
   }
 );
@@ -331,7 +331,7 @@ const scheduleSlice = createSlice({
     // getting schedules of selected activity
     getSchedulesOfSelectedActivity: (state, action) => {
       if (action.payload !== "") {
-        if (state.allSchedules.length > 0) {
+        if (state.allSchedules?.length > 0) {
           state.allSchedules.forEach((item) => {
             if (item.lessonType === action.payload) {
               state.schedulesOfSelectedActivity.push(item);

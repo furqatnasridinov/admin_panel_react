@@ -11,7 +11,7 @@ export const getListOfActivities = createAsyncThunk(
       );
       return response.data["object"];
     } catch (error) {
-      toast(error);
+      toast(`activities/getListOfActivities ${error}`);
     }
   }
 );
@@ -25,7 +25,7 @@ export const getInfoForType = createAsyncThunk(
         return response.data["object"];
       }
     } catch (error) {
-      toast(error);
+      toast(`activities/getInfoForType ${error}`);
     }
   }
 );
@@ -39,7 +39,7 @@ export const getPhotos = createAsyncThunk(
         return response.data["object"];
       }
     } catch (error) {
-      toast(error);
+      toast(`activities/getPhotos ${error}`);
     }
   }
 );
@@ -48,7 +48,7 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
   "activitiesSlice/addPhotoToSelectedActivity",
   async ({ id, files, type }) => {
     var formData = new FormData();
-    for (let i = 0; i < files.length; i++) {
+    for (let i = 0; i < files?.length; i++) {
       formData.append("files", files[i]);
     }
     formData.append("type", type);
@@ -81,7 +81,7 @@ export const patchDescriptionOfSelectedActivity = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      toast(error);
+      toast(`changeDescriptionOfSelectedActivity ${error}`);
     }
   }
 );
@@ -106,7 +106,7 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      toast(error);
+      toast(`changePeculiaritiesOfSelectedActivity ${error}`);
     }
   }
 );
@@ -127,7 +127,7 @@ export const deleteActivityPhoto = createAsyncThunk(
         }
       );
     } catch (error) {
-      toast(error);
+      toast(`deleteActivityPhoto ${error}`);
     }
   }
 );
@@ -140,7 +140,7 @@ export const deleteActivity = createAsyncThunk(
         `api/admin/gyms/${id}/lessonType/${lessonType}`
       );
     } catch (error) {
-      toast(error);
+      toast(`deleteActivity ${error}`);
     }
   }
 );
@@ -157,7 +157,7 @@ export const addNewActivity = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      toast(error);
+      toast(`addNewActivity ${error}`);
     }
   }
 );
@@ -171,7 +171,25 @@ export const getAllAvailableLessonTypes = createAsyncThunk(
         return response.data["object"];
       }
     } catch (error) {
-      toast(error);
+      toast(`getAllAvailableLessonTypes ${error}`);
+    }
+  }
+);
+
+export const dragAndDropActivities = createAsyncThunk(
+  "activities/dragAndDropActivities",
+  async ({ gymId, lessonType, orderNumber }) => {
+    try {
+      const dataToSend = {
+        lessonType: lessonType,
+        orderNumber: orderNumber,
+      };
+      const response = await axiosClient.patch(
+        `api/admin/gyms/${gymId}`,
+        dataToSend
+      );
+    } catch (error) {
+      toast(`dragAndDropActivities error ${error}`);
     }
   }
 );
@@ -196,12 +214,8 @@ const activitiesSlice = createSlice({
     isChangesOcurred: false,
   },
   reducers: {
-    dragAndDropActivities: (state, action) => {
-      state.listOfActivities = action.payload;
-    },
-
     makeFirstItemAsActive: (state) => {
-      if (state.listOfActivities.length > 0) {
+      if (state.listOfActivities?.length > 0) {
         state.selectedActivity = state.listOfActivities[0];
       }
     },
@@ -222,7 +236,7 @@ const activitiesSlice = createSlice({
     },
 
     returnDeletedPhoto: (state) => {
-      if (state.deletedPhotos.length > 0) {
+      if (state.deletedPhotos?.length > 0) {
         // remove last element from deletedPhotos and add it to photosOfSelectedActivity
         const lastElement = state.deletedPhotos.pop();
         state.photosOfSelectedActivity.push(lastElement);
@@ -237,7 +251,7 @@ const activitiesSlice = createSlice({
     },
 
     returnDeletedActivity: (state) => {
-      if (state.deletedActivities.length > 0) {
+      if (state.deletedActivities?.length > 0) {
         // remove last element from deletedActivities and add it to listOfActivities
         const lastElement = state.deletedActivities.pop();
         state.listOfActivities.push(lastElement);
@@ -360,7 +374,6 @@ const activitiesSlice = createSlice({
 });
 
 export const {
-  dragAndDropActivities,
   makeFirstItemAsActive,
   selectAnActivity,
   setActivityDescribtion,

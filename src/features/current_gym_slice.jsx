@@ -10,7 +10,7 @@ export const getListOfGyms = createAsyncThunk(
       const response = await axiosClient.get(AppConstants.getGyms);
       return response.data["object"];
     } catch (error) {
-      toast(error);
+      toast(`getListOfGyms ${error}`);
     }
   }
 );
@@ -22,7 +22,7 @@ export const getCurrentGym = createAsyncThunk(
       const response = await axiosClient.get(`api/admin/gyms/${gymId}`);
       return response.data["object"];
     } catch (error) {
-      toast(error);
+      toast(`getCurrentGym ${error}`);
     }
   }
 );
@@ -44,7 +44,7 @@ export const addGymPicture = createAsyncThunk(
         }
       );
     } catch (error) {
-      toast(error);
+      toast(`addGymPictures ${error}`);
     }
   }
 );
@@ -59,7 +59,7 @@ export const removeGymMainPic = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      toast(error);
+      toast(`editGym ${error}`);
       console.log(`${error.massage}`);
     }
   }
@@ -82,13 +82,13 @@ export const addGymLogo = createAsyncThunk(
         }
       );
     } catch (error) {
-      toast(error);
+      toast(`addGymLogo ${error}`);
     }
   }
 );
 
 export const removeGymLogo = createAsyncThunk(
-  "currentGymSlice/editGym",
+  "currentGymSlice/editGymLogo",
   async ({ gymId }) => {
     try {
       const dataToSend = {
@@ -97,8 +97,7 @@ export const removeGymLogo = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      toast(error);
-      console.log(`${error.massage}`);
+      toast(`editGymLogo ${error}`);
     }
   }
 );
@@ -113,7 +112,7 @@ export const patchGymName = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      toast(error);
+      toast(`editGym ${error}`);
       console.log(`${error.massage}`);
     }
   }
@@ -129,7 +128,7 @@ export const patchGymDescription = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      toast(error);
+      toast(`editGym ${error}`);
     }
   }
 );
@@ -146,7 +145,7 @@ export const patchGymAddress = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      toast(error);
+      toast(`editGym ${error}`);
     }
   }
 );
@@ -163,7 +162,7 @@ export const patchGymContacts = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      toast(error);
+      toast(`editGym ${error}`);
     }
   }
 );
@@ -205,7 +204,7 @@ export const searchingForAddress = createAsyncThunk(
         return featureMember;
       }
     } catch (error) {
-      toast(error);
+      toast(`searchingForAddress ${error}`);
     }
   }
 );
@@ -233,7 +232,7 @@ const currentGymSlice = createSlice({
     },
 
     setCurrentGymFromFirstItem: (state) => {
-      if (state.listOfGyms.length > 0) {
+      if (state.listOfGyms?.length > 0) {
         state.currentGym = state.listOfGyms[0];
       }
     },

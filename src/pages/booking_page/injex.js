@@ -22,7 +22,7 @@ export default function BookingPage() {
   }, []);
 
   useEffect(() => {
-    if (gymState.listOfGyms.length === 1) {
+    if (gymState.listOfGyms?.length === 1) {
       dispatch(setCurrentGymFromFirstItem());
     }
   }, [gymState.listOfGyms]);
@@ -40,14 +40,14 @@ export default function BookingPage() {
           <BookingHeader
             gym={gymState.currentGym}
             listOfGyms={gymState.listOfGyms}
-            showDropDown={gymState.listOfGyms.length > 1}
+            showDropDown={gymState.listOfGyms?.length > 1}
           />
           <BookingBody
             clientsList={clientsSlice.waitingForAccept}
-            doNotShowBlock={clientsSlice.waitingForAccept.length === 0}
+            doNotShowBlock={clientsSlice.waitingForAccept?.length === 0}
           />
 
-          {clientsSlice.waitingForAccept.length === 0 && (
+          {clientsSlice.waitingForAccept?.length === 0 && (
             <div className="centeredGreyText">
               В ближайшее время у вас нет заявок
             </div>

@@ -301,12 +301,11 @@ export default function SchedulesPage() {
                 views={["week"]}
                 defaultView="week"
                 onSelectEvent={(event) => {
-                  try {
+                  if (event.id !== scheduleState.selectedEvent?.id) {
                     dispatch(setSelectedEvent(event));
                     dispatch(showEdittingContainer());
-                  } catch (error) {
-                    toast(error);
                   }
+
                   if (scheduleState.isNavigationFromBooking) {
                     dispatch(setNavigationFromBooking(false));
                   }
@@ -318,19 +317,7 @@ export default function SchedulesPage() {
                   ) {
                     let newStyle = {};
                     let className = "";
-                    if (
-                      // event.id === scheduleState.eventFromBooking.lessonId
-                      event.start.getFullYear() ===
-                        scheduleState.eventFromBooking.startTime.getFullYear() &&
-                      event.start.getMonth() ===
-                        scheduleState.eventFromBooking.startTime.getMonth() &&
-                      event.start.getDate() ===
-                        scheduleState.eventFromBooking.startTime.getDate() &&
-                      event.start.getHours() ===
-                        scheduleState.eventFromBooking.startTime.getHours() &&
-                      event.start.getMinutes() ===
-                        scheduleState.eventFromBooking.startTime.getMinutes()
-                    ) {
+                    if (event.id === scheduleState.eventFromBooking.lessonId) {
                       className = "eventFromBooking";
                     }
                     return { className, style: newStyle };

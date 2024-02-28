@@ -37,10 +37,10 @@ export default function MenuCompany({ onClose, sidebarHeaderRef }) {
 
   return (
     <div ref={menuRef} className="main">
-      {employeesState.employees.length <= 3 ||
-        (employeesState.employees.length > 3 &&
+      {employeesState.employees?.length <= 3 ||
+        (employeesState.employees?.length > 3 &&
           allEmployeesShown &&
-          employeesState.employees.map((employee) => {
+          employeesState.employees?.map((employee) => {
             return (
               <EmployeesTile
                 key={employee.id}
@@ -65,14 +65,14 @@ export default function MenuCompany({ onClose, sidebarHeaderRef }) {
             />
           );
         })}
-      {employeesState.employees.length > 3 && !allEmployeesShown && (
+      {employeesState.employees?.length > 3 && !allEmployeesShown && (
         <div
           className="text-[10px] flex justify-center cursor-pointer font-medium"
           onClick={() => {
             setShowAllEmployees(true);
           }}
         >
-          И ещё {employeesState.employees.length - 3} человек
+          И ещё {employeesState.employees?.length - 3} человек
         </div>
       )}
 

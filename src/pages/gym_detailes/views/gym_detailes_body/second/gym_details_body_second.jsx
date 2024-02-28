@@ -65,6 +65,7 @@ export default function GymDetailesBodySecondContainer({
   const [cancelDeleteTimeoutActivities, setCancelDeleteTimeoutActivities] =
     useState([]);
   const [positionOfPhoto, setPositionOfPhoto] = useState(0);
+  const [positionOfActivity, setPositionOfActivity] = useState(0);
 
   // use refs
   const hiddenFileInput = useRef(null);
@@ -72,14 +73,13 @@ export default function GymDetailesBodySecondContainer({
   const deleteActivitiesSnackRef = useRef();
   const blueBorderedContainerRef = useRef(null);
   const progressSnackbarRef = useRef(null);
+  const draggedItemRef = useRef(null);
+  const draggedActivityRef = useRef(null);
 
   // передаем это на кнопку добавления фото,(как бы через ref, нажимаем на саму input file которого скрыли)
   const handleClick = () => {
     hiddenFileInput.current.click();
   };
-
-  // drad & drop functions for photos
-  const draggedItemRef = useRef(null);
 
   async function handleSortingPhotos() {
     const dublicatedList = [...photosOfSelectedActivity];
@@ -99,28 +99,25 @@ export default function GymDetailesBodySecondContainer({
     draggedItemRef.current = null;
   }
 
-  // drag & drop for activities
-  const draggedActivityRef = useRef(null);
-  const draggedOverActivityRef = useRef(null);
-  function handleSortingActivities() {
+  async function handleSortingActivities() {
     // creating duplicate of list
     const dublicatedList = [...listOfActivities];
-    //remove and save dragged item
+    // get dragged activty
     const draggedItemContent = dublicatedList.splice(
       draggedActivityRef.current,
       1
     )[0];
-    //switch the position
-    dublicatedList.splice(
-      draggedOverActivityRef.current,
-      0,
-      draggedItemContent
-    );
+    // dispatch
+    const request = {
+      gymId: gymId,
+      lessonType: draggedItemContent,
+      orderNumber: positionOfActivity,
+    };
+    await dispatch(dragAndDropActivities(request));
+    dispatch(getListOfActivities(gymId));
+
     // reset the position ref
     draggedActivityRef.current = null;
-    draggedOverActivityRef.current = null;
-    // update the actual array
-    dispatch(dragAndDropActivities(dublicatedList));
   }
 
   function scrollToBottom() {
@@ -225,9 +222,7 @@ export default function GymDetailesBodySecondContainer({
                             onDragStart={() =>
                               (draggedActivityRef.current = index)
                             }
-                            onDragEnter={() =>
-                              (draggedOverActivityRef.current = index)
-                            }
+                            onDragEnter={() => setPositionOfActivity(index + 1)}
                             onDragEnd={handleSortingActivities}
                             onDragOver={(e) => e.preventDefault()}
                           />

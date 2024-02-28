@@ -19,7 +19,7 @@ export default function WillCome({ clientsList, doNotShowBlock }) {
       </div>
 
       {clientsList &&
-        clientsList.length > 0 &&
+        clientsList?.length > 0 &&
         [...clientsList] // Создаем копию массива перед сортировкой
           .sort((a, b) => a.startTime - b.startTime)
           .map((client) => {

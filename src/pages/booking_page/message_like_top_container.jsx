@@ -35,7 +35,7 @@ export default function MessageLikeTopContainer({ hideOpenSchedule }) {
 
       {!showAll &&
         clientsSlice.waitingForAccept &&
-        clientsSlice.waitingForAccept.length > 0 &&
+        clientsSlice.waitingForAccept?.length > 0 &&
         [...clientsSlice.waitingForAccept] // Создаем копию массива перед сортировкой
           .slice(0, 1)
           .sort((a, b) => a.startTime - b.startTime)
@@ -104,20 +104,20 @@ export default function MessageLikeTopContainer({ hideOpenSchedule }) {
             );
           })}
 
-      {!showAll && clientsSlice.waitingForAccept.length > 1 && (
+      {!showAll && clientsSlice.waitingForAccept?.length > 1 && (
         <>
           <div
             className="text-[10px] text-blue-text font-medium leading-[11px] cursor-pointer text-center"
             onClick={() => setShowAll(true)}
           >
-            Показать еще {clientsSlice.waitingForAccept.length - 1}
+            Показать еще {clientsSlice.waitingForAccept?.length - 1}
           </div>
         </>
       )}
 
       {showAll &&
         clientsSlice.waitingForAccept &&
-        clientsSlice.waitingForAccept.length > 0 &&
+        clientsSlice.waitingForAccept?.length > 0 &&
         [...clientsSlice.waitingForAccept] // Создаем копию массива перед сортировкой
           .sort((a, b) => a.startTime - b.startTime)
           .map((client) => {

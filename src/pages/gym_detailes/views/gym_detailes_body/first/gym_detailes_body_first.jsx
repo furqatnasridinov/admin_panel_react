@@ -77,14 +77,14 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
     try {
       fileInputMainPhotoRef.current.click();
     } catch (error) {
-      toast(error);
+      toast(`openFilePickerForMainPhoto ${error}`);
     }
   };
   const openFilePickerForLogo = () => {
     try {
       fileInputLogoRef.current.click();
     } catch (error) {
-      toast(error);
+      toast(`openFilePickerForLogo ${error}`);
     }
   };
 

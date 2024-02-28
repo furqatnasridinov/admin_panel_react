@@ -104,7 +104,7 @@ export default function GymDetails() {
     console.log("selected act ", activitiesSlice.selectedActivity),
     (
       <div className="gym_details">
-        {clientsSlice.waitingForAccept.length > 0 && (
+        {clientsSlice.waitingForAccept?.length > 0 && (
           <MessageLikeTopContainer />
         )}
 
@@ -113,7 +113,7 @@ export default function GymDetails() {
             <GymDetailesHeader
               gym={gymState.currentGym}
               listOfGyms={gymState.listOfGyms}
-              showDropDown={gymState.listOfGyms.length > 1}
+              showDropDown={gymState.listOfGyms?.length > 1}
               selectAnotherGym={selectAnotherGym}
             />
 

@@ -126,9 +126,9 @@ const Sidebar = () => {
 
               {isTextShown && <div>Клиенты</div>}
 
-              {isTextShown && clientsSlice.waitingForAccept.length > 0 && (
+              {isTextShown && clientsSlice.waitingForAccept?.length > 0 && (
                 <div className="badge">
-                  {clientsSlice.waitingForAccept.length}
+                  {clientsSlice.waitingForAccept?.length}
                 </div>
               )}
             </NavLink>
@@ -145,9 +145,9 @@ const Sidebar = () => {
                   <li>
                     <span>Бронирование</span>
                   </li>
-                  {clientsSlice.waitingForAccept.length > 0 && (
+                  {clientsSlice.waitingForAccept?.length > 0 && (
                     <div className="badge">
-                      {clientsSlice.waitingForAccept.length}
+                      {clientsSlice.waitingForAccept?.length}
                     </div>
                   )}
                 </NavLink>
@@ -313,9 +313,9 @@ const Sidebar = () => {
           >
             <img src={userLogoSvg} alt="" />
 
-            {clientsSlice.waitingForAccept.length > 0 && (
+            {clientsSlice.waitingForAccept?.length > 0 && (
               <div className="badge">
-                {clientsSlice.waitingForAccept.length}
+                {clientsSlice.waitingForAccept?.length}
               </div>
             )}
           </NavLink>
