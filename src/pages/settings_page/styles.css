@@ -1,0 +1,50 @@
+.personalInfos {
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    gap: 32px;
+    background-color: white;
+    border-radius: 16px;
+    width: 100%;
+    height: fit-content;
+  }
+
+
+  .modalContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    gap: 16px;
+    background-color: white;
+    border-radius: 16px;
+    width: 100%;
+    height: fit-content;
+    max-width: 640px;
+  }
+
+  .greyBorderedContainer {
+    width: 343px;
+    padding: 16px;
+    border: 1px solid rgba(244, 244, 244, 1);
+    background-color: white;
+    border-radius: 16px;
+  }
+
+  .pinputStyle{
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 8px;
+    border: 1px solid rgba(119, 170, 249, 1);
+    margin-right: 10px;
+    outline: none;
+  }
+
+  .pinputStyleError{
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 8px;
+    border: 1px solid red;
+    margin-right: 10px;
+    outline: none;
+  }
+

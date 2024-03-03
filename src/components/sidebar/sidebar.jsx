@@ -137,7 +137,7 @@ const Sidebar = () => {
               <div>
                 {/* Additional content to be shown when Клиенты is active */}
                 <NavLink
-                  to="/"
+                  to="/bookingPage"
                   className={({ isActive }) =>
                     isActive ? "active_additional_block" : "additional_block"
                   }
@@ -304,7 +304,7 @@ const Sidebar = () => {
         {/* Первые четыре элемена */}
         <div className="flex flex-col">
           <NavLink
-            to="/"
+            to="/bookingPage"
             className={({ isActive }) =>
               isActive || isClientsActive
                 ? "sidebar_section_closed active_sidebar_section"

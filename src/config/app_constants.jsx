@@ -13,8 +13,37 @@ class AppConstants {
   static get keyToken() {
     return "token";
   }
+
   static get keyGymId() {
     return "gymId";
+  }
+
+  static get keyUserId() {
+    return "userId";
+  }
+
+  static get keyUserFirstname() {
+    return "firstName";
+  }
+
+  static get keyUserLastname() {
+    return "lastName";
+  }
+
+  static get keyPatronymic() {
+    return "patronymic";
+  }
+
+  static get keyPhoto() {
+    return "photo";
+  }
+
+  static get keyPhone() {
+    return "phone";
+  }
+
+  static get keyNotification() {
+    return "notification";
   }
 
   // yandex geocoding api key

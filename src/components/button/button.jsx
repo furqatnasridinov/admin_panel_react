@@ -10,10 +10,11 @@ export default function CustomButton({
   fontSize,
   isDidsabled,
   zIndex,
+  isLoading,
 }) {
   return (
     <button
-      onClick={isDidsabled ? null : onСlick}
+      onClick={(isDidsabled || isLoading) ? null : onСlick}
       style={{
         width: width,
         height: height,
@@ -27,7 +28,7 @@ export default function CustomButton({
           cursor: isDidsabled ? "not-allowed" : "pointer",
         }}
       >
-        {title}
+        { isLoading ? "Загрузка..." : title}
       </p>
     </button>
   );

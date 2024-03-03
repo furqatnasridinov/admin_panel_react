@@ -25,7 +25,7 @@ const MyGymsBody = () => {
       {/* LIST BUILDER */}
 
       <div className="overflow-y-auto pt-[20px]">
-        {gymState.listOfGyms.map((gym) => (
+        {gymState.listOfGyms?.map((gym) => (
           <Gym
             key={gym.id}
             id={gym.id}

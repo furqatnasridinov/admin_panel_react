@@ -1,9 +1,18 @@
-import React from 'react'
+import React from "react";
+import SettingsHeader from "./settings_header";
+import PersonalInfos from "./personal_infos";
+import Security from "./security";
+import Notification from "./notification";
 
 function SettingsPage() {
   return (
-    <div className='flex flex-col items-center gap-[50px] p-[20px]'>settings_page</div>
-  )
+    <div className="flex flex-col flex-1 pl-[10px] gap-[10px] h-[97vh] overflow-y-auto">
+      <SettingsHeader />
+      <PersonalInfos />
+      <Security />
+      <Notification />
+    </div>
+  );
 }
 
-export default SettingsPage
+export default SettingsPage;

@@ -64,6 +64,7 @@ export default function GymDetailesBodySecondContainer({
   );
   const [cancelDeleteTimeoutActivities, setCancelDeleteTimeoutActivities] =
     useState([]);
+  const [activityDescribtionNotValidated, setActivityDescribtionNotValidated] = useState(false);
   const [positionOfPhoto, setPositionOfPhoto] = useState(0);
   const [positionOfActivity, setPositionOfActivity] = useState(0);
 
@@ -190,7 +191,7 @@ export default function GymDetailesBodySecondContainer({
                             onclick={() => {
                               dispatch(selectAnActivity(activity));
                             }}
-                            onEditClicked={() => {}}
+                            onEditClicked={() => { }}
                             onRemoveClicked={async () => {
                               dispatch(
                                 removeActivityFromListOfActivities(activity)
@@ -332,25 +333,33 @@ export default function GymDetailesBodySecondContainer({
                 />
                 <EditableTextfield
                   value={activityDescribtion}
+                  isNotValidated={activityDescribtionNotValidated}
                   onChange={(e) => {
                     dispatch(changeActivityDescribtion(e.target.value));
                   }}
                   onButtonClicked={async () => {
-                    const { id, lessonType, typeDescription } = {
-                      id: gymId,
-                      lessonType: activitiesSlice.selectedActivity,
-                      typeDescription: activityDescribtion,
-                    };
-                    await dispatch(
-                      patchDescriptionOfSelectedActivity({
-                        id,
-                        lessonType,
-                        typeDescription,
-                      })
-                    );
-                    dispatch(getInfoForType(gymId));
-                    setDescribtionEditting(false);
-                    dispatch(resetChanges());
+                    if (activityDescribtion.trim() === "") {
+                      setActivityDescribtionNotValidated(true);
+
+                    } else {
+                      const { id, lessonType, typeDescription } = {
+                        id: gymId,
+                        lessonType: activitiesSlice.selectedActivity,
+                        typeDescription: activityDescribtion,
+                      };
+                      await dispatch(
+                        patchDescriptionOfSelectedActivity({
+                          id,
+                          lessonType,
+                          typeDescription,
+                        })
+                      );
+                      dispatch(getInfoForType(gymId));
+                      setDescribtionEditting(false);
+                      dispatch(resetChanges());
+                      setActivityDescribtionNotValidated(false);
+                    }
+
                   }}
                   fontsize={"13px"}
                   lineheight={"14px"}
@@ -458,7 +467,7 @@ export default function GymDetailesBodySecondContainer({
               if (cancelDeleteTimeoutPhotos.length > 0) {
                 const lastCancelFunction =
                   cancelDeleteTimeoutPhotos[
-                    cancelDeleteTimeoutPhotos.length - 1
+                  cancelDeleteTimeoutPhotos.length - 1
                   ];
                 lastCancelFunction();
                 setCancelDeleteTimeoutPhotos((prevState) =>
@@ -476,7 +485,7 @@ export default function GymDetailesBodySecondContainer({
               if (cancelDeleteTimeoutActivities.length > 0) {
                 const lastCancelFunction =
                   cancelDeleteTimeoutActivities[
-                    cancelDeleteTimeoutActivities.length - 1
+                  cancelDeleteTimeoutActivities.length - 1
                   ];
                 lastCancelFunction();
                 setCancelDeleteTimeoutActivities((prevState) =>

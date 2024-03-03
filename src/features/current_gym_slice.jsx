@@ -209,6 +209,40 @@ export const searchingForAddress = createAsyncThunk(
   }
 );
 
+export const createGym = createAsyncThunk(
+  "currentGymSlice/createGym",
+  async ({
+    name,
+    description,
+    address,
+    latitude,
+    longitude,
+    //mainPictureUrl,
+    //logo,
+    phone
+  }) => {
+    try {
+      const dataToSend = {
+        name: name,
+        description: description,
+        address: address,
+        latitude: latitude,
+        longitude: longitude,
+        //mainPictureUrl: mainPictureUrl,
+        //logo: logo,
+        phone: phone,
+      };
+      const response = await axiosClient.post("api/admin/gyms/", dataToSend);
+      if (response.data["operationResult"] === "OK") {
+        localStorage.setItem(AppConstants.keyGymId, response.data["object"].id);
+        return response.data;
+      }
+    } catch (error) {
+      toast(`createGym ${error}`);
+    }
+  }
+);
+
 const currentGymSlice = createSlice({
   name: "currentGym",
   initialState: {
@@ -224,6 +258,7 @@ const currentGymSlice = createSlice({
     isChangesOccured: false,
     addressesFromSearch: [],
     isAddressessLoading: false,
+    isNewGymCreated: false,
   },
 
   reducers: {
@@ -391,6 +426,19 @@ const currentGymSlice = createSlice({
     });
     builder.addCase(searchingForAddress.rejected, (state) => {
       state.isAddressessLoading = false;
+      state.isError = true;
+    });
+
+    // createGym
+    builder.addCase(createGym.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(createGym.fulfilled, (state) => {
+      state.isLoading = false;
+      state.isNewGymCreated = true;
+    });
+    builder.addCase(createGym.rejected, (state) => {
+      state.isLoading = false;
       state.isError = true;
     });
   },
