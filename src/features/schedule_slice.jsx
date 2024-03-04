@@ -30,7 +30,8 @@ export const getSchedules = createAsyncThunk(
                 item.description,
                 item.lessonType,
                 item.owner,
-                item.repeat
+                item.repeat,
+                item.usersCount
               )
             );
           });
@@ -39,7 +40,7 @@ export const getSchedules = createAsyncThunk(
       }
     } catch (error) {
       console.log(`getSchedules ${error}`);
-      toast(error);
+      toast(`getSchedules ${error}`);
     }
   }
 );
@@ -54,6 +55,8 @@ export const createSchedule = createAsyncThunk(
     lessonType,
     selectedWeekdays,
     autoAccept,
+    limitCountUser,
+    maxCount,
   }) => {
     try {
       const dataToSend = {
@@ -63,13 +66,16 @@ export const createSchedule = createAsyncThunk(
         lessonTypeString: lessonType,
         repeat: selectedWeekdays,
         autoAccept: autoAccept,
+        canSignUp: true,
+        limitCountUser: limitCountUser,
+        maxCount: maxCount,
       };
       const response = await axiosClient.post(
         `api/admin/gyms/${id}/lessons`,
         dataToSend
       );
     } catch (error) {
-      toast(error);
+      toast(`createSchedule ${error}`);
     }
   }
 );
@@ -82,27 +88,46 @@ export const deleteSchedule = createAsyncThunk(
         `api/admin/gyms/${gymId}/lessons/${lessonId}/${all}`
       );
     } catch (error) {
-      toast(error);
+      toast(`deleteSchedule ${error}`);
     }
   }
 );
 
 export const updateSchedule = createAsyncThunk(
   "scheduleSlice/updateSchedule",
-  async ({ gymId, lessonId, date, duration, description, all }) => {
+  async ({ gymId, lessonId, date, duration, description, all, autoAccept }) => {
     try {
       const dataToSend = {
         id: lessonId,
         date: date,
         duration: duration,
         description: description,
+        autoAccept: autoAccept,
       };
       const response = await axiosClient.patch(
         `api/admin/gyms/${gymId}/lessons/${all}`,
         dataToSend
       );
     } catch (error) {
-      toast(error);
+      toast(`updateSchedule ${error}`);
+    }
+  }
+);
+
+export const restrictLesson = createAsyncThunk(
+  "scheduleSlice/updateSchedule",
+  async ({ gymId, lessonId }) => {
+    try {
+      const dataToSend = {
+        id: lessonId,
+        canSignUp: false,
+      };
+      const response = await axiosClient.patch(
+        `api/admin/gyms/${gymId}/lessons/${false}`,
+        dataToSend
+      );
+    } catch (error) {
+      toast(`updateSchedule ${error}`);
     }
   }
 );
@@ -306,7 +331,7 @@ const scheduleSlice = createSlice({
     // getting schedules of selected activity
     getSchedulesOfSelectedActivity: (state, action) => {
       if (action.payload !== "") {
-        if (state.allSchedules.length > 0) {
+        if (state.allSchedules?.length > 0) {
           state.allSchedules.forEach((item) => {
             if (item.lessonType === action.payload) {
               state.schedulesOfSelectedActivity.push(item);

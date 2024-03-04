@@ -1,6 +1,6 @@
 import "./index.css";
 import Sidebar from "./components/sidebar/sidebar";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route,useLocation } from "react-router-dom";
 import MyGymsPage from "./pages/my_gyms_page/my_gyms_page";
 import StatisticksPage from "./pages/statisticks_page/statisticks_page";
 import SchedulesPage from "./pages/schedules_page";
@@ -13,21 +13,28 @@ import BookingPage from "./pages/booking_page/injex";
 import ClientsPage from "./pages/clients";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-function App() {
-  return (
-    // console.log(localStorage.getItem(AppConstants.keyToken)),
-    /* localStorage.setItem(
-      AppConstants.keyToken,
-      "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIrNzk5OTIxNzI0OTQiLCJleHAiOjE3MDc4NDUwNDZ9.1U7hhJ3L4xFTFl6vtG1xQw1CjW2WTzb6yzaI4AU2eg-y60x_pIcnoolhStiBVyfNKp1BImWV4EHuea99WqO5oA"
-    ), */
-    <BrowserRouter>
-      <div className="flex flex-1 flex-row bg-bg-color p-[10px] h-full">
-        <Sidebar />
+import { useEffect } from "react";
+import NewClientsWebSocket from "./features/web_sockets";
+import { useDispatch } from "react-redux";
+import { getNewClients } from "./features/clients_slice";
+import CreateGymPage from "./pages/create_gym_page";
+import Register1 from "./pages/register/register1";
+import Splash from "./pages/splash";
 
-        <div className="flex-1 h-full">
-          <Routes>
-            <Route path="/" element={<BookingPage />}></Route>
-            <Route path="/" element={<BookingPage />}></Route>
+
+function Content() {
+  const location = useLocation();
+
+  return (
+    <div className= {location.pathname !== '/registerPage' ?"flex flex-1 flex-row bg-bg-color p-[10px] h-full" : "" } >
+      {location.pathname !== '/registerPage' && <Sidebar />}
+
+      <div className="flex-1 h-full">
+      <Routes>
+            <Route path="/" element = {<Splash />}></Route>
+            <Route path="/registerPage" element = {<Register1 />}></Route>
+            <Route path="/bookingPage" element={<BookingPage />}></Route>
+            
             <Route path="/waitingClientsPage" element={<ClientsPage />}></Route>
             <Route
               path="/statisticksPage"
@@ -36,6 +43,7 @@ function App() {
             <Route path="/myGymsPage" element={<MyGymsPageLayout />}>
               {/* we declare nested navigation because MyGymsPage has two screens */}
               <Route index element={<MyGymsPage />} />
+              <Route path="createGym" element={<CreateGymPage />} />
               <Route path="gymDetails/:gymId" element={<GymDetails />} />
             </Route>
             <Route path="/schedulePage" element={<SchedulesPage />}>
@@ -48,9 +56,27 @@ function App() {
               {" "}
             </Route>
           </Routes>
-          <ToastContainer autoClose={2500} hideProgressBar />
-        </div>
+        <ToastContainer autoClose={2500} hideProgressBar />
       </div>
+    </div>
+  );
+}
+
+function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    //localStorage.setItem(AppConstants.keyToken, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIrNzk5OTIxNzI0OTQiLCJleHAiOjE3MTIwODA2Njh9.ltOhU7N79KL4udwKyLY02rK7FLwnuiLorh2okKsgZdyazu4anZD1NWrKIaUdHPznrsr4YOmFdzKjo3TpD81t0A");
+    // подключение к веб-сокету
+    NewClientsWebSocket(dispatch);
+    if (localStorage.getItem(AppConstants.keyGymId) !== null) {
+      dispatch(getNewClients(localStorage.getItem(AppConstants.keyGymId)));
+    }      
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <Content />
     </BrowserRouter>
   );
 }

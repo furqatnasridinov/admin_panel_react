@@ -10,7 +10,7 @@ export const getListOfEmployees = createAsyncThunk(
       const response = await axiosClient.get(`api/admin/gyms/${gymId}/workers`);
       return response.data["object"];
     } catch (error) {
-      toast(error);
+      toast(`getListOfEmployees ${error}`);
     }
   }
 );
@@ -23,7 +23,7 @@ export const deleteEmployee = createAsyncThunk(
         `api/admin/gyms/${gymid}/workers/${employeeId}`
       );
     } catch (error) {
-      toast(error);
+      toast(`deleteEmployee ${error}`);
     }
   }
 );
@@ -45,7 +45,7 @@ export const editEmployee = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      toast(error);
+      toast(`editEmployee ${error}`);
     }
   }
 );
@@ -67,7 +67,7 @@ export const addEmployee = createAsyncThunk(
       );
       getListOfEmployees(gymId);
     } catch (error) {
-      toast(error);
+      toast(`addEmployee ${error}`);
     }
   }
 );
@@ -142,7 +142,7 @@ const employeesSlice = createSlice({
     },
 
     returnDeletedEmployee: (state) => {
-      if (state.deletedEmployess.length > 0) {
+      if (state.deletedEmployess?.length > 0) {
         const lastElement = state.deletedEmployess.pop();
         // Добавь элемент обратно в массив employees
         state.employees.push(lastElement);

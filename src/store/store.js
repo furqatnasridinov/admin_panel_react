@@ -4,6 +4,7 @@ import employeesSlice from "../features/employees_slice";
 import activitiesSlice from "../features/activities_slice";
 import scheduleSlice from "../features/schedule_slice";
 import clientsSlice from "../features/clients_slice";
+import loginSlice from "../features/register"
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     activities: activitiesSlice,
     schedule: scheduleSlice,
     clients: clientsSlice,
+    login : loginSlice,
   },
 });

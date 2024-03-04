@@ -8,17 +8,23 @@ import {
   getNewClients,
   acceptClient,
   rejectClient,
+  setDecliningEvent,
 } from "../../features/clients_slice";
 import {
   setNavigationFromBooking,
   setEventFromBooking,
 } from "../../features/schedule_slice";
+import CustomDialog from "../../components/dialog/dialog";
+import RejectingDialog from "./rejecting_dialog";
 
 export default function MessageLikeTopContainer({ hideOpenSchedule }) {
+  // redux
   const dispatch = useDispatch();
   const [showAll, setShowAll] = useState(false);
   const clientsSlice = useSelector((state) => state.clients);
   const gymState = useSelector((state) => state.currentGym);
+  // use states
+  const [dialogOpened, openDialog] = useState(false);
 
   return (
     <div className="bookingBody mb-[10px]">
@@ -35,7 +41,7 @@ export default function MessageLikeTopContainer({ hideOpenSchedule }) {
 
       {!showAll &&
         clientsSlice.waitingForAccept &&
-        clientsSlice.waitingForAccept.length > 0 &&
+        clientsSlice.waitingForAccept?.length > 0 &&
         [...clientsSlice.waitingForAccept] // Создаем копию массива перед сортировкой
           .slice(0, 1)
           .sort((a, b) => a.startTime - b.startTime)
@@ -91,33 +97,28 @@ export default function MessageLikeTopContainer({ hideOpenSchedule }) {
                   dispatch(getNewClients(gymState.currentGym.id));
                 }}
                 onDecline={async () => {
-                  const request = {
-                    gymId: client.gymId,
-                    waitingId: client.id,
-                  };
-                  await dispatch(rejectClient(request));
-                  // getting new data
-                  dispatch(getNewClients(gymState.currentGym.id));
+                  openDialog(true);
+                  dispatch(setDecliningEvent(client));
                 }}
                 hideOpenSchedule={hideOpenSchedule}
               />
             );
           })}
 
-      {!showAll && clientsSlice.waitingForAccept.length > 1 && (
+      {!showAll && clientsSlice.waitingForAccept?.length > 1 && (
         <>
           <div
             className="text-[10px] text-blue-text font-medium leading-[11px] cursor-pointer text-center"
             onClick={() => setShowAll(true)}
           >
-            Показать еще {clientsSlice.waitingForAccept.length - 1}
+            Показать еще {clientsSlice.waitingForAccept?.length - 1}
           </div>
         </>
       )}
 
       {showAll &&
         clientsSlice.waitingForAccept &&
-        clientsSlice.waitingForAccept.length > 0 &&
+        clientsSlice.waitingForAccept?.length > 0 &&
         [...clientsSlice.waitingForAccept] // Создаем копию массива перед сортировкой
           .sort((a, b) => a.startTime - b.startTime)
           .map((client) => {
@@ -162,8 +163,19 @@ export default function MessageLikeTopContainer({ hideOpenSchedule }) {
                 endTIme={`${endHours}:${endMinutes}`}
                 gym={client.gymName}
                 event={client.lessonType}
-                onAccept={() => {}}
-                onDecline={() => {}}
+                onAccept={async () => {
+                  const request = {
+                    gymId: client.gymId,
+                    waitingId: client.id,
+                  };
+                  await dispatch(acceptClient(request));
+                  // getting new data
+                  dispatch(getNewClients(gymState.currentGym.id));
+                }}
+                onDecline={async () => {
+                  openDialog(true);
+                  dispatch(setDecliningEvent(client));
+                }}
                 onNavigation={() => {
                   dispatch(setNavigationFromBooking(true));
                   dispatch(setEventFromBooking(client));
@@ -172,6 +184,17 @@ export default function MessageLikeTopContainer({ hideOpenSchedule }) {
               />
             );
           })}
+
+      {dialogOpened && (
+        <CustomDialog
+          isOpened={dialogOpened}
+          closeOnTapOutside={() => {
+            openDialog(false);
+          }}
+        >
+          <RejectingDialog onPop={() => openDialog(false)} />
+        </CustomDialog>
+      )}
 
       {showAll && (
         <>

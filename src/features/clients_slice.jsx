@@ -31,14 +31,15 @@ export const getNewClients = createAsyncThunk(
               item.lessonType,
               item.lessonId,
               item.repeat,
-              item.usersCount
+              item.usersCount,
+              item.description
             )
           );
         });
         return listToCollect;
       }
     } catch (error) {
-      toast(error);
+      toast(`getNewClients ${error}`);
     }
   }
 );
@@ -51,7 +52,7 @@ export const acceptClient = createAsyncThunk(
         `api/admin/gyms/${gymId}/waiting/${waitingId}/true`
       );
     } catch (error) {
-      toast(error);
+      toast(`acceptClient ${error}`);
     }
   }
 );
@@ -64,7 +65,7 @@ export const rejectClient = createAsyncThunk(
         `api/admin/gyms/${gymId}/waiting/${waitingId}/false`
       );
     } catch (error) {
-      toast(error);
+      toast(`rejectClient ${error}`);
     }
   }
 );
@@ -111,7 +112,7 @@ export const getWillComeToday = createAsyncThunk(
         return listToCollect;
       }
     } catch (error) {
-      toast(error);
+      toast(`getWillComeToday ${error}`);
     }
   }
 );
@@ -155,7 +156,7 @@ export const getAlreadyCameToday = createAsyncThunk(
         return listToCollect;
       }
     } catch (error) {
-      toast(error);
+      toast(`getAlreadyCameToday ${error}`);
     }
   }
 );
@@ -183,6 +184,10 @@ const clientsSlice = createSlice({
 
     setDecliningEvent(state, action) {
       state.decliningEvent = action.payload;
+    },
+
+    addClientToList(state, action) {
+      state.waitingForAccept.push(action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -227,5 +232,6 @@ const clientsSlice = createSlice({
   },
 });
 
-export const { removeClient, setDecliningEvent } = clientsSlice.actions;
+export const { removeClient, setDecliningEvent, addClientToList } =
+  clientsSlice.actions;
 export default clientsSlice.reducer;

@@ -6,7 +6,7 @@ const axiosClient = axios.create({
   headers: {
     //Authorization: `Bearer ${localStorage.getItem(AppConstants.keyToken)}`,
     Authorization:
-      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIrNzk5OTIxNzI0OTQiLCJleHAiOjE3MTAzNTIzNjF9.xvxomjefo77p82FmLKHZ8bnmDEWSZB_M7nig3ntacLQVIlinAfIikDaq8uZbyK8OjUbQFA8wJ57QYMoRtjd7eQ",
+      `Bearer ${localStorage.getItem(AppConstants.keyToken)}`,
     "Content-Type": "application/json",
   },
 });

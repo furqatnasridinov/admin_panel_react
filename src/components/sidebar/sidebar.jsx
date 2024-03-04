@@ -126,9 +126,9 @@ const Sidebar = () => {
 
               {isTextShown && <div>Клиенты</div>}
 
-              {isTextShown && clientsSlice.waitingForAccept.length > 0 && (
+              {isTextShown && clientsSlice.waitingForAccept?.length > 0 && (
                 <div className="badge">
-                  {clientsSlice.waitingForAccept.length}
+                  {clientsSlice.waitingForAccept?.length}
                 </div>
               )}
             </NavLink>
@@ -137,7 +137,7 @@ const Sidebar = () => {
               <div>
                 {/* Additional content to be shown when Клиенты is active */}
                 <NavLink
-                  to="/"
+                  to="/bookingPage"
                   className={({ isActive }) =>
                     isActive ? "active_additional_block" : "additional_block"
                   }
@@ -145,9 +145,9 @@ const Sidebar = () => {
                   <li>
                     <span>Бронирование</span>
                   </li>
-                  {clientsSlice.waitingForAccept.length > 0 && (
+                  {clientsSlice.waitingForAccept?.length > 0 && (
                     <div className="badge">
-                      {clientsSlice.waitingForAccept.length}
+                      {clientsSlice.waitingForAccept?.length}
                     </div>
                   )}
                 </NavLink>
@@ -304,7 +304,7 @@ const Sidebar = () => {
         {/* Первые четыре элемена */}
         <div className="flex flex-col">
           <NavLink
-            to="/"
+            to="/bookingPage"
             className={({ isActive }) =>
               isActive || isClientsActive
                 ? "sidebar_section_closed active_sidebar_section"
@@ -313,9 +313,9 @@ const Sidebar = () => {
           >
             <img src={userLogoSvg} alt="" />
 
-            {clientsSlice.waitingForAccept.length > 0 && (
+            {clientsSlice.waitingForAccept?.length > 0 && (
               <div className="badge">
-                {clientsSlice.waitingForAccept.length}
+                {clientsSlice.waitingForAccept?.length}
               </div>
             )}
           </NavLink>

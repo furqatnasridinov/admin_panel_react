@@ -15,13 +15,12 @@ const CustomSnackbar = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     show(message, onTimeEnded) {
       const id = props.objectId ? props.objectId : Date.now();
-      const newSnackbar = { id, message, countdown: 9 };
+      const newSnackbar = { id, message, countdown: 5 };
       setSnackbars((prevSnackbars) => [...prevSnackbars, newSnackbar]);
 
-      const handleUnload = (event) => {
+      const handleUnload = async (event) => {
+        await onTimeEnded();
         event.preventDefault();
-        event.returnValue =
-          "You have unsaved changes. Are you sure you want to leave?";
       };
 
       window.addEventListener("beforeunload", handleUnload);
@@ -33,7 +32,7 @@ const CustomSnackbar = forwardRef((props, ref) => {
         );
         if (onTimeEnded) onTimeEnded();
         window.removeEventListener("beforeunload", handleUnload);
-      }, 9000);
+      }, 5000);
 
       // Return a cleanup function that removes the event listener and cancels the timeout
       return () => {

@@ -29,7 +29,7 @@ export default function RejectingDialog({ onPop }) {
 
   useEffect(() => {
     // after we get schedules we need to check if the event is there
-    if (scheduleState.allSchedules.length > 0) {
+    if (scheduleState.allSchedules?.length > 0) {
       const eventExists = scheduleState.allSchedules.some(
         (schedule) => schedule.id === clientsState.decliningEvent.lessonId
       );

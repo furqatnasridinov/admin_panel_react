@@ -122,13 +122,13 @@ export default function Employees({ listOfEmployees, gymId }) {
       <div className="employees_container">
         <TextAndTextButton
           text1={"Сотрудники"}
-          text2={listOfEmployees.length === 0 ? "" : "Редактировать"}
+          text2={listOfEmployees?.length === 0 ? "" : "Редактировать"}
           onclick={() =>
-            listOfEmployees.length === 0 ? {} : openRefEmployeesDialog(true)
+            listOfEmployees?.length === 0 ? {} : openRefEmployeesDialog(true)
           }
         />
 
-        {listOfEmployees.length !== 0 && isRefEmployeesDialogOpened && (
+        {listOfEmployees?.length !== 0 && isRefEmployeesDialogOpened && (
           <CustomDialog
             isOpened={isRefEmployeesDialogOpened}
             closeOnTapOutside={() => {
@@ -176,7 +176,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                           }
                           name={employee.firstName}
                           job={
-                            employee.roles.length === 0
+                            employee.roles?.length === 0
                               ? "Нет роли"
                               : employee.roles[0].name
                           }

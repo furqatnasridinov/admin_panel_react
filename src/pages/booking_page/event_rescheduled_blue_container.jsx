@@ -70,7 +70,7 @@ export default function EventRescheduledBlueContainer({
       scheduleState.endTimeMinutesTmp,
       "00"
     );
-    if (scheduleState.allSchedules.length > 0) {
+    if (scheduleState.allSchedules?.length > 0) {
       var listToCollect = [];
       scheduleState.allSchedules.forEach((schedule) => {
         if (
@@ -214,7 +214,7 @@ export default function EventRescheduledBlueContainer({
             )}
           />
 
-          {filteredEvents.length > 0 && (
+          {filteredEvents?.length > 0 && (
             <>
               <div className="flex flex-col gap-1">
                 <div className="text-[14px] font-bold mt-2">

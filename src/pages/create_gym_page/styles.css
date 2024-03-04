@@ -1,0 +1,21 @@
+.firstContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  gap: 32px;
+  background-color: white;
+  border-radius: 16px;
+  width: 100%;
+  height: fit-content;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  gap: 16px;
+  background-color: white;
+  border-radius: 16px;
+  width: 100%;
+  height: fit-content;
+}

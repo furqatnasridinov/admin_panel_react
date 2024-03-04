@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 import ProgressSnackbar from "../../../../../components/snackbar/progress_snackbar";
 import { AddressSearching } from "./address_searching";
+
 import {
   addGymPicture,
   changeCurrentGymsName,
@@ -63,6 +64,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const [addingVk, setAddingVk] = useState(false);
   const [hideAdding, setHideAdding] = useState(false);
   const [isDropDownOpened, openDropDown] = useState(false);
+  const [nameIsNotValidated, setNameIsNotValidated] = useState(false);
+  const [describtionIsNotValidated, setDescribtionIsNotValidated] = useState(false);
 
   // use refs
   const deleteMainPicSnackbarRef = useRef(null);
@@ -77,14 +80,14 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
     try {
       fileInputMainPhotoRef.current.click();
     } catch (error) {
-      toast(error);
+      toast(`openFilePickerForMainPhoto ${error}`);
     }
   };
   const openFilePickerForLogo = () => {
     try {
       fileInputLogoRef.current.click();
     } catch (error) {
-      toast(error);
+      toast(`openFilePickerForLogo ${error}`);
     }
   };
 
@@ -194,53 +197,51 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   }, [currentGym.address]);
 
   return (
-    console.log(`currentgym ${currentGym.phone.length}`),
-    (
-      <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
-        {/* Photos and Logos */}
+    <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
+      {/* Photos and Logos */}
 
-        <div className="photos_row">
-          {/* Main picture  */}
-          <ProgressSnackbar
-            isLoading={currentGymState.isMainPicLoading}
-            ref={progressSnackbarRef}
-          />
-          <ProgressSnackbar
-            isLoading={currentGymState.isLogoLoading}
-            ref={progressSnackForLogo}
-          />
-          <div className="gym_main_photo_column">
-            <TextAndTextButton
-              text1={"Фоновая фотография"}
-              text2={
-                currentGym.mainPictureUrl === "" ||
+      <div className="photos_row">
+        {/* Main picture  */}
+        <ProgressSnackbar
+          isLoading={currentGymState.isMainPicLoading}
+          ref={progressSnackbarRef}
+        />
+        <ProgressSnackbar
+          isLoading={currentGymState.isLogoLoading}
+          ref={progressSnackForLogo}
+        />
+        <div className="gym_main_photo_column">
+          <TextAndTextButton
+            text1={"Фоновая фотография"}
+            text2={
+              currentGym.mainPictureUrl === "" ||
                 currentGym.mainPictureUrl === null
-                  ? ""
-                  : "Изменить фотографию"
-              }
-              onclick={() =>
-                currentGym.mainPictureUrl !== "" &&
+                ? ""
+                : "Изменить фотографию"
+            }
+            onclick={() =>
+              currentGym.mainPictureUrl !== "" &&
                 currentGym.mainPictureUrl !== null
-                  ? openModalPhoto(true)
-                  : {
-                      openFilePickerForMainPhoto,
-                    }
-              }
-            />
+                ? openModalPhoto(true)
+                : {
+                  openFilePickerForMainPhoto,
+                }
+            }
+          />
 
-            {currentGym.mainPictureUrl !== null &&
-              currentGym.mainPictureUrl !== "" && (
-                <img
-                  className="main_pic"
-                  src={`http://77.222.53.122/image/${currentGym.mainPictureUrl}`}
-                  onClick={() => openModalPhoto(true)}
-                  style={{ cursor: "pointer" }}
-                  draggable={false}
-                  alt=""
-                />
-              )}
-            {(currentGym.mainPictureUrl === "" ||
-              currentGym.mainPictureUrl === null) && (
+          {currentGym.mainPictureUrl !== null &&
+            currentGym.mainPictureUrl !== "" && (
+              <img
+                className="main_pic"
+                src={`http://77.222.53.122/image/${currentGym.mainPictureUrl}`}
+                onClick={() => openModalPhoto(true)}
+                style={{ cursor: "pointer" }}
+                draggable={false}
+                alt=""
+              />
+            )}
+          {(currentGym.mainPictureUrl === "" ||
+            currentGym.mainPictureUrl === null) && (
               <>
                 <img
                   src={mainPicPlaceHolder}
@@ -258,224 +259,227 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                 />
               </>
             )}
-            <SizeOfPicture size={"375x210px"} />
-            {isModalPhotoOpened && (
-              <CustomDialog
-                isOpened={isModalPhotoOpened}
-                closeOnTapOutside={() => {
-                  openModalPhoto(false);
-                }}
-              >
-                <ChangeMainPhotoModal
-                  onPop={() => openModalPhoto(false)}
-                  onDeleteClicked={() => {
-                    dispatch(setEmptyStringToMainPic());
-                    openModalPhoto(false);
-                    deleteMainPicSnackbarRef.current.showSnackbars();
-                    const cancelTimeout = deleteMainPicSnackbarRef.current.show(
-                      "Вы удалили фото",
-                      () => {
-                        // function when onTime Ended
-                        const { gymId } = { gymId: currentGym.id };
-                        dispatch(removeGymMainPic({ gymId }));
-                        dispatch(removePhotoCopy());
-                      }
-                    );
-
-                    setCancelDeleteTimeoutPhoto(() => cancelTimeout);
-                  }}
-                  openFilePicker={openFilePickerForMainPhoto}
-                  photo={
-                    currentGym.mainPictureUrl === "" ||
-                    currentGym.mainPictureUrl === null
-                      ? ""
-                      : currentGym.mainPictureUrl
-                  }
-                  fileInputRef={fileInputMainPhotoRef}
-                  uploadNewPhoto={handleNewPhoto}
-                />
-              </CustomDialog>
-            )}
-          </div>
-          <CustomSnackbar
-            ref={deleteMainPicSnackbarRef}
-            undoAction={undoDeletePhoto}
-          />
-          {/*  Logos Column */}
-          <div className="flex flex-col gap-[10px] mt-[30px] ml-[43px] justify-end ">
-            <TextAndTextButton
-              text1={"Логотип"}
-              text2={
-                currentGym.logoUrl === "" || currentGym.logoUrl === null
-                  ? ""
-                  : "Изменить"
-              }
-              onclick={() =>
-                currentGym.logoUrl !== "" && currentGym.logoUrl !== null
-                  ? openModalLogo(true)
-                  : {}
-              }
-            />
-            {/* Big logo */}
-            {currentGym.logoUrl !== "" && currentGym.logoUrl !== null && (
-              <img
-                className="logo_rounded180"
-                src={`http://77.222.53.122/image/${currentGym.logoUrl}`}
-                onClick={() => openModalLogo(true)}
-                style={{ cursor: "pointer" }}
-                draggable={false}
-                alt=""
-              />
-            )}
-            {(currentGym.logoUrl === "" || currentGym.logoUrl === null) && (
-              <>
-                <img
-                  src={logoPlaceholder}
-                  style={{ cursor: "pointer" }}
-                  onClick={openFilePickerForLogo}
-                  draggable={false}
-                  alt=""
-                />
-                <input
-                  ref={fileInputLogoRef}
-                  onChange={handleNewLogo}
-                  type="file"
-                  style={{ display: "none" }}
-                  accept="image/jpeg, image/png"
-                />
-              </>
-            )}
-
-            <SizeOfPicture size={"180x180px"} />
-          </div>
-          {/* Medium logo */}
-          {currentGym.logoUrl !== "" &&
-            currentGym.logoUrl !== null &&
-            (() => {
-              const lastDotIndex = currentGym.logoUrl.lastIndexOf(".");
-              const nameWithoutExtension = currentGym.logoUrl.substring(
-                0,
-                lastDotIndex
-              );
-              const extension = currentGym.logoUrl.substring(lastDotIndex + 1);
-              const imageToCompressedFormat = `${nameWithoutExtension}_M.${extension}`;
-
-              return (
-                <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
-                  <img
-                    onClick={() => openModalLogo(true)}
-                    className="logo_rounded90"
-                    style={{ cursor: "pointer" }}
-                    src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
-                    alt=""
-                  />
-                  {/* Предполагаемый компонент SizeOfPicture */}
-                  <SizeOfPicture size="90x90px" />
-                </div>
-              );
-            })()}
-
-          {/* Small logo */}
-          {currentGym.logoUrl !== "" &&
-            currentGym.logoUrl !== null &&
-            (() => {
-              const lastDotIndex = currentGym.logoUrl.lastIndexOf(".");
-              const nameWithoutExtension = currentGym.logoUrl.substring(
-                0,
-                lastDotIndex
-              );
-              const extension = currentGym.logoUrl.substring(lastDotIndex + 1);
-              const imageToCompressedFormat = `${nameWithoutExtension}_S.${extension}`;
-
-              return (
-                <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
-                  <img
-                    onClick={() => openModalLogo(true)}
-                    className="logo_rounded50"
-                    style={{ cursor: "pointer" }}
-                    src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
-                    alt=""
-                  />
-                  {/* Предполагаемый компонент SizeOfPicture */}
-                  <SizeOfPicture size="50x50px" />
-                </div>
-              );
-            })()}
-          {isModalLogoOpened && (
+          {/* <SizeOfPicture size={"375x210px"} /> */}
+          {isModalPhotoOpened && (
             <CustomDialog
-              isOpened={isModalLogoOpened}
+              isOpened={isModalPhotoOpened}
               closeOnTapOutside={() => {
-                openModalLogo(false);
+                openModalPhoto(false);
               }}
             >
-              <ChangeLogoModal
-                onPop={() => openModalLogo(false)}
+              <ChangeMainPhotoModal
+                onPop={() => openModalPhoto(false)}
                 onDeleteClicked={() => {
-                  dispatch(setEmptyStringToLogo());
-                  openModalLogo(false);
-                  deleteLogoSnackbarRef.current.showSnackbars();
-                  const cancelTimeout = deleteLogoSnackbarRef.current.show(
-                    "Вы удалили логотип",
+                  dispatch(setEmptyStringToMainPic());
+                  openModalPhoto(false);
+                  deleteMainPicSnackbarRef.current.showSnackbars();
+                  const cancelTimeout = deleteMainPicSnackbarRef.current.show(
+                    "Вы удалили фото",
                     () => {
                       // function when onTime Ended
                       const { gymId } = { gymId: currentGym.id };
-                      dispatch(removeGymLogo({ gymId }));
-                      dispatch(removeLogoCopy());
+                      dispatch(removeGymMainPic({ gymId }));
+                      dispatch(removePhotoCopy());
                     }
                   );
-                  setCancelDeleteTimeoutLogo(() => cancelTimeout);
+                  setCancelDeleteTimeoutPhoto(() => cancelTimeout);
                 }}
-                openFilePicker={openFilePickerForLogo}
-                logo={currentGym.logoUrl}
-                fileInputRef={fileInputLogoRef}
-                uploadNewLogo={handleNewLogo}
+                openFilePicker={openFilePickerForMainPhoto}
+                photo={
+                  currentGym.mainPictureUrl === "" ||
+                    currentGym.mainPictureUrl === null
+                    ? ""
+                    : currentGym.mainPictureUrl
+                }
+                fileInputRef={fileInputMainPhotoRef}
+                uploadNewPhoto={handleNewPhoto}
               />
             </CustomDialog>
           )}
-          <CustomSnackbar
-            ref={deleteLogoSnackbarRef}
-            undoAction={undoDeleteLogo}
-          />
         </div>
+        <CustomSnackbar
+          ref={deleteMainPicSnackbarRef}
+          undoAction={undoDeletePhoto}
+        />
+        {/*  Logos Column */}
+        <div className="flex flex-col gap-[10px] mt-[30px] ml-[43px] justify-end ">
+          <TextAndTextButton
+            text1={"Логотип"}
+            text2={
+              currentGym.logoUrl === "" || currentGym.logoUrl === null
+                ? ""
+                : "Изменить"
+            }
+            onclick={() =>
+              currentGym.logoUrl !== "" && currentGym.logoUrl !== null
+                ? openModalLogo(true)
+                : {}
+            }
+          />
+          {/* Big logo */}
+          {currentGym.logoUrl !== "" && currentGym.logoUrl !== null && (
+            <img
+              className="logo_rounded180"
+              src={`http://77.222.53.122/image/${currentGym.logoUrl}`}
+              onClick={() => openModalLogo(true)}
+              style={{ cursor: "pointer" }}
+              draggable={false}
+              alt=""
+            />
+          )}
+          {(currentGym.logoUrl === "" || currentGym.logoUrl === null) && (
+            <>
+              <img
+                src={logoPlaceholder}
+                style={{ cursor: "pointer" }}
+                onClick={openFilePickerForLogo}
+                draggable={false}
+                alt=""
+              />
+              <input
+                ref={fileInputLogoRef}
+                onChange={handleNewLogo}
+                type="file"
+                style={{ display: "none" }}
+                accept="image/jpeg, image/png"
+              />
+            </>
+          )}
 
-        {/* ContactInfos */}
+          {/* <SizeOfPicture size={"180x180px"} /> */}
+        </div>
+        {/* Medium logo */}
+        {currentGym.logoUrl !== "" &&
+          currentGym.logoUrl !== null &&
+          (() => {
+            const lastDotIndex = currentGym.logoUrl.lastIndexOf(".");
+            const nameWithoutExtension = currentGym.logoUrl.substring(
+              0,
+              lastDotIndex
+            );
+            const extension = currentGym.logoUrl.substring(lastDotIndex + 1);
+            const imageToCompressedFormat = `${nameWithoutExtension}_M.${extension}`;
 
-        <div className="flex flex-col gap-[32px]">
-          <div className="flex flex-row  gap-[32px]">
-            {/* Name  */}
-            <div className="name ">
-              {!isNameEditingEnabled && (
-                <>
-                  <TextAndTextButton
-                    text1={"Название заведения"}
-                    text2={"Изменить"}
-                    isRedText={isNameEditingEnabled}
-                    onclick={() => setNameEditing(true)}
-                  />
-                  <div className="text-[13px] font-normal font-inter">
-                    {currentGym.name}
-                  </div>
-                </>
-              )}
-              {isNameEditingEnabled && (
-                <>
-                  <TextAndTextButton
-                    text1={"Название заведения"}
-                    text2={"Отменить"}
-                    isRedText={isNameEditingEnabled}
-                    onclick={() => {
-                      if (currentGymState.isChangesOccured) {
-                        dispatch(getCurrentGym(currentGym.id));
-                      }
-                      setNameEditing(false);
-                    }}
-                  />
-                  <EditableTextfield
-                    value={currentGym.name}
-                    onChange={(e) => {
-                      dispatch(changeCurrentGymsName(e.target.value));
-                    }}
-                    onButtonClicked={async () => {
+            return (
+              <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
+                <img
+                  onClick={() => openModalLogo(true)}
+                  className="logo_rounded90"
+                  style={{ cursor: "pointer" }}
+                  src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                  alt=""
+                />
+
+                {/* <SizeOfPicture size="90x90px" /> */}
+              </div>
+            );
+          })()}
+
+        {/* Small logo */}
+        {currentGym.logoUrl !== "" &&
+          currentGym.logoUrl !== null &&
+          (() => {
+            const lastDotIndex = currentGym.logoUrl.lastIndexOf(".");
+            const nameWithoutExtension = currentGym.logoUrl.substring(
+              0,
+              lastDotIndex
+            );
+            const extension = currentGym.logoUrl.substring(lastDotIndex + 1);
+            const imageToCompressedFormat = `${nameWithoutExtension}_S.${extension}`;
+
+            return (
+              <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
+                <img
+                  onClick={() => openModalLogo(true)}
+                  className="logo_rounded50"
+                  style={{ cursor: "pointer" }}
+                  src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                  alt=""
+                />
+
+                {/*  <SizeOfPicture size="50x50px" /> */}
+              </div>
+            );
+          })()}
+        {isModalLogoOpened && (
+          <CustomDialog
+            isOpened={isModalLogoOpened}
+            closeOnTapOutside={() => {
+              openModalLogo(false);
+            }}
+          >
+            <ChangeLogoModal
+              onPop={() => openModalLogo(false)}
+              onDeleteClicked={() => {
+                dispatch(setEmptyStringToLogo());
+                openModalLogo(false);
+                deleteLogoSnackbarRef.current.showSnackbars();
+                const cancelTimeout = deleteLogoSnackbarRef.current.show(
+                  "Вы удалили логотип",
+                  () => {
+                    // function when onTime Ended
+                    const { gymId } = { gymId: currentGym.id };
+                    dispatch(removeGymLogo({ gymId }));
+                    dispatch(removeLogoCopy());
+                  }
+                );
+                setCancelDeleteTimeoutLogo(() => cancelTimeout);
+              }}
+              openFilePicker={openFilePickerForLogo}
+              logo={currentGym.logoUrl}
+              fileInputRef={fileInputLogoRef}
+              uploadNewLogo={handleNewLogo}
+            />
+          </CustomDialog>
+        )}
+        <CustomSnackbar
+          ref={deleteLogoSnackbarRef}
+          undoAction={undoDeleteLogo}
+        />
+      </div>
+
+      {/* ContactInfos */}
+
+      <div className="flex flex-col gap-[32px]">
+        <div className="flex flex-row  gap-[32px]">
+          {/* Name  */}
+          <div className="name ">
+            {!isNameEditingEnabled && (
+              <>
+                <TextAndTextButton
+                  text1={"Название заведения"}
+                  text2={"Изменить"}
+                  isRedText={isNameEditingEnabled}
+                  onclick={() => setNameEditing(true)}
+                />
+                <div className="text-[13px] font-normal font-inter">
+                  {currentGym.name}
+                </div>
+              </>
+            )}
+            {isNameEditingEnabled && (
+              <>
+                <TextAndTextButton
+                  text1={"Название заведения"}
+                  text2={"Отменить"}
+                  isRedText={isNameEditingEnabled}
+                  onclick={() => {
+                    if (currentGymState.isChangesOccured) {
+                      dispatch(getCurrentGym(currentGym.id));
+                    }
+                    setNameEditing(false);
+                  }}
+                />
+                <EditableTextfield
+                  value={currentGym.name}
+                  isNotValidated={nameIsNotValidated}
+                  onChange={(e) => {
+                    dispatch(changeCurrentGymsName(e.target.value));
+                  }}
+                  onButtonClicked={async () => {
+                    if (currentGym.name === "") {
+                      setNameIsNotValidated(true);
+                    } else {
                       const { id, name } = {
                         id: currentGym.id,
                         name: currentGym.name,
@@ -484,48 +488,55 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       dispatch(getCurrentGym(currentGym.id));
                       setNameEditing(false);
                       dispatch(resetChanges());
-                    }}
-                    lineheight={"16px"}
-                  />
-                </>
-              )}
-            </div>
-            {/* Describtion  */}
-            <div className="describtion">
-              {!isDescribtionEdittingEnabled && (
-                <>
-                  <TextAndTextButton
-                    text1={"Описание"}
-                    text2={"Изменить"}
-                    isRedText={isDescribtionEdittingEnabled}
-                    onclick={() => {
-                      setDescribtionEditing(true);
-                    }}
-                  />
-                  <div className="leading-[14px] text-[13px] font-normal font-inter">
-                    {currentGym.description}
-                  </div>
-                </>
-              )}
-              {isDescribtionEdittingEnabled && (
-                <>
-                  <TextAndTextButton
-                    text1={"Описание"}
-                    text2={"Отменить"}
-                    isRedText={isDescribtionEdittingEnabled}
-                    onclick={() => {
-                      if (currentGymState.isChangesOccured) {
-                        dispatch(getCurrentGym(currentGym.id));
-                      }
-                      setDescribtionEditing(false);
-                    }}
-                  />
-                  <EditableTextfield
-                    value={currentGym.description}
-                    onChange={(e) => {
-                      dispatch(changeCurrentGymsDescription(e.target.value));
-                    }}
-                    onButtonClicked={async () => {
+                      setNameIsNotValidated(false);
+                    }
+
+                  }}
+                  lineheight={"16px"}
+                />
+              </>
+            )}
+          </div>
+          {/* Describtion  */}
+          <div className="describtion">
+            {!isDescribtionEdittingEnabled && (
+              <>
+                <TextAndTextButton
+                  text1={"Описание"}
+                  text2={"Изменить"}
+                  isRedText={isDescribtionEdittingEnabled}
+                  onclick={() => {
+                    setDescribtionEditing(true);
+                  }}
+                />
+                <div className="leading-[14px] text-[13px] font-normal font-inter">
+                  {currentGym.description}
+                </div>
+              </>
+            )}
+            {isDescribtionEdittingEnabled && (
+              <>
+                <TextAndTextButton
+                  text1={"Описание"}
+                  text2={"Отменить"}
+                  isRedText={isDescribtionEdittingEnabled}
+                  onclick={() => {
+                    if (currentGymState.isChangesOccured) {
+                      dispatch(getCurrentGym(currentGym.id));
+                    }
+                    setDescribtionEditing(false);
+                  }}
+                />
+                <EditableTextfield
+                  value={currentGym.description}
+                  isNotValidated={describtionIsNotValidated}
+                  onChange={(e) => {
+                    dispatch(changeCurrentGymsDescription(e.target.value));
+                  }}
+                  onButtonClicked={async () => {
+                    if (currentGym.description === "") {
+                      setDescribtionIsNotValidated(true);
+                    } else {
                       const { id, description } = {
                         id: currentGym.id,
                         description: currentGym.description,
@@ -534,250 +545,212 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       dispatch(getCurrentGym(currentGym.id));
                       setDescribtionEditing(false);
                       dispatch(resetChanges());
-                    }}
-                    lineheight={"14px"}
-                  />
-                </>
-              )}
-            </div>
-            {/* Address  */}
-            <div className="address">
-              {!isAddressEdittingEnabled && (
-                <>
-                  <TextAndTextButton
-                    text1={"Адрес"}
-                    text2={"Изменить"}
-                    isRedText={isAddressEdittingEnabled}
-                    onclick={() => {
-                      setAddressEditting(true);
-                    }}
-                  />
-                  <div className="leading-[16px] text-[13px] font-normal font-inter">
-                    {currentGym.address}
-                  </div>
-                </>
-              )}
-              {isAddressEdittingEnabled && (
-                <>
-                  <TextAndTextButton
-                    text1={"Адрес"}
-                    text2={"Отменить"}
-                    isRedText={isAddressEdittingEnabled}
-                    onclick={() => {
-                      if (currentGymState.isChangesOccured) {
-                        dispatch(getCurrentGym(currentGym.id));
-                      }
-                      setAddressEditting(false);
-                    }}
-                  />
+                      setDescribtionIsNotValidated(false);
+                    }
 
-                  {/* address searching dropdown */}
-                  <AddressSearching
-                    value={currentGym.address}
-                    notFound={
-                      currentGymState.addressesFromSearch &&
-                      currentGymState.addressesFromSearch.length === 0
-                    }
-                    onChange={(e) => {
-                      dispatch(changeCurrentGymsAddress(e.target.value));
-                    }}
-                    map={
-                      currentGymState.addressesFromSearch &&
-                      currentGymState.addressesFromSearch.length > 0 &&
-                      currentGymState.addressesFromSearch.map((geocode) => {
-                        return (
-                          <div
-                            className="gym_names"
-                            key={geocode.GeoObject.Point}
-                            onClick={async () => {
-                              const position =
-                                geocode.GeoObject.Point.pos.split(" ");
-                              const lat = position[1];
-                              const lon = position[0];
-                              const { id, address, latitude, longitude } = {
-                                id: currentGym.id,
-                                address:
-                                  geocode.GeoObject.metaDataProperty
-                                    .GeocoderMetaData.text,
-                                latitude: lat,
-                                longitude: lon,
-                              };
-                              await dispatch(
-                                patchGymAddress({
-                                  id,
-                                  address,
-                                  latitude,
-                                  longitude,
-                                })
-                              );
-                              dispatch(getCurrentGym(currentGym.id));
-                              setAddressEditting(false);
-                              dispatch(resetChanges());
-                            }}
-                          >
-                            {
-                              geocode.GeoObject.metaDataProperty
-                                .GeocoderMetaData.text
-                            }
-                          </div>
-                        );
-                      })
-                    }
-                  />
-                </>
-              )}
-            </div>
+                  }}
+                  lineheight={"14px"}
+                />
+              </>
+            )}
           </div>
-          {/* Contacts */}
-          <div className="flex flex-col gap-[5px] ">
-            {!isContactsEdittingEnabled && (
+          {/* Address  */}
+          <div className="address">
+            {!isAddressEdittingEnabled && (
               <>
                 <TextAndTextButton
-                  text1={"Контакты"}
+                  text1={"Адрес"}
                   text2={"Изменить"}
-                  onclick={() => setContactsEditting(true)}
+                  isRedText={isAddressEdittingEnabled}
+                  onclick={() => {
+                    setAddressEditting(true);
+                  }}
                 />
-                <div className="flex flex-row gap-[24px]">
-                  {/* Phone */}
-                  <div className="icon_and_tag">
-                    <img src={phoneSvg} alt="" />
-                    <ReactInputMask
-                      readOnly={true}
-                      value={currentGym.phone}
-                      mask="+7 (999) 999 99-99"
-                      placeholder="+7 (900) 855 45-58"
-                      style={{
-                        height: "30px",
-                        width: "fit-content",
-                        outline: "none",
-                        fontSize: "13px",
-                        fontWeight: "400",
-                        fontFamily: "Inter, sans-serif",
-                      }}
-                    />
-                  </div>
-                  {/* Tg */}
-                  {currentGym.telegram !== null &&
-                    currentGym.telegram !== "" && (
-                      <div className="icon_and_tag mr-[20px] ">
-                        <img src={tgSvg} alt="" />
-                        <div className=" text-[13px] font-normal font-inter">
-                          {currentGym.telegram}
-                        </div>
-                      </div>
-                    )}
-                  {/* Vk */}
-                  {currentGym.vk !== null && currentGym.vk !== "" && (
-                    <div className="icon_and_tag">
-                      <img src={vkSvg} alt="" />
-                      <div className=" text-[13px] font-normal font-inter">
-                        {currentGym.vk}
-                      </div>
-                    </div>
-                  )}
+                <div className="leading-[16px] text-[13px] font-normal font-inter">
+                  {currentGym.address}
                 </div>
               </>
             )}
-            {isContactsEdittingEnabled && (
+            {isAddressEdittingEnabled && (
               <>
-                <TextAndTextButtonContacts
-                  text1={"Контакты"}
-                  text2={"Сохранить"}
-                  isDisabled={currentGym.phone.length !== 12}
-                  onclick={async () => {
-                    if (currentGym.phone.length == 12) {
-                      if (addingTelegram) {
-                        setAddingTelegram(false);
-                      }
-                      if (addingVk) {
-                        setAddingVk(false);
-                      }
-                      if (hideAdding) {
-                        setHideAdding(false);
-                      }
-                      if (isDropDownOpened) {
-                        openDropDown(false);
-                      }
-                      const { id, phone, telegram, vk } = {
-                        id: currentGym.id,
-                        phone: currentGym.phone,
-                        telegram: currentGym.telegram,
-                        vk: currentGym.vk,
-                      };
-                      if (currentGymState.isChangesOccured) {
-                        await dispatch(
-                          patchGymContacts({ id, phone, telegram, vk })
-                        );
-                        dispatch(getCurrentGym(currentGym.id));
-                      }
-                      setContactsEditting(false);
-                      dispatch(resetChanges());
+                <TextAndTextButton
+                  text1={"Адрес"}
+                  text2={"Отменить"}
+                  isRedText={isAddressEdittingEnabled}
+                  onclick={() => {
+                    if (currentGymState.isChangesOccured) {
+                      dispatch(getCurrentGym(currentGym.id));
                     }
+                    setAddressEditting(false);
                   }}
                 />
-                <div className="flex flex-col gap-[10px]">
-                  {/* phone */}
-                  {currentGym.phone !== null && currentGym.phone !== "" && (
-                    <EditableContacts
-                      icon={phoneSvg}
-                      text={"Телефон"}
-                      value={currentGym.phone}
-                      isPhone={true}
-                      onChange={(e) => {
-                        dispatch(changeCurrentGymsPhone(e.target.value));
-                      }}
-                      onDeleteClicked={() => {
-                        dispatch(changeCurrentGymsPhone(""));
-                      }}
-                      showDeleting={true}
-                      isPhoneEmpty={currentGym.phone.length !== 12}
-                    />
-                  )}
 
-                  {/* telegram */}
-                  {currentGym.telegram !== null &&
-                    currentGym.telegram !== "" &&
-                    !addingTelegram && (
-                      <EditableContacts
-                        icon={tgSvg}
-                        text={"Telegram"}
-                        value={currentGym.telegram}
-                        isTg={true}
-                        onChange={(e) => {
-                          dispatch(changeCurrentGymsTelegram(e.target.value));
-                        }}
-                        onDeleteClicked={() => {
-                          dispatch(changeCurrentGymsTelegram(""));
-                        }}
-                        showDeleting={true}
-                      />
-                    )}
+                {/* address searching dropdown */}
+                <AddressSearching
+                  value={currentGym.address}
+                  notFound={
+                    currentGymState.addressesFromSearch &&
+                    currentGymState.addressesFromSearch.length === 0
+                  }
+                  onChange={(e) => {
+                    dispatch(changeCurrentGymsAddress(e.target.value));
+                  }}
+                  map={
+                    currentGymState.addressesFromSearch &&
+                    currentGymState.addressesFromSearch.length > 0 &&
+                    currentGymState.addressesFromSearch.map((geocode) => {
+                      return (
+                        <div
+                          className="gym_names"
+                          key={geocode.GeoObject.Point}
+                          onClick={async () => {
+                            const position =
+                              geocode.GeoObject.Point.pos.split(" ");
+                            const lat = position[1];
+                            const lon = position[0];
+                            const { id, address, latitude, longitude } = {
+                              id: currentGym.id,
+                              address:
+                                geocode.GeoObject.metaDataProperty
+                                  .GeocoderMetaData.text,
+                              latitude: lat,
+                              longitude: lon,
+                            };
+                            await dispatch(
+                              patchGymAddress({
+                                id,
+                                address,
+                                latitude,
+                                longitude,
+                              })
+                            );
+                            dispatch(getCurrentGym(currentGym.id));
+                            setAddressEditting(false);
+                            dispatch(resetChanges());
+                          }}
+                        >
+                          {
+                            geocode.GeoObject.metaDataProperty.GeocoderMetaData
+                              .text
+                          }
+                        </div>
+                      );
+                    })
+                  }
+                />
+              </>
+            )}
+          </div>
+        </div>
+        {/* Contacts */}
+        <div className="flex flex-col gap-[5px] ">
+          {!isContactsEdittingEnabled && (
+            <>
+              <TextAndTextButton
+                text1={"Контакты"}
+                text2={"Изменить"}
+                onclick={() => setContactsEditting(true)}
+              />
+              <div className="flex flex-row gap-[24px]">
+                {/* Phone */}
+                <div className="icon_and_tag">
+                  <img src={phoneSvg} alt="" />
+                  <ReactInputMask
+                    readOnly={true}
+                    value={currentGym.phone}
+                    mask="+7 (999) 999 99-99"
+                    placeholder="+7 (900) 855 45-58"
+                    style={{
+                      height: "30px",
+                      width: "fit-content",
+                      outline: "none",
+                      fontSize: "13px",
+                      fontWeight: "400",
+                      fontFamily: "Inter, sans-serif",
+                    }}
+                  />
+                </div>
+                {/* Tg */}
+                {currentGym.telegram !== null && currentGym.telegram !== "" && (
+                  <div className="icon_and_tag mr-[20px] ">
+                    <img src={tgSvg} alt="" />
+                    <div className=" text-[13px] font-normal font-inter">
+                      {currentGym.telegram}
+                    </div>
+                  </div>
+                )}
+                {/* Vk */}
+                {currentGym.vk !== null && currentGym.vk !== "" && (
+                  <div className="icon_and_tag">
+                    <img src={vkSvg} alt="" />
+                    <div className=" text-[13px] font-normal font-inter">
+                      {currentGym.vk}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+          {isContactsEdittingEnabled && (
+            <>
+              <TextAndTextButtonContacts
+                text1={"Контакты"}
+                text2={"Сохранить"}
+                isDisabled={currentGym.phone.length !== 12}
+                onclick={async () => {
+                  if (currentGym.phone.length == 12) {
+                    if (addingTelegram) {
+                      setAddingTelegram(false);
+                    }
+                    if (addingVk) {
+                      setAddingVk(false);
+                    }
+                    if (hideAdding) {
+                      setHideAdding(false);
+                    }
+                    if (isDropDownOpened) {
+                      openDropDown(false);
+                    }
+                    const { id, phone, telegram, vk } = {
+                      id: currentGym.id,
+                      phone: currentGym.phone,
+                      telegram: currentGym.telegram,
+                      vk: currentGym.vk,
+                    };
+                    if (currentGymState.isChangesOccured) {
+                      await dispatch(
+                        patchGymContacts({ id, phone, telegram, vk })
+                      );
+                      dispatch(getCurrentGym(currentGym.id));
+                    }
+                    setContactsEditting(false);
+                    dispatch(resetChanges());
+                  }
+                }}
+              />
+              <div className="flex flex-col gap-[10px]">
+                {/* phone */}
+                {currentGym.phone !== null && currentGym.phone !== "" && (
+                  <EditableContacts
+                    icon={phoneSvg}
+                    text={"Телефон"}
+                    value={currentGym.phone}
+                    isPhone={true}
+                    onChange={(e) => {
+                      dispatch(changeCurrentGymsPhone(e.target.value));
+                    }}
+                    onDeleteClicked={() => {
+                      dispatch(changeCurrentGymsPhone(""));
+                    }}
+                    showDeleting={true}
+                    isPhoneEmpty={currentGym.phone.length !== 12}
+                  />
+                )}
 
-                  {/* vk */}
-                  {currentGym.vk !== null &&
-                    currentGym.vk !== "" &&
-                    !addingVk && (
-                      <EditableContacts
-                        icon={vkSvg}
-                        text={"VKontakte"}
-                        value={
-                          currentGym.vk === null || currentGym.vk === ""
-                            ? ""
-                            : `${currentGym.vk}`
-                        }
-                        isVk={true}
-                        onChange={(e) => {
-                          dispatch(changeCurrentGymsVk(e.target.value));
-                        }}
-                        onDeleteClicked={() => {
-                          dispatch(changeCurrentGymsVk(""));
-                        }}
-                        showDeleting={true}
-                      />
-                    )}
-
-                  {/* when select adding */}
-                  {addingTelegram && (
+                {/* telegram */}
+                {currentGym.telegram !== null &&
+                  currentGym.telegram !== "" &&
+                  !addingTelegram && (
                     <EditableContacts
                       icon={tgSvg}
                       text={"Telegram"}
@@ -786,10 +759,17 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       onChange={(e) => {
                         dispatch(changeCurrentGymsTelegram(e.target.value));
                       }}
+                      onDeleteClicked={() => {
+                        dispatch(changeCurrentGymsTelegram(""));
+                      }}
+                      showDeleting={true}
                     />
                   )}
 
-                  {addingVk && (
+                {/* vk */}
+                {currentGym.vk !== null &&
+                  currentGym.vk !== "" &&
+                  !addingVk && (
                     <EditableContacts
                       icon={vkSvg}
                       text={"VKontakte"}
@@ -802,58 +782,90 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       onChange={(e) => {
                         dispatch(changeCurrentGymsVk(e.target.value));
                       }}
+                      onDeleteClicked={() => {
+                        dispatch(changeCurrentGymsVk(""));
+                      }}
+                      showDeleting={true}
                     />
                   )}
 
-                  {(currentGym.phone == null ||
-                    currentGym.phone === "" ||
-                    currentGym.telegram == null ||
-                    currentGym.telegram === "" ||
-                    currentGym.vk == null ||
-                    currentGym.vk === "") &&
-                    !hideAdding && (
-                      <div className="flex flex-row gap-[10px]">
-                        <img src={plusSvg} alt="" />
-                        <DropDownForAddingContacts
-                          isDropDownOpened={isDropDownOpened}
-                          openCloseDropDown={() => {
-                            openDropDown(!isDropDownOpened);
-                          }}
-                          text={"Добавить контакт"}
-                          phone={
-                            (currentGym.phone === null ||
-                              currentGym.phone === "") &&
-                            "Телефон"
-                          }
-                          tg={
-                            (currentGym.telegram === null ||
-                              currentGym.telegram === "") &&
-                            !addingTelegram &&
-                            "Telegram"
-                          }
-                          vk={
-                            (currentGym.vk === null || currentGym.vk === "") &&
-                            !addingVk &&
-                            "VKontakte"
-                          }
-                          ontapTg={() => {
-                            setAddingTelegram(true);
-                            openDropDown(false);
-                          }}
-                          ontapVk={() => {
-                            setAddingVk(true);
-                            openDropDown(false);
-                          }}
-                        />
-                      </div>
-                    )}
-                </div>
-              </>
-            )}
-          </div>
+                {/* when select adding */}
+                {addingTelegram && (
+                  <EditableContacts
+                    icon={tgSvg}
+                    text={"Telegram"}
+                    value={currentGym.telegram}
+                    isTg={true}
+                    onChange={(e) => {
+                      dispatch(changeCurrentGymsTelegram(e.target.value));
+                    }}
+                  />
+                )}
+
+                {addingVk && (
+                  <EditableContacts
+                    icon={vkSvg}
+                    text={"VKontakte"}
+                    value={
+                      currentGym.vk === null || currentGym.vk === ""
+                        ? ""
+                        : `${currentGym.vk}`
+                    }
+                    isVk={true}
+                    onChange={(e) => {
+                      dispatch(changeCurrentGymsVk(e.target.value));
+                    }}
+                  />
+                )}
+
+                {(currentGym.phone == null ||
+                  currentGym.phone === "" ||
+                  currentGym.telegram == null ||
+                  currentGym.telegram === "" ||
+                  currentGym.vk == null ||
+                  currentGym.vk === "") &&
+                  !hideAdding && (
+                    <div className="flex flex-row gap-[10px]">
+                      <img src={plusSvg} alt="" />
+                      <DropDownForAddingContacts
+                        isDropDownOpened={isDropDownOpened}
+                        openCloseDropDown={() => {
+                          openDropDown(!isDropDownOpened);
+                        }}
+                        text={"Добавить контакт"}
+                        phone={
+                          (currentGym.phone === null ||
+                            currentGym.phone === "") &&
+                          "Телефон"
+                        }
+                        tg={
+                          (currentGym.telegram === null ||
+                            currentGym.telegram === "") &&
+                          !addingTelegram &&
+                          "Telegram"
+                        }
+                        vk={
+                          (currentGym.vk === null || currentGym.vk === "") &&
+                          !addingVk &&
+                          "VKontakte"
+                        }
+                        ontapTg={() => {
+                          setAddingTelegram(true);
+                          openDropDown(false);
+                        }}
+                        ontapVk={() => {
+                          setAddingVk(true);
+                          openDropDown(false);
+                        }}
+                      />
+                    </div>
+                  )}
+              </div>
+            </>
+          )}
         </div>
       </div>
-    )
+    </div>
   );
 }
 
@@ -863,6 +875,11 @@ export function EditableTextfield({
   fontsize,
   lineheight,
   onButtonClicked,
+  hideButton,
+  height,
+  placeholder,
+  showTextfield,
+  isNotValidated,
 }) {
   const inputRef = useRef(null);
   // for autofocus calls when component first renders
@@ -881,24 +898,49 @@ export function EditableTextfield({
 
   return (
     <div className="flex flex-row justify-between gap-[10px] items-start">
-      <textarea
-        className="textArea text-[13px] font-normal font-inter"
-        ref={inputRef}
-        value={value}
-        onChange={onChange}
-        style={{
-          fontSize: fontsize,
-          lineHeight: lineheight,
-        }}
-      />
-      <button onClick={onButtonClicked}>
-        <img src={doneSvg} alt="" />
-      </button>
+      {!showTextfield && (
+        <textarea
+          className="textArea text-[13px] font-normal font-inter"
+          ref={inputRef}
+          value={value}
+          placeholder={placeholder}
+          onChange={onChange}
+          style={{
+            border: isNotValidated ? "1px solid rgba(255, 136, 136, 1)" : "1px solid #77aaf9",
+            fontSize: fontsize,
+            lineHeight: lineheight,
+            height: height,
+          }}
+        />
+      )}
+
+      {showTextfield && (
+        <input
+          type="text"
+          className="textArea text-[13px] font-normal font-inter"
+          ref={inputRef}
+          value={value}
+          placeholder={placeholder}
+          onChange={onChange}
+          style={{
+            border: isNotValidated ? "1px solid rgba(255, 136, 136, 1)" : "1px solid #77aaf9",
+            fontSize: fontsize,
+            lineHeight: lineheight,
+            height: height,
+          }}
+        />
+      )}
+
+      {!hideButton && (
+        <button onClick={onButtonClicked}>
+          <img src={doneSvg} alt="" />
+        </button>
+      )}
     </div>
   );
 }
 
-function EditableContacts({
+export function EditableContacts({
   text,
   value,
   icon,
@@ -1080,6 +1122,7 @@ function ChangeMainPhotoModal({
     </div>
   );
 }
+
 function ChangeLogoModal({
   onPop,
   logo,

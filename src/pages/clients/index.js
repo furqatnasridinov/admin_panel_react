@@ -26,7 +26,7 @@ export default function ClientsPage() {
   }, []);
 
   useEffect(() => {
-    if (gymState.listOfGyms.length === 1) {
+    if (gymState.listOfGyms?.length === 1) {
       dispatch(setCurrentGymFromFirstItem());
     }
   }, [gymState.listOfGyms]);
@@ -46,21 +46,21 @@ export default function ClientsPage() {
           <BookingHeader
             gym={gymState.currentGym}
             listOfGyms={gymState.listOfGyms}
-            showDropDown={gymState.listOfGyms.length > 1}
+            showDropDown={gymState.listOfGyms?.length > 1}
           />
 
           <AlreadyCame
-            doNotShowBlock={clientsSlice.alreadyCameToday.length === 0}
+            doNotShowBlock={clientsSlice.alreadyCameToday?.length === 0}
             clientsList={clientsSlice.alreadyCameToday}
           />
 
           <WillCome
             clientsList={clientsSlice.willComeToday}
-            doNotShowBlock={clientsSlice.willComeToday.length === 0}
+            doNotShowBlock={clientsSlice.willComeToday?.length === 0}
           />
 
-          {clientsSlice.alreadyCameToday.length === 0 &&
-            clientsSlice.willComeToday.length === 0 && (
+          {clientsSlice.alreadyCameToday?.length === 0 &&
+            clientsSlice.willComeToday?.length === 0 && (
               <div className="centeredGreyText">Сегодня у вас нет событий</div>
             )}
         </>

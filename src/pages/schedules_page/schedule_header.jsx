@@ -34,6 +34,7 @@ import previousMoth from "../../assets/svg/navigate_prev_month.svg";
 import checkboxEnabled from "../../assets/svg/done.svg";
 import checkboxDisabled from "../../assets/svg/checkbox_disabled.svg";
 import questionLogo from "../../assets/svg/questionModal.svg";
+import AppConstants from "../../config/app_constants";
 
 export default function ScheduleHeader() {
   // redux
@@ -109,6 +110,8 @@ export default function ScheduleHeader() {
                 key={index}
                 className="gymNames"
                 onClick={() => {
+                  // save gymId to local storage
+                  localStorage.setItem(AppConstants.keyGymId, item.id);
                   dispatch(setCurrentGym(item));
                   openGymsDropDown(false);
                 }}
@@ -550,15 +553,7 @@ export default function ScheduleHeader() {
                       !scheduleState.endTimeIsBeforeStartTime
                     ) {
                       // post lesson
-                      const {
-                        id,
-                        date,
-                        duration,
-                        description,
-                        lessonType,
-                        selectedWeekdays,
-                        autoAccept,
-                      } = {
+                      const request = {
                         id: gymState.currentGym.id,
                         date: scheduleState.lessonStartTimeSendToServer,
                         duration: scheduleState.lessonDurationSendToServer,
@@ -566,18 +561,10 @@ export default function ScheduleHeader() {
                         lessonType: activitiesState.selectedActivity,
                         selectedWeekdays: scheduleState.selectedWeekdays,
                         autoAccept: checkboxAutoAcceptEnabled,
+                        limitCountUser: checkboxLimitEnabled,
+                        maxCount: checkboxLimitEnabled ? limit : null,
                       };
-                      await dispatch(
-                        createSchedule({
-                          id,
-                          date,
-                          duration,
-                          description,
-                          lessonType,
-                          selectedWeekdays,
-                          autoAccept,
-                        })
-                      );
+                      await dispatch(createSchedule(request));
                       //resetdatas
                       await dispatch(getSchedules(gymState.currentGym.id));
                       dispatch(resetDatasAfterSubmitting());

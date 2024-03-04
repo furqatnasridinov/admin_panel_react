@@ -42,7 +42,7 @@ export default function BookingBody({ clientsList, doNotShowBlock }) {
       </div>
 
       {clientsList &&
-        clientsList.length > 0 &&
+        clientsList?.length > 0 &&
         [...clientsList] // Создаем копию массива перед сортировкой
           .sort((a, b) => a.startTime - b.startTime)
           .map((client) => {
@@ -99,14 +99,6 @@ export default function BookingBody({ clientsList, doNotShowBlock }) {
                 onDecline={async () => {
                   openDialog(true);
                   dispatch(setDecliningEvent(client));
-
-                  /* const request = {
-                    gymId: client.gymId,
-                    waitingId: client.id,
-                  };
-                  await dispatch(rejectClient(request));
-                  // getting new data
-                  dispatch(getNewClients(gymState.currentGym.id)); */
                 }}
                 onNavigation={() => {
                   dispatch(setNavigationFromBooking(true));

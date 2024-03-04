@@ -7,13 +7,17 @@ export default function BackButton({
   width,
   height,
   hideHover,
+  ref
 }) {
   return (
     <button
+    ref={ref}
       onClick={onСlick}
       style={{
         width: width,
         height: height,
+        paddingLeft : "16px",
+        paddingRight : "16px"
       }}
       className={
         hideHover

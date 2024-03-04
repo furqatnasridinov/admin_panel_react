@@ -21,6 +21,7 @@ import {
   getAllAvailableLessonTypes,
 } from "../../features/activities_slice";
 import MessageLikeTopContainer from "../booking_page/message_like_top_container";
+import AppConstants from "../../config/app_constants";
 
 export default function GymDetails() {
   let { gymId } = useParams(); // This hooks allows you to extract params from the URL
@@ -58,6 +59,8 @@ export default function GymDetails() {
   // here will be functions to get new data`s after selecting another gym from dropdown
   function selectAnotherGym(gym) {
     if (gym.id !== gymState.currentGym.id) {
+      // save gymID to local storage 
+      localStorage.setItem(AppConstants.keyGymId, gym.id);
       // function to get gymdetailes based on gymnewSelected gymid
       dispatch(getCurrentGym(gym.id));
 
@@ -104,7 +107,7 @@ export default function GymDetails() {
     console.log("selected act ", activitiesSlice.selectedActivity),
     (
       <div className="gym_details">
-        {clientsSlice.waitingForAccept.length > 0 && (
+        {clientsSlice.waitingForAccept?.length > 0 && (
           <MessageLikeTopContainer />
         )}
 
@@ -113,7 +116,7 @@ export default function GymDetails() {
             <GymDetailesHeader
               gym={gymState.currentGym}
               listOfGyms={gymState.listOfGyms}
-              showDropDown={gymState.listOfGyms.length > 1}
+              showDropDown={gymState.listOfGyms?.length > 1}
               selectAnotherGym={selectAnotherGym}
             />
 

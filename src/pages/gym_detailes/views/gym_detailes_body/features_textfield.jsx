@@ -12,7 +12,7 @@ export function FeaturesTextField({
     const input = inputRef.current;
     if (input) {
       input.focus();
-      const length = input.value.length;
+      const length = input.value?.length;
       input.setSelectionRange(length, length);
       input.style.height = "inherit";
       input.style.height = `${input.scrollHeight}px`;

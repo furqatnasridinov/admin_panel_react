@@ -203,7 +203,19 @@
   flex-direction: column;
   padding: 32px;
   gap: 32px;
-  width: 520px;
+  width: 800px;
+}
+
+.blueContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 16px;
+  border: 1px solid #77aaf9;
+  background-color: #f5f9ff;
+  padding: 32px;
+  width: 100%;
+  height: fit-content;
 }
 
 /* dialog style starts here */
