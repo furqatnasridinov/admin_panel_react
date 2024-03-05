@@ -13,7 +13,7 @@
 }
 
 .main_pic {
-  width: 100%;
+  width: 375px;
   height: 210px;
   border-radius: 16px;
   object-fit: cover;

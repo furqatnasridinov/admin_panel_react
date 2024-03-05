@@ -13,10 +13,10 @@ import ReactInputMask from "react-input-mask";
 import phoneSvg from "../../assets/svg/phone.svg";
 import BackButton from "../../components/button/back_button";
 import CustomButton from "../../components/button/button";
-import addPhotoSvg from "../../assets/svg/add_photo.svg";
 import { createGym, addGymPicture, addGymLogo } from "../../features/current_gym_slice";
 import { useNavigate } from "react-router-dom";
 import AppConstants from "../../config/app_constants";
+import CustomDialog from "../../components/dialog/dialog";
 
 export default function CreateGymFirstContainer() {
   //redux
@@ -38,7 +38,6 @@ export default function CreateGymFirstContainer() {
   const [isDescriptionNotValidated, setIsDescriptionNotValidated] =
     useState(false);
   const [address, setAddress] = useState("");
-  const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
   const [isAddressNotValidated, setIsAddressNotValidated] = useState(false);
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
@@ -52,33 +51,14 @@ export default function CreateGymFirstContainer() {
   const [isPhoneEdittingEnabled, setIsPhoneEdittingEnabled] = useState(false);
   const [isPhoneNotValidated, setIsPhoneNotValidated] = useState(false);
   const [isFirstStepCompleted, setIsFirstStepCompleted] = useState(false);
-  const [activity, setActivity] = useState(false);
-  const [isActivityEdittingEnabled, setIsActivityEdittingEnabled] =
-    useState(false);
-  const [isActivityNotValidated, setIsActivityNotValidated] = useState(false);
-  const [activityDescription, setActivityDescription] = useState("");
-  const [
-    isActivityDescriptionEdittingEnabled,
-    setIsActivityDescriptionEdittingEnabled,
-  ] = useState(false);
-  const [
-    isActivityDescriptionNotValidated,
-    setIsActivityDescriptionNotValidated,
-  ] = useState(false);
-  const [isActivityDescriptionConfirmed, setIsActivityDescriptionConfirmed] =
-    useState(false);
-  const [features, setFeatures] = useState("");
-  const [isFeaturesEdittingEnabled, setIsFeaturesEdittingEnabled] =
-    useState(false);
-  const [isFeaturesNotValidated, setIsFeaturesNotValidated] = useState(false);
-  const [isFeaturesConfirmed, setIsFeaturesConfirmed] = useState(false);
-  const [photos, setPhotos] = useState([]);
-  const [photosUrl, setPhotosUrl] = useState([]);
+  const [isModalShown, setIsModalShown] = useState(false);
+  const [callback, setCallback] = useState(null);
+
 
   // use refs
   const fileInputMainPhotoRef = useRef();
   const fileInputLogoRef = useRef();
-  const hiddenFileInput = useRef(null);
+  const containerRef = useRef();
 
   // use navigation
   const navigate = useNavigate();
@@ -143,53 +123,53 @@ export default function CreateGymFirstContainer() {
     }
   };
 
-  const uploadActivityPhotos = async (event) => {
-    let files = event.target.files;
-    let urls = [];
-    for (let i = 0; i < files.length; i++) {
-      let file = files[i];
-      if (file.type === "image/png") {
-        // convert to jpeg
-        const originalFileName = file.name.replace(".png", ".jpeg");
-        const image = await new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.src = URL.createObjectURL(file);
-        });
-
-        const canvas = document.createElement("canvas");
-        canvas.width = image.width;
-        canvas.height = image.height;
-        const context = canvas.getContext("2d");
-        context.drawImage(image, 0, 0, image.width, image.height);
-        const jpegURL = canvas.toDataURL("image/jpeg");
-        file = await (await fetch(jpegURL)).blob();
-        file = new File([file], originalFileName, { type: "image/jpeg" });
-      }
-
-      if (file.type === "image/jpeg") {
-        // save
-        urls.push(URL.createObjectURL(file)); // to show only
-        setPhotos((prev) => [...prev, file]);
-        setPhotosUrl((prev) => [...prev, URL.createObjectURL(file)]);
-      } else {
-        toast("Неподдерживаемый формат файла");
-      }
-    }
-  };
-
   useEffect(() => {
     if (address.length > 2) {
       dispatch(searchingForAddress(address));
     }
   }, [address]);
 
+  /*   useEffect(() => {
+      function handleClickOutside(event) {
+        if (containerRef.current && !containerRef.current.contains(event.target)) {
+          // Клик был вне контейнера, проверяем наличие обратного вызова
+          if (event.target.id === "sidebarOnclick") {
+            event.preventDefault();
+            setIsModalShown(true);
+            setCallback(() => event.target.onclick);
+          }
+        }
+      }
+  
+      // Привязываем обработчик событий к документу
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        // Удаляем обработчик событий при размонтировании компонента
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []); */
+
+  useEffect(() => {
+    function handleUnload(event) {
+      if (mainPhoto !== null ||
+        logo !== null || name !== "" ||
+        description !== "" || address !== "" || phone !== "") {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    }
+    
+    window.addEventListener("beforeunload", handleUnload);
+    return () => {
+      // Удаляем обработчик событий при размонтировании компонента
+      window.removeEventListener("beforeunload", handleUnload);
+    };
+  }, []);
+
   return (
-    console.log(`phone length: ${phone.length}`),
-    console.log(`phone: ${phone}`),
     (
       <>
-        <div className="firstContainer">
+        <div ref={containerRef} className="firstContainer">
           <div className="flex flex-row gap-[32px]">
             <div className="flex flex-col gap-[10px]">
               <TitleText
@@ -489,7 +469,17 @@ export default function CreateGymFirstContainer() {
                 width={"114px"}
                 height={"40px"}
                 title={"Отменить"}
-                onСlick={() => { }}
+                onСlick={() => {
+                  // if any data is entered, show modal
+                  if (mainPhoto !== null ||
+                    logo !== null || name !== "" ||
+                    description !== "" || address !== "" || phone !== "") {
+                    setIsModalShown(true);
+                  }
+                  else {
+                    navigate(-1);
+                  }
+                }}
               />
 
               <CustomButton
@@ -549,8 +539,6 @@ export default function CreateGymFirstContainer() {
                       address: address,
                       latitude: latitude,
                       longitude: longitude,
-                      //mainPictureUrl: mainPhoto.name,
-                      //logo: logo.name,
                       phone: phone,
                     };
                     await dispatch(createGym(request));
@@ -570,7 +558,6 @@ export default function CreateGymFirstContainer() {
                       };
                       await dispatch(addGymLogo(req2));
                     }
-
                     navigate(`/myGymsPage/gymDetails/${localStorage.getItem(AppConstants.keyGymId)}`);
                   }
                 }}
@@ -587,149 +574,38 @@ export default function CreateGymFirstContainer() {
                   выделенные красным
                 </div>
               )}
+            {isModalShown &&
+              <CustomDialog
+                isOpened={isModalShown}
+                closeOnTapOutside={() => setIsModalShown(false)} >
+                <div className="modalContainer">
+                  <div className="text-[16px] font-semibold leading-[16px]">Данные могут быть сброшены</div>
+                  <div className="flex flex-row justify-between gap-2 mt-[20px]">
+                    <BackButton
+                      height={"40px"}
+                      width={"fit-content"}
+                      title={"Отменить"}
+                      onСlick={() => {
+                        setIsModalShown(false);
+                      }} />
+                    <CustomButton height={"40px"}
+                      width={"200px"}
+                      title={"Подтвердить"}
+                      onСlick={() => {
+                        if (callback !== null) {
+                          callback();
+                        } else {
+                          navigate(-1);
+                        }
+
+                      }} />
+                  </div>
+                </div>
+              </CustomDialog>
+            }
           </div>
         )}
 
-        {/* <div className="firstContainer">
-          <div className="flex flex-col gap-[10px]">
-            <TitleText
-              firstText={"Активности"}
-              onClick={() => {
-                setIsActivityEdittingEnabled(true);
-              }}
-              undoAction={() => {
-                setIsActivityEdittingEnabled(false);
-              }}
-              isEnabled={isActivityEdittingEnabled}
-              isNotValidated={false}
-            />
-
-            {isActivityEdittingEnabled && (
-              <EditableTextfield
-                value={activity}
-                onChange={(e) => setActivity(e.target.value)}
-                onButtonClicked={async () => {}}
-                lineheight={"16px"}
-              />
-            )}
-
-            {!isActivityEdittingEnabled && activity !== "" && (
-              <div className="leading-[14px] text-[13px] font-normal font-inter">
-                {name}
-              </div>
-            )}
-          </div>
-
-          <div className="flex flex-row gap-[132px]">
-            <div className="flex flex-col gap-[32px]">
-              
-              <div className="flex flex-col gap-[10px]">
-                <TitleText
-                  firstText={"Описание"}
-                  onClick={() => {
-                    setIsActivityDescriptionEdittingEnabled(true);
-                  }}
-                  undoAction={() => {
-                    setIsActivityDescriptionEdittingEnabled(false);
-                  }}
-                  isEnabled={isActivityDescriptionEdittingEnabled}
-                  isNotValidated={isActivityDescriptionNotValidated}
-                />
-
-                {isActivityDescriptionEdittingEnabled && (
-                  <EditableTextfield
-                    value={activityDescription}
-                    onChange={(e) => setActivityDescription(e.target.value)}
-                    onButtonClicked={async () => {
-                      setIsActivityDescriptionConfirmed(true);
-                      setIsActivityDescriptionEdittingEnabled(false);
-                    }}
-                    lineheight={"16px"}
-                  />
-                )}
-
-                {!isActivityDescriptionEdittingEnabled &&
-                  activityDescription !== "" &&
-                  isActivityDescriptionConfirmed && (
-                    <div className="leading-[14px] text-[13px] font-normal font-inter">
-                      {activityDescription}
-                    </div>
-                  )}
-              </div>
-
-             
-              <div className="flex flex-col gap-[10px]">
-                <TitleText
-                  firstText={"Особенности посещения"}
-                  onClick={() => {
-                    setIsFeaturesEdittingEnabled(true);
-                  }}
-                  undoAction={() => {
-                    setIsFeaturesEdittingEnabled(false);
-                    if (!isFeaturesConfirmed) {
-                      setFeatures("");
-                    }
-                  }}
-                  isEnabled={isFeaturesEdittingEnabled}
-                  isNotValidated={isFeaturesNotValidated}
-                />
-                {isFeaturesEdittingEnabled && (
-                  <EditableTextfield
-                    value={features}
-                    onChange={(e) => setFeatures(e.target.value)}
-                    onButtonClicked={async () => {
-                      setIsFeaturesConfirmed(true);
-                      setIsFeaturesEdittingEnabled(false);
-                    }}
-                    lineheight={"16px"}
-                  />
-                )}
-                {!isFeaturesEdittingEnabled &&
-                  features !== "" &&
-                  isFeaturesConfirmed && (
-                    <div className="leading-[14px] text-[13px] font-normal font-inter">
-                      {features}
-                    </div>
-                  )}
-              </div>
-            </div>
-            <div className="flex flex-col gap-[10px]">
-              <TitleText firstText={"Фотографии"} />
-              <div className="recomendations_to_photo">
-                <p>Рекомендуемые форматы для загрузки: jpeg, png</p>
-                <p>Минимально допустимая сторона фотографии: 1080px</p>
-              </div>
-              <div className="activity_photos_container">
-                {photosUrl.map((photo, index) => {
-                  return (
-                    <img
-                      key={index}
-                      src={photo}
-                      className="activity_each_photo"
-                      alt=""
-                    />
-                  );
-                })}
-                <>
-                  <img
-                    src={addPhotoSvg}
-                    alt=""
-                    style={{ cursor: "pointer" }}
-                    onClick={() => hiddenFileInput.current.click()} // нажимаем как бы на input file
-                  />
-                  <input
-                    type="file"
-                    ref={hiddenFileInput}
-                    multiple={true}
-                    onChange={uploadActivityPhotos}
-                    style={{ display: "none" }} // Скрываем input
-                    accept="image/png, image/jpeg"
-                  />
-                </>
-              </div>
-            </div>
-          </div>
-        </div> */}
       </>
     )
   );

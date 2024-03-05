@@ -12,6 +12,8 @@ import myfit from "../../assets/svg/myfit.svg"
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux'
 import { sendPhoneNumber, sendForConfirmation } from '../../features/register'
+import { getUser } from '../../features/register'
+import AppConstants from '../../config/app_constants'
 
 
 export default function Register1() {
@@ -26,6 +28,8 @@ export default function Register1() {
   const [submittedPhone, setSubmittedPhone] = useState("");
   const [anotherPhoneAdded, setAnotherPhoneAdded] = useState(false);
   const [isWaiting, setWaiting] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem(AppConstants.keyToken));
+  const [tokenSaved, setTokenSaved] = useState(false);
 
   // use navigation
   const navigate = useNavigate();
@@ -58,26 +62,28 @@ export default function Register1() {
           phone: `+${phone}`,
           otp: otp,
         }
-        dispatch(sendForConfirmation(body))
+        const sendConfirmation = async () => {
+          await dispatch(sendForConfirmation(body))
+        }
+        sendConfirmation();
       }
     }
   }, [otp])
 
+
   useEffect(() => {
     if (loginState.isSuccessfullyLogined) {
-      setGoToWellcome(true);
-      setTimeout(() => {
-        navigate("/myGymsPage");
-      }, 3200);
+      navigate("/welcomePage", { replace: true });
+      //dispatch(getUser());
     }
-  }, [loginState.isSuccessfullyLogined])
+  }, [loginState.isSuccessfullyLogined]);
 
 
   useEffect(() => {
     if (phone.length !== 11 && isPhoneSent) {
       sendPhone(false);
       setTimer(59);
-    
+
     }
     if (phone.length === 11) {
       setWaiting(true);
@@ -86,8 +92,7 @@ export default function Register1() {
           setAnotherPhoneAdded(true);
         }
       }
-
-    }else{
+    } else {
       setWaiting(false);
     }
   }, [phone, isPhoneSent])
@@ -177,15 +182,7 @@ export default function Register1() {
 
       }
 
-      {goToWellcome && <div className='flex flex-col gap-[40px] items-center justify-center absolute top-[40%]'>
-        <div className="text-[16px] font-medium leading-[16px]">
-          Добро пожаловать в команду
-        </div>
-        <img src={myfit} alt="" />
 
-      </div>
-
-      }
 
     </div >
   )
