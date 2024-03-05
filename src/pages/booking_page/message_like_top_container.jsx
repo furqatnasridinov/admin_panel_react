@@ -43,8 +43,8 @@ export default function MessageLikeTopContainer({ hideOpenSchedule }) {
         clientsSlice.waitingForAccept &&
         clientsSlice.waitingForAccept?.length > 0 &&
         [...clientsSlice.waitingForAccept] // Создаем копию массива перед сортировкой
+        .sort((a, b) => b.id - a.id)
           .slice(0, 1)
-          .sort((a, b) => a.startTime - b.startTime)
           .map((client) => {
             let day = client.startTime.getDate();
             let month = client.startTime.getMonth() + 1;
@@ -120,7 +120,8 @@ export default function MessageLikeTopContainer({ hideOpenSchedule }) {
         clientsSlice.waitingForAccept &&
         clientsSlice.waitingForAccept?.length > 0 &&
         [...clientsSlice.waitingForAccept] // Создаем копию массива перед сортировкой
-          .sort((a, b) => a.startTime - b.startTime)
+        // сортируем по id по возрастанию, чтобы новые заявки были в в начале
+        .sort((a, b) => b.id - a.id)
           .map((client) => {
             let day = client.startTime.getDate();
             let month = client.startTime.getMonth() + 1;

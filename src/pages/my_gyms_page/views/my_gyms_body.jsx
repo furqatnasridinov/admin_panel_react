@@ -1,18 +1,12 @@
 import React from "react";
 import Gym from "../components/gym";
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { getListOfGyms } from "../../../features/current_gym_slice";
+import { useSelector } from "react-redux";
 
 const MyGymsBody = () => {
-  const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
 
-  useEffect(() => {
-    dispatch(getListOfGyms());
-  }, []);
-
   return (
+    
     <div className="px-[30px] bg-white rounded-[16px] flex flex-col h-[86vh]">
       {/* Top section */}
       <div className="flex flex-row pr-[203px] pt-[34px] bg-white justify-between h-[10%]">

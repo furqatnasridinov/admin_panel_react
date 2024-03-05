@@ -21,14 +21,14 @@
   margin-top: 16px;
   margin-left: 16px;
   margin-right: 16px;
-  /*   padding-left: 16px;
-  padding-right: 16px; */
+  padding-left: 16px;
+  padding-right: 16px;
   padding-top: 10px;
   padding-bottom: 10px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   gap: 5px;
   border-radius: 8px;
   border: 1px solid transparent;
@@ -143,4 +143,16 @@
 
 .additional_block li  {
   color: transparent;
+}
+
+
+
+.modalContainer {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+  gap: 32px;
+  width: fit-content;
 }

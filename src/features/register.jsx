@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import AppConstants from "../config/app_constants";
 
 
+
 export const sendPhoneNumber = createAsyncThunk(
     "login/sendPhoneNumber",
     async (phone) => {
@@ -111,23 +112,22 @@ export const getUser = createAsyncThunk(
             if (response.data["operationResult"] === "OK") {
 
                 // проверяем изменилось ли что-то в профиле
-                if (response.data["object"].firstName !== localStorage.getItem(AppConstants.keyUserFirstname)) {
+            if (response.data["object"].firstName !== localStorage.getItem(AppConstants.keyUserFirstname)) {
                     localStorage.setItem(AppConstants.keyUserFirstname, response.data["object"]["firstName"]);
                 }
-                if (response.data["object"].lastName !== localStorage.getItem(AppConstants.keyUserLastname)) {
+            if (response.data["object"].lastName !== localStorage.getItem(AppConstants.keyUserLastname)) {
                     localStorage.setItem(AppConstants.keyUserLastname, response.data["object"]["lastName"]);
                 }
-                if (response.data["object"].patronymic !== localStorage.getItem(AppConstants.keyPatronymic)) {
+            if (response.data["object"].patronymic !== localStorage.getItem(AppConstants.keyPatronymic)) {
                     localStorage.setItem(AppConstants.keyPatronymic, response.data["object"]["patronymic"]);
                 }
-                if (response.data["object"].pictureUrl !== localStorage.getItem(AppConstants.keyPhoto)) {
+            if (response.data["object"].pictureUrl !== localStorage.getItem(AppConstants.keyPhoto)) {
                     localStorage.setItem(AppConstants.keyPhoto, response.data["object"]["pictureUrl"]);
                 }
-                if (response.data["object"].login !== localStorage.getItem(AppConstants.keyPhone)) {
+            if (response.data["object"].login !== localStorage.getItem(AppConstants.keyPhone)) {
                     localStorage.setItem(AppConstants.keyPhone, response.data["object"]["login"]);
                 }
-
-                return response.data["object"];
+            return response.data["object"];
             }
         } catch (error) {
             toast(`getUser ${error}`);

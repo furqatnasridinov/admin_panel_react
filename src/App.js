@@ -20,6 +20,7 @@ import { getNewClients } from "./features/clients_slice";
 import CreateGymPage from "./pages/create_gym_page";
 import Register1 from "./pages/register/register1";
 import Splash from "./pages/splash";
+import WelcomePage from "./pages/register/welcome";
 
 
 function Content() {
@@ -27,12 +28,13 @@ function Content() {
 
   return (
     <div className= {location.pathname !== '/registerPage' ?"flex flex-1 flex-row bg-bg-color p-[10px] h-full" : "" } >
-      {location.pathname !== '/registerPage' && <Sidebar />}
+      {(location.pathname !== '/registerPage' && location.pathname !== '/welcomePage') && <Sidebar />}
 
       <div className="flex-1 h-full">
       <Routes>
             <Route path="/" element = {<Splash />}></Route>
             <Route path="/registerPage" element = {<Register1 />}></Route>
+            <Route path="/welcomePage" element = {<WelcomePage />}></Route>
             <Route path="/bookingPage" element={<BookingPage />}></Route>
             
             <Route path="/waitingClientsPage" element={<ClientsPage />}></Route>
@@ -69,9 +71,9 @@ function App() {
     //localStorage.setItem(AppConstants.keyToken, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIrNzk5OTIxNzI0OTQiLCJleHAiOjE3MTIwODA2Njh9.ltOhU7N79KL4udwKyLY02rK7FLwnuiLorh2okKsgZdyazu4anZD1NWrKIaUdHPznrsr4YOmFdzKjo3TpD81t0A");
     // подключение к веб-сокету
     NewClientsWebSocket(dispatch);
-    if (localStorage.getItem(AppConstants.keyGymId) !== null) {
+   /*  if (localStorage.getItem(AppConstants.keyGymId) !== null) {
       dispatch(getNewClients(localStorage.getItem(AppConstants.keyGymId)));
-    }      
+    }  */     
   }, []);
 
   return (
