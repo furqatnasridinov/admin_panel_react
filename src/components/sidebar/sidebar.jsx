@@ -90,9 +90,9 @@ const Sidebar = () => {
   }, []);
 
   useEffect(() => {
-    if (gymsState.listOfGyms?.length > 0) {
+    /* if (gymsState.listOfGyms?.length > 0) {
       dispatch(setCurrentGymFromFirstItem());
-    }
+    } */
   }, [gymsState.listOfGyms]);
 
   useEffect(() => {
@@ -133,8 +133,12 @@ const Sidebar = () => {
             {isTextShown && (
               <div className="text-[14px] font-normal  line-clamp-2 text-ellipsis">
 
-                {registerState.user?.firstName + " " +
-                  registerState.user?.lastName}
+                {registerState.user && (
+                  registerState.user?.firstName + " " +
+                  registerState.user?.lastName
+                )
+                }
+
               </div>
             )}
           </button>

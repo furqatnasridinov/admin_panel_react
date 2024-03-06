@@ -158,13 +158,37 @@ export default function CreateGymFirstContainer() {
         event.returnValue = '';
       }
     }
-    
+
     window.addEventListener("beforeunload", handleUnload);
     return () => {
       // Удаляем обработчик событий при размонтировании компонента
       window.removeEventListener("beforeunload", handleUnload);
     };
   }, []);
+
+
+  // 
+  useEffect(() => {
+    if (isNameNotValidated && name !== "") {
+      setIsNameNotValidated(false);
+    }
+    if (isDescriptionNotValidated && description !== "") {
+      setIsDescriptionNotValidated(false);
+    }
+    if (isAddressNotValidated && address !== "") {
+      setIsAddressNotValidated(false);
+    }
+    if (isPhoneNotValidated && phone.length === 11) {
+      setIsPhoneNotValidated(false);
+    }
+    if (mainPhoto !== null && isMainPhotoNotValidated) {
+      setMainPhotoNotValidated(false);
+    }
+    if (logo !== null && isLogoNotValidated) {
+      setLogoNotValidated(false);
+    }
+
+  }, [name, description, address, phone, mainPhoto, logo]);
 
   return (
     (
@@ -178,6 +202,7 @@ export default function CreateGymFirstContainer() {
                   fileInputMainPhotoRef.current.click();
                 }}
                 isNotValidated={isMainPhotoNotValidated}
+                secondText={mainPhoto !== null ? "Изменить" : "Добавить"}
               />
               <>
                 <img
@@ -204,6 +229,7 @@ export default function CreateGymFirstContainer() {
                 firstText={"Логотип"}
                 onClick={() => { }}
                 isNotValidated={isLogoNotValidated}
+                secondText={logo !== null ? "Изменить" : "Добавить"}
               />
               <div className="flex flex-row gap-[32px]  ">
                 <img
@@ -269,7 +295,11 @@ export default function CreateGymFirstContainer() {
                   if (!isNameConfirmed) {
                     setName("");
                   }
+                  /* if (name === "" && !isNameNotValidated) {
+                    setIsNameNotValidated(true);
+                  } */
                 }}
+                secondText={name !== "" && isNameConfirmed ? "Изменить" : "Добавить"}
                 isEnabled={isNameEdittingEnabled}
                 isNotValidated={isNameNotValidated}
               />
@@ -303,7 +333,11 @@ export default function CreateGymFirstContainer() {
                   if (!isDescriptionConfirmed) {
                     setDescription("");
                   }
+                  /* if (description === "" && !isDescriptionNotValidated) {
+                    setIsDescriptionNotValidated(true);
+                  } */
                 }}
+                secondText={description !== "" && isDescriptionConfirmed ? "Изменить" : "Добавить"}
                 isEnabled={isDescriptionEdittingEnabled}
                 isNotValidated={isDescriptionNotValidated}
               />
@@ -336,8 +370,8 @@ export default function CreateGymFirstContainer() {
                 }}
                 undoAction={() => {
                   setIsAddressEdittingEnabled(false);
-                  setAddress("");
                 }}
+                secondText={address !== "" && !isAddressEdittingEnabled ? "Изменить" : "Добавить"}
                 isEnabled={isAddressEdittingEnabled}
                 isNotValidated={isAddressNotValidated}
               />
@@ -355,32 +389,34 @@ export default function CreateGymFirstContainer() {
                   map={
                     currentGymState.addressesFromSearch &&
                     currentGymState.addressesFromSearch.length > 0 &&
-                    currentGymState.addressesFromSearch.map((geocode) => {
-                      return (
-                        <div
-                          className="gym_names"
-                          key={geocode.GeoObject.Point}
-                          onClick={async () => {
-                            const position =
-                              geocode.GeoObject.Point.pos.split(" ");
-                            const lat = position[1];
-                            const lon = position[0];
-                            setLatitude(lat);
-                            setLongitude(lon);
-                            setAddress(
-                              geocode.GeoObject.metaDataProperty
-                                .GeocoderMetaData.text
-                            );
-                            setIsAddressEdittingEnabled(false);
-                          }}
-                        >
-                          {
-                            geocode.GeoObject.metaDataProperty.GeocoderMetaData
-                              .text
-                          }
-                        </div>
-                      );
-                    })
+                    currentGymState.addressesFromSearch
+                      .filter(geocode => geocode.GeoObject.metaDataProperty.GeocoderMetaData.Address.country_code === 'RU')
+                      .map((geocode) => {
+                        return (
+                          <div
+                            className="gym_names"
+                            key={geocode.GeoObject.Point}
+                            onClick={async () => {
+                              const position =
+                                geocode.GeoObject.Point.pos.split(" ");
+                              const lat = position[1];
+                              const lon = position[0];
+                              setLatitude(lat);
+                              setLongitude(lon);
+                              setAddress(
+                                geocode.GeoObject.metaDataProperty
+                                  .GeocoderMetaData.text
+                              );
+                              setIsAddressEdittingEnabled(false);
+                            }}
+                          >
+                            {
+                              geocode.GeoObject.metaDataProperty.GeocoderMetaData
+                                .text
+                            }
+                          </div>
+                        );
+                      })
                   }
                 />
               )}
@@ -406,6 +442,7 @@ export default function CreateGymFirstContainer() {
                   setPhone("");
                 }
               }}
+              secondText={phone !== "" && isPhoneConfirmed ? "Изменить" : "Добавить"}
               isEnabled={isPhoneEdittingEnabled}
               isNotValidated={isPhoneNotValidated}
             />

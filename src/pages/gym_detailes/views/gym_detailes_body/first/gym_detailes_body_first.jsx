@@ -598,44 +598,46 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   map={
                     currentGymState.addressesFromSearch &&
                     currentGymState.addressesFromSearch.length > 0 &&
-                    currentGymState.addressesFromSearch.map((geocode) => {
-                      return (
-                        <div
-                          className="gym_names"
-                          key={geocode.GeoObject.Point}
-                          onClick={async () => {
-                            const position =
-                              geocode.GeoObject.Point.pos.split(" ");
-                            const lat = position[1];
-                            const lon = position[0];
-                            const { id, address, latitude, longitude } = {
-                              id: currentGym.id,
-                              address:
-                                geocode.GeoObject.metaDataProperty
-                                  .GeocoderMetaData.text,
-                              latitude: lat,
-                              longitude: lon,
-                            };
-                            await dispatch(
-                              patchGymAddress({
-                                id,
-                                address,
-                                latitude,
-                                longitude,
-                              })
-                            );
-                            dispatch(getCurrentGym(currentGym.id));
-                            setAddressEditting(false);
-                            dispatch(resetChanges());
-                          }}
-                        >
-                          {
-                            geocode.GeoObject.metaDataProperty.GeocoderMetaData
-                              .text
-                          }
-                        </div>
-                      );
-                    })
+                    currentGymState.addressesFromSearch
+                      .filter(geocode => geocode.GeoObject.metaDataProperty.GeocoderMetaData.Address.country_code === 'RU')
+                      .map((geocode) => {
+                        return (
+                          <div
+                            className="gym_names"
+                            key={geocode.GeoObject.Point}
+                            onClick={async () => {
+                              const position =
+                                geocode.GeoObject.Point.pos.split(" ");
+                              const lat = position[1];
+                              const lon = position[0];
+                              const { id, address, latitude, longitude } = {
+                                id: currentGym.id,
+                                address:
+                                  geocode.GeoObject.metaDataProperty
+                                    .GeocoderMetaData.Address.formatted,
+                                latitude: lat,
+                                longitude: lon,
+                              };
+                              await dispatch(
+                                patchGymAddress({
+                                  id,
+                                  address,
+                                  latitude,
+                                  longitude,
+                                })
+                              );
+                              dispatch(getCurrentGym(currentGym.id));
+                              setAddressEditting(false);
+                              dispatch(resetChanges());
+                            }}
+                          >
+                            {
+                              geocode.GeoObject.metaDataProperty.GeocoderMetaData
+                                .text
+                            }
+                          </div>
+                        );
+                      })
                   }
                 />
               </>
