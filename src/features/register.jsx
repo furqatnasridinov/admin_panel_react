@@ -215,6 +215,7 @@ const loginSlice = createSlice({
         isLoading: false,
         isSuccessfullyLogined: false,
         avatar: "",
+        user: null,
         avatarCopy: "",
         newAddedPhoto: "",
         isNewPhotoAdded: false,
@@ -284,8 +285,8 @@ const loginSlice = createSlice({
         });
         builder.addCase(getUser.fulfilled, (state, action) => {
             state.isLoading = false;
+            state.user = action.payload;
             state.avatar = action.payload?.pictureUrl;
-
         });
         builder.addCase(getUser.rejected, (state) => {
             //

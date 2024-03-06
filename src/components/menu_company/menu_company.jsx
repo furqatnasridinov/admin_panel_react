@@ -32,7 +32,7 @@ export default function MenuCompany({ onClose, sidebarHeaderRef, navigateToGymDe
 
   return (
     <div ref={menuRef} className="main">
-      <Events icon={settingSvg} text="Настройки компании" onClick={navigateToGymDetails} />
+      {/* <Events icon={settingSvg} text="Настройки компании" onClick={navigateToGymDetails} /> */}
       <Events icon={leaveSvg} text="Выйти из аккаунта" onClick={onLeave} />
     </div>
   );
