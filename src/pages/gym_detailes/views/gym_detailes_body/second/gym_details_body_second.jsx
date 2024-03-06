@@ -14,6 +14,7 @@ import ProgressSnackbar from "../../../../../components/snackbar/progress_snackb
 import { useDispatch, useSelector } from "react-redux";
 import { FeaturesTextField } from "../features_textfield";
 import { dragAndDropGymPictures } from "../../../../../features/current_gym_slice";
+import closePng from "../../../../../assets/images/close.png"
 import {
   dragAndDropActivities,
   selectAnActivity,
@@ -533,10 +534,21 @@ export default function GymDetailesBodySecondContainer({
                 isOpened={isPhotoShownInDialog}
                 closeOnTapOutside={() => showPhotoInDialog(false)}
               >
-                <img
-                  src={`http://77.222.53.122/image/${photoToShowInDialog}`}
-                  alt=""
-                />
+                <div className="relative min-h-[600px] min-w-[600px]">
+                  <img
+                    className="outline-none border-none w-full h-full object-cover"
+                    src={`http://77.222.53.122/image/${photoToShowInDialog}`}
+                    alt=""
+                  />
+                  <div
+                    className="closeButton"
+                    onClick={() => showPhotoInDialog(false)}
+                  >
+                    <img src={closePng} alt="" />
+                  </div>
+                </div>
+
+
               </CustomDialog>
             )}
 

@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import CustomDialog from "../dialog/dialog";
 import BackButton from "../../components/button/back_button";
 import CustomButton from "../button/button";
+import { getUser } from "../../features/register";
 
 
 const Sidebar = () => {
@@ -63,7 +64,7 @@ const Sidebar = () => {
       }
     }
   };
-  
+
 
   useEffect(() => {
     if (isSidebarOpened) {
@@ -81,6 +82,7 @@ const Sidebar = () => {
     window.addEventListener("resize", handleResize);
 
     dispatch(getListOfGyms());
+    dispatch(getUser());
 
     // Удаляем обработчик события при размонтировании
     return () => window.removeEventListener("resize", handleResize);
@@ -123,14 +125,16 @@ const Sidebar = () => {
             }
           >
             {photoPath &&
-              <img className="w-[24px] h-[24px] rounded" src={`http://77.222.53.122/image/${photoPath}`} alt="" />
+              <div className="w-[24px] h-[24px] bg-button-color rounded-[50%] p-[2px]">
+                <img className="w-full h-full rounded-[50%]" src={`http://77.222.53.122/image/${photoPath}`} alt="" />
+              </div>
             }
 
             {isTextShown && (
               <div className="text-[14px] font-normal  line-clamp-2 text-ellipsis">
 
-                {localStorage.getItem(AppConstants.keyUserFirstname) + " " +
-                  localStorage.getItem(AppConstants.keyUserLastname)}
+                {registerState.user?.firstName + " " +
+                  registerState.user?.lastName}
               </div>
             )}
           </button>
@@ -150,7 +154,6 @@ const Sidebar = () => {
               }}
               onLeave={() => {
                 showModal(true);
-
               }}
             />
           )}
@@ -370,13 +373,18 @@ const Sidebar = () => {
         className="sidebar_header"
       >
         {photoPath &&
-          <img className="w-[24px] h-[24px] rounded" src={`http://77.222.53.122/image/${photoPath}`} alt="" />
+          <div className="w-[24px] h-[24px] bg-button-color rounded-[50%] p-[2px]">
+            <img className="w-full h-full rounded-[50%]" src={`http://77.222.53.122/image/${photoPath}`} alt="" />
+          </div>
         }
       </button>
       {isMenuCompanyShown && (
         <MenuCompany
           sidebarHeaderRef={sidebarHeaderRef}
           onClose={closeMenuCompany}
+          onLeave={() => {
+            showModal(true);
+          }}
         />
       )}
 
@@ -393,13 +401,13 @@ const Sidebar = () => {
             className={({ isActive }) =>
               isActive || isClientsActive
                 ? "sidebar_section_closed active_sidebar_section"
-                : "sidebar_section_closed"
+                : "sidebar_section_closed relative"
             }
           >
             <img src={userLogoSvg} alt="" />
 
             {clientsSlice.waitingForAccept?.length > 0 && (
-              <div className="badge">
+              <div className="badge absolute top-[50&] right-[10%]">
                 {clientsSlice.waitingForAccept?.length}
               </div>
             )}

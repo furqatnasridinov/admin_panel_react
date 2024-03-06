@@ -41,9 +41,9 @@ export default function PersonalInfos() {
   const deletePhotoSnackbarRef = useRef(null);
 
   // getting init data
-  useEffect(() => {
+/*   useEffect(() => {
     dispatch(getUser())
-  }, [])
+  }, []) */
 
   // Обработчик для добавления новой фотографии
   const handleNewPhoto = async (event) => {
@@ -154,6 +154,7 @@ export default function PersonalInfos() {
                       || lastName !== localStorage.getItem(AppConstants.keyUserLastname))) {
                     // patch user
                     await dispatch(patchUser({ firstName: name, lastName: lastName }));
+                    await dispatch(getUser());
                     setIsEnabled(false);
                   }
                 }}
