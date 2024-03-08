@@ -29,14 +29,19 @@ export const sendForConfirmation = createAsyncThunk(
             }
             const response = await axiosClient.post(`api/user/loginCodeConfirmation`, data);
             if (response.data["operationResult"] === "OK") {
-                localStorage.setItem(AppConstants.keyToken, response.data["object"]["jwtToken"]);
-                localStorage.setItem(AppConstants.keyUserId, response.data["object"]["user"].id);
-                localStorage.setItem(AppConstants.keyPhone, response.data["object"]["user"].login);
-                localStorage.setItem(AppConstants.keyUserFirstname, response.data["object"]["user"].firstName);
-                localStorage.setItem(AppConstants.keyUserLastname, response.data["object"]["user"].lastName);
-                localStorage.setItem(AppConstants.keyPatronymic, response.data["object"]["user"].patronymic);
-                localStorage.setItem(AppConstants.keyPhoto, response.data["object"]["user"].pictureUrl);
-                return response.data;
+                if (response.data["object"]["user"]["roles"][0]["id"] != 2) {
+                    localStorage.setItem(AppConstants.keyToken, response.data["object"]["jwtToken"]);
+                    localStorage.setItem(AppConstants.keyUserId, response.data["object"]["user"].id);
+                    localStorage.setItem(AppConstants.keyPhone, response.data["object"]["user"].login);
+                    localStorage.setItem(AppConstants.keyUserFirstname, response.data["object"]["user"].firstName);
+                    localStorage.setItem(AppConstants.keyUserLastname, response.data["object"]["user"].lastName);
+                    localStorage.setItem(AppConstants.keyPatronymic, response.data["object"]["user"].patronymic);
+                    localStorage.setItem(AppConstants.keyPhoto, response.data["object"]["user"].pictureUrl);
+                    return response.data;
+                }else{
+                    toast("Вы не не подключены к системе MyFit Admin")
+                }
+
             }
         } catch (error) {
             toast(`sendForConfirmation ${error}`);
@@ -112,22 +117,22 @@ export const getUser = createAsyncThunk(
             if (response.data["operationResult"] === "OK") {
 
                 // проверяем изменилось ли что-то в профиле
-            if (response.data["object"].firstName !== localStorage.getItem(AppConstants.keyUserFirstname)) {
+                if (response.data["object"].firstName !== localStorage.getItem(AppConstants.keyUserFirstname)) {
                     localStorage.setItem(AppConstants.keyUserFirstname, response.data["object"]["firstName"]);
                 }
-            if (response.data["object"].lastName !== localStorage.getItem(AppConstants.keyUserLastname)) {
+                if (response.data["object"].lastName !== localStorage.getItem(AppConstants.keyUserLastname)) {
                     localStorage.setItem(AppConstants.keyUserLastname, response.data["object"]["lastName"]);
                 }
-            if (response.data["object"].patronymic !== localStorage.getItem(AppConstants.keyPatronymic)) {
+                if (response.data["object"].patronymic !== localStorage.getItem(AppConstants.keyPatronymic)) {
                     localStorage.setItem(AppConstants.keyPatronymic, response.data["object"]["patronymic"]);
                 }
-            if (response.data["object"].pictureUrl !== localStorage.getItem(AppConstants.keyPhoto)) {
+                if (response.data["object"].pictureUrl !== localStorage.getItem(AppConstants.keyPhoto)) {
                     localStorage.setItem(AppConstants.keyPhoto, response.data["object"]["pictureUrl"]);
                 }
-            if (response.data["object"].login !== localStorage.getItem(AppConstants.keyPhone)) {
+                if (response.data["object"].login !== localStorage.getItem(AppConstants.keyPhone)) {
                     localStorage.setItem(AppConstants.keyPhone, response.data["object"]["login"]);
                 }
-            return response.data["object"];
+                return response.data["object"];
             }
         } catch (error) {
             toast(`getUser ${error}`);
@@ -248,8 +253,11 @@ const loginSlice = createSlice({
         builder.addCase(sendForConfirmation.pending, (state) => {
             //
         });
-        builder.addCase(sendForConfirmation.fulfilled, (state) => {
-            state.isSuccessfullyLogined = true;
+        builder.addCase(sendForConfirmation.fulfilled, (state,action) => {
+            if (action.payload) {
+                state.isSuccessfullyLogined = true;
+            }
+            
         });
         builder.addCase(sendForConfirmation.rejected, (state) => {
             //

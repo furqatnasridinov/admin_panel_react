@@ -590,11 +590,12 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   value={currentGym.address}
                   notFound={
                     currentGymState.addressesFromSearch &&
-                    currentGymState.addressesFromSearch.length === 0
+                    currentGymState.addressesFromSearch.length === 0 && currentGym.address.length > 1
                   }
                   onChange={(e) => {
                     dispatch(changeCurrentGymsAddress(e.target.value));
                   }}
+                  showDropDown={currentGym.address.length > 1}
                   map={
                     currentGymState.addressesFromSearch &&
                     currentGymState.addressesFromSearch.length > 0 &&

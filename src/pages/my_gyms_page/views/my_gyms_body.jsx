@@ -7,13 +7,13 @@ const MyGymsBody = () => {
 
   return (
     
-    <div className="px-[30px] bg-white rounded-[16px] flex flex-col h-[86vh]">
+    <div className="px-[30px] bg-white rounded-[16px] flex flex-col gap-3 h-[86vh]">
       {/* Top section */}
-      <div className="flex flex-row pr-[203px] pt-[34px] bg-white justify-between h-[10%]">
-        <div className="text-[14px] font-medium">Название заведения</div>
-        <div className="text-[14px] font-medium">Записей за месяц</div>
-        <div className="text-[14px] font-medium">За неделю</div>
-        <div className="text-[14px] font-medium">За день</div>
+      <div className="flex flex-row  pt-[34px] h-[10%] w-full">
+        <div className="text-[14px] font-medium w-[25%]">Название заведения</div>
+        <div className="flex justify-center text-[14px] font-medium w-[25%]">Записей за месяц</div>
+        <div className="flex justify-center text-[14px] font-medium w-[25%]">За неделю</div>
+        <div className="flex justify-center text-[14px] font-medium w-[25%]">За день</div>
       </div>
 
       {/* LIST BUILDER */}

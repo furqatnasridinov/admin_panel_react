@@ -381,8 +381,9 @@ export default function CreateGymFirstContainer() {
                   value={address}
                   notFound={
                     currentGymState.addressesFromSearch &&
-                    currentGymState.addressesFromSearch.length === 0
+                    currentGymState.addressesFromSearch.length === 0 && address.length > 1
                   }
+                  showDropDown={address.length > 1}
                   onChange={(e) => {
                     setAddress(e.target.value);
                   }}

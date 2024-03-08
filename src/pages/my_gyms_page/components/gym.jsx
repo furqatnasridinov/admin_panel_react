@@ -15,8 +15,8 @@ function Gym(props) {
           borderRadius: "16px",
           paddingTop: "16px",
           paddingBottom: "16px",
-          paddingLeft: "32px",
-          paddingRight: "32px",
+          /* paddingLeft: "32px",
+          paddingRight: "32px", */
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
@@ -26,7 +26,7 @@ function Gym(props) {
         onClick={() => localStorage.setItem(AppConstants.keyGymId, props.id)}
       >
         <div className="flex flex-row items-center  w-full">
-          <div className=" flex flex-row gap-[10px] items-center  w-[250px]">
+          <div className="pl-[10px] flex flex-row gap-[10px] items-center w-[25%]">
             <img src={locationIcon} alt="" />
             <p
               style={{
@@ -43,20 +43,20 @@ function Gym(props) {
               {props.gymName}
             </p>
           </div>
-          <div className="flex items-center justify-center  w-[130px] h-[30px] ml-[60px] text-[14px] font-normal">
+          <div className="flex justify-center text-[14px] font-normal w-[25%] ">
             {props.activitiesForMonth ?? "0"}
           </div>
-          <div className="flex items-center justify-center text-[14px] font-normal   w-[90px] ml-[190px]">
+          <div className="flex justify-center text-[14px] font-normal w-[25%] ">
             {props.activitiesForWeek ?? "0"}
           </div>
-          <div className="flex items-center justify-center text-[14px] font-normal  w-[60px] ml-[190px]">
+          <div className="flex justify-center text-[14px] font-normal w-[25%] ">
             {props.activitiesForDay ?? "0"}
           </div>
         </div>
 
-        <button className="w-[24px] h-[24px]">
+        {/* <button className="w-[24px] h-[24px]">
           <img src={threeDotsIcon} alt="" />
-        </button>
+        </button> */}
       </div>
     </Link>
   );
