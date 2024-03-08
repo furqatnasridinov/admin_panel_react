@@ -134,7 +134,7 @@ export default function GymDetailesBodySecondContainer({
       <div className="activities">
         <TextAndTextButton
           text1={"Активности"}
-          text2={"Редактировать список активностей"}
+          text2={activitiesSlice.selectedActivity === null ? "Добавить активности" : "Редактировать список активностей"}
           onclick={() => {
             openActivitiesModal(true);
           }}
@@ -153,6 +153,7 @@ export default function GymDetailesBodySecondContainer({
               );
             })}
         </div>
+
         {isActivitiesModalOpened && (
           <CustomDialog
             isOpened={isActivitiesModalOpened}
@@ -231,19 +232,8 @@ export default function GymDetailesBodySecondContainer({
                         );
                       })}
                     {/* Кнопка добавить */}
-                    {!isDropDrownShown && (
-                      <div className="add_activity">
-                        <img src={AddActivitySvg} alt="" />
-                        <button
-                          onClick={() => {
-                            showDropDown(true);
-                          }}
-                        >
-                          Добавить
-                        </button>
-                      </div>
-                    )}
-                    {isDropDrownShown && (
+                    
+                    
                       <DropDownSmaller
                         text={"Добавить"}
                         isDropDownOpened={isDropDownOpened}
@@ -280,7 +270,7 @@ export default function GymDetailesBodySecondContainer({
                             </button>
                           ))}
                       />
-                    )}
+                  
                   </div>
                 </div>
 
@@ -303,396 +293,404 @@ export default function GymDetailesBodySecondContainer({
           </CustomDialog>
         )}
       </div>
-      <div className="flex flex-row gap-[50px]">
-        <div className="describtion_and_features_column">
-          {/* describtion */}
-          <div className="describtion_to_activity">
-            {!isDescribtionEdittingEnabled && (
-              <>
-                <TextAndTextButton
-                  text1={"Описание"}
-                  text2={"Изменить"}
-                  onclick={() => setDescribtionEditting(true)}
-                />
-                <div className="text-[13px] font-normal font-inter leading-[14px]">
-                  {activityDescribtion}
-                </div>
-              </>
-            )}
-            {isDescribtionEdittingEnabled && (
-              <>
-                <TextAndTextButton
-                  text1={"Описание"}
-                  text2={"Отменить"}
-                  onclick={() => {
-                    if (activitiesSlice.isChangesOcurred) {
-                      dispatch(getInfoForType(gymId));
-                    }
-                    setDescribtionEditting(false);
-                  }}
-                  isRedText={isDescribtionEdittingEnabled}
-                />
-                <EditableTextfield
-                  value={activityDescribtion}
-                  isNotValidated={activityDescribtionNotValidated}
-                  onChange={(e) => {
-                    dispatch(changeActivityDescribtion(e.target.value));
-                  }}
-                  onButtonClicked={async () => {
-                    if (activityDescribtion.trim() === "") {
-                      setActivityDescribtionNotValidated(true);
 
-                    } else {
-                      const { id, lessonType, typeDescription } = {
-                        id: gymId,
-                        lessonType: activitiesSlice.selectedActivity,
-                        typeDescription: activityDescribtion,
-                      };
-                      await dispatch(
-                        patchDescriptionOfSelectedActivity({
-                          id,
-                          lessonType,
-                          typeDescription,
-                        })
-                      );
-                      dispatch(getInfoForType(gymId));
-                      setDescribtionEditting(false);
-                      dispatch(resetChanges());
-                      setActivityDescribtionNotValidated(false);
-                    }
+      {activitiesSlice.selectedActivity !== null &&
+        <>
 
-                  }}
-                  fontsize={"13px"}
-                  lineheight={"14px"}
-                  minHeight={"90px"}
-                />
-              </>
-            )}
-          </div>
-
-          <div className="features">
-            {!isFeaturesEdittingEnabled && (
-              <>
-                <TextAndTextButton
-                  text1={"Особенности посещения"}
-                  text2={"Изменить"}
-                  isRedText={isFeaturesEdittingEnabled}
-                  onclick={() => setFeaturesEditting(true)}
-                />
-                {activityPeculiarities &&
-                  activityPeculiarities.trim() !== "" && (
-                    <div
-                      className="text-[13px] font-normal font-inter"
-                      style={{ whiteSpace: "pre-wrap" }}
-                    >
-                      {activityPeculiarities}
-                    </div>
-                  )}
-              </>
-            )}
-            {isFeaturesEdittingEnabled && (
-              <>
-                <TextAndTextButton
-                  text1={"Особенности посещения"}
-                  text2={"Отменить"}
-                  isRedText={isFeaturesEdittingEnabled}
-                  onclick={() => {
-                    if (activitiesSlice.isChangesOcurred) {
-                      dispatch(getInfoForType(gymId));
-                    }
-                    setFeaturesEditting(false);
-                  }}
-                />
-                <FeaturesTextField
-                  onButtonClicked={async () => {
-                    const { id, lessonType, peculiarities } = {
-                      id: gymId,
-                      lessonType: activitiesSlice.selectedActivity,
-                      peculiarities: activityPeculiarities,
-                    };
-                    await dispatch(
-                      patchPeculiaritiesOfSelectedActivity({
-                        id,
-                        lessonType,
-                        peculiarities,
-                      })
-                    );
-                    dispatch(getInfoForType(gymId));
-                    setFeaturesEditting(false);
-                    dispatch(resetChanges());
-                  }}
-                  onChanged={(e) => {
-                    dispatch(changeActivityPeculiarities(e.target.value));
-                  }}
-                  peculiarities={activityPeculiarities}
-                />
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-[10px] w-[609px] ">
-          {!isEdittingPhotosEnabled && (
-            <TextAndTextButton
-              text1={"Фотографии"}
-              text2={
-                photosOfSelectedActivity.length > 0
-                  ? "Удалить фото и редактировать порядок"
-                  : ""
-              }
-              isRedText={isEdittingPhotosEnabled}
-              onclick={() =>
-                photosOfSelectedActivity.length > 0
-                  ? setPhotosEditting(true)
-                  : {}
-              }
-            />
-          )}
-          {isEdittingPhotosEnabled && (
-            <TextAndTextButton
-              text1={"Фотографии"}
-              text2={"Готово"}
-              onclick={() => setPhotosEditting(false)}
-            />
-          )}
-          <div className="recomendations_to_photo">
-            <p>Рекомендуемые форматы для загрузки: jpeg, png</p>
-            <p>Минимально допустимая сторона фотографии: 1080px</p>
-          </div>
-
-          {/* Snackbar for deleting photos */}
-          <CustomSnackbar
-            ref={deletePhotosSnackRef}
-            undoAction={() => {
-              dispatch(returnDeletedPhoto());
-              if (cancelDeleteTimeoutPhotos.length > 0) {
-                const lastCancelFunction =
-                  cancelDeleteTimeoutPhotos[
-                  cancelDeleteTimeoutPhotos.length - 1
-                  ];
-                lastCancelFunction();
-                setCancelDeleteTimeoutPhotos((prevState) =>
-                  prevState.slice(0, -1)
-                );
-              }
-            }}
-          />
-
-          {/* Snackbar for deleting activities */}
-          <CustomSnackbar
-            ref={deleteActivitiesSnackRef}
-            undoAction={() => {
-              dispatch(returnDeletedActivity());
-              if (cancelDeleteTimeoutActivities.length > 0) {
-                const lastCancelFunction =
-                  cancelDeleteTimeoutActivities[
-                  cancelDeleteTimeoutActivities.length - 1
-                  ];
-                lastCancelFunction();
-                setCancelDeleteTimeoutActivities((prevState) =>
-                  prevState.slice(0, -1)
-                );
-              }
-            }}
-          />
-
-          {/* Progress snackbar */}
-          <ProgressSnackbar
-            isLoading={activitiesSlice.isActivityPhotosLoading}
-            ref={progressSnackbarRef}
-          />
-
-          {/* Container with photos */}
-          <div className="activity_photos_container">
-            {!isEdittingPhotosEnabled &&
-              photosOfSelectedActivity
-                .filter((el) => !activitiesSlice.deletedPhotos.includes(el))
-                .map((item, index) => {
-                  // Объявляем переменные в области видимости функции map
-                  const lastDotIndex = item.lastIndexOf(".");
-                  const nameWithoutExtension = item.substring(0, lastDotIndex);
-                  const extension = item.substring(lastDotIndex + 1);
-                  const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
-
-                  // Возвращаем JSX с использованием переменной внутри строки для атрибута src
-                  return (
-                    <img
-                      className="activity_each_photo"
-                      key={index}
-                      src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
-                      alt=""
-                      onClick={() => {
-                        showPhotoInDialog(true);
-                        setPhotoToBeShownInDialog(item);
-                      }}
-                      draggable={false}
+          <div className="flex flex-row gap-[50px]">
+            <div className="describtion_and_features_column">
+              {/* describtion */}
+              <div className="describtion_to_activity">
+                {!isDescribtionEdittingEnabled && (
+                  <>
+                    <TextAndTextButton
+                      text1={"Описание"}
+                      text2={"Изменить"}
+                      onclick={() => setDescribtionEditting(true)}
                     />
-                  );
-                })}
-            {showPhotoInDialog && isPhotoShownInDialog && (
-              <CustomDialog
-                isOpened={isPhotoShownInDialog}
-                closeOnTapOutside={() => showPhotoInDialog(false)}
-              >
-                <div className="relative min-h-[600px] min-w-[600px]">
-                  <img
-                    className="outline-none border-none w-full h-full object-cover"
-                    src={`http://77.222.53.122/image/${photoToShowInDialog}`}
-                    alt=""
-                  />
-                  <div
-                    className="closeButton"
-                    onClick={() => showPhotoInDialog(false)}
-                  >
-                    <img src={closePng} alt="" />
-                  </div>
-                </div>
-
-
-              </CustomDialog>
-            )}
-
-            {isEdittingPhotosEnabled &&
-              photosOfSelectedActivity
-                .filter((el) => !activitiesSlice.deletedPhotos.includes(el))
-                .map((item, index) => {
-                  const lastDotIndex = item.lastIndexOf(".");
-                  const nameWithoutExtension = item.substring(0, lastDotIndex);
-                  const extension = item.substring(lastDotIndex + 1);
-                  const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
-                  return (
-                    <div key={index} className="activity_each_photo_editting">
-                      <img
-                        src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
-                        alt=""
-                        className="rounded-[8px] h-full w-full object-cover"
-                        draggable={true}
-                        onDragStart={() => (draggedItemRef.current = index)}
-                        onDragEnter={() => {
-                          setPositionOfPhoto(index + 1);
-                        }}
-                        onDragEnd={handleSortingPhotos}
-                        onDragOver={(e) => e.preventDefault()}
-                      />
-                      <img
-                        className="delete-icon"
-                        src={deleteSvg}
-                        alt=""
-                        onClick={async () => {
-                          dispatch(removePhotoFromSelectedActivityPhotos(item));
-                          deletePhotosSnackRef.current.showSnackbars();
-                          const cancelTimeOut =
-                            deletePhotosSnackRef.current.show(
-                              "Вы удалили фото",
-                              // function when time ended
-                              async () => {
-                                const { id, url } = { id: gymId, url: item };
-                                await dispatch(
-                                  deleteActivityPhoto({ id, url })
-                                );
-                                dispatch(getPhotos(gymId));
-                              }
-                            );
-                          setCancelDeleteTimeoutPhotos((prevState) => [
-                            ...prevState,
-                            cancelTimeOut,
-                          ]);
-                        }}
-                        draggable={false}
-                      />
+                    <div className="text-[13px] font-normal font-inter leading-[14px]">
+                      {activityDescribtion}
                     </div>
-                  );
-                })}
-            {!isEdittingPhotosEnabled && (
-              <>
-                <img
-                  src={addPhotoSvg}
-                  alt=""
-                  style={{ cursor: "pointer" }}
-                  onClick={handleClick} // нажимаем как бы на input file
-                />
-                <input
-                  type="file"
-                  ref={hiddenFileInput}
-                  multiple={true}
-                  onChange={async (event) => {
-                    var files = event.target.files;
-                    var convertedFiles = [];
-                    if (files.length > 0) {
-                      for (let i = 0; i < files.length; i++) {
-                        var file = files[i];
-                        if (file.type === "image/png") {
-                          // convert to jpeg
-                          const originalFileName = file.name.replace(
-                            ".png",
-                            ".jpeg"
+                  </>
+                )}
+                {isDescribtionEdittingEnabled && (
+                  <>
+                    <TextAndTextButton
+                      text1={"Описание"}
+                      text2={"Отменить"}
+                      onclick={() => {
+                        if (activitiesSlice.isChangesOcurred) {
+                          dispatch(getInfoForType(gymId));
+                        }
+                        setDescribtionEditting(false);
+                      }}
+                      isRedText={isDescribtionEdittingEnabled}
+                    />
+                    <EditableTextfield
+                      value={activityDescribtion}
+                      isNotValidated={activityDescribtionNotValidated}
+                      onChange={(e) => {
+                        dispatch(changeActivityDescribtion(e.target.value));
+                      }}
+                      onButtonClicked={async () => {
+                        if (activityDescribtion.trim() === "") {
+                          setActivityDescribtionNotValidated(true);
+
+                        } else {
+                          const { id, lessonType, typeDescription } = {
+                            id: gymId,
+                            lessonType: activitiesSlice.selectedActivity,
+                            typeDescription: activityDescribtion,
+                          };
+                          await dispatch(
+                            patchDescriptionOfSelectedActivity({
+                              id,
+                              lessonType,
+                              typeDescription,
+                            })
                           );
-                          const image = await new Promise((resolve) => {
-                            const img = new Image();
-                            img.onload = () => resolve(img);
-                            img.src = URL.createObjectURL(file);
-                          });
-
-                          const canvas = document.createElement("canvas");
-                          canvas.width = image.width;
-                          canvas.height = image.height;
-                          const context = canvas.getContext("2d");
-                          context.drawImage(
-                            image,
-                            0,
-                            0,
-                            image.width,
-                            image.height
-                          );
-                          const jpegURL = canvas.toDataURL("image/jpeg");
-                          file = await (await fetch(jpegURL)).blob();
-                          file = new File([file], originalFileName, {
-                            type: "image/jpeg",
-                          });
-                        }
-                        if (file.type === "image/jpeg") {
-                          convertedFiles.push(file);
+                          dispatch(getInfoForType(gymId));
+                          setDescribtionEditting(false);
+                          dispatch(resetChanges());
+                          setActivityDescribtionNotValidated(false);
                         }
 
-                        if (file.type !== "image/jpeg") {
-                          toast("Неподдерживаемый формат файла");
+                      }}
+                      fontsize={"13px"}
+                      lineheight={"14px"}
+                      minHeight={"90px"}
+                    />
+                  </>
+                )}
+              </div>
+
+              <div className="features">
+                {!isFeaturesEdittingEnabled && (
+                  <>
+                    <TextAndTextButton
+                      text1={"Особенности посещения"}
+                      text2={"Изменить"}
+                      isRedText={isFeaturesEdittingEnabled}
+                      onclick={() => setFeaturesEditting(true)}
+                    />
+                    {activityPeculiarities &&
+                      activityPeculiarities.trim() !== "" && (
+                        <div
+                          className="text-[13px] font-normal font-inter"
+                          style={{ whiteSpace: "pre-wrap" }}
+                        >
+                          {activityPeculiarities}
+                        </div>
+                      )}
+                  </>
+                )}
+                {isFeaturesEdittingEnabled && (
+                  <>
+                    <TextAndTextButton
+                      text1={"Особенности посещения"}
+                      text2={"Отменить"}
+                      isRedText={isFeaturesEdittingEnabled}
+                      onclick={() => {
+                        if (activitiesSlice.isChangesOcurred) {
+                          dispatch(getInfoForType(gymId));
                         }
-                      }
-
-                      const { id, type } = {
-                        id: gymId,
-                        type: activitiesSlice.selectedActivity,
-                      };
-
-                      // if convertedFiles includes only jpeg files
-                      if (convertedFiles.length > 0) {
-                        deletePhotosSnackRef.current.hideSnackbars();
-                        progressSnackbarRef.current.show("Идет загрузка фото");
+                        setFeaturesEditting(false);
+                      }}
+                    />
+                    <FeaturesTextField
+                      onButtonClicked={async () => {
+                        const { id, lessonType, peculiarities } = {
+                          id: gymId,
+                          lessonType: activitiesSlice.selectedActivity,
+                          peculiarities: activityPeculiarities,
+                        };
                         await dispatch(
-                          addPhotoToSelectedActivity({
+                          patchPeculiaritiesOfSelectedActivity({
                             id,
-                            files: convertedFiles,
-                            type,
+                            lessonType,
+                            peculiarities,
                           })
                         );
-                        dispatch(getPhotos(gymId));
-                      }
-                    }
-                    event.target.value = null; // Очистить значение элемента ввода файла
-                  }}
-                  style={{ display: "none" }} // Скрываем input
-                  accept="image/png, image/jpeg"
-                />
-              </>
-            )}
+                        dispatch(getInfoForType(gymId));
+                        setFeaturesEditting(false);
+                        dispatch(resetChanges());
+                      }}
+                      onChanged={(e) => {
+                        dispatch(changeActivityPeculiarities(e.target.value));
+                      }}
+                      peculiarities={activityPeculiarities}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
 
-            {isEdittingPhotosEnabled &&
-              photosOfSelectedActivity.length === 0 &&
-              // Если режим редактирования включен и нет фотографий, то показываем кнопку добавления
-              setPhotosEditting(false)}
+            <div className="flex flex-col gap-[10px] w-[609px] ">
+              {!isEdittingPhotosEnabled && (
+                <TextAndTextButton
+                  text1={"Фотографии"}
+                  text2={
+                    photosOfSelectedActivity.length > 0
+                      ? "Удалить фото и редактировать порядок"
+                      : ""
+                  }
+                  isRedText={isEdittingPhotosEnabled}
+                  onclick={() =>
+                    photosOfSelectedActivity.length > 0
+                      ? setPhotosEditting(true)
+                      : {}
+                  }
+                />
+              )}
+              {isEdittingPhotosEnabled && (
+                <TextAndTextButton
+                  text1={"Фотографии"}
+                  text2={"Готово"}
+                  onclick={() => setPhotosEditting(false)}
+                />
+              )}
+              <div className="recomendations_to_photo">
+                <p>Рекомендуемые форматы для загрузки: jpeg, png</p>
+                <p>Минимально допустимая сторона фотографии: 1080px</p>
+              </div>
+
+              {/* Snackbar for deleting photos */}
+              <CustomSnackbar
+                ref={deletePhotosSnackRef}
+                undoAction={() => {
+                  dispatch(returnDeletedPhoto());
+                  if (cancelDeleteTimeoutPhotos.length > 0) {
+                    const lastCancelFunction =
+                      cancelDeleteTimeoutPhotos[
+                      cancelDeleteTimeoutPhotos.length - 1
+                      ];
+                    lastCancelFunction();
+                    setCancelDeleteTimeoutPhotos((prevState) =>
+                      prevState.slice(0, -1)
+                    );
+                  }
+                }}
+              />
+
+              {/* Snackbar for deleting activities */}
+              <CustomSnackbar
+                ref={deleteActivitiesSnackRef}
+                undoAction={() => {
+                  dispatch(returnDeletedActivity());
+                  if (cancelDeleteTimeoutActivities.length > 0) {
+                    const lastCancelFunction =
+                      cancelDeleteTimeoutActivities[
+                      cancelDeleteTimeoutActivities.length - 1
+                      ];
+                    lastCancelFunction();
+                    setCancelDeleteTimeoutActivities((prevState) =>
+                      prevState.slice(0, -1)
+                    );
+                  }
+                }}
+              />
+
+              {/* Progress snackbar */}
+              <ProgressSnackbar
+                isLoading={activitiesSlice.isActivityPhotosLoading}
+                ref={progressSnackbarRef}
+              />
+
+              {/* Container with photos */}
+              <div className="activity_photos_container">
+                {!isEdittingPhotosEnabled &&
+                  photosOfSelectedActivity
+                    .filter((el) => !activitiesSlice.deletedPhotos.includes(el))
+                    .map((item, index) => {
+                      // Объявляем переменные в области видимости функции map
+                      const lastDotIndex = item.lastIndexOf(".");
+                      const nameWithoutExtension = item.substring(0, lastDotIndex);
+                      const extension = item.substring(lastDotIndex + 1);
+                      const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
+
+                      // Возвращаем JSX с использованием переменной внутри строки для атрибута src
+                      return (
+                        <img
+                          className="activity_each_photo"
+                          key={index}
+                          src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                          alt=""
+                          onClick={() => {
+                            showPhotoInDialog(true);
+                            setPhotoToBeShownInDialog(item);
+                          }}
+                          draggable={false}
+                        />
+                      );
+                    })}
+                {showPhotoInDialog && isPhotoShownInDialog && (
+                  <CustomDialog
+                    isOpened={isPhotoShownInDialog}
+                    closeOnTapOutside={() => showPhotoInDialog(false)}
+                  >
+                    <div className="relative min-h-[600px] min-w-[600px]">
+                      <img
+                        className="outline-none border-none w-full h-full object-cover"
+                        src={`http://77.222.53.122/image/${photoToShowInDialog}`}
+                        alt=""
+                      />
+                      <div
+                        className="closeButton"
+                        onClick={() => showPhotoInDialog(false)}
+                      >
+                        <img src={closePng} alt="" />
+                      </div>
+                    </div>
+
+
+                  </CustomDialog>
+                )}
+
+                {isEdittingPhotosEnabled &&
+                  photosOfSelectedActivity
+                    .filter((el) => !activitiesSlice.deletedPhotos.includes(el))
+                    .map((item, index) => {
+                      const lastDotIndex = item.lastIndexOf(".");
+                      const nameWithoutExtension = item.substring(0, lastDotIndex);
+                      const extension = item.substring(lastDotIndex + 1);
+                      const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
+                      return (
+                        <div key={index} className="activity_each_photo_editting">
+                          <img
+                            src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                            alt=""
+                            className="rounded-[8px] h-full w-full object-cover"
+                            draggable={true}
+                            onDragStart={() => (draggedItemRef.current = index)}
+                            onDragEnter={() => {
+                              setPositionOfPhoto(index + 1);
+                            }}
+                            onDragEnd={handleSortingPhotos}
+                            onDragOver={(e) => e.preventDefault()}
+                          />
+                          <img
+                            className="delete-icon"
+                            src={deleteSvg}
+                            alt=""
+                            onClick={async () => {
+                              dispatch(removePhotoFromSelectedActivityPhotos(item));
+                              deletePhotosSnackRef.current.showSnackbars();
+                              const cancelTimeOut =
+                                deletePhotosSnackRef.current.show(
+                                  "Вы удалили фото",
+                                  // function when time ended
+                                  async () => {
+                                    const { id, url } = { id: gymId, url: item };
+                                    await dispatch(
+                                      deleteActivityPhoto({ id, url })
+                                    );
+                                    dispatch(getPhotos(gymId));
+                                  }
+                                );
+                              setCancelDeleteTimeoutPhotos((prevState) => [
+                                ...prevState,
+                                cancelTimeOut,
+                              ]);
+                            }}
+                            draggable={false}
+                          />
+                        </div>
+                      );
+                    })}
+                {!isEdittingPhotosEnabled && (
+                  <>
+                    <img
+                      src={addPhotoSvg}
+                      alt=""
+                      style={{ cursor: "pointer" }}
+                      onClick={handleClick} // нажимаем как бы на input file
+                    />
+                    <input
+                      type="file"
+                      ref={hiddenFileInput}
+                      multiple={true}
+                      onChange={async (event) => {
+                        var files = event.target.files;
+                        var convertedFiles = [];
+                        if (files.length > 0) {
+                          for (let i = 0; i < files.length; i++) {
+                            var file = files[i];
+                            if (file.type === "image/png") {
+                              // convert to jpeg
+                              const originalFileName = file.name.replace(
+                                ".png",
+                                ".jpeg"
+                              );
+                              const image = await new Promise((resolve) => {
+                                const img = new Image();
+                                img.onload = () => resolve(img);
+                                img.src = URL.createObjectURL(file);
+                              });
+
+                              const canvas = document.createElement("canvas");
+                              canvas.width = image.width;
+                              canvas.height = image.height;
+                              const context = canvas.getContext("2d");
+                              context.drawImage(
+                                image,
+                                0,
+                                0,
+                                image.width,
+                                image.height
+                              );
+                              const jpegURL = canvas.toDataURL("image/jpeg");
+                              file = await (await fetch(jpegURL)).blob();
+                              file = new File([file], originalFileName, {
+                                type: "image/jpeg",
+                              });
+                            }
+                            if (file.type === "image/jpeg") {
+                              convertedFiles.push(file);
+                            }
+
+                            if (file.type !== "image/jpeg") {
+                              toast("Неподдерживаемый формат файла");
+                            }
+                          }
+
+                          const { id, type } = {
+                            id: gymId,
+                            type: activitiesSlice.selectedActivity,
+                          };
+
+                          // if convertedFiles includes only jpeg files
+                          if (convertedFiles.length > 0) {
+                            deletePhotosSnackRef.current.hideSnackbars();
+                            progressSnackbarRef.current.show("Идет загрузка фото");
+                            await dispatch(
+                              addPhotoToSelectedActivity({
+                                id,
+                                files: convertedFiles,
+                                type,
+                              })
+                            );
+                            dispatch(getPhotos(gymId));
+                          }
+                        }
+                        event.target.value = null; // Очистить значение элемента ввода файла
+                      }}
+                      style={{ display: "none" }} // Скрываем input
+                      accept="image/png, image/jpeg"
+                    />
+                  </>
+                )}
+
+                {isEdittingPhotosEnabled &&
+                  photosOfSelectedActivity.length === 0 &&
+                  // Если режим редактирования включен и нет фотографий, то показываем кнопку добавления
+                  setPhotosEditting(false)}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+
+        </>
+      }
+
     </div>
   );
 }

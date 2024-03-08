@@ -7,7 +7,7 @@ export default function TextAndTextButton({
   isRedText,
 }) {
   return (
-    <div className="flex flex-row gap-[10px]">
+    <div className="flex flex-row gap-[10px] items-center">
       <div className="text-[14px] font-bold ">{text1}:</div>
       <div
         className={

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-export function AddressSearching({ value, onChange, map, notFound }) {
+export function AddressSearching({ value, onChange, map, notFound, showDropDown }) {
   return (
     <div
       style={{
@@ -17,10 +17,10 @@ export function AddressSearching({ value, onChange, map, notFound }) {
         className="textAreaForAddress text-[13px] font-normal font-inter"
         value={value}
         onChange={onChange}
-        placeholder="Напиши адрес"
+        placeholder="Введите адрес заведения"
       />
 
-      <div
+      {showDropDown && <div
         className="dropdownBody"
         style={{
           zIndex: "2",
@@ -48,7 +48,9 @@ export function AddressSearching({ value, onChange, map, notFound }) {
         ) : (
           map
         )}
-      </div>
+      </div>}
+
+
     </div>
   );
 }

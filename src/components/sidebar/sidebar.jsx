@@ -126,7 +126,7 @@ const Sidebar = () => {
           >
             {photoPath &&
               <div className="w-[24px] h-[24px] bg-button-color rounded-[50%] p-[2px]">
-                <img className="w-full h-full rounded-[50%]" src={`http://77.222.53.122/image/${photoPath}`} alt="" />
+                <img className="w-full h-full rounded-[50%] object-cover" src={`http://77.222.53.122/image/${photoPath}`} alt="" />
               </div>
             }
 

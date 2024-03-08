@@ -217,6 +217,8 @@ const activitiesSlice = createSlice({
     makeFirstItemAsActive: (state) => {
       if (state.listOfActivities?.length > 0) {
         state.selectedActivity = state.listOfActivities[0];
+      }else{
+        state.selectedActivity = null;
       }
     },
 

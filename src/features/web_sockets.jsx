@@ -23,6 +23,7 @@ export default function NewClientsWebSocket(dispatch) {
       const endTime = new Date(
         startTime.getTime() + parseDuration(data.duration)
       );
+      // check if state waiting
       dispatch(
         addClientToList(
           new BookingData(
