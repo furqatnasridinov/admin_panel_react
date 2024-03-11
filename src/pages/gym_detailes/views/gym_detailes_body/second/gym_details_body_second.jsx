@@ -232,45 +232,46 @@ export default function GymDetailesBodySecondContainer({
                         );
                       })}
                     {/* Кнопка добавить */}
-                    
-                    
-                      <DropDownSmaller
-                        text={"Добавить"}
-                        isDropDownOpened={isDropDownOpened}
-                        openCloseDropDown={() => {
-                          if (isDropDownOpened) {
-                            openDropDown(false);
-                          } else {
-                            openDropDown(true);
-                            scrollToBottom();
-                          }
-                        }}
-                        map={activitiesSlice.allAvailableLessonTypes
-                          .filter(
-                            (el) =>
-                              !activitiesSlice.listOfActivities.includes(el)
-                          )
-                          .map((item, index) => (
-                            <button
-                              key={index}
-                              className="gym_names"
-                              onClick={async () => {
-                                const { id, lessonType } = {
-                                  id: gymId,
-                                  lessonType: item,
-                                };
-                                await dispatch(
-                                  addNewActivity({ id, lessonType })
-                                );
-                                dispatch(getListOfActivities(gymId));
-                                showDropDown(false);
-                              }}
-                            >
-                              {item}
-                            </button>
-                          ))}
-                      />
-                  
+
+
+                    <DropDownSmaller
+                      text={"Добавить"}
+                      isDropDownOpened={isDropDownOpened}
+                      openCloseDropDown={() => {
+                        if (isDropDownOpened) {
+                          openDropDown(false);
+                        } else {
+                          openDropDown(true);
+                          scrollToBottom();
+                        }
+                      }}
+                      map={activitiesSlice.allAvailableLessonTypes
+                        .filter(
+                          (el) =>
+                            !activitiesSlice.listOfActivities.includes(el)
+                        )
+                        .map((item, index) => (
+                          <button
+                            key={index}
+                            className="gym_names"
+                            onClick={async () => {
+                              const { id, lessonType } = {
+                                id: gymId,
+                                lessonType: item,
+                              };
+                              await dispatch(
+                                addNewActivity({ id, lessonType }),
+                                openDropDown(false),
+                              );
+                              dispatch(getListOfActivities(gymId));
+                              showDropDown(false);
+                            }}
+                          >
+                            {item}
+                          </button>
+                        ))}
+                    />
+
                   </div>
                 </div>
 
@@ -330,7 +331,9 @@ export default function GymDetailesBodySecondContainer({
                       value={activityDescribtion}
                       isNotValidated={activityDescribtionNotValidated}
                       onChange={(e) => {
-                        dispatch(changeActivityDescribtion(e.target.value));
+                        if (e.target.value.length <= 250) {
+                          dispatch(changeActivityDescribtion(e.target.value));
+                        }
                       }}
                       onButtonClicked={async () => {
                         if (activityDescribtion.trim() === "") {
@@ -357,8 +360,10 @@ export default function GymDetailesBodySecondContainer({
 
                       }}
                       fontsize={"13px"}
-                      lineheight={"14px"}
-                      minHeight={"90px"}
+                      lineheight={"16px"}
+                      maxLength={250}
+                      textFieldsMinWidth={"300px"}
+
                     />
                   </>
                 )}
@@ -508,7 +513,6 @@ export default function GymDetailesBodySecondContainer({
                       const extension = item.substring(lastDotIndex + 1);
                       const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
 
-                      // Возвращаем JSX с использованием переменной внутри строки для атрибута src
                       return (
                         <img
                           className="activity_each_photo"
@@ -730,13 +734,13 @@ function EachActivity({
         onClick={onRemoveClicked}
       />
       <p onClick={onclick}>{title}</p>
-      <img
+      {/* <img
         style={{ cursor: "pointer" }}
         className="edit_icon"
         onClick={onEditClicked}
         src={editActivitySvg}
         alt=""
-      />
+      /> */}
     </div>
   );
 }

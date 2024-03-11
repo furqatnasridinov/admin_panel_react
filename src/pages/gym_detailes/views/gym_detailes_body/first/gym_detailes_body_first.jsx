@@ -440,7 +440,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
 
       {/* ContactInfos */}
 
-      <div className="flex flex-col gap-[32px]">
+      <div className="flex flex-col gap-[32px] ">
         <div className="flex flex-row  gap-[32px]">
           {/* Name  */}
           <div className="name ">
@@ -472,9 +472,12 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                 />
                 <EditableTextfield
                   value={currentGym.name}
+                  maxLength={70}
                   isNotValidated={nameIsNotValidated}
                   onChange={(e) => {
-                    dispatch(changeCurrentGymsName(e.target.value));
+                    if (e.target.value.length <= 70) {
+                      dispatch(changeCurrentGymsName(e.target.value));
+                    }
                   }}
                   onButtonClicked={async () => {
                     if (currentGym.name === "") {
@@ -528,10 +531,15 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   }}
                 />
                 <EditableTextfield
+                  maxLength={250}
                   value={currentGym.description}
                   isNotValidated={describtionIsNotValidated}
+
+                  textFieldsMinWidth={"300px"}
                   onChange={(e) => {
-                    dispatch(changeCurrentGymsDescription(e.target.value));
+                    if (e.target.value.length <= 250) {
+                      dispatch(changeCurrentGymsDescription(e.target.value));
+                    }
                   }}
                   onButtonClicked={async () => {
                     if (currentGym.description === "") {
@@ -549,7 +557,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     }
 
                   }}
-                  lineheight={"14px"}
+                  lineheight={"16px"}
                 />
               </>
             )}
@@ -883,6 +891,8 @@ export function EditableTextfield({
   placeholder,
   showTextfield,
   isNotValidated,
+  maxLength,
+  textFieldsMinWidth,
 }) {
   const inputRef = useRef(null);
   // for autofocus calls when component first renders
@@ -897,25 +907,33 @@ export function EditableTextfield({
       input.style.height = "inherit"; // Reset height to recalculate
       input.style.height = `${input.scrollHeight}px`; // Set new height based on scroll height
     }
-  }, []);
+  }, [value]);
 
   return (
-    <div className="flex flex-row justify-between gap-[10px] items-start">
-      {!showTextfield && (
-        <textarea
-          className="textArea text-[13px] font-normal font-inter"
-          ref={inputRef}
-          value={value}
-          placeholder={placeholder}
-          onChange={onChange}
-          style={{
-            border: isNotValidated ? "1px solid rgba(255, 136, 136, 1)" : "1px solid #77aaf9",
-            fontSize: fontsize,
-            lineHeight: lineheight,
-            height: height,
-          }}
-        />
-      )}
+    <div className="flex flex-row  gap-[10px] items-start">
+      {!showTextfield &&
+        <div className="flex flex-col">
+          <textarea
+            className="textArea text-[13px] font-normal font-inter"
+            ref={inputRef}
+            value={value}
+            placeholder={placeholder}
+            onChange={onChange}
+            style={{
+              border: isNotValidated ? "1px solid rgba(255, 136, 136, 1)" : "1px solid #77aaf9",
+              fontSize: fontsize,
+              lineHeight: lineheight,
+              height: "auto",
+              maxHeight: `${10 * lineheight}px`, // Set max height to 10 lines
+              minHeight: `${lineheight}px`, 
+              minWidth: textFieldsMinWidth,
+              overflow: 'auto',
+            }}
+          />
+          <div className="text-[12px] font-normal text-grey-text">{`${value.length}/${maxLength ?? 100}`}</div>
+        </div>
+
+      }
 
       {showTextfield && (
         <input

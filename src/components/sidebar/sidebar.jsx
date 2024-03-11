@@ -251,7 +251,7 @@ const Sidebar = () => {
                 </div>
               )}
 
-              <NavLink
+             {/*  <NavLink
                 id="sidebarOnclick"
                 to="/statisticksPage"
                 className={({ isActive }) =>
@@ -268,7 +268,7 @@ const Sidebar = () => {
                 <img src={statsLogo} alt="" />
 
                 {isTextShown && <div>Статистика</div>}
-              </NavLink>
+              </NavLink> */}
 
               <NavLink
                 id="sidebarOnclick"
@@ -324,7 +324,7 @@ const Sidebar = () => {
                 </div>
               </div>
 
-              <NavLink
+              {/* <NavLink
                 id="sidebarOnclick"
                 to="/help"
                 className={({ isActive }) =>
@@ -341,7 +341,7 @@ const Sidebar = () => {
                 <img src={questionLogo} alt="" />
 
                 {isTextShown && <div>Помощь</div>}
-              </NavLink>
+              </NavLink> */}
 
               <NavLink
                 id="sidebarOnclick"
@@ -417,7 +417,7 @@ const Sidebar = () => {
             )}
           </NavLink>
 
-          <NavLink
+          {/* <NavLink
             id="sidebarOnclick"
             to="/statisticksPage"
             className={({ isActive }) =>
@@ -432,7 +432,7 @@ const Sidebar = () => {
             }}
           >
             <img src={statsLogo} alt="" />
-          </NavLink>
+          </NavLink> */}
 
           <NavLink
             id="sidebarOnclick"
@@ -487,7 +487,7 @@ const Sidebar = () => {
             </div>
           </div>
 
-          <NavLink
+          {/* <NavLink
             id="sidebarOnclick"
             to="/help"
             className={({ isActive }) =>
@@ -502,7 +502,7 @@ const Sidebar = () => {
             }}
           >
             <img src={questionLogo} alt="" />
-          </NavLink>
+          </NavLink> */}
 
           <NavLink
             id="sidebarOnclick"
