@@ -306,12 +306,18 @@ export default function CreateGymFirstContainer() {
               {isNameEdittingEnabled && (
                 <EditableTextfield
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 70) {
+                      setName(e.target.value);
+                    }
+                  }}
                   onButtonClicked={async () => {
                     setIsNameConfirmed(true);
                     setIsNameEdittingEnabled(false);
                   }}
                   lineheight={"16px"}
+                  maxLength={70}
+                  textFieldsMinWidth={"200px"}
                 />
               )}
               {!isNameEdittingEnabled && name !== "" && isNameConfirmed && (
@@ -344,12 +350,18 @@ export default function CreateGymFirstContainer() {
               {isDescriptionEdittingEnabled && (
                 <EditableTextfield
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 250) {
+                      setDescription(e.target.value);
+                    }
+                  }}
                   onButtonClicked={async () => {
                     setIsDescriptionConfirmed(true);
                     setIsDescriptionEdittingEnabled(false);
                   }}
                   lineheight={"16px"}
+                  textFieldsMinWidth={"300px"}
+                  maxLength={250}
                 />
               )}
               {!isDescriptionEdittingEnabled &&

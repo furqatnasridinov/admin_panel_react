@@ -81,7 +81,7 @@ export const patchDescriptionOfSelectedActivity = createAsyncThunk(
         dataToSend
       );
     } catch (error) {
-      toast(`changeDescriptionOfSelectedActivity ${error}`);
+      toast(`changeDescriptionOfSelectedActivity ${error["response"]["data"]["operationInfo"]}`);
     }
   }
 );

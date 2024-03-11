@@ -128,7 +128,7 @@ export default function PersonalInfos() {
             <div className="flex flex-row gap-[10px]">
               <EditableTextfield
                 hideButton={true}
-                height={"40px"}
+                //height={"40px"}
                 placeholder={"Имя"}
                 showTextfield={true}
                 value={name}
@@ -136,7 +136,7 @@ export default function PersonalInfos() {
                 isNotValidated={isNameEmpty}
               />
               <EditableTextfield
-                height={"40px"}
+                //height={"40px"}
                 placeholder={"Фамилия"}
                 showTextfield={true}
                 value={lastName}

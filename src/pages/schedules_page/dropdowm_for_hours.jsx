@@ -43,7 +43,7 @@ export default function DropdownForHours({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [hoursContainerRef, minutesContainerRef, openCloseDropDown]);
+  }, [hoursContainerRef, minutesContainerRef, ]);
 
   // Функция для центрирования выбранного элемента
   function centerSelectedItem(container, selectedItem) {

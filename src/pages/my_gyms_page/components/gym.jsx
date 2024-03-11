@@ -1,6 +1,5 @@
 import React from "react";
 import locationIcon from "../../../assets/svg/location.svg";
-import threeDotsIcon from "../../../assets/svg/three_dots.svg";
 import { Link } from "react-router-dom";
 import AppConstants from "../../../config/app_constants";
 

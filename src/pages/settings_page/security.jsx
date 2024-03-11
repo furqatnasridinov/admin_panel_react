@@ -157,7 +157,8 @@ export default function Security() {
             }}
           />
         </div>
-        <div className="flex flex-row gap-[10px] items-center">
+
+        {/* <div className="flex flex-row gap-[10px] items-center">
           {googleToggleOn &&
 
             <img src={toggleOn}
@@ -182,7 +183,7 @@ export default function Security() {
 
           <div className="text-[13px] font-medium leading-[15px]">Включить двухфакторную аутентификацию через Google Authenticator</div>
 
-        </div>
+        </div> */}
 
         {isModalOpened && <CustomDialog isOpened={isModalOpened} closeOnTapOutside={() => setModalOpened(false)}>
 

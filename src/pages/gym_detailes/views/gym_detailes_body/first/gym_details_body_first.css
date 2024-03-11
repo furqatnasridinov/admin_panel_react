@@ -184,11 +184,9 @@
   border: 1px solid #77aaf9;
   border-radius: 8px;
   outline: none;
-  max-height: 120px;
   resize: none;
   overflow-y: auto;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+ /* Firefox */
 }
 
 .textArea::-webkit-scrollbar {

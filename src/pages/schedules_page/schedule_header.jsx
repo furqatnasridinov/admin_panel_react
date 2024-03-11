@@ -240,7 +240,7 @@ export default function ScheduleHeader() {
                   }
                   isDropDownOpened={false}
                   openCloseDropDown={() => {
-                    setDatePickerShown(true);
+                    setDatePickerShown(!datePickerShown);
                   }}
                   isError={isDateNotSelected}
                 />
@@ -285,6 +285,7 @@ export default function ScheduleHeader() {
                 </div>
               </div>
             </div>
+
             {/* calendar */}
             <DatePicker
               selected={startDate}
@@ -292,6 +293,7 @@ export default function ScheduleHeader() {
               open={datePickerShown}
               shouldCloseOnSelect={true}
               onSelect={(date) => {
+                // here we check if selected day in future or not
                 dispatch(selectADayFromCalendar(date));
                 setDatePickerShown(false);
               }}
@@ -338,8 +340,11 @@ export default function ScheduleHeader() {
             <TextAndTextfield
               value={scheduleState.description}
               onChange={(event) => {
-                dispatch(setDescription(event.target.value));
+                if (event.target.value.length <= 250) {
+                  dispatch(setDescription(event.target.value));
+                }
               }}
+              showTextArea={true}
               textfieldHasFocus={hasFocus}
               requestFocus={() => setFocus(true)}
               removeFocus={() => setFocus(false)}
@@ -347,6 +352,9 @@ export default function ScheduleHeader() {
               placeholder={"Напишите описание к занятию"}
               showLogo={false}
               isError={isFormNotValidated}
+              lineheight={"16px"}
+              showMaxLength={true}
+              maxLength={"250"}
             />
 
             <div className="flex flex-row justify-between items-center">
@@ -547,6 +555,7 @@ export default function ScheduleHeader() {
                     if (scheduleState.selectedDay === "") {
                       setDateNotSelected(true);
                     }
+                    
                     if (
                       scheduleState.description !== "" &&
                       scheduleState.selectedDay !== "" &&
@@ -592,3 +601,4 @@ export default function ScheduleHeader() {
     </div>
   );
 }
+

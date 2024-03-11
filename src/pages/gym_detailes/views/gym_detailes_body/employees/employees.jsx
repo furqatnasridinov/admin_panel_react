@@ -210,7 +210,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                           isSelected={
                             employeesSlice.selectedEmployee !== null
                               ? employeesSlice.selectedEmployee.id ===
-                                employee.id
+                              employee.id
                               : false
                           }
                         />
@@ -265,13 +265,13 @@ export default function Employees({ listOfEmployees, gymId }) {
                         <TextAndTextfield
                           value={
                             employeesSlice.selectedEmployee !== null &&
-                            employeesSlice.selectedEmployee.lastName === null
+                              employeesSlice.selectedEmployee.lastName === null
                               ? ""
                               : employeesSlice.selectedEmployee !== null &&
                                 employeesSlice.selectedEmployee.lastName !==
-                                  null
-                              ? employeesSlice.selectedEmployee.lastName
-                              : ""
+                                null
+                                ? employeesSlice.selectedEmployee.lastName
+                                : ""
                           }
                           onChange={(event) => {
                             dispatch(
@@ -335,10 +335,10 @@ export default function Employees({ listOfEmployees, gymId }) {
                           employeesSlice.selectedRoleName !== null
                             ? employeesSlice.selectedRoleName
                             : employeesSlice.selectedEmployee === null
-                            ? ""
-                            : employeesSlice.selectedEmployee.roles.length === 0
-                            ? "Нет роли"
-                            : employeesSlice.selectedEmployee.roles[0].name
+                              ? ""
+                              : employeesSlice.selectedEmployee.roles.length === 0
+                                ? "Нет роли"
+                                : employeesSlice.selectedEmployee.roles[0].name
                         }
                         isDropDownOpened={isDropDown2Opened}
                         openCloseDropDown={openCloseDropDown2}
@@ -375,9 +375,8 @@ export default function Employees({ listOfEmployees, gymId }) {
                               alt=""
                             />
                             <div
-                              className={`text-[14px] font-normal leading-[16px] ${
-                                isAvailable ? "" : "text-grey-text"
-                              }`}
+                              className={`text-[14px] font-normal leading-[16px] ${isAvailable ? "" : "text-grey-text"
+                                }`}
                             >
                               {priveledge.name}
                             </div>
@@ -397,9 +396,8 @@ export default function Employees({ listOfEmployees, gymId }) {
                               alt=""
                             />
                             <div
-                              className={`text-[14px] font-normal leading-[16px] ${
-                                isAvailable ? "" : "text-grey-text"
-                              }`}
+                              className={`text-[14px] font-normal leading-[16px] ${isAvailable ? "" : "text-grey-text"
+                                }`}
                             >
                               {priveledge.name}
                             </div>
@@ -463,7 +461,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                       ? "Нет роли"
                       : employee.roles[0].name
                   }
-                  //isThatYou={localStorage.id === employee.id} <== maybe?
+                //isThatYou={localStorage.id === employee.id} <== maybe?
                 />
               );
             })}
@@ -487,7 +485,7 @@ export default function Employees({ listOfEmployees, gymId }) {
               if (cancelDeleteTimeoutEmployees.length > 0) {
                 const lastCancelFunction =
                   cancelDeleteTimeoutEmployees[
-                    cancelDeleteTimeoutEmployees.length - 1
+                  cancelDeleteTimeoutEmployees.length - 1
                   ];
                 lastCancelFunction();
                 setCancelDeleteTimeoutEmployees((prevState) =>
@@ -602,9 +600,8 @@ export default function Employees({ listOfEmployees, gymId }) {
                           alt=""
                         />
                         <div
-                          className={`text-[14px] font-normal leading-[16px] ${
-                            isAvailable ? "" : "text-grey-text"
-                          }`}
+                          className={`text-[14px] font-normal leading-[16px] ${isAvailable ? "" : "text-grey-text"
+                            }`}
                         >
                           {priveledge.name}
                         </div>
@@ -716,8 +713,8 @@ export function EachEmployee({
         isSelected
           ? "selected_employee_row"
           : showPointer
-          ? "each_employee cursor-pointer"
-          : "each_employee"
+            ? "each_employee cursor-pointer"
+            : "each_employee"
       }
       onClick={onEmployeeClicked}
     >
@@ -781,9 +778,30 @@ export function TextAndTextfield({
   isPhoneTextfield,
   isError,
   showLogo,
+  lineheight,
+  maxLength,
+  showMaxLength,
+  showTextArea,
 }) {
+
+  const inputRef = useRef(null);
+  // for autofocus calls when component first renders
+  useEffect(() => {
+    const input = inputRef.current;
+    if (input) {
+      input.focus();
+      // Set the cursor to the end of the text
+      const length = input.value.length;
+      input.setSelectionRange(length, length);
+      // set the height relatively textfields content
+      input.style.height = "inherit"; // Reset height to recalculate
+      input.style.height = `${input.scrollHeight}px`; // Set new height based on scroll height
+    }
+  }, [value]);
+
+
   return (
-    <div className="flex flex-col gap-[5px] w-full">
+    <div className="flex flex-col gap-[5px] w-full ">
       <div
         className={
           isError
@@ -798,8 +816,8 @@ export function TextAndTextfield({
           textfieldHasFocus
             ? "icon_and_textfield_row_focused"
             : isError
-            ? "error"
-            : "icon_and_textfield_row"
+              ? "error"
+              : "icon_and_textfield_row"
         }
       >
         {showLogo && <img src={logo} className="userlogo" alt="" />}
@@ -814,8 +832,9 @@ export function TextAndTextfield({
             onChange={onChange}
           />
         )}
-        {!isPhoneTextfield && (
+        {!isPhoneTextfield && !showTextArea && (
           <input
+          ref={inputRef}
             value={value}
             type="text"
             required
@@ -825,9 +844,39 @@ export function TextAndTextfield({
             onBlur={removeFocus}
             placeholder={placeholder}
             onChange={onChange}
+            style={{
+              height: "auto",
+              maxHeight: `${10 * lineheight}px`, // Set max height to 10 lines
+              minHeight: `${lineheight}px`,
+              overflow: 'auto',
+            }}
+
+          />
+        )}
+        {showTextArea && (
+          <textarea
+            ref={inputRef}
+            value={value}
+            type="text"
+            className="textfiled"
+            onFocus={requestFocus}
+            onBlur={removeFocus}
+            placeholder={placeholder}
+            onChange={onChange}
+            style={{
+              height: "auto",
+              maxHeight: `${10 * lineheight}px`, // Set max height to 10 lines
+              minHeight: `${lineheight}px`,
+              overflow: 'auto',
+              resize: 'none', // Disables user resize
+              boxSizing: 'border-box', 
+            }}
           />
         )}
       </div>
+      {showMaxLength &&
+        <div className="text-[12px] font-normal text-grey-text">{`${value.length}/${maxLength ?? 100}`}</div>
+      }
     </div>
   );
 }
@@ -846,7 +895,7 @@ function CustomDropdownForRef({
         className={
           isDropDownOpened ? "dropdown_header_opened" : "dropdown_header"
         }
-        onClick={bloclClick ? () => {} : openCloseDropDown}
+        onClick={bloclClick ? () => { } : openCloseDropDown}
       >
         <div className="text-[14px] font-medium">
           {bloclClick ? "Выберите сотрудника" : currentRole}
@@ -893,7 +942,7 @@ function CustomDropdownForAddingEmployee({
         className={
           isDropDownOpened ? "dropdown_header_opened" : "dropdown_header"
         }
-        onClick={bloclClick ? () => {} : openCloseDropDown}
+        onClick={bloclClick ? () => { } : openCloseDropDown}
       >
         <div className="text-[14px] font-medium">
           {bloclClick ? "Выберите сотрудника" : currentRole}
