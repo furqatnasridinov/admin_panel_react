@@ -243,6 +243,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                       <div className="flex flex-row gap-[32px] ">
                         {/* Name */}
                         <TextAndTextfield
+                        textfieldsMinHeight={"40px"}
                           value={
                             employeesSlice.selectedEmployee !== null
                               ? employeesSlice.selectedEmployee.firstName
@@ -263,6 +264,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                         />
                         {/* Surname */}
                         <TextAndTextfield
+                        textfieldsMinHeight={"40px"}
                           value={
                             employeesSlice.selectedEmployee !== null &&
                               employeesSlice.selectedEmployee.lastName === null
@@ -292,6 +294,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                       <div className="flex flex-row gap-[32px]">
                         {/* Phone */}
                         <TextAndTextfield
+                        textfieldsMinHeight={"40px"}
                           value={
                             employeesSlice.selectedEmployee !== null
                               ? employeesSlice.selectedEmployee.login
@@ -522,6 +525,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                 <div className="flex flex-row gap-[24px]">
                   {/* Иям */}
                   <TextAndTextfield
+                  textfieldsMinHeight={"40px"}
                     value={name}
                     onChange={changeName}
                     textfieldHasFocus={nameTextfieldHasFocus}
@@ -535,6 +539,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                   />
                   {/* Фамилия */}
                   <TextAndTextfield
+                  textfieldsMinHeight={"40px"}
                     value={surname}
                     onChange={changeSurName}
                     textfieldHasFocus={surnameTextfieldHasFocus}
@@ -549,6 +554,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                 <div className="flex flex-row gap-[24px]">
                   {/* Номер */}
                   <TextAndTextfield
+                  textfieldsMinHeight={"40px"}
                     value={phoneNumber}
                     onChange={changePhone}
                     textfieldHasFocus={phoneNumberTextfieldHasFocus}
@@ -782,6 +788,7 @@ export function TextAndTextfield({
   maxLength,
   showMaxLength,
   showTextArea,
+  textfieldsMinHeight
 }) {
 
   const inputRef = useRef(null);
@@ -812,6 +819,7 @@ export function TextAndTextfield({
         {text}
       </div>
       <div
+      style={{minHeight : textfieldsMinHeight}}
         className={
           textfieldHasFocus
             ? "icon_and_textfield_row_focused"

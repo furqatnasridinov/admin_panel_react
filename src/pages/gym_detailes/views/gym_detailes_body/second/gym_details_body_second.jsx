@@ -44,8 +44,6 @@ export default function GymDetailesBodySecondContainer({
   listOfActivities,
   activityDescribtion,
   activityPeculiarities,
-  photosOfSelectedActivity,
-  setPhotosOfSelectedActivity,
 }) {
   const dispatch = useDispatch();
   const activitiesSlice = useSelector((state) => state.activities);
@@ -84,7 +82,7 @@ export default function GymDetailesBodySecondContainer({
   };
 
   async function handleSortingPhotos() {
-    const dublicatedList = [...photosOfSelectedActivity];
+    const dublicatedList = [...activitiesSlice.photosOfSelectedActivity];
     //remove and save dragged item
     const draggedItemContent = dublicatedList.splice(
       draggedItemRef.current,
@@ -205,8 +203,7 @@ export default function GymDetailesBodySecondContainer({
                                   async () => {
                                     const { id, lessonType } = {
                                       id: gymId,
-                                      lessonType:
-                                        activitiesSlice.selectedActivity,
+                                      lessonType: activity,
                                     };
                                     await dispatch(
                                       deleteActivity({ id, lessonType })
@@ -331,7 +328,7 @@ export default function GymDetailesBodySecondContainer({
                       value={activityDescribtion}
                       isNotValidated={activityDescribtionNotValidated}
                       onChange={(e) => {
-                        if (e.target.value.length <= 250) {
+                        if (e.target.value?.length <= 250) {
                           dispatch(changeActivityDescribtion(e.target.value));
                         }
                       }}
@@ -435,13 +432,13 @@ export default function GymDetailesBodySecondContainer({
                 <TextAndTextButton
                   text1={"Фотографии"}
                   text2={
-                    photosOfSelectedActivity.length > 0
+                    activitiesSlice.photosOfSelectedActivity.length > 0
                       ? "Удалить фото и редактировать порядок"
                       : ""
                   }
                   isRedText={isEdittingPhotosEnabled}
                   onclick={() =>
-                    photosOfSelectedActivity.length > 0
+                    activitiesSlice.photosOfSelectedActivity.length > 0
                       ? setPhotosEditting(true)
                       : {}
                   }
@@ -504,7 +501,7 @@ export default function GymDetailesBodySecondContainer({
               {/* Container with photos */}
               <div className="activity_photos_container">
                 {!isEdittingPhotosEnabled &&
-                  photosOfSelectedActivity
+                  activitiesSlice.photosOfSelectedActivity
                     .filter((el) => !activitiesSlice.deletedPhotos.includes(el))
                     .map((item, index) => {
                       // Объявляем переменные в области видимости функции map
@@ -551,7 +548,7 @@ export default function GymDetailesBodySecondContainer({
                 )}
 
                 {isEdittingPhotosEnabled &&
-                  photosOfSelectedActivity
+                  activitiesSlice.photosOfSelectedActivity
                     .filter((el) => !activitiesSlice.deletedPhotos.includes(el))
                     .map((item, index) => {
                       const lastDotIndex = item.lastIndexOf(".");
@@ -685,7 +682,7 @@ export default function GymDetailesBodySecondContainer({
                 )}
 
                 {isEdittingPhotosEnabled &&
-                  photosOfSelectedActivity.length === 0 &&
+                  activitiesSlice.photosOfSelectedActivity.length === 0 &&
                   // Если режим редактирования включен и нет фотографий, то показываем кнопку добавления
                   setPhotosEditting(false)}
               </div>

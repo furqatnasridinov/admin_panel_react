@@ -112,8 +112,11 @@ export const patchGymName = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      toast(`editGym ${error}`);
-      console.log(`${error.massage}`);
+      if (error["response"]["data"]["error"] === "Forbidden") {
+        toast(`У вас нет доступа`);
+      } else {
+        toast(`addEmployee ${error}`);
+      }
     }
   }
 );
@@ -128,7 +131,11 @@ export const patchGymDescription = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      toast(`editGym ${error}`);
+      if (error["response"]["data"]["error"] === "Forbidden") {
+        toast(`У вас нет доступа`);
+      } else {
+        toast(`addEmployee ${error}`);
+      }
     }
   }
 );
@@ -145,7 +152,11 @@ export const patchGymAddress = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      toast(`editGym ${error}`);
+      if (error["response"]["data"]["error"] === "Forbidden") {
+        toast(`У вас нет доступа`);
+      } else {
+        toast(`addEmployee ${error}`);
+      }
     }
   }
 );
@@ -162,7 +173,11 @@ export const patchGymContacts = createAsyncThunk(
       };
       const response = await axiosClient.patch("api/admin/gyms/", dataToSend);
     } catch (error) {
-      toast(`editGym ${error}`);
+      if (error["response"]["data"]["error"] === "Forbidden") {
+        toast(`У вас нет доступа`);
+      } else {
+        toast(`addEmployee ${error}`);
+      }
     }
   }
 );
@@ -185,7 +200,11 @@ export const dragAndDropGymPictures = createAsyncThunk(
         }
       );
     } catch (error) {
-      toast(`Ошибка при изменении порядка фотографий ${error}`);
+      if (error["response"]["data"]["error"] === "Forbidden") {
+        toast(`У вас нет доступа`);
+      } else {
+        toast(`Ошибка при изменении порядка фотографий ${error}`);
+      }
     }
   }
 );

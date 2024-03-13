@@ -1,10 +1,8 @@
 import React from "react";
 import "../sidebar/sidebar.css";
-import statsLogo from "../../assets/svg/statictics.svg";
 import locationIcon from "../../assets/svg/location.svg";
 import calendarLogo from "../../assets/svg/calendar.svg";
 import settingsLogo from "../../assets/svg/settings.svg";
-import questionLogo from "../../assets/svg/question.svg";
 import sidebarOpenedLogo from "../../assets/svg/sidebar_opened.svg";
 import sidebarClosedLogo from "../../assets/svg/sidebar_closed.svg";
 import userLogoSvg from "../../assets/svg/contacts.svg";
@@ -13,8 +11,7 @@ import { NavLink } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setNavigationFromBooking } from "../../features/schedule_slice";
-import AppConstants from "../../config/app_constants";
-import { getListOfGyms, setCurrentGymFromFirstItem } from "../../features/current_gym_slice";
+import { getListOfGyms } from "../../features/current_gym_slice";
 import { getNewClients } from "../../features/clients_slice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -22,6 +19,7 @@ import CustomDialog from "../dialog/dialog";
 import BackButton from "../../components/button/back_button";
 import CustomButton from "../button/button";
 import { getUser } from "../../features/register";
+import placeHolderImg from "../../assets/images/placeholder.jpg"
 
 
 const Sidebar = () => {
@@ -105,10 +103,10 @@ const Sidebar = () => {
   // This function will be passed to MenuCompany to close it
   const closeMenuCompany = () => showMenuCompany(false);
   const sidebarWidth = isSidebarOpened ? "sidebar_opened" : "sidebar_closed";
-  const photoPath = registerState.avatar === "" ? localStorage.getItem(AppConstants.keyPhoto) : registerState.avatar;
+
 
   return isSidebarOpened ? (
-    (console.log(`sidebarref ${sideBarRef.current}`),
+    (
       (
         <div
           id="sidebar"
@@ -124,9 +122,15 @@ const Sidebar = () => {
               handleClickMenuCompany
             }
           >
-            {photoPath &&
+            {registerState.avatar &&
               <div className="w-[24px] h-[24px] bg-button-color rounded-[50%] p-[2px]">
-                <img className="w-full h-full rounded-[50%] object-cover" src={`http://77.222.53.122/image/${photoPath}`} alt="" />
+                <img className="w-full h-full rounded-[50%] object-cover" src={`http://77.222.53.122/image/${registerState.avatar}`} alt="" />
+              </div>
+            }
+
+            {!registerState.avatar &&
+              <div className="w-[24px] h-[24px] bg-button-color rounded-[50%] p-[2px]">
+                <img className="w-full h-full rounded-[50%] object-cover" src={placeHolderImg} alt="" />
               </div>
             }
 
@@ -138,7 +142,6 @@ const Sidebar = () => {
                   registerState.user?.lastName
                 )
                 }
-
               </div>
             )}
           </button>
@@ -251,7 +254,7 @@ const Sidebar = () => {
                 </div>
               )}
 
-             {/*  <NavLink
+              {/*  <NavLink
                 id="sidebarOnclick"
                 to="/statisticksPage"
                 className={({ isActive }) =>
@@ -376,9 +379,15 @@ const Sidebar = () => {
         style={{ backgroundColor: isMenuCompanyShown ? "#F5F9FF" : "white" }}
         className="sidebar_header"
       >
-        {photoPath &&
+        {registerState.avatar &&
           <div className="w-[24px] h-[24px] bg-button-color rounded-[50%] p-[2px]">
-            <img className="w-full h-full rounded-[50%]" src={`http://77.222.53.122/image/${photoPath}`} alt="" />
+            <img className="w-full h-full rounded-[50%]" src={`http://77.222.53.122/image/${registerState.avatar}`} alt="" />
+          </div>
+        }
+        
+        {!registerState.avatar &&
+          <div className="w-[24px] h-[24px] bg-button-color rounded-[50%] p-[2px]">
+            <img className="w-full h-full rounded-[50%] object-cover" src={placeHolderImg} alt="" />
           </div>
         }
       </button>

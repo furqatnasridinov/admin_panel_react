@@ -26,6 +26,7 @@ export const sendForConfirmation = createAsyncThunk(
             const data = {
                 login: phone,
                 confirmToken: otp,
+                app: false,
             }
             const response = await axiosClient.post(`api/user/loginCodeConfirmation`, data);
             if (response.data["operationResult"] === "OK") {
@@ -38,7 +39,7 @@ export const sendForConfirmation = createAsyncThunk(
                     localStorage.setItem(AppConstants.keyPatronymic, response.data["object"]["user"].patronymic);
                     localStorage.setItem(AppConstants.keyPhoto, response.data["object"]["user"].pictureUrl);
                     return response.data;
-                }else{
+                } else {
                     toast("Вы не не подключены к системе MyFit Admin")
                 }
 
@@ -135,7 +136,12 @@ export const getUser = createAsyncThunk(
                 return response.data["object"];
             }
         } catch (error) {
-            toast(`getUser ${error}`);
+            if (error["response"]["data"]) {
+                toast(`getUser ${error["response"]["data"]}`);
+            } else {
+                toast(`getUser ${error}`);
+            }
+
         }
     }
 );
@@ -253,11 +259,11 @@ const loginSlice = createSlice({
         builder.addCase(sendForConfirmation.pending, (state) => {
             //
         });
-        builder.addCase(sendForConfirmation.fulfilled, (state,action) => {
+        builder.addCase(sendForConfirmation.fulfilled, (state, action) => {
             if (action.payload) {
                 state.isSuccessfullyLogined = true;
             }
-            
+
         });
         builder.addCase(sendForConfirmation.rejected, (state) => {
             //

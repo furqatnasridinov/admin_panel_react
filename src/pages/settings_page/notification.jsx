@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 export default function Notification() {
   const [toggledOn, setToggleOn] = useState(false);
 
-  useEffect(() => {
+/*   useEffect(() => {
     if (toggledOn) {
       try {
         if ('Notification' in window) {
@@ -28,7 +28,7 @@ export default function Notification() {
       }
 
     }
-  }, [toggledOn])
+  }, [toggledOn]) */
 
   return (
     <div className='personalInfos'>

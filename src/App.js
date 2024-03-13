@@ -8,15 +8,13 @@ import Help from "./pages/help";
 import SettingsPage from "./pages/settings_page";
 import GymDetails from "./pages/gym_detailes/gym_detailes";
 import MyGymsPageLayout from "./pages/my_gyms_page/my_gyms_page_layout";
-import AppConstants from "./config/app_constants";
 import BookingPage from "./pages/booking_page/injex";
 import ClientsPage from "./pages/clients";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import NewClientsWebSocket from "./features/web_sockets";
-import { useDispatch } from "react-redux";
-import { getNewClients } from "./features/clients_slice";
+import { useDispatch, useSelector } from "react-redux";
 import CreateGymPage from "./pages/create_gym_page";
 import Register1 from "./pages/register/register1";
 import Splash from "./pages/splash";
@@ -66,10 +64,15 @@ function Content() {
 
 function App() {
   const dispatch = useDispatch();
+  const clientsState = useSelector((state) => state.clients);
 
   useEffect(() => {
     //localStorage.setItem(AppConstants.keyToken, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIrNzk5OTIxNzI0OTQiLCJleHAiOjE3MTIwODA2Njh9.ltOhU7N79KL4udwKyLY02rK7FLwnuiLorh2okKsgZdyazu4anZD1NWrKIaUdHPznrsr4YOmFdzKjo3TpD81t0A");
     // подключение к веб-сокету
+    const params = {
+      dispatch : dispatch,
+      waitingForAccept : clientsState.waitingForAccept,
+    }
     NewClientsWebSocket(dispatch);
    /*  if (localStorage.getItem(AppConstants.keyGymId) !== null) {
       dispatch(getNewClients(localStorage.getItem(AppConstants.keyGymId)));
