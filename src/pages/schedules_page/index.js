@@ -140,7 +140,7 @@ export default function SchedulesPage() {
   }, []);
 
   useEffect(() => {
-    if (gymState.listOfGyms.length === 1) {
+    if (gymState.listOfGyms?.length === 1) {
       dispatch(setCurrentGymFromFirstItem());
     }
   }, [gymState.listOfGyms]);
@@ -166,9 +166,9 @@ export default function SchedulesPage() {
   useEffect(() => {
     const calendarElement = document.querySelector(".my-calendar-container");
     if (calendarElement) {
-      if (scheduleState.allSchedules.length > 0) {
+      if (scheduleState.allSchedules?.length > 0) {
         const events = calendarElement.querySelectorAll(".rbc-event");
-        if (events.length > 0) {
+        if (events?.length > 0) {
           events.forEach((event) => {
             const eventWidth = event.offsetWidth;
             const containerWidth = event.offsetParent.offsetWidth;
@@ -265,7 +265,7 @@ export default function SchedulesPage() {
     console.log("isFromBooking", scheduleState.isNavigationFromBooking),
     (
       <div ref={pageRef} className="schedule_page">
-        {clientsSlice.waitingForAccept.length > 0 && (
+        {clientsSlice.waitingForAccept?.length > 0 && (
           <MessageLikeTopContainer hideOpenSchedule={true} />
         )}
         <ScheduleHeader />

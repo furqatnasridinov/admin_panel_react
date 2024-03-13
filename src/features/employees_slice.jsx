@@ -67,7 +67,12 @@ export const addEmployee = createAsyncThunk(
       );
       getListOfEmployees(gymId);
     } catch (error) {
-      toast(`addEmployee ${error}`);
+      if (error["response"]["data"]["error"] === "Forbidden") {
+        toast(`У вас нет доступа на добавление сотрудников`);
+      } else {
+        toast(`addEmployee ${error}`);
+      }
+
     }
   }
 );

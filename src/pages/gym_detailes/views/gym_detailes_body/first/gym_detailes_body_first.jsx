@@ -924,13 +924,12 @@ export function EditableTextfield({
               fontSize: fontsize,
               lineHeight: lineheight,
               height: "auto",
-              maxHeight: `${10 * lineheight}px`, // Set max height to 10 lines
-              minHeight: `${lineheight}px`, 
+              maxHeight: `${10 * lineheight}px`, // Set max height to 10 lines 
               minWidth: textFieldsMinWidth,
               overflow: 'auto',
             }}
           />
-          <div className="text-[12px] font-normal text-grey-text">{`${value.length}/${maxLength ?? 100}`}</div>
+          <div className="text-[12px] font-normal text-grey-text">{`${value?.length ?? 0}/${maxLength ?? 100}`}</div>
         </div>
 
       }

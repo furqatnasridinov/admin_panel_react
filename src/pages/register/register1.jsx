@@ -110,6 +110,7 @@ export default function Register1() {
             </div>
             <div className="flex flex-row gap-[10px] h-[40px] items-end">
               <TextAndTextfield
+                textfieldsMinHeight={"40px"}
                 value={phone}
                 onChange={(e) => {
                   const onlyDigits = e.target.value.replace(/\D/g, "");

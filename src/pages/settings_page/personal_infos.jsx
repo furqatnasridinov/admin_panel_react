@@ -41,9 +41,9 @@ export default function PersonalInfos() {
   const deletePhotoSnackbarRef = useRef(null);
 
   // getting init data
-/*   useEffect(() => {
-    dispatch(getUser())
-  }, []) */
+  /*   useEffect(() => {
+      dispatch(getUser())
+    }, []) */
 
   // Обработчик для добавления новой фотографии
   const handleNewPhoto = async (event) => {
@@ -189,10 +189,8 @@ export default function PersonalInfos() {
           />
 
 
-          {(registerState.avatar !== "null" &&
-            registerState.avatar !== "" && registerState.avatar !== null) &&
+          {registerState.avatar &&
             <div className="flex flex-row relative">
-
               <img
                 src={`http://77.222.53.122/image/${registerState.avatar}`}
                 alt=""
@@ -216,8 +214,7 @@ export default function PersonalInfos() {
             </div>
           }
 
-          {(registerState.avatar === "null" ||
-            registerState.avatar === "" || registerState.avatar === null) &&
+          {!registerState.avatar &&
 
             <>
               <img

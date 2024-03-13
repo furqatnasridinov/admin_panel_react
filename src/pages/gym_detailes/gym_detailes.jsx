@@ -132,9 +132,6 @@ export default function GymDetails() {
               listOfActivities={activitiesSlice.listOfActivities}
               activityPeculiarities={activitiesSlice.activityPeculiarities}
               activityDescribtion={activitiesSlice.activityDescribtion}
-              photosOfSelectedActivity={
-                activitiesSlice.photosOfSelectedActivity
-              }
               setPhotosOfSelectedActivity={setPhotosOfSelectedActivity}
               snackbarRef={snackBarRef}
             />

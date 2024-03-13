@@ -139,6 +139,7 @@ export const deleteActivity = createAsyncThunk(
       const response = await axiosClient.delete(
         `api/admin/gyms/${id}/lessonType/${lessonType}`
       );
+      console.log(`addNewActivity response ${response.data}`)
     } catch (error) {
       toast(`deleteActivity ${error}`);
     }
@@ -156,6 +157,7 @@ export const addNewActivity = createAsyncThunk(
         `api/admin/gyms/${id}`,
         dataToSend
       );
+      console.log(`addNewActivity response ${response.data}`)
     } catch (error) {
       toast(`addNewActivity ${error}`);
     }

@@ -189,6 +189,12 @@ const clientsSlice = createSlice({
     addClientToList(state, action) {
       state.waitingForAccept.push(action.payload);
     },
+
+    replaceItemInAarray(state, action) {
+      const index = state.waitingForAccept.findIndex(element => element.id === action.payload.id);
+      state.waitingForAccept[index] = action.payload;
+    },
+
   },
   extraReducers: (builder) => {
     // getNewClients
@@ -232,6 +238,6 @@ const clientsSlice = createSlice({
   },
 });
 
-export const { removeClient, setDecliningEvent, addClientToList } =
+export const { removeClient, setDecliningEvent, addClientToList, replaceItemInAarray } =
   clientsSlice.actions;
 export default clientsSlice.reducer;

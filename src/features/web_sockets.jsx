@@ -1,8 +1,8 @@
-import { addClientToList } from "./clients_slice";
-import { useDispatch } from "react-redux";
+import { addClientToList, replaceItemInAarray } from "./clients_slice";
 import { BookingData } from "../models/booking_data";
 
-export default function NewClientsWebSocket(dispatch) {
+
+export default function NewClientsWebSocket({ dispatch, waitingForAccept }) {
   const ws = new WebSocket("ws://77.222.53.122:8080/adminPanel/3");
 
   ws.onopen = () => {
@@ -23,8 +23,7 @@ export default function NewClientsWebSocket(dispatch) {
       const endTime = new Date(
         startTime.getTime() + parseDuration(data.duration)
       );
-      // check if state waiting
-      dispatch(
+      /* dispatch(
         addClientToList(
           new BookingData(
             data.id,
@@ -38,9 +37,39 @@ export default function NewClientsWebSocket(dispatch) {
             data.usersCount
           )
         )
-      );
+      ); */
+      var booking = new BookingData(
+        data.id,
+        data.gymId,
+        data.gymName,
+        startTime,
+        endTime,
+        data.lessonType,
+        data.lessonId,
+        data.repeat,
+        data.usersCount
+      )
+      if (waitingForAccept.some(element => element.id === booking.id)) {
+        dispatch(replaceItemInAarray(booking));
+      } else {
+        dispatch(
+          addClientToList(
+            new BookingData(
+              data.id,
+              data.gymId,
+              data.gymName,
+              startTime,
+              endTime,
+              data.lessonType,
+              data.lessonId,
+              data.repeat,
+              data.usersCount
+            )
+          )
+        );
+      }
     } catch (error) {
-      console.error("Error ", error);
+      console.error("onmessage Error ", error);
     }
   };
 
