@@ -93,6 +93,7 @@ export default function ScheduleHeader() {
         {gymState.listOfGyms?.length === 1 && gymState.currentGym !== null && (
           <div className=""> {gymState.currentGym.name} </div>
         )}
+
         {gymState.listOfGyms?.length > 1 && (
           <CustomDropdown
             isDropDownOpened={isGymsDropDownOpened}
@@ -124,7 +125,16 @@ export default function ScheduleHeader() {
           />
         )}
       </div>
-      {gymState.currentGym !== null && (
+
+      {activitiesState.listOfActivities?.length === 1 && (
+        <div className="flex flow-row gap-[10px] items-center">
+          <div className="slash">/</div>
+          <div className=""> {activitiesState.selectedActivity ?? ""} </div>
+        </div>
+      )}
+
+      {/* show dropdown for choosing activity */}
+      {gymState.currentGym !== null && activitiesState.listOfActivities.length > 1 && (
         <CustomDropdown
           isDropDownOpened={isActivitiesDropDownOpened}
           zIndex={"5"}
@@ -555,7 +565,7 @@ export default function ScheduleHeader() {
                     if (scheduleState.selectedDay === "") {
                       setDateNotSelected(true);
                     }
-                    
+
                     if (
                       scheduleState.description !== "" &&
                       scheduleState.selectedDay !== "" &&

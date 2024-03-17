@@ -11,7 +11,7 @@ import { NavLink } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setNavigationFromBooking } from "../../features/schedule_slice";
-import { getListOfGyms } from "../../features/current_gym_slice";
+import { getListOfGyms, setCurrentGymFromFirstItem } from "../../features/current_gym_slice";
 import { getNewClients } from "../../features/clients_slice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -88,9 +88,9 @@ const Sidebar = () => {
   }, []);
 
   useEffect(() => {
-    /* if (gymsState.listOfGyms?.length > 0) {
+    if (gymsState.listOfGyms?.length > 0 && gymsState.currentGym === null) {
       dispatch(setCurrentGymFromFirstItem());
-    } */
+    }
   }, [gymsState.listOfGyms]);
 
   useEffect(() => {

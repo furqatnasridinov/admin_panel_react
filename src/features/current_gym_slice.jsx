@@ -249,7 +249,7 @@ export const createGym = createAsyncThunk(
         longitude: longitude,
         //mainPictureUrl: mainPictureUrl,
         //logo: logo,
-        phone: phone,
+        phone: `+${phone}`,
       };
       const response = await axiosClient.post("api/admin/gyms/", dataToSend);
       if (response.data["operationResult"] === "OK") {

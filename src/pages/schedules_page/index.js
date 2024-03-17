@@ -140,7 +140,7 @@ export default function SchedulesPage() {
   }, []);
 
   useEffect(() => {
-    if (gymState.listOfGyms?.length === 1) {
+    if (gymState.listOfGyms?.length > 0 && gymState.currentGym == null) {
       dispatch(setCurrentGymFromFirstItem());
     }
   }, [gymState.listOfGyms]);
@@ -160,7 +160,16 @@ export default function SchedulesPage() {
     if (sessionStorage.getItem("selectedActivity") !== null) {
       dispatch(selectAnActivity(sessionStorage.getItem("selectedActivity")));
     }
+    if (activitiesState.listOfActivities?.length == 1) {
+      dispatch(selectAnActivity(activitiesState.listOfActivities[0]));
+    }
   }, [gymState.currentGym]);
+
+  useEffect(() => {
+    if (activitiesState.listOfActivities?.length == 1) {
+      dispatch(selectAnActivity(activitiesState.listOfActivities[0]));
+    }
+  }, [activitiesState.listOfActivities]);
 
   // styles to each events
   useEffect(() => {

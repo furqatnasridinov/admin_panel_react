@@ -2,12 +2,11 @@ import { addClientToList, replaceItemInAarray } from "./clients_slice";
 import { BookingData } from "../models/booking_data";
 
 
-export default function NewClientsWebSocket({ dispatch, waitingForAccept }) {
-  const ws = new WebSocket("ws://77.222.53.122:8080/adminPanel/3");
+export default function NewClientsWebSocket({ dispatch, waitingForAccept, gymId }) {
+  const ws = new WebSocket(`ws://77.222.53.122:8080/adminPanel/${gymId}`);
 
   ws.onopen = () => {
     console.log("WebSocket Connected");
-    // Здесь можно отправить какие-либо сообщения серверу, если это необходимо
   };
 
   ws.onmessage = (event) => {
@@ -23,21 +22,6 @@ export default function NewClientsWebSocket({ dispatch, waitingForAccept }) {
       const endTime = new Date(
         startTime.getTime() + parseDuration(data.duration)
       );
-      /* dispatch(
-        addClientToList(
-          new BookingData(
-            data.id,
-            data.gymId,
-            data.gymName,
-            startTime,
-            endTime,
-            data.lessonType,
-            data.lessonId,
-            data.repeat,
-            data.usersCount
-          )
-        )
-      ); */
       var booking = new BookingData(
         data.id,
         data.gymId,
@@ -80,4 +64,7 @@ export default function NewClientsWebSocket({ dispatch, waitingForAccept }) {
   ws.onclose = () => {
     console.log("WebSocket Disconnected");
   };
+
+  // Возвращаем WebSocket, чтобы его можно было закрыть в функции очистки
+  return ws;
 }
