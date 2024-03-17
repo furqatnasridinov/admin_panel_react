@@ -8,10 +8,12 @@ import { useEffect } from "react";
 import {
   getListOfGyms,
   setCurrentGymFromFirstItem,
+
 } from "../../features/current_gym_slice";
 import {
   getAlreadyCameToday,
   getWillComeToday,
+  getNewClients
 } from "../../features/clients_slice";
 
 export default function ClientsPage() {
@@ -26,14 +28,14 @@ export default function ClientsPage() {
   }, []);
 
   useEffect(() => {
-    if (gymState.listOfGyms?.length === 1) {
+    if (gymState.listOfGyms?.length > 0 && gymState.currentGym == null) {
       dispatch(setCurrentGymFromFirstItem());
     }
   }, [gymState.listOfGyms]);
 
   useEffect(() => {
     if (gymState.currentGym !== null) {
-      //dispatch(getNewClients(gymState.currentGym.id));
+      dispatch(getNewClients(gymState.currentGym.id));
       dispatch(getWillComeToday(gymState.currentGym.id));
       dispatch(getAlreadyCameToday(gymState.currentGym.id));
     }

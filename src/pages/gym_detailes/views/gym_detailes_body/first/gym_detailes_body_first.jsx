@@ -197,6 +197,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   }, [currentGym.address]);
 
   return (
+   
     <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
       {/* Photos and Logos */}
 
@@ -653,6 +654,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
             )}
           </div>
         </div>
+
         {/* Contacts */}
         <div className="flex flex-col gap-[5px] ">
           {!isContactsEdittingEnabled && (
@@ -707,9 +709,9 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
               <TextAndTextButtonContacts
                 text1={"Контакты"}
                 text2={"Сохранить"}
-                isDisabled={currentGym.phone.length !== 12}
+                isDisabled={currentGym.phone?.length !== 12}
                 onclick={async () => {
-                  if (currentGym.phone.length == 12) {
+                  if (currentGym.phone?.length == 12) {
                     if (addingTelegram) {
                       setAddingTelegram(false);
                     }
@@ -867,6 +869,9 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                         ontapVk={() => {
                           setAddingVk(true);
                           openDropDown(false);
+                        }}
+                        ontapPhone={() => {
+
                         }}
                       />
                     </div>

@@ -192,7 +192,11 @@ const clientsSlice = createSlice({
 
     replaceItemInAarray(state, action) {
       const index = state.waitingForAccept.findIndex(element => element.id === action.payload.id);
-      state.waitingForAccept[index] = action.payload;
+      // remove at this index
+      if (index > -1) {
+        state.waitingForAccept.splice(index, 1);
+      }
+      //state.waitingForAccept[index] = action.payload;
     },
 
   },

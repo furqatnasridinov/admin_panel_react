@@ -65,19 +65,22 @@ function Content() {
 function App() {
   const dispatch = useDispatch();
   const clientsState = useSelector((state) => state.clients);
+  const currentGymState = useSelector((state) => state.currentGym);
 
   useEffect(() => {
-    //localStorage.setItem(AppConstants.keyToken, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIrNzk5OTIxNzI0OTQiLCJleHAiOjE3MTIwODA2Njh9.ltOhU7N79KL4udwKyLY02rK7FLwnuiLorh2okKsgZdyazu4anZD1NWrKIaUdHPznrsr4YOmFdzKjo3TpD81t0A");
-    // подключение к веб-сокету
+    if (currentGymState.currentGym !== null) {
+      // подключение к веб-сокету    
     const params = {
       dispatch : dispatch,
       waitingForAccept : clientsState.waitingForAccept,
+      gymId : currentGymState.currentGym?.id,
     }
-    NewClientsWebSocket(dispatch);
-   /*  if (localStorage.getItem(AppConstants.keyGymId) !== null) {
-      dispatch(getNewClients(localStorage.getItem(AppConstants.keyGymId)));
-    }  */     
-  }, []);
+    const ws = NewClientsWebSocket(params);    
+    return () => {
+      ws.close();
+    };
+    }
+  }, [currentGymState.currentGym?.id]); // 
 
   return (
     <BrowserRouter>

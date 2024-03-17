@@ -14,11 +14,11 @@ export default function BookingPage() {
   const gymState = useSelector((state) => state.currentGym);
   const clientsSlice = useSelector((state) => state.clients);
 
-  useEffect(() => {
-    if (gymState.listOfGyms?.length > 0) {
+/*   useEffect(() => {
+    if (gymState.listOfGyms?.length > 0 && gymState.currentGym === null) {
       dispatch(setCurrentGymFromFirstItem());
     }
-  }, [gymState.listOfGyms]);
+  }, [gymState.listOfGyms]); */
 
 
   return (
