@@ -153,21 +153,22 @@ export default function SchedulesPage() {
       dispatch(getListOfActivities(gymState.currentGym.id));
     }
 
-    if (activitiesState.selectedActivity !== "") {
+    /* if (activitiesState.selectedActivity !== "") {
       dispatch(removeSelectedActivity());
-    }
+    } */
 
     if (sessionStorage.getItem("selectedActivity") !== null) {
       dispatch(selectAnActivity(sessionStorage.getItem("selectedActivity")));
     }
-    if (activitiesState.listOfActivities?.length == 1) {
-      dispatch(selectAnActivity(activitiesState.listOfActivities[0]));
-    }
+   
   }, [gymState.currentGym]);
 
   useEffect(() => {
     if (activitiesState.listOfActivities?.length == 1) {
       dispatch(selectAnActivity(activitiesState.listOfActivities[0]));
+    }
+    if (activitiesState.listOfActivities?.length == 0 && activitiesState.selectedActivity !== "") {
+      dispatch(selectAnActivity(""));
     }
   }, [activitiesState.listOfActivities]);
 
@@ -271,21 +272,29 @@ export default function SchedulesPage() {
   }, [activitiesState.selectedActivity, scheduleState.allSchedules]);
 
   return (
-    console.log("isFromBooking", scheduleState.isNavigationFromBooking),
+    console.log("len", activitiesState.listOfActivities.length),
     (
       <div ref={pageRef} className="schedule_page">
         {clientsSlice.waitingForAccept?.length > 0 && (
           <MessageLikeTopContainer hideOpenSchedule={true} />
         )}
+
         <ScheduleHeader />
+
         <div className="schedule_body">
           {gymState.currentGym === null && !gymState.isGymsLoading && (
             <div className="centeredGreyText">Выберите заведение</div>
           )}
 
           {gymState.currentGym !== null &&
-            activitiesState.selectedActivity === "" && (
+            activitiesState.selectedActivity === "" &&  activitiesState.listOfActivities.length > 0 &&(
               <div className="centeredGreyText">Выберите активность</div>
+            )}
+          
+          {gymState.currentGym !== null &&
+            activitiesState.listOfActivities.length === 0 && (
+              <div className="centeredGreyText">В данном заведении нет активностей,вы можете добавить 
+              активности переходя в страницу данного заведения</div>
             )}
 
           {(gymState.isGymsLoading ||

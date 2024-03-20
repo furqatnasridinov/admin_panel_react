@@ -1,9 +1,10 @@
-import { addClientToList, replaceItemInAarray } from "./clients_slice";
+import { addOrRemoveClient } from "./clients_slice";
 import { BookingData } from "../models/booking_data";
+import AppConstants from "../config/app_constants";
 
 
-export default function NewClientsWebSocket({ dispatch, waitingForAccept, gymId }) {
-  const ws = new WebSocket(`ws://77.222.53.122:8080/adminPanel/${gymId}`);
+export default function NewClientsWebSocket({ dispatch, gymId }) {
+  const ws = new WebSocket(`ws://77.222.53.122:8080/adminPanel/${gymId}?token=${localStorage.getItem(AppConstants.keyToken)}`);
 
   ws.onopen = () => {
     console.log("WebSocket Connected");
@@ -31,27 +32,12 @@ export default function NewClientsWebSocket({ dispatch, waitingForAccept, gymId 
         data.lessonType,
         data.lessonId,
         data.repeat,
-        data.usersCount
-      )
-      if (waitingForAccept.some(element => element.id === booking.id)) {
-        dispatch(replaceItemInAarray(booking));
-      } else {
-        dispatch(
-          addClientToList(
-            new BookingData(
-              data.id,
-              data.gymId,
-              data.gymName,
-              startTime,
-              endTime,
-              data.lessonType,
-              data.lessonId,
-              data.repeat,
-              data.usersCount
-            )
-          )
-        );
-      }
+        data.usersCount,
+        data.description
+      );
+      dispatch(
+        addOrRemoveClient(booking));
+
     } catch (error) {
       console.error("onmessage Error ", error);
     }
