@@ -69,6 +69,7 @@ function App() {
 
   useEffect(() => {
     if (currentGymState.currentGym !== null) {
+      
       // подключение к веб-сокету    
     const params = {
       dispatch : dispatch,
@@ -80,7 +81,7 @@ function App() {
       ws.close();
     };
     }
-  }, [currentGymState.currentGym?.id]); // 
+  }, [currentGymState.currentGym?.id]); 
 
   return (
     <BrowserRouter>

@@ -186,18 +186,31 @@ const clientsSlice = createSlice({
       state.decliningEvent = action.payload;
     },
 
-    addClientToList(state, action) {
-      state.waitingForAccept.push(action.payload);
+    addOrRemoveClient(state, action) {
+      var list = state.waitingForAccept;
+      const booking = action.payload;
+      const isContains = list.some(element => element.id === booking.id);
+      if (isContains) {
+        // remove at this index
+        const index = list.findIndex(element => element.id === action.payload.id);
+      if (index > -1) {
+        list.splice(index, 1);
+        state.waitingForAccept = list;
+      }
+      }else{
+      list.push(action.payload);
+      state.waitingForAccept = list;
+      }
     },
 
-    replaceItemInAarray(state, action) {
+  /*   replaceItemInAarray(state, action) {
       const index = state.waitingForAccept.findIndex(element => element.id === action.payload.id);
       // remove at this index
       if (index > -1) {
         state.waitingForAccept.splice(index, 1);
       }
       //state.waitingForAccept[index] = action.payload;
-    },
+    }, */
 
   },
   extraReducers: (builder) => {
@@ -242,6 +255,6 @@ const clientsSlice = createSlice({
   },
 });
 
-export const { removeClient, setDecliningEvent, addClientToList, replaceItemInAarray } =
+export const { removeClient, setDecliningEvent, addOrRemoveClient, replaceItemInAarray } =
   clientsSlice.actions;
 export default clientsSlice.reducer;
