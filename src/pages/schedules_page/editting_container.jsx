@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { hideEdittingContainer } from "../../features/schedule_slice";
 import roundedGarbage from "../../assets/svg/rounded_garbage.svg";
+import { TextAndTextfield } from "../gym_detailes/views/gym_detailes_body/employees/employees";
 import {
   deleteSchedule,
   resetSelectedEvent,
@@ -22,7 +23,7 @@ import CustomDialog from "../../components/dialog/dialog";
 import BackButton from "../../components/button/back_button";
 import CustomButton from "../../components/button/button";
 import DropdownForHours from "./dropdowm_for_hours";
-import checkboxEnabledSvg from "../../assets/svg/done.svg";
+import checkboxEnabledSvg from "../../assets/svg/Check.svg";
 import checkboxDisabledSvg from "../../assets/svg/checkbox_disabled.svg";
 import backButton from "../../assets/svg/back_button.svg";
 import psych from "../../assets/images/american_psycho.jpg";
@@ -290,30 +291,32 @@ export default function EdittingContainer() {
           )}
         </div>
 
-        <div className="flex flex-col gap-[5px]">
-          <div className="text-[14px] font-bold">Описание занятия:</div>
-          {!scheduleState.isScheduleEdittingEnabled && (
-            <div className="text-[13px] font-medium leading-[15px]">
-              {scheduleState.selectedEvent.title}
-            </div>
-          )}
+        {!scheduleState.isScheduleEdittingEnabled && (
+          <div className="text-[13px] font-medium leading-[15px]">
+            {scheduleState.selectedEvent.title}
+          </div>
+        )}
 
-          {scheduleState.isScheduleEdittingEnabled && (
-            <div className="">
-              <textarea
-                className="textArea text-[13px] font-normal font-inter"
-                value={scheduleState.selectedEvent.title}
-                onChange={(e) => {
-                  dispatch(selectedEventSetTitle(e.target.value));
-                }}
-                style={{
-                  fontSize: "13px",
-                  lineHeight: "14px",
-                }}
-              />
-            </div>
-          )}
-        </div>
+        {scheduleState.isScheduleEdittingEnabled &&
+          <TextAndTextfield
+            textfieldHasFocus={true}
+            value={scheduleState.selectedEvent.title}
+            onChange={(e) => {
+              if (e.target.value.length <= 250){
+                dispatch(selectedEventSetTitle(e.target.value));
+              }
+            }}
+            showTextArea={true}
+            fontSize={"13px"}
+            fontWeight={"medium"}
+            text={"Описание занятия:"}
+            placeholder={"Напишите описание к занятию"}
+            showLogo={false}
+            lineheight={"16px"}
+            showMaxLength={true}
+            maxLength={"250"}
+          />
+        }
 
         {!scheduleState.isScheduleEdittingEnabled && (
           <BackButton
@@ -450,7 +453,9 @@ export default function EdittingContainer() {
                 title={"Отменить"}
                 onСlick={() => {
                   dispatch(disableScheduleEditting());
-                  // reset times
+                  dispatch(hideEdittingContainer());
+                  dispatch(getSchedules(gymState.currentGym.id));
+                  dispatch(resetDatasAfterSubmitting());
                 }}
               />
               <CustomButton
@@ -459,7 +464,7 @@ export default function EdittingContainer() {
                 title={"Сохранить"}
                 onСlick={async () => {
                   // send update request
-
+                  
                   if (!scheduleState.endTimeIsBeforeStartTime) {
                     const {
                       gymId,
@@ -516,11 +521,11 @@ export default function EdittingContainer() {
               key={weekday.id}
               className={
                 scheduleState.selectedEvent.repeat.length > 1 &&
-                scheduleState.selectedEvent.repeat.includes(weekday.id)
+                  scheduleState.selectedEvent.repeat.includes(weekday.id)
                   ? "roundedWeekdaysSelected"
                   : "roundedWeekdays "
               }
-              onClick={() => {}}
+              onClick={() => { }}
             >
               {weekday.name}
             </div>

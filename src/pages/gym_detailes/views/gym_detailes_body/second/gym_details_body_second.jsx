@@ -40,13 +40,13 @@ import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 import { toast } from "react-toastify";
 
 export default function GymDetailesBodySecondContainer({
-  gymId,
   listOfActivities,
   activityDescribtion,
   activityPeculiarities,
 }) {
   const dispatch = useDispatch();
   const activitiesSlice = useSelector((state) => state.activities);
+  const gymState = useSelector((state) => state.currentGym);
 
   // use states
   const [isDescribtionEdittingEnabled, setDescribtionEditting] =
@@ -89,12 +89,12 @@ export default function GymDetailesBodySecondContainer({
       1
     )[0];
     const request = {
-      gymId: gymId,
+      gymId: gymState.currentGym.id,
       url: draggedItemContent,
       orderNumber: positionOfPhoto,
     };
     await dispatch(dragAndDropGymPictures(request));
-    dispatch(getPhotos(gymId));
+    dispatch(getPhotos(gymState.currentGym.id));
     // reset the position ref
     draggedItemRef.current = null;
   }
@@ -109,12 +109,12 @@ export default function GymDetailesBodySecondContainer({
     )[0];
     // dispatch
     const request = {
-      gymId: gymId,
+      gymId: gymState.currentGym.id,
       lessonType: draggedItemContent,
       orderNumber: positionOfActivity,
     };
     await dispatch(dragAndDropActivities(request));
-    dispatch(getListOfActivities(gymId));
+    dispatch(getListOfActivities(gymState.currentGym.id));
 
     // reset the position ref
     draggedActivityRef.current = null;
@@ -128,6 +128,7 @@ export default function GymDetailesBodySecondContainer({
   }
 
   return (
+    console.log("activityDescribtion ", activityDescribtion),
     <div className="flex flex-col bg-white h-fit rounded-[16px] p-[32px] gap-[32px]">
       <div className="activities">
         <TextAndTextButton
@@ -139,7 +140,7 @@ export default function GymDetailesBodySecondContainer({
         />
         <div className="chips_row ">
           {listOfActivities
-            .filter((el) => !activitiesSlice.deletedActivities.includes(el))
+            ?.filter((el) => !activitiesSlice.deletedActivities.includes(el))
             .map((activity, index) => {
               return (
                 <Chip
@@ -202,13 +203,13 @@ export default function GymDetailesBodySecondContainer({
                                   // function when time ended
                                   async () => {
                                     const { id, lessonType } = {
-                                      id: gymId,
+                                      id: gymState.currentGym.id,
                                       lessonType: activity,
                                     };
                                     await dispatch(
                                       deleteActivity({ id, lessonType })
                                     );
-                                    dispatch(getListOfActivities(gymId));
+                                    dispatch(getListOfActivities(gymState.currentGym.id));
                                   }
                                 );
                               setCancelDeleteTimeoutActivities((prevState) => [
@@ -253,14 +254,14 @@ export default function GymDetailesBodySecondContainer({
                             className="gym_names"
                             onClick={async () => {
                               const { id, lessonType } = {
-                                id: gymId,
+                                id: gymState.currentGym.id,
                                 lessonType: item,
                               };
                               await dispatch(
                                 addNewActivity({ id, lessonType }),
                                 openDropDown(false),
                               );
-                              dispatch(getListOfActivities(gymId));
+                              dispatch(getListOfActivities(gymState.currentGym.id));
                               showDropDown(false);
                             }}
                           >
@@ -318,7 +319,7 @@ export default function GymDetailesBodySecondContainer({
                       text2={"Отменить"}
                       onclick={() => {
                         if (activitiesSlice.isChangesOcurred) {
-                          dispatch(getInfoForType(gymId));
+                          dispatch(getInfoForType(gymState.currentGym.id));
                         }
                         setDescribtionEditting(false);
                       }}
@@ -333,12 +334,11 @@ export default function GymDetailesBodySecondContainer({
                         }
                       }}
                       onButtonClicked={async () => {
-                        if (activityDescribtion.trim() === "") {
+                        if (activityDescribtion === "") {
                           setActivityDescribtionNotValidated(true);
-
                         } else {
                           const { id, lessonType, typeDescription } = {
-                            id: gymId,
+                            id: gymState.currentGym.id,
                             lessonType: activitiesSlice.selectedActivity,
                             typeDescription: activityDescribtion,
                           };
@@ -349,7 +349,7 @@ export default function GymDetailesBodySecondContainer({
                               typeDescription,
                             })
                           );
-                          dispatch(getInfoForType(gymId));
+                          dispatch(getInfoForType(gymState.currentGym.id));
                           setDescribtionEditting(false);
                           dispatch(resetChanges());
                           setActivityDescribtionNotValidated(false);
@@ -394,7 +394,7 @@ export default function GymDetailesBodySecondContainer({
                       isRedText={isFeaturesEdittingEnabled}
                       onclick={() => {
                         if (activitiesSlice.isChangesOcurred) {
-                          dispatch(getInfoForType(gymId));
+                          dispatch(getInfoForType(gymState.currentGym.id));
                         }
                         setFeaturesEditting(false);
                       }}
@@ -402,7 +402,7 @@ export default function GymDetailesBodySecondContainer({
                     <FeaturesTextField
                       onButtonClicked={async () => {
                         const { id, lessonType, peculiarities } = {
-                          id: gymId,
+                          id: gymState.currentGym.id,
                           lessonType: activitiesSlice.selectedActivity,
                           peculiarities: activityPeculiarities,
                         };
@@ -413,7 +413,7 @@ export default function GymDetailesBodySecondContainer({
                             peculiarities,
                           })
                         );
-                        dispatch(getInfoForType(gymId));
+                        dispatch(getInfoForType(gymState.currentGym.id));
                         setFeaturesEditting(false);
                         dispatch(resetChanges());
                       }}
@@ -524,7 +524,7 @@ export default function GymDetailesBodySecondContainer({
                         />
                       );
                     })}
-                {showPhotoInDialog && isPhotoShownInDialog && (
+                {isPhotoShownInDialog && (
                   <CustomDialog
                     isOpened={isPhotoShownInDialog}
                     closeOnTapOutside={() => showPhotoInDialog(false)}
@@ -581,11 +581,11 @@ export default function GymDetailesBodySecondContainer({
                                   "Вы удалили фото",
                                   // function when time ended
                                   async () => {
-                                    const { id, url } = { id: gymId, url: item };
+                                    const { id, url } = { id: gymState.currentGym.id, url: item };
                                     await dispatch(
                                       deleteActivityPhoto({ id, url })
                                     );
-                                    dispatch(getPhotos(gymId));
+                                    dispatch(getPhotos(gymState.currentGym.id));
                                   }
                                 );
                               setCancelDeleteTimeoutPhotos((prevState) => [
@@ -655,7 +655,7 @@ export default function GymDetailesBodySecondContainer({
                           }
 
                           const { id, type } = {
-                            id: gymId,
+                            id: gymState.currentGym.id,
                             type: activitiesSlice.selectedActivity,
                           };
 
@@ -670,7 +670,7 @@ export default function GymDetailesBodySecondContainer({
                                 type,
                               })
                             );
-                            dispatch(getPhotos(gymId));
+                            dispatch(getPhotos(gymState.currentGym.id));
                           }
                         }
                         event.target.value = null; // Очистить значение элемента ввода файла

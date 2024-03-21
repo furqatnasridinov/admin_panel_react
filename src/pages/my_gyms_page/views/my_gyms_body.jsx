@@ -25,6 +25,7 @@ const MyGymsBody = () => {
             {gymState.listOfGyms?.map((gym) => (
               <Gym
                 key={gym.id}
+                gym = {gym}
                 id={gym.id}
                 gymName={gym.name}
                 activitiesForMonth={gym.activitiesForMonth}

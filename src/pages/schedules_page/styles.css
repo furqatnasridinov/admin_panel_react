@@ -170,6 +170,7 @@
   border: 1px solid rgba(212, 229, 255, 1);
   background-color: white;
   z-index: 2;
+  overflow-y: auto;
 }
 
 .refSchedule {

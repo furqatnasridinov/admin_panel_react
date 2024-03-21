@@ -31,7 +31,7 @@ import { TextAndTextfield } from "../gym_detailes/views/gym_detailes_body/employ
 import { WEEK_DAYS } from "../../dummy_data/dymmy_data";
 import nextMoth from "../../assets/svg/navigate_next_month.svg";
 import previousMoth from "../../assets/svg/navigate_prev_month.svg";
-import checkboxEnabled from "../../assets/svg/done.svg";
+import checkboxEnabled from "../../assets/svg/Check.svg";
 import checkboxDisabled from "../../assets/svg/checkbox_disabled.svg";
 import questionLogo from "../../assets/svg/questionModal.svg";
 import AppConstants from "../../config/app_constants";
@@ -150,7 +150,7 @@ export default function ScheduleHeader() {
                 onClick={() => {
                   dispatch(setNavigationFromBooking(false)); // to make select acvity work
                   dispatch(selectAnActivity(item));
-                  sessionStorage.setItem("selectedActivity", item);
+                  //sessionStorage.setItem("selectedActivity", item);
                   openActivitiesDropDown(false);
                 }}
               >
@@ -298,11 +298,15 @@ export default function ScheduleHeader() {
 
             {/* calendar */}
             <DatePicker
+            minDate={new Date()}
               selected={startDate}
               onChange={(date) => setStartDate(date)}
               open={datePickerShown}
               shouldCloseOnSelect={true}
               onSelect={(date) => {
+                if (isDateNotSelected) {
+                  setDateNotSelected(false);
+                }
                 // here we check if selected day in future or not
                 dispatch(selectADayFromCalendar(date));
                 setDatePickerShown(false);
@@ -350,11 +354,16 @@ export default function ScheduleHeader() {
             <TextAndTextfield
               value={scheduleState.description}
               onChange={(event) => {
+                if (event.target.value.length > 0 && isFormNotValidated) {
+                  setFormNotValidated(false);
+                }
                 if (event.target.value.length <= 250) {
                   dispatch(setDescription(event.target.value));
                 }
               }}
               showTextArea={true}
+              fontSize={"13px"}
+              fontWeight={"medium"}
               textfieldHasFocus={hasFocus}
               requestFocus={() => setFocus(true)}
               removeFocus={() => setFocus(false)}
