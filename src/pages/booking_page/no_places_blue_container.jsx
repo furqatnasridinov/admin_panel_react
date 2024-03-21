@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import "./styles.css";
-import checkboxEnabledSvg from "../../assets/svg/done.svg";
+import checkboxEnabledSvg from "../../assets/svg/Check.svg";
 import checkboxDisabledSvg from "../../assets/svg/checkbox_disabled.svg";
 import { useDispatch } from "react-redux";
 import { useState } from "react";

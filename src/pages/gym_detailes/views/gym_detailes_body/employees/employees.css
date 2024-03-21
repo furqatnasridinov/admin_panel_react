@@ -141,6 +141,10 @@
   padding-right: 16px;
 }
 
+textarea {
+  font-weight: 500;
+}
+
 .icon_and_textfield_row_focused {
   display: flex;
   flex-direction: row;

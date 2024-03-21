@@ -128,7 +128,6 @@ export default function GymDetails() {
             <GymDetailesBodyFirstContainer currentGym={gymState.currentGym} />
 
             <GymDetailesBodySecondContainer
-              gymId={gymId}
               listOfActivities={activitiesSlice.listOfActivities}
               activityPeculiarities={activitiesSlice.activityPeculiarities}
               activityDescribtion={activitiesSlice.activityDescribtion}

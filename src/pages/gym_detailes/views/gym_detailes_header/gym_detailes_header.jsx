@@ -5,6 +5,7 @@ import CustomDropdown from "../../../../components/dropdown/custom_dropdown";
 import { toast } from "react-toastify";
 import CustomButton from "../../../../components/button/button"
 import questionLogo from "../../../../assets/svg/questionModal.svg";
+import { setCurrentGym } from "../../../../features/current_gym_slice";
 
 
 export default function GymDetailesHeader({
@@ -35,12 +36,8 @@ export default function GymDetailesHeader({
   }
 
   function setCurrentGymAndPop(gym) {
-    try {
-      selectAnotherGym(gym);
-      openCloseDropDown();
-    } catch (error) {
-      toast(`setCurrentGymAndPop ${error}`);
-    }
+    selectAnotherGym(gym);
+    openCloseDropDown();
   }
 
 
@@ -50,7 +47,7 @@ export default function GymDetailesHeader({
       const link = document.createElement('a');
       link.href = `http://77.222.53.122/image/${gym.qrcode}`;
       link.setAttribute('download', fileName); //or any other extension
-      link.target = '_blank'; 
+      link.target = '_blank';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

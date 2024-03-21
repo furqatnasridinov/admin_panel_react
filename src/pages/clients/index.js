@@ -22,17 +22,6 @@ export default function ClientsPage() {
   const gymState = useSelector((state) => state.currentGym);
   const clientsSlice = useSelector((state) => state.clients);
 
-  // get initial data`s
-  useEffect(() => {
-    dispatch(getListOfGyms());
-  }, []);
-
-  useEffect(() => {
-    if (gymState.listOfGyms?.length > 0 && gymState.currentGym == null) {
-      dispatch(setCurrentGymFromFirstItem());
-    }
-  }, [gymState.listOfGyms]);
-
   useEffect(() => {
     if (gymState.currentGym !== null) {
       dispatch(getNewClients(gymState.currentGym.id));

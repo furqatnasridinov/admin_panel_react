@@ -113,7 +113,6 @@ export default function SchedulesPage() {
 
   // get initial data`s
   useEffect(() => {
-    dispatch(getListOfGyms());
     if (
       scheduleState.isNavigationFromBooking &&
       scheduleState.eventFromBooking !== null
@@ -123,27 +122,17 @@ export default function SchedulesPage() {
         activitiesState.selectedActivity
       ) {
         dispatch(selectAnActivity(scheduleState.eventFromBooking.lessonType));
-        sessionStorage.setItem(
-          "selectedActivity",
-          scheduleState.eventFromBooking.lessonType
-        );
       }
       if (gymState.currentGym.id !== scheduleState.eventFromBooking.gymId) {
         dispatch(setCurrentGym(scheduleState.eventFromBooking.gymName));
-        sessionStorage.setItem(
+       /*  sessionStorage.setItem(
           "currentGym",
           scheduleState.eventFromBooking.gymName
-        );
+        ); */
       }
       setCurrentDate(scheduleState.eventFromBooking.startTime);
     }
   }, []);
-
-  useEffect(() => {
-    if (gymState.listOfGyms?.length > 0 && gymState.currentGym == null) {
-      dispatch(setCurrentGymFromFirstItem());
-    }
-  }, [gymState.listOfGyms]);
 
   // get new infos every time when currentGym changes
   useEffect(() => {
@@ -152,10 +141,6 @@ export default function SchedulesPage() {
       dispatch(getListOfEmployees(gymState.currentGym.id)); // to show in sidebar top
       dispatch(getListOfActivities(gymState.currentGym.id));
     }
-
-    /* if (activitiesState.selectedActivity !== "") {
-      dispatch(removeSelectedActivity());
-    } */
 
     if (sessionStorage.getItem("selectedActivity") !== null) {
       dispatch(selectAnActivity(sessionStorage.getItem("selectedActivity")));

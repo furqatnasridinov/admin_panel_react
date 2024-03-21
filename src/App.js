@@ -69,7 +69,6 @@ function App() {
 
   useEffect(() => {
     if (currentGymState.currentGym !== null) {
-      
       // подключение к веб-сокету    
     const params = {
       dispatch : dispatch,
@@ -84,6 +83,7 @@ function App() {
   }, [currentGymState.currentGym?.id]); 
 
   return (
+    console.log("sessio storage",JSON.stringify(sessionStorage.getItem("currentGym"))),
     <BrowserRouter>
       <Content />
     </BrowserRouter>

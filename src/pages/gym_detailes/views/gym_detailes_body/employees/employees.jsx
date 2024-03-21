@@ -788,6 +788,8 @@ export function TextAndTextfield({
   maxLength,
   showMaxLength,
   showTextArea,
+  fontSize,
+  fontWeight,
   textfieldsMinHeight
 }) {
 
@@ -853,6 +855,9 @@ export function TextAndTextfield({
             placeholder={placeholder}
             onChange={onChange}
             style={{
+              lineHeight: `${lineheight}px`,
+              fontSize: fontSize ,
+              fontWeight: fontWeight,
               height: "auto",
               maxHeight: `${10 * lineheight}px`, // Set max height to 10 lines
               minHeight: `${lineheight}px`,
@@ -872,6 +877,9 @@ export function TextAndTextfield({
             placeholder={placeholder}
             onChange={onChange}
             style={{
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              lineHeight: `${lineheight}px`,
               height: "auto",
               maxHeight: `${10 * lineheight}px`, // Set max height to 10 lines
               minHeight: `${lineheight}px`,
