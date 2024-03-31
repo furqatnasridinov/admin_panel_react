@@ -115,6 +115,14 @@ export default function ScheduleHeader() {
                   localStorage.setItem(AppConstants.keyGymId, item.id);
                   dispatch(setCurrentGym(item));
                   openGymsDropDown(false);
+                  // reset selected activity and close editting container
+                  if (scheduleState.isEdittingContainerShown) {
+                    dispatch(hideEdittingContainer());
+                  }
+                  if (scheduleState.isScheduleEdittingEnabled) {
+                    dispatch(disableScheduleEditting());
+                  }
+                  dispatch(resetSelectedEvent());
                 }}
               >
                 {item.name}
@@ -150,8 +158,15 @@ export default function ScheduleHeader() {
                 onClick={() => {
                   dispatch(setNavigationFromBooking(false)); // to make select acvity work
                   dispatch(selectAnActivity(item));
-                  //sessionStorage.setItem("selectedActivity", item);
                   openActivitiesDropDown(false);
+                   // reset selected activity and close editting container
+                   if (scheduleState.isEdittingContainerShown) {
+                    dispatch(hideEdittingContainer());
+                  }
+                  if (scheduleState.isScheduleEdittingEnabled) {
+                    dispatch(disableScheduleEditting());
+                  }
+                  dispatch(resetSelectedEvent());
                 }}
               >
                 {item}
@@ -298,7 +313,7 @@ export default function ScheduleHeader() {
 
             {/* calendar */}
             <DatePicker
-            minDate={new Date()}
+              minDate={new Date()}
               selected={startDate}
               onChange={(date) => setStartDate(date)}
               open={datePickerShown}

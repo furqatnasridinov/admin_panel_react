@@ -22,18 +22,21 @@ export const getSchedules = createAsyncThunk(
             const endTime = new Date(
               startTime.getTime() + parseDuration(item.duration)
             );
-            listToCollect.push(
-              new ScheduleEvent(
-                item.id,
-                startTime,
-                endTime,
-                item.description,
-                item.lessonType,
-                item.owner,
-                item.repeat,
-                item.usersCount
-              )
-            );
+            if (!item.isDeleted) {
+              listToCollect.push(
+                new ScheduleEvent(
+                  item.id,
+                  startTime,
+                  endTime,
+                  item.description,
+                  item.lessonType,
+                  item.owner,
+                  item.repeat,
+                  item.usersCount,
+                  item.lessonState
+                )
+              );
+            }
           });
         });
         return listToCollect;
@@ -171,7 +174,7 @@ const scheduleSlice = createSlice({
       state.lessonDurationSendToServer = "";
       state.lessonStartTimeSendToServer = "";
     },
-    getFormattedMonthFromSwitching: (state, action) => {},
+    getFormattedMonthFromSwitching: (state, action) => { },
 
     setSchedulesLoading: (state, action) => {
       state.isSchedulesLoading = action.payload;

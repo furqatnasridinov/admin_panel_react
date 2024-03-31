@@ -19,7 +19,6 @@ export default function BookingBody({ clientsList, doNotShowBlock }) {
   // redux
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
-  const scheduleState = useSelector((state) => state.schedule);
 
   // use states
   const [dialogOpened, openDialog] = useState(false);
@@ -44,7 +43,7 @@ export default function BookingBody({ clientsList, doNotShowBlock }) {
       {clientsList &&
         clientsList?.length > 0 &&
         [...clientsList] // Создаем копию массива перед сортировкой
-          .sort((a, b) => a.startTime - b.startTime)
+          .sort((a, b) => a.id - b.id)
           .map((client) => {
             let day = client.startTime.getDate();
             let month = client.startTime.getMonth() + 1;

@@ -11,6 +11,7 @@ export default function EventCancelledBlueContainer({
   event,
   onPop,
   scheduleExists,
+  reScheduledEvent,
 }) {
   // redux
   const dispatch = useDispatch();
@@ -57,6 +58,9 @@ export default function EventCancelledBlueContainer({
         </div>
       </div>
 
+      {reScheduledEvent.usersCounts > 0 &&
+          <div className="">{`На это событие записано ${reScheduledEvent.usersCounts} пользователей.`}</div>}
+
       {/* buttons  */}
       <div className="flex flex-row gap-[10px]">
         <BackButton
@@ -90,7 +94,6 @@ export default function EventCancelledBlueContainer({
               );
             }
 
-            // getting new data (remove when websocket will be implemented)
             dispatch(getNewClients(event.gymId));
             onPop();
           }}
