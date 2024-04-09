@@ -134,9 +134,7 @@ export default function GymDetailesBodySecondContainer({
         <TextAndTextButton
           text1={"Активности"}
           text2={activitiesSlice.selectedActivity === null ? "Добавить активности" : "Редактировать список активностей"}
-          onclick={() => {
-            openActivitiesModal(true);
-          }}
+          onclick={() => {openActivitiesModal(true)}}
         />
         <div className="chips_row ">
           {listOfActivities
@@ -156,9 +154,7 @@ export default function GymDetailesBodySecondContainer({
         {isActivitiesModalOpened && (
           <CustomDialog
             isOpened={isActivitiesModalOpened}
-            closeOnTapOutside={() => {
-              openActivitiesModal(false);
-            }}
+            closeOnTapOutside={() => {openActivitiesModal(false)}}
           >
             {/* Activities modal body */}
             <div className="mainContainerActivitiesModal">
@@ -178,25 +174,16 @@ export default function GymDetailesBodySecondContainer({
                   <div className="text-[14px] font-bold">Ваши активности:</div>
                   <div
                     className="blue_bordered_container"
-                    ref={blueBorderedContainerRef}
-                  >
-                    {listOfActivities
-                      .filter(
-                        (el) => !activitiesSlice.deletedActivities.includes(el)
-                      )
+                    ref={blueBorderedContainerRef}>
+                    {listOfActivities.filter((el) => !activitiesSlice.deletedActivities.includes(el))
                       .map((activity, index) => {
                         return (
                           <EachActivity
                             key={index}
                             title={activity}
-                            onclick={() => {
-                              dispatch(selectAnActivity(activity));
-                            }}
+                            onclick={() => {dispatch(selectAnActivity(activity))}}
                             onEditClicked={() => { }}
-                            onRemoveClicked={async () => {
-                              dispatch(
-                                removeActivityFromListOfActivities(activity)
-                              );
+                            onRemoveClicked={async () => {dispatch(removeActivityFromListOfActivities(activity));
                               const cancelTimeOut =
                                 deleteActivitiesSnackRef.current.show(
                                   "Вы удалили занятие",
@@ -206,9 +193,7 @@ export default function GymDetailesBodySecondContainer({
                                       id: gymState.currentGym.id,
                                       lessonType: activity,
                                     };
-                                    await dispatch(
-                                      deleteActivity({ id, lessonType })
-                                    );
+                                    await dispatch(deleteActivity({ id, lessonType }));
                                     dispatch(getListOfActivities(gymState.currentGym.id));
                                   }
                                 );
@@ -217,12 +202,8 @@ export default function GymDetailesBodySecondContainer({
                                 cancelTimeOut,
                               ]);
                             }}
-                            isActive={
-                              activity === activitiesSlice.selectedActivity
-                            }
-                            onDragStart={() =>
-                              (draggedActivityRef.current = index)
-                            }
+                            isActive={activity === activitiesSlice.selectedActivity}
+                            onDragStart={() =>(draggedActivityRef.current = index)}
                             onDragEnter={() => setPositionOfActivity(index + 1)}
                             onDragEnd={handleSortingActivities}
                             onDragOver={(e) => e.preventDefault()}
@@ -230,8 +211,6 @@ export default function GymDetailesBodySecondContainer({
                         );
                       })}
                     {/* Кнопка добавить */}
-
-
                     <DropDownSmaller
                       text={"Добавить"}
                       isDropDownOpened={isDropDownOpened}
@@ -241,13 +220,9 @@ export default function GymDetailesBodySecondContainer({
                         } else {
                           openDropDown(true);
                           scrollToBottom();
-                        }
-                      }}
+                        }}}
                       map={activitiesSlice.allAvailableLessonTypes
-                        .filter(
-                          (el) =>
-                            !activitiesSlice.listOfActivities.includes(el)
-                        )
+                        .filter((el) =>!activitiesSlice.listOfActivities.includes(el))
                         .map((item, index) => (
                           <button
                             key={index}
@@ -269,7 +244,6 @@ export default function GymDetailesBodySecondContainer({
                           </button>
                         ))}
                     />
-
                   </div>
                 </div>
 
@@ -300,39 +274,30 @@ export default function GymDetailesBodySecondContainer({
             <div className="describtion_and_features_column">
               {/* describtion */}
               <div className="describtion_to_activity">
-                {!isDescribtionEdittingEnabled && (
-                  <>
-                    <TextAndTextButton
-                      text1={"Описание"}
-                      text2={"Изменить"}
-                      onclick={() => setDescribtionEditting(true)}
-                    />
-                    <div className="text-[13px] font-normal font-inter leading-[14px]">
-                      {activityDescribtion}
-                    </div>
-                  </>
-                )}
-                {isDescribtionEdittingEnabled && (
-                  <>
-                    <TextAndTextButton
-                      text1={"Описание"}
-                      text2={"Отменить"}
-                      onclick={() => {
-                        if (activitiesSlice.isChangesOcurred) {
-                          dispatch(getInfoForType(gymState.currentGym.id));
-                        }
-                        setDescribtionEditting(false);
-                      }}
-                      isRedText={isDescribtionEdittingEnabled}
-                    />
-                    <EditableTextfield
-                      value={activityDescribtion}
-                      isNotValidated={activityDescribtionNotValidated}
-                      onChange={(e) => {
-                        if (e.target.value?.length <= 250) {
-                          dispatch(changeActivityDescribtion(e.target.value));
-                        }
-                      }}
+                <TextAndTextButton
+                  text1={"Описание"}
+                  text2={isDescribtionEdittingEnabled ? "Отменить" : "Изменить"}
+                  isRedText={isDescribtionEdittingEnabled}
+                  onclick={() => {
+                    if (!isDescribtionEdittingEnabled) {
+                      setDescribtionEditting(true);
+                    }else{
+                      if (activitiesSlice.isChangesOcurred) {
+                      dispatch(getInfoForType(gymState.currentGym.id))}
+                      setDescribtionEditting(false)}
+                  }}/>
+                {!isDescribtionEdittingEnabled && 
+                <div className="text-[13px] font-normal font-inter leading-[14px]">
+                  {activityDescribtion}
+                </div>}
+
+                {isDescribtionEdittingEnabled && 
+                  <EditableTextfield
+                    value={activityDescribtion}
+                    isNotValidated={activityDescribtionNotValidated}
+                    onChange={(e) => {
+                      if (e.target.value?.length <= 250) {
+                        dispatch(changeActivityDescribtion(e.target.value))}}}
                       onButtonClicked={async () => {
                         if (activityDescribtion === "") {
                           setActivityDescribtionNotValidated(true);
@@ -343,114 +308,71 @@ export default function GymDetailesBodySecondContainer({
                             typeDescription: activityDescribtion,
                           };
                           await dispatch(
-                            patchDescriptionOfSelectedActivity({
-                              id,
-                              lessonType,
-                              typeDescription,
-                            })
-                          );
+                          patchDescriptionOfSelectedActivity({id,lessonType,typeDescription}));
                           dispatch(getInfoForType(gymState.currentGym.id));
                           setDescribtionEditting(false);
                           dispatch(resetChanges());
                           setActivityDescribtionNotValidated(false);
-                        }
-
-                      }}
+                        }}}
                       fontsize={"13px"}
                       lineheight={"16px"}
                       maxLength={250}
                       textFieldsMinWidth={"300px"}
-
-                    />
-                  </>
-                )}
+                    />}
               </div>
 
+              {/* features */}
               <div className="features">
-                {!isFeaturesEdittingEnabled && (
-                  <>
-                    <TextAndTextButton
-                      text1={"Особенности посещения"}
-                      text2={"Изменить"}
-                      isRedText={isFeaturesEdittingEnabled}
-                      onclick={() => setFeaturesEditting(true)}
-                    />
-                    {activityPeculiarities &&
-                      activityPeculiarities.trim() !== "" && (
-                        <div
-                          className="text-[13px] font-normal font-inter"
-                          style={{ whiteSpace: "pre-wrap" }}
-                        >
-                          {activityPeculiarities}
-                        </div>
-                      )}
-                  </>
-                )}
-                {isFeaturesEdittingEnabled && (
-                  <>
-                    <TextAndTextButton
-                      text1={"Особенности посещения"}
-                      text2={"Отменить"}
-                      isRedText={isFeaturesEdittingEnabled}
-                      onclick={() => {
-                        if (activitiesSlice.isChangesOcurred) {
-                          dispatch(getInfoForType(gymState.currentGym.id));
-                        }
+                <TextAndTextButton
+                  text1={"Особенности посещения"}
+                  text2={isFeaturesEdittingEnabled ? "Отменить" : "Изменить"}
+                  isRedText={isFeaturesEdittingEnabled}
+                  onclick={() =>{
+                    if (isFeaturesEdittingEnabled) {
+                      if (activitiesSlice.isChangesOcurred) {
+                        dispatch(getInfoForType(gymState.currentGym.id))}
                         setFeaturesEditting(false);
-                      }}
-                    />
-                    <FeaturesTextField
-                      onButtonClicked={async () => {
-                        const { id, lessonType, peculiarities } = {
-                          id: gymState.currentGym.id,
-                          lessonType: activitiesSlice.selectedActivity,
-                          peculiarities: activityPeculiarities,
-                        };
-                        await dispatch(
-                          patchPeculiaritiesOfSelectedActivity({
-                            id,
-                            lessonType,
-                            peculiarities,
-                          })
-                        );
-                        dispatch(getInfoForType(gymState.currentGym.id));
-                        setFeaturesEditting(false);
-                        dispatch(resetChanges());
-                      }}
-                      onChanged={(e) => {
-                        dispatch(changeActivityPeculiarities(e.target.value));
-                      }}
-                      peculiarities={activityPeculiarities}
-                    />
-                  </>
-                )}
+                      }else{
+                        setFeaturesEditting(true)
+                      }
+                  }}/>  
+                {!isFeaturesEdittingEnabled && activityPeculiarities?.trim() !== "" && (
+                  <div
+                    className="text-[13px] font-normal font-inter"
+                    style={{ whiteSpace: "pre-wrap" }}>
+                    {activityPeculiarities}
+                  </div>)}
+                {isFeaturesEdittingEnabled && 
+                  <FeaturesTextField
+                    onButtonClicked={async () => {
+                      const { id, lessonType, peculiarities } = {
+                      id: gymState.currentGym.id,
+                      lessonType: activitiesSlice.selectedActivity,
+                      peculiarities: activityPeculiarities
+                    };
+                    await dispatch(patchPeculiaritiesOfSelectedActivity({id,lessonType,peculiarities}));
+                    dispatch(getInfoForType(gymState.currentGym.id));
+                    setFeaturesEditting(false);
+                    dispatch(resetChanges())}}
+                    onChanged={(e) => {dispatch(changeActivityPeculiarities(e.target.value))}}
+                    peculiarities={activityPeculiarities}
+                    />}
               </div>
             </div>
 
             <div className="flex flex-col gap-[10px] w-[609px] ">
-              {!isEdittingPhotosEnabled && (
-                <TextAndTextButton
-                  text1={"Фотографии"}
-                  text2={
-                    activitiesSlice.photosOfSelectedActivity.length > 0
-                      ? "Удалить фото и редактировать порядок"
-                      : ""
-                  }
-                  isRedText={isEdittingPhotosEnabled}
-                  onclick={() =>
-                    activitiesSlice.photosOfSelectedActivity.length > 0
-                      ? setPhotosEditting(true)
-                      : {}
-                  }
-                />
-              )}
-              {isEdittingPhotosEnabled && (
-                <TextAndTextButton
-                  text1={"Фотографии"}
-                  text2={"Готово"}
-                  onclick={() => setPhotosEditting(false)}
-                />
-              )}
+              <TextAndTextButton
+                text1={"Фотографии"}
+                text2={isEdittingPhotosEnabled ? "Готово" :
+                  activitiesSlice.photosOfSelectedActivity.length > 0 ? "Удалить фото и редактировать порядок" : ""}
+                onclick={() =>{
+                  if (isEdittingPhotosEnabled) {
+                    setPhotosEditting(false)
+                  }else{
+                    if (activitiesSlice.photosOfSelectedActivity.length) {
+                      setPhotosEditting(true)
+                    }}}}
+              />
               <div className="recomendations_to_photo">
                 <p>Рекомендуемые форматы для загрузки: jpeg, png</p>
                 <p>Минимально допустимая сторона фотографии: 1080px</p>
@@ -500,8 +422,7 @@ export default function GymDetailesBodySecondContainer({
 
               {/* Container with photos */}
               <div className="activity_photos_container">
-                {!isEdittingPhotosEnabled &&
-                  activitiesSlice.photosOfSelectedActivity
+                {activitiesSlice.photosOfSelectedActivity
                     .filter((el) => !activitiesSlice.deletedPhotos.includes(el))
                     .map((item, index) => {
                       // Объявляем переменные в области видимости функции map
@@ -509,176 +430,127 @@ export default function GymDetailesBodySecondContainer({
                       const nameWithoutExtension = item.substring(0, lastDotIndex);
                       const extension = item.substring(lastDotIndex + 1);
                       const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
-
-                      return (
-                        <img
-                          className="activity_each_photo"
-                          key={index}
-                          src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
-                          alt=""
-                          onClick={() => {
-                            showPhotoInDialog(true);
-                            setPhotoToBeShownInDialog(item);
-                          }}
-                          draggable={false}
-                        />
-                      );
+                      if (!isEdittingPhotosEnabled) {
+                        return <>
+                            <img
+                              className="activity_each_photo"
+                              key={index}
+                              src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                              alt=""
+                              onClick={() => {
+                                showPhotoInDialog(true);
+                                setPhotoToBeShownInDialog(item)}}
+                              draggable={false}/> 
+                         </>
+                      }else{
+                        return (
+                          <div key={index} className="activity_each_photo_editting">
+                            <img
+                              src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                              alt=""
+                              className="rounded-[8px] h-full w-full object-cover"
+                              draggable={true}
+                              onDragStart={() => (draggedItemRef.current = index)}
+                              onDragEnter={() => {setPositionOfPhoto(index + 1)}}
+                              onDragEnd={handleSortingPhotos}
+                              onDragOver={(e) => e.preventDefault()}/>
+                            <img
+                              className="delete-icon"
+                              src={deleteSvg}
+                              alt=""
+                              onClick={async () => {
+                                dispatch(removePhotoFromSelectedActivityPhotos(item));
+                                deletePhotosSnackRef.current.showSnackbars();
+                                const cancelTimeOut =
+                                  deletePhotosSnackRef.current.show(
+                                    "Вы удалили фото",
+                                    // function when time ended
+                                    async () => {
+                                      const { id, url } = { id: gymState.currentGym.id, url: item };
+                                      await dispatch(deleteActivityPhoto({ id, url }));
+                                      dispatch(getPhotos(gymState.currentGym.id));
+                                    });
+                                setCancelDeleteTimeoutPhotos((prevState) => [
+                                  ...prevState,
+                                  cancelTimeOut,
+                                ]);
+                              }}
+                              draggable={false}
+                            />
+                          </div>
+                        );
+                      }
                     })}
+                    {/* plus image (to upload photo) */}
+                  {!isEdittingPhotosEnabled && (
+                        <>
+                            <img
+                              src={addPhotoSvg}
+                              alt=""
+                              style={{ cursor: "pointer" }}
+                              onClick={handleClick}/> 
+                            <input
+                              type="file"
+                              ref={hiddenFileInput}
+                              multiple={true}
+                              onChange={async (event) => {
+                              var files = event.target.files;
+                              var convertedFiles = [];
+                              if (files.length > 0) {
+                                for (let i = 0; i < files.length; i++) {
+                                var file = files[i];
+                                if (file.type === "image/png") {
+                                // convert to jpeg
+                                const originalFileName = file.name.replace(".png",".jpeg");
+                                const image = await new Promise((resolve) => {
+                                  const img = new Image();
+                                  img.onload = () => resolve(img);
+                                  img.src = URL.createObjectURL(file);
+                                });
+                                const canvas = document.createElement("canvas");
+                                canvas.width = image.width;
+                                canvas.height = image.height;
+                                const context = canvas.getContext("2d");
+                                context.drawImage(image,0,0,image.width,image.height);
+                                const jpegURL = canvas.toDataURL("image/jpeg");
+                                file = await (await fetch(jpegURL)).blob();
+                                file = new File([file], originalFileName, {type: "image/jpeg"});}
+                                if (file.type === "image/jpeg") {convertedFiles.push(file)}
+                                if (file.type !== "image/jpeg") {toast("Неподдерживаемый формат файла")}}
+                                const { id, type } = {
+                                id: gymState.currentGym.id,
+                                type: activitiesSlice.selectedActivity};
+                                // if convertedFiles includes only jpeg files
+                                if (convertedFiles.length > 0) {
+                                  deletePhotosSnackRef.current.hideSnackbars();
+                                  progressSnackbarRef.current.show("Идет загрузка фото");
+                                  await dispatch(addPhotoToSelectedActivity({id,files: convertedFiles,type}));
+                                  dispatch(getPhotos(gymState.currentGym.id))
+                                }
+                              }
+                              event.target.value = null}} // Очистить значение элемента ввода файла
+                              style={{ display: "none" }} // Скрываем input
+                              accept="image/png, image/jpeg"/>
+                        </>
+                  )} 
+
+                {/* Dialog when click photo */}
                 {isPhotoShownInDialog && (
                   <CustomDialog
                     isOpened={isPhotoShownInDialog}
-                    closeOnTapOutside={() => showPhotoInDialog(false)}
-                  >
+                    closeOnTapOutside={() => showPhotoInDialog(false)}>
                     <div className="relative min-h-[600px] min-w-[600px]">
                       <img
                         className="outline-none border-none w-full h-full object-cover"
                         src={`http://77.222.53.122/image/${photoToShowInDialog}`}
-                        alt=""
-                      />
+                        alt=""/>
                       <div
                         className="closeButton"
-                        onClick={() => showPhotoInDialog(false)}
-                      >
+                        onClick={() => showPhotoInDialog(false)}>
                         <img src={closePng} alt="" />
                       </div>
                     </div>
-
-
                   </CustomDialog>
-                )}
-
-                {isEdittingPhotosEnabled &&
-                  activitiesSlice.photosOfSelectedActivity
-                    .filter((el) => !activitiesSlice.deletedPhotos.includes(el))
-                    .map((item, index) => {
-                      const lastDotIndex = item.lastIndexOf(".");
-                      const nameWithoutExtension = item.substring(0, lastDotIndex);
-                      const extension = item.substring(lastDotIndex + 1);
-                      const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
-                      return (
-                        <div key={index} className="activity_each_photo_editting">
-                          <img
-                            src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
-                            alt=""
-                            className="rounded-[8px] h-full w-full object-cover"
-                            draggable={true}
-                            onDragStart={() => (draggedItemRef.current = index)}
-                            onDragEnter={() => {
-                              setPositionOfPhoto(index + 1);
-                            }}
-                            onDragEnd={handleSortingPhotos}
-                            onDragOver={(e) => e.preventDefault()}
-                          />
-                          <img
-                            className="delete-icon"
-                            src={deleteSvg}
-                            alt=""
-                            onClick={async () => {
-                              dispatch(removePhotoFromSelectedActivityPhotos(item));
-                              deletePhotosSnackRef.current.showSnackbars();
-                              const cancelTimeOut =
-                                deletePhotosSnackRef.current.show(
-                                  "Вы удалили фото",
-                                  // function when time ended
-                                  async () => {
-                                    const { id, url } = { id: gymState.currentGym.id, url: item };
-                                    await dispatch(
-                                      deleteActivityPhoto({ id, url })
-                                    );
-                                    dispatch(getPhotos(gymState.currentGym.id));
-                                  }
-                                );
-                              setCancelDeleteTimeoutPhotos((prevState) => [
-                                ...prevState,
-                                cancelTimeOut,
-                              ]);
-                            }}
-                            draggable={false}
-                          />
-                        </div>
-                      );
-                    })}
-                {!isEdittingPhotosEnabled && (
-                  <>
-                    <img
-                      src={addPhotoSvg}
-                      alt=""
-                      style={{ cursor: "pointer" }}
-                      onClick={handleClick} // нажимаем как бы на input file
-                    />
-                    <input
-                      type="file"
-                      ref={hiddenFileInput}
-                      multiple={true}
-                      onChange={async (event) => {
-                        var files = event.target.files;
-                        var convertedFiles = [];
-                        if (files.length > 0) {
-                          for (let i = 0; i < files.length; i++) {
-                            var file = files[i];
-                            if (file.type === "image/png") {
-                              // convert to jpeg
-                              const originalFileName = file.name.replace(
-                                ".png",
-                                ".jpeg"
-                              );
-                              const image = await new Promise((resolve) => {
-                                const img = new Image();
-                                img.onload = () => resolve(img);
-                                img.src = URL.createObjectURL(file);
-                              });
-
-                              const canvas = document.createElement("canvas");
-                              canvas.width = image.width;
-                              canvas.height = image.height;
-                              const context = canvas.getContext("2d");
-                              context.drawImage(
-                                image,
-                                0,
-                                0,
-                                image.width,
-                                image.height
-                              );
-                              const jpegURL = canvas.toDataURL("image/jpeg");
-                              file = await (await fetch(jpegURL)).blob();
-                              file = new File([file], originalFileName, {
-                                type: "image/jpeg",
-                              });
-                            }
-                            if (file.type === "image/jpeg") {
-                              convertedFiles.push(file);
-                            }
-
-                            if (file.type !== "image/jpeg") {
-                              toast("Неподдерживаемый формат файла");
-                            }
-                          }
-
-                          const { id, type } = {
-                            id: gymState.currentGym.id,
-                            type: activitiesSlice.selectedActivity,
-                          };
-
-                          // if convertedFiles includes only jpeg files
-                          if (convertedFiles.length > 0) {
-                            deletePhotosSnackRef.current.hideSnackbars();
-                            progressSnackbarRef.current.show("Идет загрузка фото");
-                            await dispatch(
-                              addPhotoToSelectedActivity({
-                                id,
-                                files: convertedFiles,
-                                type,
-                              })
-                            );
-                            dispatch(getPhotos(gymState.currentGym.id));
-                          }
-                        }
-                        event.target.value = null; // Очистить значение элемента ввода файла
-                      }}
-                      style={{ display: "none" }} // Скрываем input
-                      accept="image/png, image/jpeg"
-                    />
-                  </>
                 )}
 
                 {isEdittingPhotosEnabled &&
@@ -688,7 +560,6 @@ export default function GymDetailesBodySecondContainer({
               </div>
             </div>
           </div>
-
         </>
       }
 

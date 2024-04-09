@@ -174,6 +174,9 @@ export default function NoPlacesBlueContainer({ event, onPop }) {
         </div>
       </div>
 
+      {event.usersCounts > 0 &&
+          <div className="">{`На это событие записано ${event.usersCounts} пользователей.`}</div>}
+
       {/* buttons  */}
       <div className="flex flex-row gap-[10px]">
         <BackButton
@@ -202,8 +205,6 @@ export default function NoPlacesBlueContainer({ event, onPop }) {
               waitingId: event.id,
             };
             await dispatch(rejectClient(request));
-
-            // getting new data (remove when websocket will be implemented)
             dispatch(getNewClients(event.gymId));
             onPop();
           }}

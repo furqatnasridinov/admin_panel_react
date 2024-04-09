@@ -68,7 +68,7 @@ export default function EdittingContainer() {
     setIsTooltipVisible(true);
   };
 
-  const handleMouseEnter2 = () => {
+  const showConfirmationOverlay = () => {
     const ref = edittingButtonRef.current;
     const rect = ref.getBoundingClientRect();
 
@@ -80,6 +80,7 @@ export default function EdittingContainer() {
   };
 
   return (
+    console.log("scheduleState.selectedEvent", JSON.stringify(scheduleState.selectedEvent)),
     <div className={`edittingContainer h-[76vh]`}>
       {/*  */}
       <div className="flex flex-row items-center justify-between">
@@ -112,13 +113,13 @@ export default function EdittingContainer() {
             // if event is repeating show modal
             if (
               scheduleState.selectedEvent.repeat.length > 1 ||
-              scheduleState.selectedEvent.usersCount > 0
+              scheduleState.selectedEvent.usersCount >= 1
             ) {
               openDeleteModal(true);
             }
             if (
-              scheduleState.selectedEvent.repeat.length < 1 &&
-              scheduleState.selectedEvent.usersCount < 1
+              scheduleState.selectedEvent.repeat.length <= 1 &&
+              scheduleState.selectedEvent.usersCount == 0
             ) {
               // else delete event
               const { gymId, lessonId, all } = {
@@ -302,7 +303,7 @@ export default function EdittingContainer() {
             textfieldHasFocus={true}
             value={scheduleState.selectedEvent.title}
             onChange={(e) => {
-              if (e.target.value.length <= 250){
+              if (e.target.value.length <= 250) {
                 dispatch(selectedEventSetTitle(e.target.value));
               }
             }}
@@ -323,15 +324,14 @@ export default function EdittingContainer() {
             title={"Редактировать"}
             height={"40px"}
             onСlick={() => {
-              handleMouseEnter2();
-              /* if (
+              if (
                 scheduleState.selectedEvent.usersCount &&
                 scheduleState.selectedEvent.usersCount > 0
               ) {
-                handleMouseEnter2();
+                showConfirmationOverlay();
               } else {
                 dispatch(enableScheduleEditting());
-              } */
+              }
             }}
             hideHover={true}
           />
@@ -464,7 +464,7 @@ export default function EdittingContainer() {
                 title={"Сохранить"}
                 onСlick={async () => {
                   // send update request
-                  
+
                   if (!scheduleState.endTimeIsBeforeStartTime) {
                     const {
                       gymId,

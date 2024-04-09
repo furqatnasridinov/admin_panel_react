@@ -28,25 +28,21 @@ export default function BookingHeader({ gym, listOfGyms, showDropDown }) {
       <div className="text-[14px] font-normal">Работа с клиентами</div>
 
       <div className="slash"> / </div>
-      {showDropDown && (
-        <CustomDropdown
-          text={gym.name}
-          isDropDownOpened={isDropDownOpened}
-          openCloseDropDown={openCloseDropDown}
-          map={listOfGyms.map((item, index) => (
+        {showDropDown && (
+          <CustomDropdown
+            text={gym.name}
+            isDropDownOpened={isDropDownOpened}
+            openCloseDropDown={openCloseDropDown}
+            map={listOfGyms.map((item, index) => (
             <button
               key={index}
               className="gym_names"
-              onClick={() => setCurrentGymAndPop(item)}
-            >
+              onClick={() => setCurrentGymAndPop(item)}>
               {item.name}
-            </button>
-          ))}
-        />
-      )}
-      {!showDropDown && (
-        <div className="text-[14px font-normal]">{gym.name}</div>
-      )}
-    </div>
+            </button>))}/>
+        )}
+        {!showDropDown && (
+          <div className="text-[14px font-normal]">{gym.name}</div>)}
+      </div>
   );
 }

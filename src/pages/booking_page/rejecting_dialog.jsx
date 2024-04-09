@@ -7,7 +7,6 @@ import radioNotActive from "../../assets/svg/radio_not_active.svg";
 import { CANCELLATION_REASONS } from "../../dummy_data/dymmy_data";
 import EventCancelledBlueContainer from "./event_cancelled_blue_container";
 import BackButton from "../../components/button/back_button";
-import CustomButton from "../../components/button/button";
 import EventRescheduledBlueContainer from "./event_rescheduled_blue_container";
 import NoPlacesBlueContainer from "./no_places_blue_container";
 import { getSchedules } from "../../features/schedule_slice";
@@ -77,6 +76,7 @@ export default function RejectingDialog({ onPop }) {
             event={clientsState.decliningEvent}
             onPop={onPop}
             scheduleExists={scheduleExists}
+            reScheduledEvent={clientsState.decliningEvent}
           />
         )}
 

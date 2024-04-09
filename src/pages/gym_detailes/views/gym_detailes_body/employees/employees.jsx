@@ -34,9 +34,7 @@ import {
   resetChanges,
   removeEmployeeFromList,
   returnDeletedEmployee,
-  resetSelectedEmployee,
   selectAPriveledge,
-  removeEmployeeFromDeletedEmployeesList,
 } from "../../../../../features/employees_slice";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 
@@ -110,32 +108,24 @@ export default function Employees({ listOfEmployees, gymId }) {
 
   useEffect(() => {
     if (employeesSlice.selectedEmployee !== null) {
-      dispatch(
-        selectAPriveledge(employeesSlice.selectedEmployee.roles[0].privilegesId)
-      );
+      dispatch(selectAPriveledge(employeesSlice.selectedEmployee.roles[0].privilegesId));
     }
   }, [employeesSlice.selectedEmployee]);
 
   return (
-    console.log(`xz ${JSON.stringify(employeesSlice.deletedEmployess)}`),
     (
       <div className="employees_container">
         <TextAndTextButton
           text1={"Сотрудники"}
           text2={listOfEmployees?.length === 0 ? "" : "Редактировать"}
-          onclick={() =>
-            listOfEmployees?.length === 0 ? {} : openRefEmployeesDialog(true)
-          }
+          onclick={() => listOfEmployees?.length === 0 ? {} : openRefEmployeesDialog(true)}
         />
-
         {listOfEmployees?.length !== 0 && isRefEmployeesDialogOpened && (
           <CustomDialog
             isOpened={isRefEmployeesDialogOpened}
-            closeOnTapOutside={() => {
-              openRefEmployeesDialog(false);
-            }}
+            closeOnTapOutside={() => {openRefEmployeesDialog(false)}}
           >
-            {/* Refactor employees dialog body */}
+          {/* Refactor employees dialog body */}
             <div className="refEmployeeDialog">
               <div className="flex flex-col gap-[5px]">
                 <div className="text-[16px] font-semibold leading-[16px]">
@@ -156,30 +146,17 @@ export default function Employees({ listOfEmployees, gymId }) {
                   </div>
                 </div>
                 <div className="employees_wrap">
-                  {listOfEmployees
-                    .filter(
-                      (employee) =>
+                  {listOfEmployees.filter((employee) =>
                         !employeesSlice.deletedEmployess.some(
-                          (deletedEmployee) =>
-                            deletedEmployee.id === employee.id
-                        )
-                    )
+                          (deletedEmployee) =>deletedEmployee.id === employee.id))
                     .map((employee) => {
                       return (
                         <EachEmployee
                           key={employee.id}
                           photo={goggins}
-                          lastName={
-                            employee.lastName == null || employee.lastName == ""
-                              ? ""
-                              : employee.lastName
-                          }
+                          lastName={employee.lastName == null || employee.lastName == ""? "" : employee.lastName}
                           name={employee.firstName}
-                          job={
-                            employee.roles?.length === 0
-                              ? "Нет роли"
-                              : employee.roles[0].name
-                          }
+                          job={employee.roles?.length === 0 ? "Нет роли": employee.roles[0].name}
                           onDeleteClicked={async () => {
                             dispatch(removeEmployeeFromList(employee));
                             const cancelTimeOut =
@@ -191,9 +168,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                                     gymid: gymId,
                                     employeeId: employee.id,
                                   };
-                                  await dispatch(
-                                    deleteEmployee({ gymid, employeeId }) // it will work dispise the warning
-                                  );
+                                  await dispatch(deleteEmployee({ gymid, employeeId }));
                                   dispatch(getListOfEmployees(gymId));
                                 }
                               );
@@ -204,16 +179,9 @@ export default function Employees({ listOfEmployees, gymId }) {
                           }}
                           //isThatYou={localStorage.id === employee.id} <== maybe?
                           showPointer={true}
-                          onEmployeeClicked={() =>
-                            dispatch(selectAnEmployee(employee))
-                          }
-                          isSelected={
-                            employeesSlice.selectedEmployee !== null
-                              ? employeesSlice.selectedEmployee.id ===
-                              employee.id
-                              : false
-                          }
-                        />
+                          onEmployeeClicked={() =>dispatch(selectAnEmployee(employee))}
+                          isSelected={employeesSlice.selectedEmployee !== null 
+                            ? employeesSlice.selectedEmployee.id === employee.id : false }/>
                       );
                     })}
                   <div
@@ -244,16 +212,8 @@ export default function Employees({ listOfEmployees, gymId }) {
                         {/* Name */}
                         <TextAndTextfield
                         textfieldsMinHeight={"40px"}
-                          value={
-                            employeesSlice.selectedEmployee !== null
-                              ? employeesSlice.selectedEmployee.firstName
-                              : ""
-                          }
-                          onChange={(event) => {
-                            dispatch(
-                              changeSelectedEmployeesName(event.target.value)
-                            );
-                          }}
+                          value={employeesSlice.selectedEmployee !== null ? employeesSlice.selectedEmployee.firstName : ""}
+                          onChange={(event) => {dispatch(changeSelectedEmployeesName(event.target.value))}}
                           textfieldHasFocus={nameTextfield2HasFocus}
                           requestFocus={() => setName2Focus(true)}
                           removeFocus={() => setName2Focus(false)}
@@ -265,23 +225,10 @@ export default function Employees({ listOfEmployees, gymId }) {
                         {/* Surname */}
                         <TextAndTextfield
                         textfieldsMinHeight={"40px"}
-                          value={
-                            employeesSlice.selectedEmployee !== null &&
-                              employeesSlice.selectedEmployee.lastName === null
-                              ? ""
-                              : employeesSlice.selectedEmployee !== null &&
-                                employeesSlice.selectedEmployee.lastName !==
-                                null
-                                ? employeesSlice.selectedEmployee.lastName
-                                : ""
-                          }
-                          onChange={(event) => {
-                            dispatch(
-                              changeSelectedEmployeesLastname(
-                                event.target.value
-                              )
-                            );
-                          }}
+                          value={employeesSlice.selectedEmployee !== null && employeesSlice.selectedEmployee.lastName === null
+                              ? "": employeesSlice.selectedEmployee !== null && employeesSlice.selectedEmployee.lastName !==
+                              null? employeesSlice.selectedEmployee.lastName : ""}
+                          onChange={(event) => {dispatch(changeSelectedEmployeesLastname(event.target.value))}}
                           textfieldHasFocus={surnameTextfield2HasFocus}
                           requestFocus={() => setSurname2Focus(true)}
                           removeFocus={() => setSurname2Focus(false)}
@@ -294,18 +241,10 @@ export default function Employees({ listOfEmployees, gymId }) {
                       <div className="flex flex-row gap-[32px]">
                         {/* Phone */}
                         <TextAndTextfield
-                        textfieldsMinHeight={"40px"}
-                          value={
-                            employeesSlice.selectedEmployee !== null
-                              ? employeesSlice.selectedEmployee.login
-                              : ""
-                          }
+                          textfieldsMinHeight={"40px"}
+                          value={employeesSlice.selectedEmployee !== null ? employeesSlice.selectedEmployee.login : ""}
                           onChange={(event) => {
-                            dispatch(
-                              changeSelectedEmployeesPhone(
-                                event.target.value.replace(/\D/g, "")
-                              )
-                            );
+                            dispatch(changeSelectedEmployeesPhone(event.target.value.replace(/\D/g, "")));
                           }}
                           textfieldHasFocus={phoneNumberTextfield2HasFocus}
                           requestFocus={() => setPhone2Focus(true)}
@@ -334,14 +273,9 @@ export default function Employees({ listOfEmployees, gymId }) {
                         Уровень доступа сотрудника{" "}
                       </div>
                       <CustomDropdownForRef
-                        currentRole={
-                          employeesSlice.selectedRoleName !== null
-                            ? employeesSlice.selectedRoleName
-                            : employeesSlice.selectedEmployee === null
-                              ? ""
-                              : employeesSlice.selectedEmployee.roles.length === 0
-                                ? "Нет роли"
-                                : employeesSlice.selectedEmployee.roles[0].name
+                        currentRole={employeesSlice.selectedRoleName !== null ? employeesSlice.selectedRoleName
+                            : employeesSlice.selectedEmployee === null ? "": employeesSlice.selectedEmployee.roles.length === 0
+                            ? "Нет роли" : employeesSlice.selectedEmployee.roles[0].name
                         }
                         isDropDownOpened={isDropDown2Opened}
                         openCloseDropDown={openCloseDropDown2}
@@ -364,44 +298,31 @@ export default function Employees({ listOfEmployees, gymId }) {
                     </div>
                     {priveledges.map((priveledge) => {
                       if (employeesSlice.selectedEmployeesPriveledges) {
-                        const isAvailable =
-                          employeesSlice.selectedEmployeesPriveledges.includes(
-                            priveledge.id
-                          );
+                        const isAvailable = employeesSlice.selectedEmployeesPriveledges.includes(priveledge.id);
                         return (
                           <div
                             key={priveledge.id}
-                            className="flex flex-row gap-[10px] items-center"
-                          >
+                            className="flex flex-row gap-[10px] items-center">
                             <img
                               src={isAvailable ? availableSvg : notAvailable}
-                              alt=""
-                            />
+                              alt=""/>
                             <div
-                              className={`text-[14px] font-normal leading-[16px] ${isAvailable ? "" : "text-grey-text"
-                                }`}
-                            >
+                            className={`text-[14px] font-normal leading-[16px] ${isAvailable ? "" : "text-grey-text"}`}>
                               {priveledge.name}
                             </div>
                           </div>
                         );
                       } else {
-                        const isAvailable = priveledgesOfEmployee.includes(
-                          priveledge.id
-                        );
+                        const isAvailable = priveledgesOfEmployee.includes(priveledge.id);
                         return (
                           <div
                             key={priveledge.id}
-                            className="flex flex-row gap-[10px] items-center"
-                          >
+                            className="flex flex-row gap-[10px] items-center">
                             <img
                               src={isAvailable ? availableSvg : notAvailable}
-                              alt=""
-                            />
+                              alt=""/>
                             <div
-                              className={`text-[14px] font-normal leading-[16px] ${isAvailable ? "" : "text-grey-text"
-                                }`}
-                            >
+                              className={`text-[14px] font-normal leading-[16px] ${isAvailable ? "" : "text-grey-text"}`}>
                               {priveledge.name}
                             </div>
                           </div>
@@ -415,25 +336,12 @@ export default function Employees({ listOfEmployees, gymId }) {
                 <CustomButton
                   width={"100%"}
                   height={"40px"}
-                  title={
-                    employeesSlice.isChangesOccured
-                      ? "Применять изменения"
-                      : "Завершить редактирование"
-                  }
+                  title={employeesSlice.isChangesOccured ? "Применять изменения" : "Завершить редактирование"}
                   onСlick={async () => {
                     if (employeesSlice.isChangesOccured) {
                       const { id, roles, firstName, lastName, login } =
                         employeesSlice.selectedEmployee;
-                      await dispatch(
-                        editEmployee({
-                          gymId,
-                          id,
-                          roles,
-                          firstName,
-                          lastName,
-                          login,
-                        })
-                      );
+                      await dispatch(editEmployee({gymId,id,roles,firstName,lastName,login}));
                       dispatch(getListOfEmployees(gymId));
                     }
                     dispatch(resetChanges());
@@ -446,12 +354,8 @@ export default function Employees({ listOfEmployees, gymId }) {
         )}
         <div className="employees_list">
           {listOfEmployees
-            .filter(
-              (employee) =>
-                !employeesSlice.deletedEmployess.some(
-                  (deletedEmployee) => deletedEmployee.id === employee.id
-                )
-            )
+            .filter((employee) =>!employeesSlice.deletedEmployess.some(
+                  (deletedEmployee) => deletedEmployee.id === employee.id))
             .map((employee) => {
               return (
                 <EachEmployee
@@ -459,10 +363,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                   photo={goggins}
                   name={employee.firstName}
                   lastName={employee.lastName}
-                  job={
-                    employee.roles.length === 0
-                      ? "Нет роли"
-                      : employee.roles[0].name
+                  job={employee.roles.length === 0 ? "Нет роли" : employee.roles[0].name
                   }
                 //isThatYou={localStorage.id === employee.id} <== maybe?
                 />
@@ -525,7 +426,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                 <div className="flex flex-row gap-[24px]">
                   {/* Иям */}
                   <TextAndTextfield
-                  textfieldsMinHeight={"40px"}
+                    textfieldsMinHeight={"40px"}
                     value={name}
                     onChange={changeName}
                     textfieldHasFocus={nameTextfieldHasFocus}
@@ -539,7 +440,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                   />
                   {/* Фамилия */}
                   <TextAndTextfield
-                  textfieldsMinHeight={"40px"}
+                    textfieldsMinHeight={"40px"}
                     value={surname}
                     onChange={changeSurName}
                     textfieldHasFocus={surnameTextfieldHasFocus}
@@ -554,7 +455,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                 <div className="flex flex-row gap-[24px]">
                   {/* Номер */}
                   <TextAndTextfield
-                  textfieldsMinHeight={"40px"}
+                    textfieldsMinHeight={"40px"}
                     value={phoneNumber}
                     onChange={changePhone}
                     textfieldHasFocus={phoneNumberTextfieldHasFocus}
@@ -593,22 +494,16 @@ export default function Employees({ listOfEmployees, gymId }) {
                     выбранная вами роль
                   </div>
                   {priveledges.map((priveledge) => {
-                    const isAvailable = priveledgesOfEmployee.includes(
-                      priveledge.id
-                    );
+                    const isAvailable = priveledgesOfEmployee.includes(priveledge.id);
                     return (
                       <div
                         key={priveledge.id}
-                        className="flex flex-row gap-[10px] items-center"
-                      >
+                        className="flex flex-row gap-[10px] items-center">
                         <img
                           src={isAvailable ? availableSvg : notAvailable}
-                          alt=""
-                        />
+                          alt=""/>
                         <div
-                          className={`text-[14px] font-normal leading-[16px] ${isAvailable ? "" : "text-grey-text"
-                            }`}
-                        >
+                          className={`text-[14px] font-normal leading-[16px] ${isAvailable ? "" : "text-grey-text"}`}>
                           {priveledge.name}
                         </div>
                       </div>
@@ -636,7 +531,6 @@ export default function Employees({ listOfEmployees, gymId }) {
                       // Assume both fields are valid to start with
                       let isPhoneValid = true;
                       let isNameValid = true;
-
                       // Check phone number validity (assuming you want exactly 18 characters)
                       if (phoneNumber.length !== 12) {
                         setPhoneNotValidated(true);
@@ -644,7 +538,6 @@ export default function Employees({ listOfEmployees, gymId }) {
                       } else {
                         setPhoneNotValidated(false);
                       }
-
                       // Check name validity (assuming you want at least 1 character)
                       if (name.trim().length === 0) {
                         setNameNotValidated(true);
@@ -652,7 +545,6 @@ export default function Employees({ listOfEmployees, gymId }) {
                       } else {
                         setNameNotValidated(false);
                       }
-
                       // when validation passes
                       if (isPhoneValid && isNameValid) {
                         const { firstName, lastName, login, roles } = {
@@ -667,16 +559,8 @@ export default function Employees({ listOfEmployees, gymId }) {
                             },
                           ],
                         };
-
                         await dispatch(
-                          addEmployee({
-                            gymId,
-                            firstName,
-                            lastName,
-                            login,
-                            roles,
-                          })
-                        );
+                          addEmployee({gymId,firstName,lastName,login,roles}));
                         dispatch(getListOfEmployees(gymId));
                         openAddEmployeesDialog(false);
                         if (isFromRef) {
@@ -715,15 +599,8 @@ export function EachEmployee({
 }) {
   return (
     <div
-      className={
-        isSelected
-          ? "selected_employee_row"
-          : showPointer
-            ? "each_employee cursor-pointer"
-            : "each_employee"
-      }
-      onClick={onEmployeeClicked}
-    >
+      className={isSelected ? "selected_employee_row" : showPointer ? "each_employee cursor-pointer" : "each_employee"}
+      onClick={onEmployeeClicked}>
       {!isSelected && (
         <>
           {/* Photo */}

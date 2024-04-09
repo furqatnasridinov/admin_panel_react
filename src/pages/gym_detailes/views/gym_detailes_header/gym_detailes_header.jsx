@@ -5,7 +5,6 @@ import CustomDropdown from "../../../../components/dropdown/custom_dropdown";
 import { toast } from "react-toastify";
 import CustomButton from "../../../../components/button/button"
 import questionLogo from "../../../../assets/svg/questionModal.svg";
-import { setCurrentGym } from "../../../../features/current_gym_slice";
 
 
 export default function GymDetailesHeader({
@@ -21,7 +20,6 @@ export default function GymDetailesHeader({
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 
   // functions
-
   const handleMouseEnter = (event) => {
     const rect = event.target.getBoundingClientRect();
     setTooltipPosition({
@@ -30,7 +28,6 @@ export default function GymDetailesHeader({
     });
     setIsTooltipVisible(true);
   };
-
   function openCloseDropDown() {
     openDropDown(!isDropDownOpened);
   }
@@ -56,8 +53,6 @@ export default function GymDetailesHeader({
     }
   };
 
-
-
   return (
     console.log(`gym ${JSON.stringify(gym)}`),
     <div className="h-[82px] mb-[10px] pl-[35px] pr-[19px] py-[21px] bg-white flex flex-row items-center rounded-[16px] justify-between ">
@@ -82,14 +77,10 @@ export default function GymDetailesHeader({
             ))}
           />
         )}
-
         {!showDropDown && (
           <div className="text-[14px font-normal]">{gym.name}</div>
         )}
-
-
       </div>
-
       <div className="flex flex-row items-center gap-2">
         <CustomButton
           width={"340px"}
@@ -134,7 +125,6 @@ export default function GymDetailesHeader({
           </div>
         </div>
       )}
-
     </div>
   );
 }

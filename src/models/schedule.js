@@ -1,5 +1,5 @@
 export class ScheduleEvent {
-    constructor(id, startTime, endTime, title, lessonType, owner, repeat, usersCount) {
+    constructor(id, startTime, endTime, title, lessonType, owner, repeat, usersCount, lessonState) {
       this.id = id;
       this.startTime = startTime;
       this.endTime = endTime;
@@ -8,6 +8,7 @@ export class ScheduleEvent {
       this.owner = owner;
       this.repeat = repeat;
       this.usersCount = usersCount;
+      this.lessonState = lessonState;
     }
   }
   

@@ -3,7 +3,6 @@ import "./styles.css";
 import BookingHeader from "./booking_header";
 import BookingBody from "./booking_body";
 import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
 
 
 export default function BookingPage() {

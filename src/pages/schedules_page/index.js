@@ -138,7 +138,7 @@ export default function SchedulesPage() {
   useEffect(() => {
     if (gymState.currentGym !== null) {
       dispatch(getSchedules(gymState.currentGym.id));
-      dispatch(getListOfEmployees(gymState.currentGym.id)); // to show in sidebar top
+      //dispatch(getListOfEmployees(gymState.currentGym.id)); // to show in sidebar top
       dispatch(getListOfActivities(gymState.currentGym.id));
     }
 

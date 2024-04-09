@@ -43,7 +43,7 @@ export default function DropdownForHours({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [hoursContainerRef, minutesContainerRef, ]);
+  }, [hoursContainerRef, minutesContainerRef]);
 
   // Функция для центрирования выбранного элемента
   function centerSelectedItem(container, selectedItem) {
@@ -65,11 +65,7 @@ export default function DropdownForHours({
     <div className="column" style={{ zIndex: zIndex }}>
       <button
         style={{ backgroundColor: backgroundColor }}
-        className={
-          isDropDownOpened
-            ? "dropdownHeaderOpenedForHours"
-            : "dropdownHeaderForHours"
-        }
+        className={isDropDownOpened ? "dropdownHeaderOpenedForHours" : "dropdownHeaderForHours"}
         onClick={openCloseDropDown}
       >
         <div className="text-[14px] font-medium">{text}</div>
@@ -86,9 +82,7 @@ export default function DropdownForHours({
                 return (
                   <div
                     key={index}
-                    className={
-                      selectedHour == item ? "eachNumberSelected" : "eachNumber"
-                    }
+                    className={selectedHour == item ? "eachNumberSelected" : "eachNumber"}
                     onClick={() => setHours(item)}
                   >
                     {item}
@@ -106,11 +100,7 @@ export default function DropdownForHours({
                 return (
                   <div
                     key={index}
-                    className={
-                      selectedMinute == item
-                        ? "eachNumberSelected"
-                        : "eachNumber"
-                    }
+                    className={selectedMinute == item ? "eachNumberSelected": "eachNumber"}
                     onClick={() => {
                       setMinutes(item);
                       openCloseDropDown();

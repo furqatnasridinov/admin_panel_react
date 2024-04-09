@@ -78,10 +78,9 @@ export default function GymDetails() {
     }
   }
 
-  // after getting list of activities making first of its item as active
   useEffect(() => {
     dispatch(makeFirstItemAsActive());
-  }, [activitiesSlice.listOfActivities]); // This useEffect will only run when listOfActivities changes
+  }, [activitiesSlice.listOfActivities]); 
 
   useEffect(() => {
     if (activitiesSlice.selectedActivity !== "") {

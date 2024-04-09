@@ -81,7 +81,7 @@ export default function EventRescheduledBlueContainer({
           listToCollect.push(schedule);
         }
       });
-      setFilteredEvents(listToCollect);
+      setFilteredEvents(listToCollect.sort((a, b) => a.startTime - b.startTime));
     }
   }, [
     scheduleState.selectedDay,
@@ -92,8 +92,6 @@ export default function EventRescheduledBlueContainer({
   ]);
 
   return (
-    console.log(`hamahe ${scheduleState.lessonDurationSendToServer}`),
-    console.log(`hamahe start ${scheduleState.lessonStartTimeSendToServer}`),
     (
       <Fragment>
         <div className="blueContainer">
@@ -272,7 +270,8 @@ export default function EventRescheduledBlueContainer({
           </>
         </div>
 
-        <div className="">{`На это событие записано ${reScheduledEvent.usersCounts} пользователей.`}</div>
+        {reScheduledEvent.usersCounts > 0 &&
+          <div className="">{`На это событие записано ${reScheduledEvent.usersCounts} пользователей.`}</div>}
 
         {/* buttons  */}
         <div className="flex flex-row gap-[10px]">
@@ -290,7 +289,7 @@ export default function EventRescheduledBlueContainer({
             title="Перенести занятие и оповестить пользователей об этом"
             onСlick={async () => {
               if (selectedEvent === null && newCreatedEventSelected) {
-                // если выбран новый созданный event создадим новый event в базу, удалим старый, отклоняем запрос и оповещаем клиента
+                // если выбран новый созданный event создадим новый event в базу,отклоняем запрос и оповещаем клиента
                 const createEventRequest = {
                   id: reScheduledEvent.gymId,
                   date: scheduleState.lessonStartTimeSendToServer,
