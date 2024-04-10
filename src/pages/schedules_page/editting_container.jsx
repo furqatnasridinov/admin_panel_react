@@ -256,18 +256,12 @@ export default function EdittingContainer() {
               <DropdownForHours
                 text={`${scheduleState.startTimeHoursTmp}:${scheduleState.startTimeMinutesTmp}`}
                 isDropDownOpened={isStartTimeDropDownOpened}
-                openCloseDropDown={() => {
-                  if (isEndTimeDropDownOpened) {
-                    openEndTimeDropDown(false);
-                  }
-                  openStartTimeDropDown(!isStartTimeDropDownOpened);
-                }}
-                setHours={(hours) => {
-                  dispatch(setStartTimeHours(hours));
-                }}
+                openCloseDropDown={() => {openStartTimeDropDown(!isStartTimeDropDownOpened)}}
+                setHours={(hours) => {dispatch(setStartTimeHours(hours))}}
                 setMinutes={(minute) => dispatch(setStartTimeMinutes(minute))}
                 selectedHour={scheduleState.startTimeHoursTmp}
                 selectedMinute={scheduleState.startTimeMinutesTmp}
+                closeOntapOutside={() => {openStartTimeDropDown(false)}}
               />
 
               <div className="">-</div>
@@ -275,18 +269,12 @@ export default function EdittingContainer() {
               <DropdownForHours
                 text={`${scheduleState.endTimeHoursTmp}:${scheduleState.endTimeMinutesTmp}`}
                 isDropDownOpened={isEndTimeDropDownOpened}
-                openCloseDropDown={() => {
-                  if (isStartTimeDropDownOpened) {
-                    openStartTimeDropDown(false);
-                  }
-                  openEndTimeDropDown(!isEndTimeDropDownOpened);
-                }}
-                setHours={(hours) => {
-                  dispatch(setEndTimeHours(hours));
-                }}
+                openCloseDropDown={() => {openEndTimeDropDown(!isEndTimeDropDownOpened)}}
+                setHours={(hours) => {dispatch(setEndTimeHours(hours))}}
                 setMinutes={(minute) => dispatch(setEndTimeMinutes(minute))}
                 selectedHour={scheduleState.endTimeHoursTmp}
                 selectedMinute={scheduleState.endTimeMinutesTmp}
+                closeOntapOutside={() => {openEndTimeDropDown(false)}}
               />
             </div>
           )}

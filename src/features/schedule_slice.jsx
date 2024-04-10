@@ -22,7 +22,7 @@ export const getSchedules = createAsyncThunk(
             const endTime = new Date(
               startTime.getTime() + parseDuration(item.duration)
             );
-            if (!item.isDeleted) {
+            if (!item.deleteLesson) {
               listToCollect.push(
                 new ScheduleEvent(
                   item.id,
@@ -33,7 +33,9 @@ export const getSchedules = createAsyncThunk(
                   item.owner,
                   item.repeat,
                   item.usersCount,
-                  item.lessonState
+                  item.lessonState,
+                  item.canSignUp,
+                  item.deleteLesson
                 )
               );
             }

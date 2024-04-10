@@ -72,6 +72,9 @@ export default function SchedulesPage() {
       lessonType: item.lessonType,
       repeat: item.repeat,
       usersCount: item.usersCount,
+      lessonState: item.lessonState,
+      canSignUp: item.canSignUp,
+      deletedLesson: item.deletedLesson,
     };
   });
 
@@ -315,15 +318,17 @@ export default function SchedulesPage() {
                   }
                 }}
                 eventPropGetter={(event) => {
-                  if (
-                    scheduleState.isNavigationFromBooking &&
-                    scheduleState.eventFromBooking !== null
-                  ) {
                     let newStyle = {};
                     let className = "";
+                  if (scheduleState.isNavigationFromBooking &&
+                    scheduleState.eventFromBooking !== null) {
                     if (event.id === scheduleState.eventFromBooking.lessonId) {
                       className = "eventFromBooking";
                     }
+                    return { className, style: newStyle };
+                  }
+                  if (!event.canSignUp) {
+                    className = "canSignUpFalseEvents";
                     return { className, style: newStyle };
                   }
                 }}
