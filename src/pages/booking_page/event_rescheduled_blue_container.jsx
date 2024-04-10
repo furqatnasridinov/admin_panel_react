@@ -40,6 +40,7 @@ export default function EventRescheduledBlueContainer({
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [newCreatedEventSelected, setNewCreatedEventSelected] = useState(false);
   const [filteredEvents, setFilteredEvents] = useState([]);
+  const [validationError, setValidationError] = useState(false);
   const [tomorrow, setTomorrow] = useState(() => {
     const date = new Date();
     date.setDate(date.getDate() + 1);
@@ -91,10 +92,17 @@ export default function EventRescheduledBlueContainer({
     scheduleState.startTimeMinutesTmp,
   ]);
 
+  // remove validation error when user selects an event
+  useEffect(() => {
+    if ((selectedEvent !== null || newCreatedEventSelected) && validationError) {
+      setValidationError(false);
+    }
+  }, [selectedEvent, newCreatedEventSelected]);
+
   return (
     (
       <Fragment>
-        <div className="blueContainer">
+        <div className="blueContainer" style={{border: validationError ? "1px solid red" : "1px solid #77aaf9"}}>
           <div className="text-[14px] font-bold">
             Укажите, на какую дату и время было перенесено занятие
           </div>
@@ -132,15 +140,12 @@ export default function EventRescheduledBlueContainer({
                   backgroundColor={"white"}
                   text={`${scheduleState.startTimeHoursTmp}:${scheduleState.startTimeMinutesTmp}`}
                   isDropDownOpened={isStartTimeDropDownOpened}
-                  openCloseDropDown={() => {
-                    openStartTimeDropDown(!isStartTimeDropDownOpened);
-                  }}
-                  setHours={(hours) => {
-                    dispatch(setStartTimeHours(hours));
-                  }}
+                  openCloseDropDown={() => {openStartTimeDropDown(!isStartTimeDropDownOpened)}}
+                  setHours={(hours) => {dispatch(setStartTimeHours(hours))}}
                   setMinutes={(minute) => dispatch(setStartTimeMinutes(minute))}
                   selectedHour={scheduleState.startTimeHoursTmp}
                   selectedMinute={scheduleState.startTimeMinutesTmp}
+                  closeOntapOutside={() => {openStartTimeDropDown(false)}}
                 />
 
                 <div className="">-</div>
@@ -149,15 +154,12 @@ export default function EventRescheduledBlueContainer({
                   backgroundColor={"white"}
                   text={`${scheduleState.endTimeHoursTmp}:${scheduleState.endTimeMinutesTmp}`}
                   isDropDownOpened={isEndTimeDropDownOpened}
-                  openCloseDropDown={() => {
-                    openEndTimeDropDown(!isEndTimeDropDownOpened);
-                  }}
-                  setHours={(hours) => {
-                    dispatch(setEndTimeHours(hours));
-                  }}
+                  openCloseDropDown={() => {openEndTimeDropDown(!isEndTimeDropDownOpened)}}
+                  setHours={(hours) => {dispatch(setEndTimeHours(hours))}}
                   setMinutes={(minute) => dispatch(setEndTimeMinutes(minute))}
                   selectedHour={scheduleState.endTimeHoursTmp}
                   selectedMinute={scheduleState.endTimeMinutesTmp}
+                  closeOntapOutside={() => {openEndTimeDropDown(false)}}
                 />
               </div>
             </div>
@@ -274,20 +276,21 @@ export default function EventRescheduledBlueContainer({
           <div className="">{`На это событие записано ${reScheduledEvent.usersCounts} пользователей.`}</div>}
 
         {/* buttons  */}
-        <div className="flex flex-row gap-[10px]">
-          <BackButton
-            width={"114px"}
-            height={"40px"}
-            title={"Отменить"}
-            onСlick={onPop}
-          />
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row gap-[10px]">
+            <BackButton
+              width={"114px"}
+              height={"40px"}
+              title={"Отменить"}
+              onСlick={onPop}
+            />
 
-          <CustomButton
-            width={"100%"}
-            height={"40px"}
-            fontSize={"14px"}
-            title="Перенести занятие и оповестить пользователей об этом"
-            onСlick={async () => {
+            <CustomButton
+              width={"100%"}
+              height={"40px"}
+              fontSize={"14px"}
+              title="Перенести занятие и оповестить пользователей об этом"
+              onСlick={async () => {
               if (selectedEvent === null && newCreatedEventSelected) {
                 // если выбран новый созданный event создадим новый event в базу,отклоняем запрос и оповещаем клиента
                 const createEventRequest = {
@@ -306,6 +309,13 @@ export default function EventRescheduledBlueContainer({
                 };
                 await dispatch(rejectClient(rejectingRequest));
                 dispatch(getNewClients(reScheduledEvent.gymId));
+                // в обоих случаях удаляем старое занятие
+                const deleteEventRequest = {
+                  gymId: reScheduledEvent.gymId,
+                  lessonId: reScheduledEvent.lessonId,
+                  all: false,
+                };
+                dispatch(deleteSchedule(deleteEventRequest));
                 onPop();
               }
               if (selectedEvent !== null && !newCreatedEventSelected) {
@@ -316,18 +326,27 @@ export default function EventRescheduledBlueContainer({
                 };
                 await dispatch(rejectClient(rejectingRequest));
                 dispatch(getNewClients(reScheduledEvent.gymId));
+                // в обоих случаях удаляем старое занятие
+                const deleteEventRequest = {
+                  gymId: reScheduledEvent.gymId,
+                  lessonId: reScheduledEvent.lessonId,
+                  all: false,
+                };
+                dispatch(deleteSchedule(deleteEventRequest));
                 onPop();
               }
-              // в обоих случаях удаляем старое занятие
-              const deleteEventRequest = {
-                gymId: reScheduledEvent.gymId,
-                lessonId: reScheduledEvent.lessonId,
-                all: false,
-              };
-              dispatch(deleteSchedule(deleteEventRequest));
+              if (selectedEvent === null && !newCreatedEventSelected) {
+                // trigger validation
+                setValidationError(true);
+              }
             }}
           />
         </div>
+        {validationError && 
+              <span className="text-[13px] text-red-600"> Выберите существующее занятие или создайте новое.
+              </span>}
+        </div>
+        
       </Fragment>
     )
   );

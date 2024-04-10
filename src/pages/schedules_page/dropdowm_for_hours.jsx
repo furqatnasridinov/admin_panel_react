@@ -14,9 +14,11 @@ export default function DropdownForHours({
   selectedMinute,
   selectedHour,
   backgroundColor,
+  closeOntapOutside,
 }) {
   const hoursContainerRef = useRef(null);
   const minutesContainerRef = useRef(null);
+  const headerRef = useRef(null);
 
   useEffect(() => {
     if (isDropDownOpened) {
@@ -29,13 +31,15 @@ export default function DropdownForHours({
   // close dropdown when clicked outside
   useEffect(() => {
     function handleClickOutside(event) {
-      if (
-        hoursContainerRef.current &&
-        !hoursContainerRef.current.contains(event.target) &&
-        minutesContainerRef.current &&
-        !minutesContainerRef.current.contains(event.target)
-      ) {
-        openCloseDropDown();
+      if (headerRef.current && !headerRef.current.contains(event.target)) {
+        if (
+          hoursContainerRef.current &&
+          !hoursContainerRef.current.contains(event.target) &&
+          minutesContainerRef.current &&
+          !minutesContainerRef.current.contains(event.target)
+        ) {
+          closeOntapOutside();
+        }
       }
     }
 
@@ -64,6 +68,7 @@ export default function DropdownForHours({
   return (
     <div className="column" style={{ zIndex: zIndex }}>
       <button
+        ref={headerRef}
         style={{ backgroundColor: backgroundColor }}
         className={isDropDownOpened ? "dropdownHeaderOpenedForHours" : "dropdownHeaderForHours"}
         onClick={openCloseDropDown}
@@ -100,7 +105,7 @@ export default function DropdownForHours({
                 return (
                   <div
                     key={index}
-                    className={selectedMinute == item ? "eachNumberSelected": "eachNumber"}
+                    className={selectedMinute == item ? "eachNumberSelected" : "eachNumber"}
                     onClick={() => {
                       setMinutes(item);
                       openCloseDropDown();

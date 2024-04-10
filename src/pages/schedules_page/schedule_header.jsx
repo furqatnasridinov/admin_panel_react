@@ -284,6 +284,7 @@ export default function ScheduleHeader() {
                     setMinutes={(minute) =>dispatch(setStartTimeMinutes(minute))}
                     selectedHour={scheduleState.startTimeHoursTmp}
                     selectedMinute={scheduleState.startTimeMinutesTmp}
+                    closeOntapOutside={() => {openStartTimeDropDown(false)}}
                   />
 
                   <div className="">-</div>
@@ -296,6 +297,7 @@ export default function ScheduleHeader() {
                     setMinutes={(minute) => dispatch(setEndTimeMinutes(minute))}
                     selectedHour={scheduleState.endTimeHoursTmp}
                     selectedMinute={scheduleState.endTimeMinutesTmp}
+                    closeOntapOutside={() => {openEndTimeDropDown(false)}}
                   />
                 </div>
               </div>
