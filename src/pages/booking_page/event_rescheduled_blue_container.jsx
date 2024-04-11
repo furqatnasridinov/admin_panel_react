@@ -137,6 +137,7 @@ export default function EventRescheduledBlueContainer({
               </div>
               <div className="flex flex-row gap-[10px] items-center">
                 <DropdownForHours
+                  zIndex={"2"}
                   backgroundColor={"white"}
                   text={`${scheduleState.startTimeHoursTmp}:${scheduleState.startTimeMinutesTmp}`}
                   isDropDownOpened={isStartTimeDropDownOpened}
@@ -167,6 +168,7 @@ export default function EventRescheduledBlueContainer({
 
           <DatePicker
             selected={startDate}
+            minDate={new Date()}
             onChange={(date) => setStartDate(date)}
             open={datePickerShown}
             shouldCloseOnSelect={true}
@@ -302,7 +304,7 @@ export default function EventRescheduledBlueContainer({
                   selectedWeekdays: [],
                   autoAccept: false,
                 };
-                dispatch(createSchedule(createEventRequest));
+               await dispatch(createSchedule(createEventRequest));
                 const rejectingRequest = {
                   gymId: reScheduledEvent.gymId,
                   waitingId: reScheduledEvent.id,
