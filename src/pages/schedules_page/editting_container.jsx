@@ -107,53 +107,39 @@ export default function EdittingContainer() {
 
         <img
           src={roundedGarbage}
-          alt=""
+          alt="roundedGarbage"
           className="cursor-pointer"
           onClick={async () => {
             // if event is repeating show modal
-            if (
-              scheduleState.selectedEvent.repeat.length > 1 ||
-              scheduleState.selectedEvent.usersCount >= 1
-            ) {
-              openDeleteModal(true);
-            }
-            if (
-              scheduleState.selectedEvent.repeat.length <= 1 &&
-              scheduleState.selectedEvent.usersCount == 0
-            ) {
-              // else delete event
-              const { gymId, lessonId, all } = {
-                gymId: gymState.currentGym.id,
-                lessonId: scheduleState.selectedEvent.id,
-                all: false,
-              };
-              await dispatch(deleteSchedule({ gymId, lessonId, all }));
-              dispatch(resetSelectedEvent());
-              dispatch(hideEdittingContainer());
-              dispatch(getSchedules(gymState.currentGym.id));
-            }
+            openDeleteModal(true);
           }}
         />
       </div>
+      
 
-      <CustomDialog
+      {deleteModalShown && <CustomDialog
         isOpened={deleteModalShown}
         closeOnTapOutside={() => openDeleteModal(false)}
       >
         <div className="deleteModalContainer">
           <div className="flex flex-col gap-[5px]">
-            <div className="text-[16px] font-semibold">Удаление занятия</div>
-            <div className="text-[14px] font-normal leading-[16px]">
+          <div className="">{`userscount : ${scheduleState.selectedEvent.usersCount} repeat: ${scheduleState.selectedEvent.repeat.length}`}</div>
+            {/* <div className="text-[16px] font-semibold">Удаление занятия</div> */}
+            {scheduleState.selectedEvent?.repeat?.length > 0 && <div className="text-[14px] font-normal leading-[16px]">
               Это занятие было скопировано на несколько недель вперёд. Вы хотите
               удалить только это занятие, или так же все его копии?
-            </div>
+            </div>}
+
+            {scheduleState.selectedEvent?.repeat?.length == 0 && <div className="text-[14px] font-normal leading-[16px]">
+              Это действие удалит занятие без возможности восстановления. 
+            </div>}
           </div>
-          <div className="blueContainer">
+
+          {scheduleState.selectedEvent?.usersCount > 0 && <div className="blueContainer">
             <div className="text-[14px] font-medium leading-[16px]">
               Внимание: На это занятие записано:{" "}
               <strong>{scheduleState.selectedEvent.usersCount}</strong>{" "}
-              пользователей!{" "}
-              {/* А на все повторяющиеся - <strong>57</strong>! */}
+              пользователей!
             </div>
             <div className="text-[14px] font-normal leading-[16px]">
               Удаление приведёт к отмене всех записей. Если вы хотите перенести
@@ -161,8 +147,8 @@ export default function EdittingContainer() {
               редактированием вместо удаления, это позволит сохранить часть
               записей и уведомит пользователей о переносе.
             </div>
-          </div>
-
+          </div>}
+          
           <div className="flex flex-row gap-[10px]">
             <BackButton
               height={"40px"}
@@ -172,9 +158,10 @@ export default function EdittingContainer() {
                 openDeleteModal(false);
               }}
             />
-            <BackButton
+            
+            {scheduleState.selectedEvent?.repeat?.length > 0 && <BackButton
               height={"40px"}
-              width={"40%"}
+              width={"100%"}
               title={"Удалить только выбранное занятие"}
               onСlick={async () => {
                 const { gymId, lessonId, all } = {
@@ -188,11 +175,12 @@ export default function EdittingContainer() {
                 dispatch(getSchedules(gymState.currentGym.id));
                 openDeleteModal(false);
               }}
-            />
+            />}
+
             <CustomButton
               height={"40px"}
-              width={"40%"}
-              title={"Удалить занятие и все его копии"}
+              width={"100%"}
+              title={scheduleState.selectedEvent?.repeat?.length > 1 ? "Удалить занятие и все его копии" : "Подтвердить удаление"}
               fontSize={"14px"}
               onСlick={async () => {
                 const { gymId, lessonId, all } = {
@@ -209,7 +197,7 @@ export default function EdittingContainer() {
             />
           </div>
         </div>
-      </CustomDialog>
+      </CustomDialog>}
 
       {/*  */}
       <div className="flex flex-col gap-[5px]">
