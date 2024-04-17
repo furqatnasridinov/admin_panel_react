@@ -10,6 +10,8 @@ export class BookingData {
     repeat,
     usersCounts,
     title,
+    userName,
+    pictureUrl,
   ) {
     this.id = id;
     this.gymId = gymId;
@@ -21,5 +23,7 @@ export class BookingData {
     this.repeat = repeat;
     this.usersCounts = usersCounts;
     this.title = title;
+    this.userName = userName;
+    this.pictureUrl = pictureUrl;
   }
 }

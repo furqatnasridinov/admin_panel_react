@@ -9,7 +9,7 @@ import questionLogo from "../../assets/svg/questionModal.svg";
 import BackButton from "../../components/button/back_button";
 import CustomButton from "../../components/button/button";
 import { rejectClient, getNewClients } from "../../features/clients_slice";
-import { restrictLesson } from "../../features/schedule_slice";
+import { restrictLesson, getSchedules } from "../../features/schedule_slice";
 
 export default function NoPlacesBlueContainer({ event, onPop }) {
   // redux
@@ -205,6 +205,7 @@ export default function NoPlacesBlueContainer({ event, onPop }) {
               waitingId: event.id,
             };
             await dispatch(rejectClient(request));
+            dispatch(getSchedules(event.gymId));
             dispatch(getNewClients(event.gymId));
             onPop();
           }}

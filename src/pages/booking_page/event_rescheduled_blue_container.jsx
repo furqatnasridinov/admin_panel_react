@@ -14,6 +14,7 @@ import {
   getDuration,
   getStartTimeToSendToServer,
   deleteSchedule,
+  getSchedules,
 } from "../../features/schedule_slice";
 import { rejectClient, getNewClients } from "../../features/clients_slice";
 import DatePicker from "react-datepicker";
@@ -334,7 +335,8 @@ export default function EventRescheduledBlueContainer({
                   lessonId: reScheduledEvent.lessonId,
                   all: false,
                 };
-                dispatch(deleteSchedule(deleteEventRequest));
+                await dispatch(deleteSchedule(deleteEventRequest));
+                dispatch(getSchedules(reScheduledEvent.gymId));
                 onPop();
               }
               if (selectedEvent === null && !newCreatedEventSelected) {
