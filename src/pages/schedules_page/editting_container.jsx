@@ -450,6 +450,7 @@ export default function EdittingContainer() {
                       description,
                       autoAccept,
                       all,
+                      canSignUp,
                     } = {
                       gymId: gymState.currentGym.id,
                       lessonId: scheduleState.selectedEvent.id,
@@ -458,6 +459,7 @@ export default function EdittingContainer() {
                       description: scheduleState.selectedEvent.title,
                       autoAccept: checkboxForAutoApprove,
                       all: checkBoxEnabled,
+                      canSignUp: scheduleState.selectedEvent.canSignUp,
                     };
                     await dispatch(
                       updateSchedule({
@@ -468,6 +470,7 @@ export default function EdittingContainer() {
                         description,
                         autoAccept,
                         all,
+                        canSignUp,
                       })
                     );
                     dispatch(disableScheduleEditting());

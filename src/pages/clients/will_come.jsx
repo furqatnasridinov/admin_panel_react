@@ -45,6 +45,8 @@ export default function WillCome({ clientsList, doNotShowBlock }) {
                 endTime={`${endHours}:${endMinutes}`}
                 event={client.lessonType}
                 gym={client.gymName}
+                userName={client.userName}
+                picture={client.pictureUrl}
               />
             );
           })}

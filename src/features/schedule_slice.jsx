@@ -100,7 +100,7 @@ export const deleteSchedule = createAsyncThunk(
 
 export const updateSchedule = createAsyncThunk(
   "scheduleSlice/updateSchedule",
-  async ({ gymId, lessonId, date, duration, description, all, autoAccept }) => {
+  async ({ gymId, lessonId, date, duration, description, all, autoAccept, canSignUp }) => {
     try {
       const dataToSend = {
         id: lessonId,
@@ -108,6 +108,7 @@ export const updateSchedule = createAsyncThunk(
         duration: duration,
         description: description,
         autoAccept: autoAccept,
+        canSignUp: canSignUp,
       };
       const response = await axiosClient.patch(
         `api/admin/gyms/${gymId}/lessons/${all}`,
@@ -120,7 +121,7 @@ export const updateSchedule = createAsyncThunk(
 );
 
 export const restrictLesson = createAsyncThunk(
-  "scheduleSlice/updateSchedule",
+  "scheduleSlice/restrictLesson",
   async ({ gymId, lessonId }) => {
     try {
       const dataToSend = {

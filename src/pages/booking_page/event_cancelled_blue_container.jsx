@@ -3,8 +3,8 @@ import "./styles.css";
 import BackButton from "../../components/button/back_button";
 import CustomButton from "../../components/button/button";
 import { rejectClient, getNewClients } from "../../features/clients_slice";
-import { deleteSchedule } from "../../features/schedule_slice";
-import { useDispatch, useSelector } from "react-redux";
+import { deleteSchedule ,getSchedules} from "../../features/schedule_slice";
+import { useDispatch } from "react-redux";
 
 
 export default function EventCancelledBlueContainer({
@@ -85,7 +85,7 @@ export default function EventCancelledBlueContainer({
 
             // delete event from schedule if is exists
             if (scheduleExists) {
-              dispatch(
+             await dispatch(
                 deleteSchedule({
                   gymId: event.gymId,
                   lessonId: event.lessonId,
@@ -93,8 +93,9 @@ export default function EventCancelledBlueContainer({
                 })
               );
             }
-
+            dispatch(getSchedules(event.gymId));
             dispatch(getNewClients(event.gymId));
+
             onPop();
           }}
         />

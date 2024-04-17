@@ -86,13 +86,10 @@ export const getWillComeToday = createAsyncThunk(
         const data = response.data["object"];
         data.forEach((item) => {
           const startTime = new Date(item.date.replace("@", "T"));
-          const endTime = new Date(
-            startTime.getTime() + parseDuration(item.duration)
-          );
+          const endTime = new Date(startTime.getTime() + parseDuration(item.duration));
           const today = new Date();
           // добавим только сегодняшние и те что еще не пришли
-          if (
-            startTime.getDate() === today.getDate() &&
+         /*  if (startTime.getDate() === today.getDate() &&
             startTime.getMonth() === today.getMonth() &&
             startTime.getFullYear() === today.getFullYear() &&
             startTime > today
@@ -107,7 +104,23 @@ export const getWillComeToday = createAsyncThunk(
                 item.lessonType
               )
             );
-          }
+          } */
+          listToCollect.push(
+            new BookingData(
+              item.id,
+              item.gymId,
+              item.gymName,
+              startTime,
+              endTime,
+              item.lessonType,
+              item.lessonId,
+              item.repeat,
+              item.usersCount,
+              item.title,
+              item.userName,
+              item.pictureUrl,
+            )
+          );
         });
         return listToCollect;
       }
@@ -136,7 +149,7 @@ export const getAlreadyCameToday = createAsyncThunk(
           );
           const today = new Date();
           // добавим только сегодняшние
-          if (
+         /*  if (
             startTime.getDate() === today.getDate() &&
             startTime.getMonth() === today.getMonth() &&
             startTime.getFullYear() === today.getFullYear()
@@ -151,7 +164,23 @@ export const getAlreadyCameToday = createAsyncThunk(
                 item.lessonType
               )
             );
-          }
+          } */
+          listToCollect.push(
+            new BookingData(
+              item.id,
+              item.gymId,
+              item.gymName,
+              startTime,
+              endTime,
+              item.lessonType,
+              item.lessonId,
+              item.repeat,
+              item.usersCount,
+              item.title,
+              item.userName,
+              item.pictureUrl,
+            )
+          );
         });
         return listToCollect;
       }

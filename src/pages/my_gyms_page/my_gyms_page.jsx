@@ -5,6 +5,7 @@ import MessageLikeTopContainer from "../booking_page/message_like_top_container"
 import { useSelector } from "react-redux";
 
 export default function MyGymsPage() {
+  console.log("token ", localStorage.getItem(AppConstants.keyToken));
   const clientsSlice = useSelector((state) => state.clients);
   return (
     console.log(`token ${localStorage.getItem(AppConstants.keyToken)}`),
