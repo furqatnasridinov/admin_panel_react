@@ -145,7 +145,7 @@ const scheduleSlice = createSlice({
     selectedDay: "",
     startTimeHoursTmp: "11",
     startTimeMinutesTmp: "00",
-    endTimeHoursTmp: "13",
+    endTimeHoursTmp: "12",
     endTimeMinutesTmp: "00",
     description: "",
     selectedEvent: null,
@@ -264,6 +264,21 @@ const scheduleSlice = createSlice({
         list.splice(index, 1);
       }
       state.selectedWeekdays = list;
+    },
+
+    // function to automatically assign end time when start selected (+1 hour)
+    setEndTimeAutomatically: (state) => {
+      const startHour = state.startTimeHoursTmp;
+      const startMinute = state.startTimeMinutesTmp;
+      const newEndTime = parseInt(startHour) + 1;
+      let endTimeString = newEndTime.toString();
+      if (newEndTime === 24) {
+        endTimeString = "00";
+      } else if (endTimeString.length === 1) {
+        endTimeString = `0${endTimeString}`;
+      }
+      state.endTimeHoursTmp = endTimeString;
+      state.endTimeMinutesTmp = startMinute;
     },
 
     selectADayFromCalendar: (state, action) => {
@@ -407,6 +422,7 @@ export const {
   setIsloading,
   setNavigationFromBooking,
   setEventFromBooking,
+  setEndTimeAutomatically,
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

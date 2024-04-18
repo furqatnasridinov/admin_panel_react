@@ -1,6 +1,6 @@
 import React from "react";
 import "./styles.css";
-import { useState, useRef } from "react";
+import { useState, useRef , useEffect} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { hideEdittingContainer } from "../../features/schedule_slice";
 import roundedGarbage from "../../assets/svg/rounded_garbage.svg";
@@ -17,6 +17,7 @@ import {
   disableScheduleEditting,
   updateSchedule,
   resetDatasAfterSubmitting,
+  setEndTimeAutomatically,
 } from "../../features/schedule_slice";
 import { getSchedules } from "../../features/schedule_slice";
 import CustomDialog from "../../components/dialog/dialog";
@@ -59,6 +60,12 @@ export default function EdittingContainer() {
   const [isTooltip2Visible, setIsTooltip2Visible] = useState(false);
   const [tooltip2Position, setTooltip2Position] = useState({ top: 0, left: 0 });
 
+
+    // use effect 
+    useEffect(() => { 
+      dispatch(setEndTimeAutomatically());
+    }, [scheduleState.startTimeHoursTmp, scheduleState.startTimeMinutesTmp]);
+    
   const handleMouseEnter = (event) => {
     const rect = event.target.getBoundingClientRect();
     setTooltipPosition({

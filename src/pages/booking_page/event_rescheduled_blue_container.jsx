@@ -15,6 +15,7 @@ import {
   getStartTimeToSendToServer,
   deleteSchedule,
   getSchedules,
+  setEndTimeAutomatically,
 } from "../../features/schedule_slice";
 import { rejectClient, getNewClients } from "../../features/clients_slice";
 import DatePicker from "react-datepicker";
@@ -99,6 +100,10 @@ export default function EventRescheduledBlueContainer({
       setValidationError(false);
     }
   }, [selectedEvent, newCreatedEventSelected]);
+
+  useEffect(() => { 
+    dispatch(setEndTimeAutomatically());
+  }, [scheduleState.startTimeHoursTmp, scheduleState.startTimeMinutesTmp]);
 
   return (
     (
