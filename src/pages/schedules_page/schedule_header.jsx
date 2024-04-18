@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./styles.css";
 import { setCurrentGym } from "../../features/current_gym_slice";
 import { selectAnActivity } from "../../features/activities_slice";
@@ -19,6 +19,7 @@ import {
   disableScheduleEditting,
   hideEdittingContainer,
   setNavigationFromBooking,
+  setEndTimeAutomatically,
 } from "../../features/schedule_slice";
 import { useDispatch, useSelector } from "react-redux";
 import CustomDropdown from "../../components/dropdown/custom_dropdown";
@@ -64,6 +65,11 @@ export default function ScheduleHeader() {
   const [isTooltip2Visible, setIsTooltip2Visible] = useState(false);
   const [tooltip2Position, setTooltip2Position] = useState({ top: 0, left: 0 });
 
+  // use effect 
+  useEffect(() => { 
+    dispatch(setEndTimeAutomatically());
+  }, [scheduleState.startTimeHoursTmp, scheduleState.startTimeMinutesTmp]);
+
   const handleMouseEnter = (event) => {
     const rect = event.target.getBoundingClientRect();
     setTooltipPosition({
@@ -85,6 +91,8 @@ export default function ScheduleHeader() {
   let numbers = Array.from({ length: 100 }, (_, i) => i + 1);
 
   return (
+    console.log("start time hours", scheduleState.startTimeHoursTmp),
+    console.log("start time minutes", scheduleState.startTimeMinutesTmp),
     <div className="schedule_header">
       <div className="flex flow-row gap-[10px] items-center">
         <div className="">Расписание</div>
@@ -159,8 +167,8 @@ export default function ScheduleHeader() {
                   dispatch(setNavigationFromBooking(false)); // to make select acvity work
                   dispatch(selectAnActivity(item));
                   openActivitiesDropDown(false);
-                   // reset selected activity and close editting container
-                   if (scheduleState.isEdittingContainerShown) {
+                  // reset selected activity and close editting container
+                  if (scheduleState.isEdittingContainerShown) {
                     dispatch(hideEdittingContainer());
                   }
                   if (scheduleState.isScheduleEdittingEnabled) {
@@ -279,12 +287,12 @@ export default function ScheduleHeader() {
                   <DropdownForHours
                     text={`${scheduleState.startTimeHoursTmp}:${scheduleState.startTimeMinutesTmp}`}
                     isDropDownOpened={isStartTimeDropDownOpened}
-                    openCloseDropDown={() => {openStartTimeDropDown(!isStartTimeDropDownOpened)}}
-                    setHours={(hours) => {dispatch(setStartTimeHours(hours))}}
-                    setMinutes={(minute) =>dispatch(setStartTimeMinutes(minute))}
+                    openCloseDropDown={() => { openStartTimeDropDown(!isStartTimeDropDownOpened) }}
+                    setHours={(hours) => { dispatch(setStartTimeHours(hours)) }}
+                    setMinutes={(minute) => dispatch(setStartTimeMinutes(minute))}
                     selectedHour={scheduleState.startTimeHoursTmp}
                     selectedMinute={scheduleState.startTimeMinutesTmp}
-                    closeOntapOutside={() => {openStartTimeDropDown(false)}}
+                    closeOntapOutside={() => { openStartTimeDropDown(false) }}
                   />
 
                   <div className="">-</div>
@@ -292,12 +300,12 @@ export default function ScheduleHeader() {
                   <DropdownForHours
                     text={`${scheduleState.endTimeHoursTmp}:${scheduleState.endTimeMinutesTmp}`}
                     isDropDownOpened={isEndTimeDropDownOpened}
-                    openCloseDropDown={() => {openEndTimeDropDown(!isEndTimeDropDownOpened)}}
-                    setHours={(hours) => {dispatch(setEndTimeHours(hours))}}
+                    openCloseDropDown={() => { openEndTimeDropDown(!isEndTimeDropDownOpened) }}
+                    setHours={(hours) => { dispatch(setEndTimeHours(hours)) }}
                     setMinutes={(minute) => dispatch(setEndTimeMinutes(minute))}
                     selectedHour={scheduleState.endTimeHoursTmp}
                     selectedMinute={scheduleState.endTimeMinutesTmp}
-                    closeOntapOutside={() => {openEndTimeDropDown(false)}}
+                    closeOntapOutside={() => { openEndTimeDropDown(false) }}
                   />
                 </div>
               </div>
@@ -348,7 +356,7 @@ export default function ScheduleHeader() {
 
                   <div
                     className="text-[14px] font-medium text-button-color cursor-pointer"
-                    onClick={() => {setDatePickerShown(false)}}>
+                    onClick={() => { setDatePickerShown(false) }}>
                     Закрыть
                   </div>
                 </div>
@@ -386,7 +394,7 @@ export default function ScheduleHeader() {
                   className="cursor-pointer w-[24px] h-[24px]"
                   src={checkboxAutoAcceptEnabled ? checkboxEnabled : checkboxDisabled}
                   alt="checkbox"
-                  onClick={() => {setCheckboxAutoAccept(!checkboxAutoAcceptEnabled)}}
+                  onClick={() => { setCheckboxAutoAccept(!checkboxAutoAcceptEnabled) }}
                 />
                 <div className="text-[13px] font-medium">
                   Автоматически одобрять бронирование пользователей на занятия
@@ -433,7 +441,7 @@ export default function ScheduleHeader() {
                   className="w-[24px] h-[24px]"
                   src={checkboxLimitEnabled ? checkboxEnabled : checkboxDisabled}
                   alt="checkbox"
-                  onClick={() => {setIsCheckboxLimitEnabled(!checkboxLimitEnabled)}}
+                  onClick={() => { setIsCheckboxLimitEnabled(!checkboxLimitEnabled) }}
                 />
                 <div className="flex flex-row gap-[4px]">
                   <div className="text-[13px] font-medium leading-[15px]">
@@ -456,7 +464,7 @@ export default function ScheduleHeader() {
                       gap={"0px"}
                       backgroundColor={"white"}
                       padding={"10px"}
-                      openCloseDropDown={() => {setIsLimitDropDownOpened(!isLimitDropDownOpened)}}
+                      openCloseDropDown={() => { setIsLimitDropDownOpened(!isLimitDropDownOpened) }}
                       map={numbers.map((number) => {
                         return (
                           <div
@@ -526,7 +534,7 @@ export default function ScheduleHeader() {
                   <div
                     key={weekday.id}
                     className={scheduleState.selectedWeekdays.includes(weekday.id)
-                        ? "roundedWeekdaysSelected cursor-pointer" : "roundedWeekdays cursor-pointer"}
+                      ? "roundedWeekdaysSelected cursor-pointer" : "roundedWeekdays cursor-pointer"}
                     onClick={() => {
                       if (scheduleState.selectedWeekdays.includes(weekday.id)) {
                         dispatch(removeDayFromSelectedWeekdays(weekday.id));
@@ -547,7 +555,7 @@ export default function ScheduleHeader() {
                   width={"114px"}
                   height={"40px"}
                   title={"Отменить"}
-                  onСlick={() => {openModal(false)}}
+                  onСlick={() => { openModal(false) }}
                 />
 
                 <CustomButton
