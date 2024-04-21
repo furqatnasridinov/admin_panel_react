@@ -20,6 +20,7 @@ import BackButton from "../../components/button/back_button";
 import CustomButton from "../button/button";
 import { getUser } from "../../features/register";
 import placeHolderImg from "../../assets/images/placeholder.jpg"
+import Notification from "../../firebase/push_notification";
 
 
 const Sidebar = () => {
@@ -118,17 +119,13 @@ const Sidebar = () => {
         <div
           id="sidebar"
           ref={sideBarRef}
-          className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}
-        >
+          className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}>
           {/* Название ИП */}
           <button
             ref={sidebarHeaderRef}
             className="sidebar_header"
             style={{ backgroundColor: isMenuCompanyShown ? "#F5F9FF" : "white" }}
-            onClick={
-              handleClickMenuCompany
-            }
-          >
+            onClick={handleClickMenuCompany}>
             {registerState.avatar &&
               <div className="w-[24px] h-[24px] bg-button-color rounded-[50%] p-[2px]">
                 <img className="w-full h-full rounded-[50%] object-cover" src={`http://77.222.53.122/image/${registerState.avatar}`} alt="" />
@@ -143,12 +140,9 @@ const Sidebar = () => {
 
             {isTextShown && (
               <div className="text-[14px] font-normal  line-clamp-2 text-ellipsis">
-
                 {registerState.user && (
                   registerState.user?.firstName + " " +
-                  registerState.user?.lastName
-                )
-                }
+                  registerState.user?.lastName)}
               </div>
             )}
           </button>
@@ -166,9 +160,7 @@ const Sidebar = () => {
                   showMenuCompany(false);
                 }
               }}
-              onLeave={() => {
-                showModal(true);
-              }}
+              onLeave={() => {showModal(true)}}
             />
           )}
 
@@ -207,19 +199,10 @@ const Sidebar = () => {
             <div className="flex flex-col">
               <NavLink
                 id="sidebarOnclick"
-                className={
-                  isClientsActive
-                    ? "sidebar_section active_sidebar_section"
-                    : "sidebar_section"
-                }
-                onClick={() => {
-                  setClientsActive(true);
-                }}
-              >
+                className={isClientsActive ? "sidebar_section active_sidebar_section" : "sidebar_section"}
+                onClick={() => {setClientsActive(true)}}>
                 <img src={userLogoSvg} alt="" />
-
                 {isTextShown && <div>Клиенты</div>}
-
                 {isTextShown && clientsSlice.waitingForAccept?.length > 0 && (
                   <div className="badge">
                     {clientsSlice.waitingForAccept?.length}
@@ -233,10 +216,7 @@ const Sidebar = () => {
                   <NavLink
                     id="sidebarOnclick"
                     to="/bookingPage"
-                    className={({ isActive }) =>
-                      isActive ? "active_additional_block" : "additional_block"
-                    }
-                  >
+                    className={({ isActive }) => isActive ? "active_additional_block" : "additional_block"}>
                     <li>
                       <span>Бронирование</span>
                     </li>
@@ -250,10 +230,7 @@ const Sidebar = () => {
                   <NavLink
                     id="sidebarOnclick"
                     to="/waitingClientsPage"
-                    className={({ isActive }) =>
-                      isActive ? "active_additional_block" : "additional_block"
-                    }
-                  >
+                    className={({ isActive }) => isActive ? "active_additional_block" : "additional_block"}>
                     <li>
                       <span>Посещения сегодня</span>
                     </li>

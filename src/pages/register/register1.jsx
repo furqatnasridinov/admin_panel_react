@@ -8,11 +8,9 @@ import enabledSendSvg from "../../assets/svg/enabled_send.svg"
 import disabledSendSvg from "../../assets/svg/disabled_send.svg"
 import waitingSendSvg from "../../assets/svg/waiting_send.svg"
 import OtpInput from 'react-otp-input';
-import myfit from "../../assets/svg/myfit.svg"
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux'
 import { sendPhoneNumber, sendForConfirmation } from '../../features/register'
-import { getUser } from '../../features/register'
 import AppConstants from '../../config/app_constants'
 
 
@@ -74,7 +72,6 @@ export default function Register1() {
   useEffect(() => {
     if (loginState.isSuccessfullyLogined) {
       navigate("/welcomePage", { replace: true });
-      //dispatch(getUser());
     }
   }, [loginState.isSuccessfullyLogined]);
 
@@ -130,7 +127,12 @@ export default function Register1() {
                   if (phone.length === 11) {
                     sendPhone(true)
                     setSubmittedPhone(phone);
-                    dispatch(sendPhoneNumber(`+${phone}`));
+                    const body = {
+                      login: `+${phone}`,
+                      fcmToken: ""
+                    }
+                    dispatch(sendPhoneNumber(body));
+                    localStorage.setItem(AppConstants.keyPhone, `+${phone}` );
                   }
                 }}
               />

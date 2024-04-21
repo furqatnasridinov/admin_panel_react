@@ -1,6 +1,6 @@
 import React from "react";
 import "./styles.css";
-import { useState, useRef , useEffect} from "react";
+import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { hideEdittingContainer } from "../../features/schedule_slice";
 import roundedGarbage from "../../assets/svg/rounded_garbage.svg";
@@ -18,6 +18,11 @@ import {
   updateSchedule,
   resetDatasAfterSubmitting,
   setEndTimeAutomatically,
+  selectedEventSetCansignUp,
+  removeDayFromSelectedWeekdays,
+  addDaysToSelectedWeekdays,
+  selectedEventRepeatsAdd,
+  selectedEventRepeatRemove
 } from "../../features/schedule_slice";
 import { getSchedules } from "../../features/schedule_slice";
 import CustomDialog from "../../components/dialog/dialog";
@@ -31,6 +36,11 @@ import psych from "../../assets/images/american_psycho.jpg";
 import { WEEK_DAYS } from "../../dummy_data/dymmy_data";
 import questionLogo from "../../assets/svg/questionModal.svg";
 import ReactDOM from "react-dom";
+import alertSvg from "../../assets/svg/alert.svg"
+import groupSvg from "../../assets/svg/group.svg"
+import hiddenSvg from "../../assets/svg/hidden.svg"
+import shownSvg from "../../assets/svg/shown.svg" 
+import CustomDropdown from "../../components/dropdown/custom_dropdown";
 
 const TooltipOverlay = ({ children, visible }) => {
   if (!visible) return null;
@@ -45,8 +55,10 @@ export default function EdittingContainer() {
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
   const scheduleState = useSelector((state) => state.schedule);
-  const [checkBoxEnabled, setCheckbox] = useState(false);
-  const [checkboxForAutoApprove, setCheckboxEnabledState] = useState(false);
+  const [allCheked, setAll] = useState(false);
+  const [checkboxForAutoAccept, setCheckboxForAutoAccept] = useState(false);
+  const [checkboxForRestriction, setCheckboxForRestriction] = useState(false);
+
 
   // use ref
   const edittingButtonRef = useRef(null);
@@ -59,13 +71,19 @@ export default function EdittingContainer() {
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
   const [isTooltip2Visible, setIsTooltip2Visible] = useState(false);
   const [tooltip2Position, setTooltip2Position] = useState({ top: 0, left: 0 });
+  const [isTooltip3Visible, setIsTooltip3Visible] = useState(false);
+  const [tooltip3Position, setTooltip3Position] = useState({ top: 0, left: 0 });
+  const [isTooltip4Visible, setIsTooltip4Visible] = useState(false);
+  const [tooltip4Position, setTooltip4Position] = useState({ top: 0, left: 0 });
+  const [isLimitDropDownOpened, setIsLimitDropDownOpened] = useState(false);
+  const [limit, setLimit] = useState(69);
 
 
-    // use effect 
-    useEffect(() => { 
-      dispatch(setEndTimeAutomatically());
-    }, [scheduleState.startTimeHoursTmp, scheduleState.startTimeMinutesTmp]);
-    
+  // use effect 
+  useEffect(() => {
+    dispatch(setEndTimeAutomatically());
+  }, [scheduleState.startTimeHoursTmp, scheduleState.startTimeMinutesTmp]);
+
   const handleMouseEnter = (event) => {
     const rect = event.target.getBoundingClientRect();
     setTooltipPosition({
@@ -73,6 +91,24 @@ export default function EdittingContainer() {
       left: rect.left + window.scrollX - 320, // Сдвигаем на 50px левее от иконки
     });
     setIsTooltipVisible(true);
+  };
+
+  const handleMouseEnter3 = (event) => {
+    const rect = event.target.getBoundingClientRect();
+    setTooltip3Position({
+      top: rect.top + window.scrollY + rect.height - 90,
+      left: rect.left + window.scrollX - 320,
+    });
+    setIsTooltip3Visible(true);
+  };
+
+  const handleMouseEnter4 = (event) => {
+    const rect = event.target.getBoundingClientRect();
+    setTooltip4Position({
+      top: rect.top + window.scrollY + rect.height - 30,
+      left: rect.left + window.scrollX - 320,
+    });
+    setIsTooltip4Visible(true);
   };
 
   const showConfirmationOverlay = () => {
@@ -85,6 +121,8 @@ export default function EdittingContainer() {
     });
     setIsTooltip2Visible(true);
   };
+
+  let numbers = Array.from({ length: 100 }, (_, i) => i + 1);
 
   return (
     console.log("scheduleState.selectedEvent", JSON.stringify(scheduleState.selectedEvent)),
@@ -122,7 +160,7 @@ export default function EdittingContainer() {
           }}
         />
       </div>
-      
+
 
       {deleteModalShown && <CustomDialog
         isOpened={deleteModalShown}
@@ -130,7 +168,7 @@ export default function EdittingContainer() {
       >
         <div className="deleteModalContainer">
           <div className="flex flex-col gap-[5px]">
-          <div className="">{`userscount : ${scheduleState.selectedEvent.usersCount} repeat: ${scheduleState.selectedEvent.repeat.length}`}</div>
+            <div className="">{`userscount : ${scheduleState.selectedEvent.usersCount} repeat: ${scheduleState.selectedEvent.repeat.length}`}</div>
             {/* <div className="text-[16px] font-semibold">Удаление занятия</div> */}
             {scheduleState.selectedEvent?.repeat?.length > 0 && <div className="text-[14px] font-normal leading-[16px]">
               Это занятие было скопировано на несколько недель вперёд. Вы хотите
@@ -138,7 +176,7 @@ export default function EdittingContainer() {
             </div>}
 
             {scheduleState.selectedEvent?.repeat?.length == 0 && <div className="text-[14px] font-normal leading-[16px]">
-              Это действие удалит занятие без возможности восстановления. 
+              Это действие удалит занятие без возможности восстановления.
             </div>}
           </div>
 
@@ -155,7 +193,7 @@ export default function EdittingContainer() {
               записей и уведомит пользователей о переносе.
             </div>
           </div>}
-          
+
           <div className="flex flex-row gap-[10px]">
             <BackButton
               height={"40px"}
@@ -165,7 +203,7 @@ export default function EdittingContainer() {
                 openDeleteModal(false);
               }}
             />
-            
+
             {scheduleState.selectedEvent?.repeat?.length > 0 && <BackButton
               height={"40px"}
               width={"100%"}
@@ -251,12 +289,12 @@ export default function EdittingContainer() {
               <DropdownForHours
                 text={`${scheduleState.startTimeHoursTmp}:${scheduleState.startTimeMinutesTmp}`}
                 isDropDownOpened={isStartTimeDropDownOpened}
-                openCloseDropDown={() => {openStartTimeDropDown(!isStartTimeDropDownOpened)}}
-                setHours={(hours) => {dispatch(setStartTimeHours(hours))}}
+                openCloseDropDown={() => { openStartTimeDropDown(!isStartTimeDropDownOpened) }}
+                setHours={(hours) => { dispatch(setStartTimeHours(hours)) }}
                 setMinutes={(minute) => dispatch(setStartTimeMinutes(minute))}
                 selectedHour={scheduleState.startTimeHoursTmp}
                 selectedMinute={scheduleState.startTimeMinutesTmp}
-                closeOntapOutside={() => {openStartTimeDropDown(false)}}
+                closeOntapOutside={() => { openStartTimeDropDown(false) }}
               />
 
               <div className="">-</div>
@@ -264,22 +302,27 @@ export default function EdittingContainer() {
               <DropdownForHours
                 text={`${scheduleState.endTimeHoursTmp}:${scheduleState.endTimeMinutesTmp}`}
                 isDropDownOpened={isEndTimeDropDownOpened}
-                openCloseDropDown={() => {openEndTimeDropDown(!isEndTimeDropDownOpened)}}
-                setHours={(hours) => {dispatch(setEndTimeHours(hours))}}
+                openCloseDropDown={() => { openEndTimeDropDown(!isEndTimeDropDownOpened) }}
+                setHours={(hours) => { dispatch(setEndTimeHours(hours)) }}
                 setMinutes={(minute) => dispatch(setEndTimeMinutes(minute))}
                 selectedHour={scheduleState.endTimeHoursTmp}
                 selectedMinute={scheduleState.endTimeMinutesTmp}
-                closeOntapOutside={() => {openEndTimeDropDown(false)}}
+                closeOntapOutside={() => { openEndTimeDropDown(false) }}
               />
             </div>
           )}
         </div>
 
-        {!scheduleState.isScheduleEdittingEnabled && (
-          <div className="text-[13px] font-medium leading-[15px]">
-            {scheduleState.selectedEvent.title}
+
+
+        {!scheduleState.isScheduleEdittingEnabled && 
+          <div className="">
+              <span className="text-[14px] font-bold">Описание занятия:</span>
+              <div className="text-[13px] font-medium leading-[15px]">
+                {scheduleState.selectedEvent.title}
+              </div>
           </div>
-        )}
+        }
 
         {scheduleState.isScheduleEdittingEnabled &&
           <TextAndTextfield
@@ -302,6 +345,203 @@ export default function EdittingContainer() {
           />
         }
 
+        {/* Настройки */}
+        <div className="flex flex-col gap-[16px]">
+          <span className="text-[14px] font-bold">Настройки:</span>
+
+          {/* canSignUp */}
+          <div className="flex flex-row gap-[10px] items-center">
+            <img src={scheduleState.selectedEvent.canSignUp ? shownSvg : hiddenSvg } alt="" />
+            
+            <span className="text-[13px] font-medium">
+              {scheduleState.selectedEvent.canSignUp ? "Это занятие доступно для записи. " : "Это занятие скрыто от пользователей приложения."}
+              {scheduleState.isScheduleEdittingEnabled && <span 
+                className="text-[13px] font-medium text-blue-text cursor-pointer"
+                onClick={()=>{
+                  dispatch(selectedEventSetCansignUp(!scheduleState.selectedEvent?.canSignUp));
+                }}
+                >
+                {scheduleState.selectedEvent?.canSignUp ? "Скрыть от пользователей" : "Отобразить"}
+              </span>}
+              
+            </span>
+          </div>
+
+            {/* Ограничение записей в день: */}
+         {scheduleState.selectedEvent?.limitCountUser || scheduleState.isScheduleEdittingEnabled &&  
+         <div className="flex flex-row gap-[10px] items-center justify-between">
+            <div className="flex flex-row gap-[10px] items-center">
+             {scheduleState.isScheduleEdittingEnabled && 
+              <img
+                className="cursor-pointer w-[24px] h-[24px]"
+                src={checkboxForRestriction ? checkboxEnabledSvg : checkboxDisabledSvg}
+                alt="checkbox"
+                onClick={() => {setCheckboxForRestriction(!checkboxForRestriction)}}
+              />}
+
+              {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.limitCountUser) && <img src={alertSvg} alt="" />}
+              {((scheduleState.isScheduleEdittingEnabled) || (!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.limitCountUser)) && 
+              <span className="text-[13px] font-medium">Ограничение записей в день:</span>}
+              {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.limitCountUser && !checkboxForRestriction) && 
+                  <span className="text-[14px] font-bold">13</span>}
+              {(checkboxForRestriction && scheduleState.isScheduleEdittingEnabled) && 
+                  <div className="flex flex-row items-center gap-[33px] ">
+                    <CustomDropdown
+                      isDropDownOpened={isLimitDropDownOpened}
+                      text={limit}
+                      maxHeight={150}
+                      maxWidth={"80px"}
+                      gap={"0px"}
+                      backgroundColor={"white"}
+                      padding={"10px"}
+                      openCloseDropDown={() => { setIsLimitDropDownOpened(!isLimitDropDownOpened) }}
+                      map={numbers.map((number) => {
+                        return (
+                          <div
+                            className="numbers"
+                            onClick={() => {
+                              setLimit(number);
+                              setIsLimitDropDownOpened(false);
+                            }}
+                          >
+                            {number}
+                          </div>
+                        );
+                      })}
+                    />
+                  </div>}
+            </div>
+            {(scheduleState.isScheduleEdittingEnabled || scheduleState.selectedEvent?.limitCountUser) && 
+              <>
+                 <div className="relative">
+                  <img
+                    className="cursor-pointer w-[24px] h-[24px]"
+                    src={questionLogo}
+                    alt="questionLogo"
+                    onMouseEnter={handleMouseEnter3}
+                    onMouseLeave={() => setIsTooltip3Visible(false)}
+                  />
+
+                  {isTooltip3Visible && (
+                    <div
+                      className="overlay"
+                      style={{
+                        top: tooltip3Position.top + "px",
+                        left: tooltip3Position.left + "px",
+                      }}>
+                    <div className="text-[16px] font-semibold">
+                      Ограничение записи в день
+                    </div>
+                    <div className="text-[14px] font-normal">
+                      Если вы хотите ограничить количество потенциальных
+                      записей в день - то выберите и настройте этот параметр.
+                   </div>
+                   <div className="text-[14px] font-normal">
+                      Например, вы знаете, что ваш зал вмещает не больше 30
+                      человек, при этом у вас есть 10 постоянных посетителей.
+                      Тогда имеет смысл выбрать данный параметр и поставить
+                      ограничение на 20 записей в день.Когда значение в 20
+                      записей будет достигнуто - занятие перестанет появляться
+                     у пользователей именно в те дни, когда значение будет
+                      достигать 20. Если кто то отменит занятие, или вы
+                      увеличите ограничение - занятие снова отобразится.
+                   </div>
+                  </div>
+                    )}
+                 </div>
+              </>
+            }
+          </div>}
+
+            {/* AutoAccept */}
+          {scheduleState.selectedEvent?.autoAccept || scheduleState.isScheduleEdittingEnabled && 
+            <div className="flex flex-row gap-[10px] items-center justify-between">
+            <div className="flex flex-row gap-[10px] items-center">
+              {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.autoAccept) && <img src={groupSvg} alt="" />}
+              {scheduleState.isScheduleEdittingEnabled && 
+                <img
+                  className="cursor-pointer w-[24px] h-[24px]"
+                  src={checkboxForAutoAccept ? checkboxEnabledSvg : checkboxDisabledSvg}
+                  alt="checkbox"
+                  onClick={() => {setCheckboxForAutoAccept(!checkboxForAutoAccept)}}
+                />}
+              {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.autoAccept) 
+                && <span className="text-[13px] font-medium mr-1">Включено автоматическое одобрение бронирований</span>}
+              {scheduleState.isScheduleEdittingEnabled  && <span className="text-[13px] font-medium mr-1">Включено автоматическое одобрение бронирований</span>}
+            </div>
+            <div>
+              {(scheduleState.isScheduleEdittingEnabled || scheduleState.selectedEvent?.autoAccept) && 
+                <>
+                <img
+                  className="cursor-pointer w-[34px] h-[24px]"
+                  src={questionLogo}
+                  alt="questionLogo"
+                  onMouseEnter={handleMouseEnter4}
+                  onMouseLeave={() => setIsTooltip4Visible(false)}
+                />
+                {isTooltip4Visible && <div
+                  className="overlay"
+                  style={{
+                    top: tooltip4Position.top + "px",
+                    left: tooltip4Position.left + "px",
+                  }}>
+                <div className="text-[16px] font-semibold">
+                  Автоматическое бронирование
+                </div>
+                <div className="text-[14px] font-normal">
+                 Когда вы создаёте активность, пользователь в приложении может
+                  на неё записаться. В стандартном сценарии вам необходимо будет
+                  свериться с расписанием и одобрить запись клиента.
+               </div>
+                <div className="text-[14px] font-normal">
+                  Если поставить галочку - одобрение бронирования для этой
+                  активности будет происходить автоматически, без вашего
+                  участия.
+                </div>
+             </div>}
+                </>}
+            </div>
+          </div>}
+        </div>
+
+        <div className="flex flex-col gap-[5px]">
+          <div className="text-[14px] font-bold">В какие дни повторяется:</div>
+          <div className="flex flex-row gap-[5px]">
+            {WEEK_DAYS.map((weekday) => (
+              <div
+                key={weekday.id}
+                className={scheduleState.selectedEvent?.repeat.includes(weekday.id)
+                  ? "roundedWeekdaysSelected cursor-pointer" : "roundedWeekdays cursor-pointer"}
+                  onClick={() => {
+                    if (scheduleState.selectedEvent?.repeat.includes(weekday.id)) {
+                      dispatch(selectedEventRepeatRemove(weekday.id));
+                    } else {
+                      dispatch(selectedEventRepeatsAdd(weekday.id));
+                    }
+                  }}
+              >
+              {weekday.name}
+            </div>
+            ))}
+          </div>
+        </div>
+          
+        {/* all */} 
+        {scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.repeat.length > 1 &&
+             <div className="flex flex-col gap-[10px]">
+                <span className="text-[14px] font-bold ">Сохранение:</span>
+                <div className="flex flex-row gap-[10px] items-center">
+                  <img
+                   className="cursor-pointer w-[24px] h-[24px]"
+                    src={allCheked ? checkboxEnabledSvg : checkboxDisabledSvg}
+                    alt="checkbox"
+                    onClick={() => {setAll(!allCheked)}}
+                  />
+                  <span className="text-[13px] font-medium">Применить ко всем повторяющимся событиям</span>
+                </div>
+            </div>
+        } 
+
         {!scheduleState.isScheduleEdittingEnabled && (
           <BackButton
             title={"Редактировать"}
@@ -319,6 +559,7 @@ export default function EdittingContainer() {
             hideHover={true}
           />
         )}
+
         {isTooltip2Visible && (
           <div
             className="overlay"
@@ -336,9 +577,7 @@ export default function EdittingContainer() {
             <div className="flex flex-row gap-2 mt-3">
               <BackButton
                 height={"40px"}
-                onСlick={() => {
-                  setIsTooltip2Visible(false);
-                }}
+                onСlick={() => {setIsTooltip2Visible(false)}}
                 title={"Назад"}
               />
               <CustomButton
@@ -354,78 +593,6 @@ export default function EdittingContainer() {
             </div>
           </div>
         )}
-
-        {scheduleState.isScheduleEdittingEnabled && (
-          <div className="flex flex-row justify-between items-center">
-            <div className="flex flex-row gap-[5px] items-center">
-              <img
-                className="cursor-pointer w-[24px] h-[24px]"
-                src={
-                  checkboxForAutoApprove
-                    ? checkboxEnabledSvg
-                    : checkboxDisabledSvg
-                }
-                alt="checkbox"
-                onClick={() => {
-                  setCheckboxEnabledState(!checkboxForAutoApprove);
-                }}
-              />
-              <div className="text-[13px] font-medium">
-                Автоматически одобрять бронирование пользователей на занятия
-              </div>
-            </div>
-            <div className="relative ml-1">
-              <img
-                className="cursor-pointer max-w-7"
-                src={questionLogo}
-                alt=""
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={() => setIsTooltipVisible(false)}
-              />
-              <TooltipOverlay visible={isTooltipVisible}>
-                <div
-                  className="overlay"
-                  style={{
-                    top: tooltipPosition.top + "px",
-                    left: tooltipPosition.left + "px",
-                  }}
-                >
-                  <div className="text-[16px] font-semibold">
-                    Автоматическое бронирование
-                  </div>
-                  <div className="text-[14px] font-normal">
-                    Когда вы создаёте активность, пользователь в приложении
-                    может на неё записаться. В стандартном сценарии вам
-                    необходимо будет свериться с расписанием и одобрить запись
-                    клиента.
-                  </div>
-                  <div className="text-[14px] font-normal">
-                    Если поставить галочку - одобрение бронирования для этой
-                    активности будет происходить автоматически, без вашего
-                    участия.
-                  </div>
-                </div>
-              </TooltipOverlay>
-            </div>
-          </div>
-        )}
-
-        {scheduleState.isScheduleEdittingEnabled &&
-          scheduleState.selectedEvent.repeat.length > 1 && (
-            <div className="flex flex-row gap-[10px] ">
-              <img
-                src={checkBoxEnabled ? checkboxEnabledSvg : checkboxDisabledSvg}
-                alt=""
-                className="cursor-pointer w-[24px] h-[24px]"
-                onClick={() => {
-                  setCheckbox(!checkBoxEnabled);
-                }}
-              />
-              <div className="text-[13px] font-medium leading-[15px]">
-                Применить ко всем повторяющимся событиям
-              </div>
-            </div>
-          )}
 
         <div className="flex flex-col gap-[16px]">
           {scheduleState.isScheduleEdittingEnabled && (
@@ -447,39 +614,21 @@ export default function EdittingContainer() {
                 title={"Сохранить"}
                 onСlick={async () => {
                   // send update request
-
                   if (!scheduleState.endTimeIsBeforeStartTime) {
-                    const {
-                      gymId,
-                      lessonId,
-                      date,
-                      duration,
-                      description,
-                      autoAccept,
-                      all,
-                      canSignUp,
-                    } = {
+                    const body = {
                       gymId: gymState.currentGym.id,
                       lessonId: scheduleState.selectedEvent.id,
                       date: scheduleState.lessonStartTimeSendToServer,
                       duration: scheduleState.lessonDurationSendToServer,
                       description: scheduleState.selectedEvent.title,
-                      autoAccept: checkboxForAutoApprove,
-                      all: checkBoxEnabled,
+                      autoAccept: checkboxForAutoAccept,
+                      all: allCheked,
                       canSignUp: scheduleState.selectedEvent.canSignUp,
+                      // repeat : scheduleState.selectedEvent.repeat,
+                      limitCountUser : checkboxForRestriction,
+                      maxCount : scheduleState.selectedEvent.maxCount ?? 69,
                     };
-                    await dispatch(
-                      updateSchedule({
-                        gymId,
-                        lessonId,
-                        date,
-                        duration,
-                        description,
-                        autoAccept,
-                        all,
-                        canSignUp,
-                      })
-                    );
+                    await dispatch(updateSchedule({body}));
                     dispatch(disableScheduleEditting());
                     dispatch(getSchedules(gymState.currentGym.id));
                     dispatch(resetDatasAfterSubmitting());
@@ -498,26 +647,7 @@ export default function EdittingContainer() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-[5px]">
-        <div className="text-[14px] font-bold">В какие дни повторяется:</div>
-
-        <div className="flex flex-row gap-[5px]">
-          {WEEK_DAYS.map((weekday) => (
-            <div
-              key={weekday.id}
-              className={
-                scheduleState.selectedEvent.repeat.length > 1 &&
-                  scheduleState.selectedEvent.repeat.includes(weekday.id)
-                  ? "roundedWeekdaysSelected"
-                  : "roundedWeekdays "
-              }
-              onClick={() => { }}
-            >
-              {weekday.name}
-            </div>
-          ))}
-        </div>
-      </div>
+      
     </div>
   );
 }

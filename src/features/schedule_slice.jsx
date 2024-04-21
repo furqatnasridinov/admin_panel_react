@@ -35,7 +35,10 @@ export const getSchedules = createAsyncThunk(
                   item.usersCount,
                   item.lessonState,
                   item.canSignUp,
-                  item.deleteLesson
+                  item.deleteLesson,
+                  item.autoAccept ?? false,
+                  item.limitCountUser ?? false,
+                  item.maxCount ?? 34,
                 )
               );
             }
@@ -100,18 +103,21 @@ export const deleteSchedule = createAsyncThunk(
 
 export const updateSchedule = createAsyncThunk(
   "scheduleSlice/updateSchedule",
-  async ({ gymId, lessonId, date, duration, description, all, autoAccept, canSignUp }) => {
+  async ({body}) => {
     try {
       const dataToSend = {
-        id: lessonId,
-        date: date,
-        duration: duration,
-        description: description,
-        autoAccept: autoAccept,
-        canSignUp: canSignUp,
+        id: body.lessonId,
+        date: body.date,
+        duration: body.duration,
+        description: body.description,
+        autoAccept: body.autoAccept,
+        canSignUp: body.canSignUp,
+        // repeat : body.repeat,
+         limitCountUser : body.limitCountUser,
+        maxCount : body.maxCount,
       };
       const response = await axiosClient.patch(
-        `api/admin/gyms/${gymId}/lessons/${all}`,
+        `api/admin/gyms/${body.gymId}/lessons/${body.all}`,
         dataToSend
       );
     } catch (error) {
@@ -177,7 +183,6 @@ const scheduleSlice = createSlice({
       state.lessonDurationSendToServer = "";
       state.lessonStartTimeSendToServer = "";
     },
-    getFormattedMonthFromSwitching: (state, action) => { },
 
     setSchedulesLoading: (state, action) => {
       state.isSchedulesLoading = action.payload;
@@ -194,6 +199,11 @@ const scheduleSlice = createSlice({
     selectedEventSetTitle: (state, action) => {
       state.selectedEvent.title = action.payload;
     },
+
+    selectedEventSetCansignUp : (state, action)=>{
+      state.selectedEvent.canSignUp = action.payload;
+    },
+
     setIsloading: (state) => {
       state.isloading = true;
     },
@@ -264,6 +274,19 @@ const scheduleSlice = createSlice({
         list.splice(index, 1);
       }
       state.selectedWeekdays = list;
+    },
+
+    selectedEventRepeatsAdd : (state, action) => {
+      state.selectedEvent.repeat.push(action.payload);
+    },
+
+    selectedEventRepeatRemove : (state, action) =>{
+      var list = state.selectedEvent.repeat;
+      var index = list.indexOf(action.payload);
+      if (index > -1) {
+        list.splice(index, 1);
+      }
+      state.selectedEvent.repeat = list;
     },
 
     // function to automatically assign end time when start selected (+1 hour)
@@ -423,6 +446,9 @@ export const {
   setNavigationFromBooking,
   setEventFromBooking,
   setEndTimeAutomatically,
+  selectedEventSetCansignUp,
+  selectedEventRepeatsAdd,
+  selectedEventRepeatRemove
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;
