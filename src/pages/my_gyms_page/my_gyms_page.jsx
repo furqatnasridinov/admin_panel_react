@@ -12,7 +12,7 @@ export default function MyGymsPage() {
 
   useEffect(()=>{
     // request for fcm
-      RequestForToken();
+      //RequestForToken();
   },[])
 
   return (
