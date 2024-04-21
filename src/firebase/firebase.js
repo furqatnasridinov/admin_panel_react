@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+/* import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { store } from "../store/store"
 import { sendPhoneNumber } from '../features/register';
@@ -68,3 +68,4 @@ export const RequestForToken = () => {
     });
 });
 
+ */
