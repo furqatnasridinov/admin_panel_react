@@ -4,13 +4,13 @@ import { toast } from "react-toastify";
 import AppConstants from "../config/app_constants";
 
 
-
 export const sendPhoneNumber = createAsyncThunk(
     "login/sendPhoneNumber",
-    async (phone) => {
+    async ({login, fcmToken}) => {
         try {
             const data = {
-                login: phone,
+                login: login,
+                fcmToken: fcmToken
             }
             const response = await axiosClient.post(`api/user/loginCode`, data);
         } catch (error) {

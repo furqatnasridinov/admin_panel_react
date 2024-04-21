@@ -14,6 +14,10 @@ class AppConstants {
     return "token";
   }
 
+  static get keyFcmToken(){
+    return "fcm";
+  }
+
   static get keyGymId() {
     return "gymId";
   }
