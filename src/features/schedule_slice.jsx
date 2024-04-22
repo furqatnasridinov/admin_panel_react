@@ -36,9 +36,9 @@ export const getSchedules = createAsyncThunk(
                   item.lessonState,
                   item.canSignUp,
                   item.deleteLesson,
-                  item.autoAccept ?? false,
-                  item.limitCountUser ?? false,
-                  item.maxCount ?? 34,
+                  item.autoAccept,
+                  item.limitCountUser,
+                  item.maxCount,
                 )
               );
             }
@@ -112,8 +112,8 @@ export const updateSchedule = createAsyncThunk(
         description: body.description,
         autoAccept: body.autoAccept,
         canSignUp: body.canSignUp,
-        // repeat : body.repeat,
-         limitCountUser : body.limitCountUser,
+        repeat : body.repeat,
+        limitCountUser : body.limitCountUser,
         maxCount : body.maxCount,
       };
       const response = await axiosClient.patch(
@@ -289,6 +289,18 @@ const scheduleSlice = createSlice({
       state.selectedEvent.repeat = list;
     },
 
+    selectedEventToggleAutoAccept : (state) =>{
+      state.selectedEvent.autoAccept = !state.selectedEvent?.autoAccept
+    },
+
+    selectedEventToggleLimitCountUser : (state) =>{
+      state.selectedEvent.limitCountUser = !state.selectedEvent?.limitCountUser
+    },
+
+    selectedEventSetMaxCount : (state,action) =>{
+      state.selectedEvent.maxCount = action.payload
+    },
+
     // function to automatically assign end time when start selected (+1 hour)
     setEndTimeAutomatically: (state) => {
       const startHour = state.startTimeHoursTmp;
@@ -448,7 +460,10 @@ export const {
   setEndTimeAutomatically,
   selectedEventSetCansignUp,
   selectedEventRepeatsAdd,
-  selectedEventRepeatRemove
+  selectedEventRepeatRemove,
+  selectedEventSetMaxCount,
+  selectedEventToggleLimitCountUser,
+  selectedEventToggleAutoAccept
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

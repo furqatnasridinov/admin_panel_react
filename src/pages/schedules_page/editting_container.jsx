@@ -19,10 +19,11 @@ import {
   resetDatasAfterSubmitting,
   setEndTimeAutomatically,
   selectedEventSetCansignUp,
-  removeDayFromSelectedWeekdays,
-  addDaysToSelectedWeekdays,
   selectedEventRepeatsAdd,
-  selectedEventRepeatRemove
+  selectedEventRepeatRemove,
+  selectedEventSetMaxCount,
+  selectedEventToggleLimitCountUser,
+  selectedEventToggleAutoAccept
 } from "../../features/schedule_slice";
 import { getSchedules } from "../../features/schedule_slice";
 import CustomDialog from "../../components/dialog/dialog";
@@ -42,13 +43,6 @@ import hiddenSvg from "../../assets/svg/hidden.svg"
 import shownSvg from "../../assets/svg/shown.svg" 
 import CustomDropdown from "../../components/dropdown/custom_dropdown";
 
-const TooltipOverlay = ({ children, visible }) => {
-  if (!visible) return null;
-
-  // Элемент, куда будет рендериться оверлей.
-  const overlayRoot = document.getElementById("overlay-root");
-  return ReactDOM.createPortal(children, overlayRoot);
-};
 
 export default function EdittingContainer() {
   // redux
@@ -56,8 +50,7 @@ export default function EdittingContainer() {
   const gymState = useSelector((state) => state.currentGym);
   const scheduleState = useSelector((state) => state.schedule);
   const [allCheked, setAll] = useState(false);
-  const [checkboxForAutoAccept, setCheckboxForAutoAccept] = useState(false);
-  const [checkboxForRestriction, setCheckboxForRestriction] = useState(false);
+
 
 
   // use ref
@@ -67,8 +60,6 @@ export default function EdittingContainer() {
   const [deleteModalShown, openDeleteModal] = useState(false);
   const [isStartTimeDropDownOpened, openStartTimeDropDown] = useState(false);
   const [isEndTimeDropDownOpened, openEndTimeDropDown] = useState(false);
-  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
   const [isTooltip2Visible, setIsTooltip2Visible] = useState(false);
   const [tooltip2Position, setTooltip2Position] = useState({ top: 0, left: 0 });
   const [isTooltip3Visible, setIsTooltip3Visible] = useState(false);
@@ -76,7 +67,6 @@ export default function EdittingContainer() {
   const [isTooltip4Visible, setIsTooltip4Visible] = useState(false);
   const [tooltip4Position, setTooltip4Position] = useState({ top: 0, left: 0 });
   const [isLimitDropDownOpened, setIsLimitDropDownOpened] = useState(false);
-  const [limit, setLimit] = useState(69);
 
 
   // use effect 
@@ -84,14 +74,7 @@ export default function EdittingContainer() {
     dispatch(setEndTimeAutomatically());
   }, [scheduleState.startTimeHoursTmp, scheduleState.startTimeMinutesTmp]);
 
-  const handleMouseEnter = (event) => {
-    const rect = event.target.getBoundingClientRect();
-    setTooltipPosition({
-      top: rect.top + window.scrollY + rect.height - 60, // Центрируем по вертикали относительно иконки
-      left: rect.left + window.scrollX - 320, // Сдвигаем на 50px левее от иконки
-    });
-    setIsTooltipVisible(true);
-  };
+
 
   const handleMouseEnter3 = (event) => {
     const rect = event.target.getBoundingClientRect();
@@ -357,38 +340,34 @@ export default function EdittingContainer() {
               {scheduleState.selectedEvent.canSignUp ? "Это занятие доступно для записи. " : "Это занятие скрыто от пользователей приложения."}
               {scheduleState.isScheduleEdittingEnabled && <span 
                 className="text-[13px] font-medium text-blue-text cursor-pointer"
-                onClick={()=>{
-                  dispatch(selectedEventSetCansignUp(!scheduleState.selectedEvent?.canSignUp));
-                }}
+                onClick={()=>{dispatch(selectedEventSetCansignUp(!scheduleState.selectedEvent?.canSignUp))}}
                 >
                 {scheduleState.selectedEvent?.canSignUp ? "Скрыть от пользователей" : "Отобразить"}
               </span>}
-              
             </span>
           </div>
 
             {/* Ограничение записей в день: */}
-         {scheduleState.selectedEvent?.limitCountUser || scheduleState.isScheduleEdittingEnabled &&  
          <div className="flex flex-row gap-[10px] items-center justify-between">
             <div className="flex flex-row gap-[10px] items-center">
              {scheduleState.isScheduleEdittingEnabled && 
               <img
                 className="cursor-pointer w-[24px] h-[24px]"
-                src={checkboxForRestriction ? checkboxEnabledSvg : checkboxDisabledSvg}
+                src={scheduleState.selectedEvent?.limitCountUser ? checkboxEnabledSvg : checkboxDisabledSvg}
                 alt="checkbox"
-                onClick={() => {setCheckboxForRestriction(!checkboxForRestriction)}}
+                onClick={() => dispatch(selectedEventToggleLimitCountUser())}
               />}
 
               {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.limitCountUser) && <img src={alertSvg} alt="" />}
               {((scheduleState.isScheduleEdittingEnabled) || (!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.limitCountUser)) && 
               <span className="text-[13px] font-medium">Ограничение записей в день:</span>}
-              {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.limitCountUser && !checkboxForRestriction) && 
-                  <span className="text-[14px] font-bold">13</span>}
-              {(checkboxForRestriction && scheduleState.isScheduleEdittingEnabled) && 
+              {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.limitCountUser ) && 
+                  <span className="text-[14px] font-bold">{scheduleState.selectedEvent?.maxCount}</span>}
+              {(scheduleState.selectedEvent?.limitCountUser && scheduleState.isScheduleEdittingEnabled) && 
                   <div className="flex flex-row items-center gap-[33px] ">
                     <CustomDropdown
                       isDropDownOpened={isLimitDropDownOpened}
-                      text={limit}
+                      text={scheduleState.selectedEvent?.maxCount}
                       maxHeight={150}
                       maxWidth={"80px"}
                       gap={"0px"}
@@ -400,7 +379,7 @@ export default function EdittingContainer() {
                           <div
                             className="numbers"
                             onClick={() => {
-                              setLimit(number);
+                              dispatch(selectedEventSetMaxCount(number));
                               setIsLimitDropDownOpened(false);
                             }}
                           >
@@ -451,19 +430,18 @@ export default function EdittingContainer() {
                  </div>
               </>
             }
-          </div>}
+          </div>
 
             {/* AutoAccept */}
-          {scheduleState.selectedEvent?.autoAccept || scheduleState.isScheduleEdittingEnabled && 
             <div className="flex flex-row gap-[10px] items-center justify-between">
             <div className="flex flex-row gap-[10px] items-center">
               {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.autoAccept) && <img src={groupSvg} alt="" />}
               {scheduleState.isScheduleEdittingEnabled && 
                 <img
                   className="cursor-pointer w-[24px] h-[24px]"
-                  src={checkboxForAutoAccept ? checkboxEnabledSvg : checkboxDisabledSvg}
+                  src={scheduleState.selectedEvent?.autoAccept ? checkboxEnabledSvg : checkboxDisabledSvg}
                   alt="checkbox"
-                  onClick={() => {setCheckboxForAutoAccept(!checkboxForAutoAccept)}}
+                  onClick={() => dispatch(selectedEventToggleAutoAccept())}
                 />}
               {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.autoAccept) 
                 && <span className="text-[13px] font-medium mr-1">Включено автоматическое одобрение бронирований</span>}
@@ -501,7 +479,7 @@ export default function EdittingContainer() {
              </div>}
                 </>}
             </div>
-          </div>}
+          </div>
         </div>
 
         <div className="flex flex-col gap-[5px]">
@@ -621,12 +599,12 @@ export default function EdittingContainer() {
                       date: scheduleState.lessonStartTimeSendToServer,
                       duration: scheduleState.lessonDurationSendToServer,
                       description: scheduleState.selectedEvent.title,
-                      autoAccept: checkboxForAutoAccept,
+                      autoAccept: scheduleState.selectedEvent.autoAccept,
                       all: allCheked,
                       canSignUp: scheduleState.selectedEvent.canSignUp,
-                      // repeat : scheduleState.selectedEvent.repeat,
-                      limitCountUser : checkboxForRestriction,
-                      maxCount : scheduleState.selectedEvent.maxCount ?? 69,
+                      repeat : scheduleState.selectedEvent.repeat,
+                      limitCountUser : scheduleState.selectedEvent.limitCountUser,
+                      maxCount : scheduleState.selectedEvent.maxCount,
                     };
                     await dispatch(updateSchedule({body}));
                     dispatch(disableScheduleEditting());

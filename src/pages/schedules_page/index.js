@@ -75,6 +75,9 @@ export default function SchedulesPage() {
       lessonState: item.lessonState,
       canSignUp: item.canSignUp,
       deletedLesson: item.deletedLesson,
+      autoAccept : item.autoAccept,
+      limitCountUser : item.limitCountUser,
+      maxCount : item.maxCount,
     };
   });
 
@@ -312,14 +315,13 @@ export default function SchedulesPage() {
                     dispatch(setSelectedEvent(event));
                     dispatch(showEdittingContainer());
                   }
-
                   if (scheduleState.isNavigationFromBooking) {
                     dispatch(setNavigationFromBooking(false));
                   }
                 }}
                 eventPropGetter={(event) => {
-                    let newStyle = {};
-                    let className = "";
+                  let newStyle = {};
+                  let className = "";
                   if (scheduleState.isNavigationFromBooking &&
                     scheduleState.eventFromBooking !== null) {
                     if (event.id === scheduleState.eventFromBooking.lessonId) {
@@ -331,6 +333,13 @@ export default function SchedulesPage() {
                     className = "canSignUpFalseEvents";
                     return { className, style: newStyle };
                   }
+                  /* if(event.id === scheduleState.selectedEvent?.id){
+                    className = "selectedEvent";
+                    return { className, style: newStyle };
+                  } */
+                  // Для добавления иконок
+                  //className = "eventWithIcon";
+                  return { className, style: newStyle };
                 }}
                 slotGroupPropGetter={(slot) => {
                   let newStyle = {
