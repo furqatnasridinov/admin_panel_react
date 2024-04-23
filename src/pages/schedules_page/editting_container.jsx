@@ -329,11 +329,11 @@ export default function EdittingContainer() {
         }
 
         {/* Настройки */}
-        <div className="flex flex-col gap-[16px]">
+        <div className="flex flex-col">
           <span className="text-[14px] font-bold">Настройки:</span>
 
           {/* canSignUp */}
-          <div className="flex flex-row gap-[10px] items-center">
+          <div className="flex flex-row gap-[10px] items-center mt-[16px]">
             <img src={scheduleState.selectedEvent.canSignUp ? shownSvg : hiddenSvg } alt="" />
             
             <span className="text-[13px] font-medium">
@@ -352,19 +352,19 @@ export default function EdittingContainer() {
             <div className="flex flex-row gap-[10px] items-center">
              {scheduleState.isScheduleEdittingEnabled && 
               <img
-                className="cursor-pointer w-[24px] h-[24px]"
+                className="cursor-pointer w-[24px] h-[24px] mt-[16px]"
                 src={scheduleState.selectedEvent?.limitCountUser ? checkboxEnabledSvg : checkboxDisabledSvg}
                 alt="checkbox"
                 onClick={() => dispatch(selectedEventToggleLimitCountUser())}
               />}
 
-              {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.limitCountUser) && <img src={alertSvg} alt="" />}
+              {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.limitCountUser) && <img className="mt-[16px]" src={alertSvg} alt="" />}
               {((scheduleState.isScheduleEdittingEnabled) || (!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.limitCountUser)) && 
-              <span className="text-[13px] font-medium">Ограничение записей в день:</span>}
+              <span className="text-[13px] font-medium  mt-[16px]">Ограничение записей в день:</span>}
               {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.limitCountUser ) && 
-                  <span className="text-[14px] font-bold">{scheduleState.selectedEvent?.maxCount}</span>}
+                  <span className="text-[14px] font-bold  mt-[16px]">{scheduleState.selectedEvent?.maxCount}</span>}
               {(scheduleState.selectedEvent?.limitCountUser && scheduleState.isScheduleEdittingEnabled) && 
-                  <div className="flex flex-row items-center gap-[33px] ">
+                  <div className="flex flex-row items-center gap-[33px] mt-[16px] ">
                     <CustomDropdown
                       isDropDownOpened={isLimitDropDownOpened}
                       text={scheduleState.selectedEvent?.maxCount}
@@ -392,7 +392,7 @@ export default function EdittingContainer() {
             </div>
             {(scheduleState.isScheduleEdittingEnabled || scheduleState.selectedEvent?.limitCountUser) && 
               <>
-                 <div className="relative">
+                 <div className="relative mt-[16px]">
                   <img
                     className="cursor-pointer w-[24px] h-[24px]"
                     src={questionLogo}
@@ -435,23 +435,23 @@ export default function EdittingContainer() {
             {/* AutoAccept */}
             <div className="flex flex-row gap-[10px] items-center justify-between">
             <div className="flex flex-row gap-[10px] items-center">
-              {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.autoAccept) && <img src={groupSvg} alt="" />}
+              {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.autoAccept) && <img className="mt-[16px]" src={groupSvg} alt="" />}
               {scheduleState.isScheduleEdittingEnabled && 
                 <img
-                  className="cursor-pointer w-[24px] h-[24px]"
+                  className="cursor-pointer w-[24px] h-[24px] mt-[16px]"
                   src={scheduleState.selectedEvent?.autoAccept ? checkboxEnabledSvg : checkboxDisabledSvg}
                   alt="checkbox"
                   onClick={() => dispatch(selectedEventToggleAutoAccept())}
                 />}
               {(!scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.autoAccept) 
-                && <span className="text-[13px] font-medium mr-1">Включено автоматическое одобрение бронирований</span>}
-              {scheduleState.isScheduleEdittingEnabled  && <span className="text-[13px] font-medium mr-1">Включено автоматическое одобрение бронирований</span>}
+                && <span className="text-[13px] font-medium mr-1 mt-[16px]">Включено автоматическое одобрение бронирований</span>}
+              {scheduleState.isScheduleEdittingEnabled  && <span className="text-[13px] font-medium mr-1 mt-[16px]">Включено автоматическое одобрение бронирований</span>}
             </div>
             <div>
               {(scheduleState.isScheduleEdittingEnabled || scheduleState.selectedEvent?.autoAccept) && 
                 <>
                 <img
-                  className="cursor-pointer w-[34px] h-[24px]"
+                  className="cursor-pointer w-[34px] h-[24px] mt-[16px]"
                   src={questionLogo}
                   alt="questionLogo"
                   onMouseEnter={handleMouseEnter4}
@@ -482,19 +482,23 @@ export default function EdittingContainer() {
           </div>
         </div>
 
+        {/* Дни повторений */}
         <div className="flex flex-col gap-[5px]">
           <div className="text-[14px] font-bold">В какие дни повторяется:</div>
           <div className="flex flex-row gap-[5px]">
             {WEEK_DAYS.map((weekday) => (
               <div
                 key={weekday.id}
+                style={{cursor : scheduleState.isScheduleEdittingEnabled ? "pointer" : "initial"}}
                 className={scheduleState.selectedEvent?.repeat.includes(weekday.id)
-                  ? "roundedWeekdaysSelected cursor-pointer" : "roundedWeekdays cursor-pointer"}
+                  ? "roundedWeekdaysSelected " : "roundedWeekdays "}
                   onClick={() => {
-                    if (scheduleState.selectedEvent?.repeat.includes(weekday.id)) {
-                      dispatch(selectedEventRepeatRemove(weekday.id));
-                    } else {
-                      dispatch(selectedEventRepeatsAdd(weekday.id));
+                    if (scheduleState.isScheduleEdittingEnabled) {
+                      if (scheduleState.selectedEvent?.repeat.includes(weekday.id)) {
+                        dispatch(selectedEventRepeatRemove(weekday.id));
+                      } else {
+                        dispatch(selectedEventRepeatsAdd(weekday.id));
+                      }
                     }
                   }}
               >
@@ -505,7 +509,7 @@ export default function EdittingContainer() {
         </div>
           
         {/* all */} 
-        {scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.repeat.length > 1 &&
+        {scheduleState.isScheduleEdittingEnabled && scheduleState.selectedEvent?.repeat?.length > 1 &&
              <div className="flex flex-col gap-[10px]">
                 <span className="text-[14px] font-bold ">Сохранение:</span>
                 <div className="flex flex-row gap-[10px] items-center">
