@@ -45,6 +45,10 @@ import ru from "date-fns/locale/ru";
 import MessageLikeTopContainer from "../booking_page/message_like_top_container";
 import ScheduleHeader from "./schedule_header";
 import EdittingContainer from "./editting_container";
+import autoAcceptBlueIcon from "../../assets/svg/autoAcceptBlue.svg";
+import autoAcceptBrownIcon from "../../assets/svg/autoAcceptBrown.svg";
+import dangerBlueIcon from "../../assets/svg/dangerBlue.svg";
+import dangerBrownIcon from "../../assets/svg/dangerBrown.svg";
 
 registerLocale("ru", ru);
 export default function SchedulesPage() {
@@ -329,16 +333,14 @@ export default function SchedulesPage() {
                     }
                     return { className, style: newStyle };
                   }
-                  if (!event.canSignUp) {
-                    className = "canSignUpFalseEvents";
+                  if (!event.canSignUp) {        
+                      className = "canSignUpFalseEvents ";
                     return { className, style: newStyle };
                   }
-                  /* if(event.id === scheduleState.selectedEvent?.id){
+                  /* if (event.id === scheduleState.selectedEvent?.id) {
                     className = "selectedEvent";
-                    return { className, style: newStyle };
                   } */
-                  // Для добавления иконок
-                  //className = "eventWithIcon";
+
                   return { className, style: newStyle };
                 }}
                 slotGroupPropGetter={(slot) => {
@@ -348,6 +350,29 @@ export default function SchedulesPage() {
                   return { style: newStyle };
                 }}
                 components={{
+                  // добавляем иконки в нижную часть событий
+                  event: ({ event }) => (
+                    <div>
+                      <div className="rbc-event-content" title={event.title}>
+                        { event.title }
+                      </div>
+                      <div className="event-footer">
+                        {event.autoAccept && event.canSignUp && <img src={autoAcceptBrownIcon} alt="autoAcceptBrownIcon"></img>}
+                        {event.autoAccept && !event.canSignUp && <img src={autoAcceptBlueIcon} alt="autoAcceptBlueIcon"></img>}
+                        {event.limitCountUser &&  event.canSignUp && 
+                          <div style={{border: "1px solid rgba(241, 209, 156, 1)"}}>
+                            <img src={dangerBrownIcon} alt="danger"></img>
+                            <span className="text-[10px] font-medium">{event.maxCount}</span>
+                          </div>}
+                          {event.limitCountUser &&  !event.canSignUp && 
+                          <div style={{border: "1px solid rgba(233, 230, 230, 1)"}}>
+                            <img src={dangerBlueIcon} alt="danger"></img>
+                            <span className="text-[10px] font-medium">{event.maxCount}</span>
+                          </div>}
+                      </div>
+                    </div>
+                  ),
+
                   timeGutterHeader: () => (
                     <Navigation
                       onPreviousClick={() => {
