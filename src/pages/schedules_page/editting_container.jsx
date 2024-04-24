@@ -50,9 +50,7 @@ export default function EdittingContainer() {
   const gymState = useSelector((state) => state.currentGym);
   const scheduleState = useSelector((state) => state.schedule);
   const [allCheked, setAll] = useState(false);
-
-
-
+  
   // use ref
   const edittingButtonRef = useRef(null);
 
@@ -79,7 +77,7 @@ export default function EdittingContainer() {
   const handleMouseEnter3 = (event) => {
     const rect = event.target.getBoundingClientRect();
     setTooltip3Position({
-      top: rect.top + window.scrollY + rect.height - 90,
+      top: rect.top + window.scrollY + rect.height - 300,
       left: rect.left + window.scrollX - 320,
     });
     setIsTooltip3Visible(true);
@@ -88,7 +86,7 @@ export default function EdittingContainer() {
   const handleMouseEnter4 = (event) => {
     const rect = event.target.getBoundingClientRect();
     setTooltip4Position({
-      top: rect.top + window.scrollY + rect.height - 30,
+      top: rect.top + window.scrollY + rect.height - 230,
       left: rect.left + window.scrollX - 320,
     });
     setIsTooltip4Visible(true);
@@ -109,7 +107,7 @@ export default function EdittingContainer() {
 
   return (
     console.log("scheduleState.selectedEvent", JSON.stringify(scheduleState.selectedEvent)),
-    <div className={`edittingContainer h-[76vh]`}>
+    <div className={`edittingContainer h-[79vh]`}>
       {/*  */}
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-[10px]">
@@ -367,7 +365,7 @@ export default function EdittingContainer() {
                   <div className="flex flex-row items-center gap-[33px] mt-[16px] ">
                     <CustomDropdown
                       isDropDownOpened={isLimitDropDownOpened}
-                      text={scheduleState.selectedEvent?.maxCount}
+                      text={scheduleState.selectedEvent?.maxCount == 0 ? "1" : scheduleState.selectedEvent?.maxCount}
                       maxHeight={150}
                       maxWidth={"80px"}
                       gap={"0px"}
@@ -610,6 +608,7 @@ export default function EdittingContainer() {
                       limitCountUser : scheduleState.selectedEvent.limitCountUser,
                       maxCount : scheduleState.selectedEvent.maxCount,
                     };
+                    console.log(`updateSchedule request ${JSON.stringify(body)}`);
                     await dispatch(updateSchedule({body}));
                     dispatch(disableScheduleEditting());
                     dispatch(getSchedules(gymState.currentGym.id));

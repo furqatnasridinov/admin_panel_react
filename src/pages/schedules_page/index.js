@@ -3,13 +3,10 @@ import "./styles.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect, useRef } from "react";
 import {
-  getListOfGyms,
   setCurrentGym,
-  setCurrentGymFromFirstItem,
 } from "../../features/current_gym_slice";
 import {
   getListOfActivities,
-  removeSelectedActivity,
   selectAnActivity,
 } from "../../features/activities_slice";
 import {
@@ -23,14 +20,9 @@ import {
   getStartTimeToSendToServer,
   getSchedulesOfSelectedActivity,
   resetScheduleOfSelectedActivity,
-  setSchedulesLoading,
   showEdittingContainer,
-  setIsloading,
-  removeLoading,
   setNavigationFromBooking,
 } from "../../features/schedule_slice";
-import { toast } from "react-toastify";
-import { getListOfEmployees } from "../../features/employees_slice";
 import previousSvg from "../../assets/svg/previous.svg";
 import nextSvg from "../../assets/svg/next.svg";
 import { Calendar, momentLocalizer } from "react-big-calendar";
@@ -49,6 +41,7 @@ import autoAcceptBlueIcon from "../../assets/svg/autoAcceptBlue.svg";
 import autoAcceptBrownIcon from "../../assets/svg/autoAcceptBrown.svg";
 import dangerBlueIcon from "../../assets/svg/dangerBlue.svg";
 import dangerBrownIcon from "../../assets/svg/dangerBrown.svg";
+import { getMaxLines } from "../../config/apphelpers";
 
 registerLocale("ru", ru);
 export default function SchedulesPage() {
@@ -82,6 +75,7 @@ export default function SchedulesPage() {
       autoAccept : item.autoAccept,
       limitCountUser : item.limitCountUser,
       maxCount : item.maxCount,
+      durationInMinutes: item.durationInMinutes,
     };
   });
 
@@ -267,7 +261,7 @@ export default function SchedulesPage() {
   }, [activitiesState.selectedActivity, scheduleState.allSchedules]);
 
   return (
-    console.log("len", activitiesState.listOfActivities.length),
+    console.log("len", activitiesState.listOfActivities?.length),
     (
       <div ref={pageRef} className="schedule_page">
         {clientsSlice.waitingForAccept?.length > 0 && (
@@ -282,12 +276,12 @@ export default function SchedulesPage() {
           )}
 
           {gymState.currentGym !== null &&
-            activitiesState.selectedActivity === "" &&  activitiesState.listOfActivities.length > 0 &&(
+            activitiesState.selectedActivity === "" &&  activitiesState.listOfActivities?.length > 0 &&(
               <div className="centeredGreyText">Выберите активность</div>
             )}
           
           {gymState.currentGym !== null &&
-            activitiesState.listOfActivities.length === 0 && (
+            activitiesState.listOfActivities?.length === 0 && (
               <div className="centeredGreyText">В данном заведении нет активностей,вы можете добавить 
               активности переходя в страницу данного заведения</div>
             )}
@@ -352,25 +346,38 @@ export default function SchedulesPage() {
                 components={{
                   // добавляем иконки в нижную часть событий
                   event: ({ event }) => (
-                    <div>
-                      <div className="rbc-event-content" title={event.title}>
-                        { event.title }
-                      </div>
+                  <div>
+                    { event.durationInMinutes >= 50 &&
+                         <div 
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: getMaxLines(event.durationInMinutes),
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }} 
+                          className="rbc-event-content" >
+                            {event.title}
+                        </div>
+                    }
+                    
+                    {
+                      event.durationInMinutes >= 60 &&
                       <div className="event-footer">
                         {event.autoAccept && event.canSignUp && <img src={autoAcceptBrownIcon} alt="autoAcceptBrownIcon"></img>}
                         {event.autoAccept && !event.canSignUp && <img src={autoAcceptBlueIcon} alt="autoAcceptBlueIcon"></img>}
                         {event.limitCountUser &&  event.canSignUp && 
-                          <div style={{border: "1px solid rgba(241, 209, 156, 1)"}}>
-                            <img src={dangerBrownIcon} alt="danger"></img>
-                            <span className="text-[10px] font-medium">{event.maxCount}</span>
-                          </div>}
-                          {event.limitCountUser &&  !event.canSignUp && 
-                          <div style={{border: "1px solid rgba(233, 230, 230, 1)"}}>
-                            <img src={dangerBlueIcon} alt="danger"></img>
-                            <span className="text-[10px] font-medium">{event.maxCount}</span>
-                          </div>}
+                        <div style={{border: "1px solid rgba(241, 209, 156, 1)"}}>
+                          <img src={dangerBrownIcon} alt="danger"></img>
+                          <span className="text-[10px] font-medium">{event.maxCount}</span>
+                        </div>}
+                        {event.limitCountUser &&  !event.canSignUp && 
+                        <div style={{border: "1px solid rgba(233, 230, 230, 1)"}}>
+                          <img src={dangerBlueIcon} alt="danger"></img>
+                          <span className="text-[10px] font-medium">{event.maxCount}</span>
+                        </div>}
                       </div>
-                    </div>
+                    }
+                  </div>
                   ),
 
                   timeGutterHeader: () => (
