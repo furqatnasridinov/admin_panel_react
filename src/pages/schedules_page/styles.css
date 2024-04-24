@@ -162,7 +162,7 @@
   flex-direction: column;
   gap: 32px;
   position: fixed;
-  top: 185px;
+  top: 21%;
   right: 0;
   width: 386px;
   padding: 24px;
@@ -560,10 +560,7 @@
   bottom: 5px;
   display: flex;
   flex-direction: row;
-  justify-content: center;
   gap: 5px;
-  padding-left: 38px;
-
 }
 
 .event-footer > div {

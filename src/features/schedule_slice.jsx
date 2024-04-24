@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ScheduleEvent } from "../models/schedule";
 import axiosClient from "../config/axios_client";
 import { toast } from "react-toastify";
+const moment = require('moment');
 
 export const getSchedules = createAsyncThunk(
   "scheduleSlice/getSchedules",
@@ -19,9 +20,9 @@ export const getSchedules = createAsyncThunk(
         keys.forEach((date) => {
           data[date].forEach((item) => {
             const startTime = new Date(item.date.replace("@", "T"));
-            const endTime = new Date(
-              startTime.getTime() + parseDuration(item.duration)
-            );
+            const endTime = new Date(startTime.getTime() + parseDuration(item.duration));
+            const duration = moment.duration(moment(endTime).diff(moment(startTime)));
+            const minutes = duration.asMinutes(); 
             if (!item.deleteLesson) {
               listToCollect.push(
                 new ScheduleEvent(
@@ -39,6 +40,7 @@ export const getSchedules = createAsyncThunk(
                   item.autoAccept,
                   item.limitCountUser,
                   item.maxCount,
+                  minutes
                 )
               );
             }
