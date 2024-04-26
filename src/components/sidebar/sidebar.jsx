@@ -119,7 +119,7 @@ const Sidebar = () => {
         <div
           id="sidebar"
           ref={sideBarRef}
-          className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}>
+          className={`${sidebarWidth} h-[96vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}>
           {/* Название ИП */}
           <button
             ref={sidebarHeaderRef}

@@ -396,14 +396,15 @@ export default function SchedulesPage() {
                 }}
               />
             )}
-        </div>
-
-        {gymState.currentGym !== null &&
+            {gymState.currentGym !== null &&
           scheduleState.selectedEvent !== null &&
           scheduleState.isEdittingContainerShown && (
             // right container for editting events
             <EdittingContainer />
           )}
+        </div>
+
+        
 
         {gymState.currentGym !== null &&
           activitiesState.selectedActivity !== "" && (
