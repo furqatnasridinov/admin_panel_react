@@ -107,7 +107,7 @@ export default function EdittingContainer() {
 
   return (
     console.log("scheduleState.selectedEvent", JSON.stringify(scheduleState.selectedEvent)),
-    <div className={`edittingContainer h-[79vh]`}>
+    <div className={`edittingContainer`}>
       {/*  */}
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-[10px]">
