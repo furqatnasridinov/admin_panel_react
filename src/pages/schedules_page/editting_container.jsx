@@ -38,7 +38,7 @@ import { WEEK_DAYS } from "../../dummy_data/dymmy_data";
 import questionLogo from "../../assets/svg/questionModal.svg";
 import ReactDOM from "react-dom";
 import alertSvg from "../../assets/svg/alert.svg"
-import groupSvg from "../../assets/svg/group.svg"
+import groupSvg from "../../assets/svg/autoAccept2.svg"
 import hiddenSvg from "../../assets/svg/hidden.svg"
 import shownSvg from "../../assets/svg/shown.svg" 
 import CustomDropdown from "../../components/dropdown/custom_dropdown";

@@ -42,6 +42,8 @@ import autoAcceptBrownIcon from "../../assets/svg/autoAcceptBrown.svg";
 import dangerBlueIcon from "../../assets/svg/dangerBlue.svg";
 import dangerBrownIcon from "../../assets/svg/dangerBrown.svg";
 import { getMaxLines } from "../../config/apphelpers";
+import  group  from "../../assets/svg/group2.svg";
+import group2Brown from "../../assets/svg/group2Brown.svg"
 
 registerLocale("ru", ru);
 export default function SchedulesPage() {
@@ -365,15 +367,23 @@ export default function SchedulesPage() {
                       <div className="event-footer">
                         {event.autoAccept && event.canSignUp && <img src={autoAcceptBrownIcon} alt="autoAcceptBrownIcon"></img>}
                         {event.autoAccept && !event.canSignUp && <img src={autoAcceptBlueIcon} alt="autoAcceptBlueIcon"></img>}
-                        {event.limitCountUser &&  event.canSignUp && 
+                        
+                        {(event.limitCountUser || event.usersCount > 0) && event.canSignUp && 
                         <div style={{border: "1px solid rgba(241, 209, 156, 1)"}}>
-                          <img src={dangerBrownIcon} alt="danger"></img>
-                          <span className="text-[10px] font-medium">{event.maxCount}</span>
+                          <img src={group2Brown} alt="danger"></img>
+                          {event.limitCountUser && 
+                            <span className="text-[10px] font-medium">{event.usersCount + "/" + event.maxCount}</span>}
+                          {!event.limitCountUser && event.usersCount > 0 && 
+                            <span className="text-[10px] font-medium">{event.usersCount}</span>}
                         </div>}
-                        {event.limitCountUser &&  !event.canSignUp && 
+
+                        {(event.limitCountUser || event.usersCount > 0) &&  !event.canSignUp && 
                         <div style={{border: "1px solid rgba(233, 230, 230, 1)"}}>
-                          <img src={dangerBlueIcon} alt="danger"></img>
-                          <span className="text-[10px] font-medium">{event.maxCount}</span>
+                          <img src={group} alt="danger"></img>
+                          {event.limitCountUser && 
+                            <span className="text-[10px] font-medium">{event.usersCount + "/" + event.maxCount}</span>}
+                          {!event.limitCountUser && event.usersCount > 0 && 
+                            <span className="text-[10px] font-medium">{event.usersCount}</span>}
                         </div>}
                       </div>
                     }
