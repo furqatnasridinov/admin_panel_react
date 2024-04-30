@@ -23,7 +23,8 @@ import {
   selectedEventRepeatRemove,
   selectedEventSetMaxCount,
   selectedEventToggleLimitCountUser,
-  selectedEventToggleAutoAccept
+  selectedEventToggleAutoAccept,
+  setSelectedEventsCopy
 } from "../../features/schedule_slice";
 import { getSchedules } from "../../features/schedule_slice";
 import CustomDialog from "../../components/dialog/dialog";
@@ -36,12 +37,13 @@ import backButton from "../../assets/svg/back_button.svg";
 import psych from "../../assets/images/american_psycho.jpg";
 import { WEEK_DAYS } from "../../dummy_data/dymmy_data";
 import questionLogo from "../../assets/svg/questionModal.svg";
-import ReactDOM from "react-dom";
+import { isEqual } from 'lodash';
 import alertSvg from "../../assets/svg/alert.svg"
 import groupSvg from "../../assets/svg/autoAccept2.svg"
 import hiddenSvg from "../../assets/svg/hidden.svg"
 import shownSvg from "../../assets/svg/shown.svg" 
 import CustomDropdown from "../../components/dropdown/custom_dropdown";
+import { toast } from "react-toastify";
 
 
 export default function EdittingContainer() {
@@ -528,13 +530,11 @@ export default function EdittingContainer() {
             title={"Редактировать"}
             height={"40px"}
             onСlick={() => {
-              if (
-                scheduleState.selectedEvent.usersCount &&
-                scheduleState.selectedEvent.usersCount > 0
-              ) {
+              if (scheduleState.selectedEvent.usersCount && scheduleState.selectedEvent.usersCount > 0) {
                 showConfirmationOverlay();
               } else {
                 dispatch(enableScheduleEditting());
+                dispatch(setSelectedEventsCopy());
               }
             }}
             hideHover={true}
@@ -567,6 +567,7 @@ export default function EdittingContainer() {
                 fontSize={"14px"}
                 title="Редактировать"
                 onСlick={() => {
+                  dispatch(setSelectedEventsCopy());
                   dispatch(enableScheduleEditting());
                   setIsTooltip2Visible(false);
                 }}
@@ -585,7 +586,8 @@ export default function EdittingContainer() {
                 onСlick={() => {
                   dispatch(disableScheduleEditting());
                   dispatch(hideEdittingContainer());
-                  dispatch(getSchedules(gymState.currentGym.id));
+                  dispatch(resetSelectedEvent());
+                  //dispatch(getSchedules(gymState.currentGym.id));
                   dispatch(resetDatasAfterSubmitting());
                 }}
               />
@@ -593,6 +595,7 @@ export default function EdittingContainer() {
                 width={"100%"}
                 height={"40px"}
                 title={"Сохранить"}
+                isDidsabled={isEqual(scheduleState.selectedEvent, scheduleState.selectedEventsCopy)}
                 onСlick={async () => {
                   // send update request
                   if (!scheduleState.endTimeIsBeforeStartTime) {
@@ -607,13 +610,17 @@ export default function EdittingContainer() {
                       canSignUp: scheduleState.selectedEvent.canSignUp,
                       repeat : scheduleState.selectedEvent.repeat,
                       limitCountUser : scheduleState.selectedEvent.limitCountUser,
-                      maxCount : scheduleState.selectedEvent.maxCount,
+                      maxCount : (scheduleState.selectedEvent.limitCountUser && scheduleState.selectedEvent.maxCount == 0) ? 
+                                1 : scheduleState.selectedEvent.maxCount 
                     };
                     console.log(`updateSchedule request ${JSON.stringify(body)}`);
                     await dispatch(updateSchedule({body}));
+                    toast.success("Занятие успешно обновлено");
                     dispatch(disableScheduleEditting());
-                    dispatch(getSchedules(gymState.currentGym.id));
+                    dispatch(hideEdittingContainer());
+                    dispatch(resetSelectedEvent());
                     dispatch(resetDatasAfterSubmitting());
+                    dispatch(getSchedules(gymState.currentGym.id));
                   }
                 }}
                 fontSize={"14px"}
