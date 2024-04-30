@@ -106,6 +106,7 @@ export default function EdittingContainer() {
   let numbers = Array.from({ length: 100 }, (_, i) => i + 1);
 
   return (
+    
     console.log("scheduleState.selectedEvent", JSON.stringify(scheduleState.selectedEvent)),
     <div className={`edittingContainer`}>
       {/*  */}

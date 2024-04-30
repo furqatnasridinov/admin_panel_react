@@ -255,6 +255,8 @@ export default function SchedulesPage() {
       const container = pageRef.current;
       container.scrollTop = container.scrollHeight;
     }
+    // 
+    dispatch(getStartTimeToSendToServer())
   }, [scheduleState.selectedEvent]);
 
   useEffect(() => {
@@ -264,6 +266,7 @@ export default function SchedulesPage() {
 
   return (
     console.log("len", activitiesState.listOfActivities?.length),
+    console.log("dataalo >> ", scheduleState.lessonStartTimeSendToServer),
     (
       <div ref={pageRef} className="schedule_page">
         {clientsSlice.waitingForAccept?.length > 0 && (
@@ -372,7 +375,7 @@ export default function SchedulesPage() {
                         <div style={{border: "1px solid rgba(241, 209, 156, 1)"}}>
                           <img src={group2Brown} alt="danger"></img>
                           {event.limitCountUser && 
-                            <span className="text-[10px] font-medium">{event.usersCount + "/" + event.maxCount}</span>}
+                            <span className="text-[10px] font-medium">{event.usersCount + " / " + event.maxCount}</span>}
                           {!event.limitCountUser && event.usersCount > 0 && 
                             <span className="text-[10px] font-medium">{event.usersCount}</span>}
                         </div>}
@@ -381,7 +384,7 @@ export default function SchedulesPage() {
                         <div style={{border: "1px solid rgba(233, 230, 230, 1)"}}>
                           <img src={group} alt="danger"></img>
                           {event.limitCountUser && 
-                            <span className="text-[10px] font-medium">{event.usersCount + "/" + event.maxCount}</span>}
+                            <span className="text-[10px] font-medium">{event.usersCount + " / " + event.maxCount}</span>}
                           {!event.limitCountUser && event.usersCount > 0 && 
                             <span className="text-[10px] font-medium">{event.usersCount}</span>}
                         </div>}
