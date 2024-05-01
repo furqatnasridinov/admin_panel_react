@@ -40,7 +40,7 @@ export default function Register1() {
   useEffect(() => {
     const fcmtoken = localStorage.getItem(AppConstants.keyFcmToken);
     if (!fcmtoken || !fcmtoken?.length) {
-      RequestForToken();
+      //RequestForToken();
     }
   }, [])
 

@@ -40,7 +40,7 @@ const Sidebar = () => {
   const clientsSlice = useSelector((state) => state.clients);
   const scheduleState = useSelector((state) => state.schedule);
   const registerState = useSelector((state) => state.login);
-  const messaging = getMessaging();
+  //const messaging = getMessaging();
   const handleClick = () => {
     if (isSidebarOpened) {
       openCloseSearchBar(false);
