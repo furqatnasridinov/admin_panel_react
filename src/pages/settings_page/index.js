@@ -2,7 +2,7 @@ import React from "react";
 import SettingsHeader from "./settings_header";
 import PersonalInfos from "./personal_infos";
 import Security from "./security";
-import Notification from "./notification";
+import NotificationBlock from "./notification";
 import { useSelector } from "react-redux";
 import MessageLikeTopContainer from "../booking_page/message_like_top_container";
 
@@ -16,7 +16,7 @@ function SettingsPage() {
       <SettingsHeader />
       <PersonalInfos />
       <Security />
-      <Notification />
+      <NotificationBlock />
     </div>
   );
 }

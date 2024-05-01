@@ -164,6 +164,7 @@ const scheduleSlice = createSlice({
     lessonDurationSendToServer: "",
     selectedWeekdays: [],
     allSchedules: [],
+    selectedEventsCopy: null,
     schedulesOfSelectedActivity: [],
     isCurrentEventHasRepeats: false,
     endTimeIsBeforeStartTime: false,
@@ -196,6 +197,12 @@ const scheduleSlice = createSlice({
 
     resetSelectedEvent: (state) => {
       state.selectedEvent = null;
+    },
+
+    setSelectedEventsCopy: (state) => {
+      // делаем для того чтобы можно проверить при редактировании
+      // урока были ли изменения
+      state.selectedEventsCopy = state.selectedEvent;
     },
 
     selectedEventSetTitle: (state, action) => {
@@ -465,7 +472,8 @@ export const {
   selectedEventRepeatRemove,
   selectedEventSetMaxCount,
   selectedEventToggleLimitCountUser,
-  selectedEventToggleAutoAccept
+  selectedEventToggleAutoAccept,
+  setSelectedEventsCopy,
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;
