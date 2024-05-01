@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux'
 import { sendPhoneNumber, sendForConfirmation } from '../../features/register'
 import AppConstants from '../../config/app_constants'
+import { RequestForToken } from '../../firebase/firebase'
 
 
 export default function Register1() {
@@ -36,6 +37,12 @@ export default function Register1() {
   const dispatch = useDispatch();
   const loginState = useSelector((state) => state.login);
 
+  useEffect(() => {
+    const fcmtoken = localStorage.getItem(AppConstants.keyFcmToken);
+    if (!fcmtoken || !fcmtoken?.length) {
+      RequestForToken();
+    }
+  }, [])
 
   useEffect(() => {
     if (isPhoneSent || resetCode) {
@@ -129,7 +136,7 @@ export default function Register1() {
                     setSubmittedPhone(phone);
                     const body = {
                       login: `+${phone}`,
-                      fcmToken: ""
+                      fcmToken: localStorage.getItem(AppConstants.keyFcmToken) ?? "",
                     }
                     dispatch(sendPhoneNumber(body));
                     localStorage.setItem(AppConstants.keyPhone, `+${phone}` );

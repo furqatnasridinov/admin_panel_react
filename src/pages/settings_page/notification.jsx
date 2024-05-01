@@ -1,34 +1,30 @@
 import React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import toggledOnSvg from "../../assets/svg/toggle_on.svg"
 import toggledfOffSvg from "../../assets/svg/toggle_off.svg"
 import { toast } from "react-toastify";
 
-export default function Notification() {
+export default function NotificationBlock() {
   const [toggledOn, setToggleOn] = useState(false);
 
-/*   useEffect(() => {
-    if (toggledOn) {
-      try {
-        if ('Notification' in window) {
-          Notification.requestPermission().then((permission) => {
-            if (permission === 'granted') {
-              console.log('Notification permission granted.');
-            } else {
-              console.log('Unable to get permission to notify.');
-            }
-          }).catch(error => {
-            console.log('Notification.requestPermission error:', error);
-          });
-        } else {
-          console.log('This browser does not support desktop notification');
-        }
-      } catch (error) {
-        toast(`Ошибка при запросе на уведомления, ${error}`)
+  const checkBrowserPermission = useCallback(()=>{
+    if ("Notification" in window) {
+      if (Notification.permission === "granted") {
+        setToggleOn(true);
+      }else if (Notification.permission === "denied") {
+        setToggleOn(false);
       }
-
     }
-  }, [toggledOn]) */
+  },[])
+
+  useEffect(()=>{
+    checkBrowserPermission();
+  },[])
+
+
+  useEffect(() => {
+    
+  }, [toggledOn]);
 
   return (
     <div className='personalInfos'>

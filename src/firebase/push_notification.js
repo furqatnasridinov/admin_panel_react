@@ -1,4 +1,4 @@
-/* import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import { toast } from 'react-toastify';
 import { onMessageListener } from './firebase';
 
@@ -22,4 +22,4 @@ const Notification = () => {
     return null;
 }
 
-export default Notification */
+export default Notification
