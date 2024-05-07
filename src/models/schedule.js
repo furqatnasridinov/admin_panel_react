@@ -13,7 +13,9 @@ export class ScheduleEvent {
       autoAccept, 
       limitCountUser, 
       maxCount, 
-      durationInMinutes) {
+      durationInMinutes,
+      canEdit,
+    ) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -29,6 +31,7 @@ export class ScheduleEvent {
         this.limitCountUser = limitCountUser;
         this.maxCount = maxCount;
         this.durationInMinutes = durationInMinutes;
+        this.canEdit = canEdit;
     }
   }
   

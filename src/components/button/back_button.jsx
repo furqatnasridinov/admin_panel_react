@@ -6,18 +6,23 @@ export default function BackButton({
   onСlick,
   width,
   height,
+  isDidsabled,
   hideHover,
   ref
 }) {
   return (
     <button
+    disabled = {isDidsabled}
     ref={ref}
-      onClick={onСlick}
+    onClick={(isDidsabled) ? null : onСlick}
       style={{
         width: width,
         height: height,
         paddingLeft : "16px",
-        paddingRight : "16px"
+        paddingRight : "16px",
+        color : isDidsabled ? "rgba(176, 176, 176, 1)" : "",
+        backgroundColor: isDidsabled ? "rgba(220, 220, 220, 1)" : "",
+        borderColor: isDidsabled ? "rgba(220, 220, 220, 1)" : "",
       }}
       className={
         hideHover

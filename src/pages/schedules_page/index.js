@@ -22,6 +22,8 @@ import {
   resetScheduleOfSelectedActivity,
   showEdittingContainer,
   setNavigationFromBooking,
+  disableScheduleEditting,
+  getTimeDiffers
 } from "../../features/schedule_slice";
 import previousSvg from "../../assets/svg/previous.svg";
 import nextSvg from "../../assets/svg/next.svg";
@@ -39,8 +41,6 @@ import ScheduleHeader from "./schedule_header";
 import EdittingContainer from "./editting_container";
 import autoAcceptBlueIcon from "../../assets/svg/autoAcceptBlue.svg";
 import autoAcceptBrownIcon from "../../assets/svg/autoAcceptBrown.svg";
-import dangerBlueIcon from "../../assets/svg/dangerBlue.svg";
-import dangerBrownIcon from "../../assets/svg/dangerBrown.svg";
 import { getMaxLines } from "../../config/apphelpers";
 import  group  from "../../assets/svg/group2.svg";
 import group2Brown from "../../assets/svg/group2Brown.svg"
@@ -78,6 +78,7 @@ export default function SchedulesPage() {
       limitCountUser : item.limitCountUser,
       maxCount : item.maxCount,
       durationInMinutes: item.durationInMinutes,
+      canEdit: item.canEdit,
     };
   });
 
@@ -236,7 +237,10 @@ export default function SchedulesPage() {
         )
       );
     }
-  }, [scheduleState.selectedEvent]);
+    if (scheduleState.isScheduleEdittingEnabled) {
+      dispatch(disableScheduleEditting());
+    }
+  }, [scheduleState.selectedEvent?.id]);
 
   useEffect(() => {
     dispatch(getDuration());
@@ -248,6 +252,7 @@ export default function SchedulesPage() {
     scheduleState.endTimeMinutesTmp,
     scheduleState.selectedDay,
   ]);
+
 
   useEffect(() => {
     if (scheduleState.selectedEvent && pageRef.current) {

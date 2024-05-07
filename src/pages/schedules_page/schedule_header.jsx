@@ -67,7 +67,10 @@ export default function ScheduleHeader() {
 
   // use effect 
   useEffect(() => { 
-    dispatch(setEndTimeAutomatically());
+    if (scheduleState.selectedEvent == null) {
+      dispatch(setEndTimeAutomatically());
+    }
+    
   }, [scheduleState.startTimeHoursTmp, scheduleState.startTimeMinutesTmp]);
 
   const handleMouseEnter = (event) => {
