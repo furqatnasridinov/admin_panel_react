@@ -22,7 +22,12 @@ export const getSchedules = createAsyncThunk(
             const startTime = new Date(item.date.replace("@", "T"));
             const endTime = new Date(startTime.getTime() + parseDuration(item.duration));
             const duration = moment.duration(moment(endTime).diff(moment(startTime)));
-            const minutes = duration.asMinutes(); 
+            const minutes = duration.asMinutes();
+               // Создание переменной canEdit
+            const now = moment();
+            const start = moment(startTime);
+            const diffMinutes = start.diff(now, 'minutes');
+            const canEdit = diffMinutes > 30;
             if (!item.deleteLesson) {
               listToCollect.push(
                 new ScheduleEvent(
@@ -40,7 +45,8 @@ export const getSchedules = createAsyncThunk(
                   item.autoAccept,
                   item.limitCountUser,
                   item.maxCount,
-                  minutes
+                  minutes,
+                  canEdit
                 )
               );
             }
@@ -105,7 +111,7 @@ export const deleteSchedule = createAsyncThunk(
 
 export const updateSchedule = createAsyncThunk(
   "scheduleSlice/updateSchedule",
-  async ({body}) => {
+  async ({ body }) => {
     try {
       const dataToSend = {
         id: body.lessonId,
@@ -114,9 +120,9 @@ export const updateSchedule = createAsyncThunk(
         description: body.description,
         autoAccept: body.autoAccept,
         canSignUp: body.canSignUp,
-        repeat : body.repeat,
-        limitCountUser : body.limitCountUser,
-        maxCount : body.maxCount,
+        repeat: body.repeat,
+        limitCountUser: body.limitCountUser,
+        maxCount: body.maxCount,
       };
       const response = await axiosClient.patch(
         `api/admin/gyms/${body.gymId}/lessons/${body.all}`,
@@ -172,6 +178,7 @@ const scheduleSlice = createSlice({
     isEdittingContainerShown: false,
     isNavigationFromBooking: false,
     eventFromBooking: null,
+    timesDiffersFromCopy: false,
   },
 
   reducers: {
@@ -205,11 +212,12 @@ const scheduleSlice = createSlice({
       state.selectedEventsCopy = state.selectedEvent;
     },
 
+
     selectedEventSetTitle: (state, action) => {
       state.selectedEvent.title = action.payload;
     },
 
-    selectedEventSetCansignUp : (state, action)=>{
+    selectedEventSetCansignUp: (state, action) => {
       state.selectedEvent.canSignUp = action.payload;
     },
 
@@ -285,11 +293,11 @@ const scheduleSlice = createSlice({
       state.selectedWeekdays = list;
     },
 
-    selectedEventRepeatsAdd : (state, action) => {
+    selectedEventRepeatsAdd: (state, action) => {
       state.selectedEvent.repeat.push(action.payload);
     },
 
-    selectedEventRepeatRemove : (state, action) =>{
+    selectedEventRepeatRemove: (state, action) => {
       var list = state.selectedEvent.repeat;
       var index = list.indexOf(action.payload);
       if (index > -1) {
@@ -298,15 +306,15 @@ const scheduleSlice = createSlice({
       state.selectedEvent.repeat = list;
     },
 
-    selectedEventToggleAutoAccept : (state) =>{
+    selectedEventToggleAutoAccept: (state) => {
       state.selectedEvent.autoAccept = !state.selectedEvent?.autoAccept
     },
 
-    selectedEventToggleLimitCountUser : (state) =>{
+    selectedEventToggleLimitCountUser: (state) => {
       state.selectedEvent.limitCountUser = !state.selectedEvent?.limitCountUser
     },
 
-    selectedEventSetMaxCount : (state,action) =>{
+    selectedEventSetMaxCount: (state, action) => {
       state.selectedEvent.maxCount = action.payload
     },
 
@@ -431,6 +439,18 @@ const scheduleSlice = createSlice({
     builder.addCase(getSchedules.rejected, (state) => {
       // state isError
     });
+
+    // update schedule
+    builder.addCase(updateSchedule.pending, (state) => {
+      //state.isloading = true;
+    });
+    builder.addCase(updateSchedule.fulfilled, (state) => {
+      //state.isloading = false;
+      //toast.success("Занятие успешно обновлено");
+    });
+    builder.addCase(updateSchedule.rejected, (state) => {
+      //state.isloading = false;
+    });
   },
 });
 
@@ -474,6 +494,7 @@ export const {
   selectedEventToggleLimitCountUser,
   selectedEventToggleAutoAccept,
   setSelectedEventsCopy,
+  getTimeDiffers
 } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

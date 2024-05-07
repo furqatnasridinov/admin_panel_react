@@ -10,6 +10,7 @@ import {
 } from "../../features/clients_slice";
 import CustomDialog from "../../components/dialog/dialog";
 import RejectingDialog from "./rejecting_dialog";
+import { getSchedules } from "../../features/schedule_slice";
 
 export default function MessageLikeTopContainer({ hideOpenSchedule }) {
   // redux
@@ -68,6 +69,7 @@ export default function MessageLikeTopContainer({ hideOpenSchedule }) {
           };
           await dispatch(acceptClient(request));
           dispatch(getNewClients(gymState.currentGym.id));
+          dispatch(getSchedules(client.gymId));
         }}
         onDecline={async () => {
           openDialog(true);

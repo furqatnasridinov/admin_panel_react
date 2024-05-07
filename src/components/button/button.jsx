@@ -14,11 +14,14 @@ export default function CustomButton({
 }) {
   return (
     <button
+      disabled = {isDidsabled}
       onClick={(isDidsabled || isLoading) ? null : onСlick}
       style={{
         width: width,
         height: height,
         zIndex: zIndex,
+        backgroundColor: isDidsabled ? "rgba(220, 220, 220, 1)" : "",
+        borderColor: isDidsabled ? "rgba(220, 220, 220, 1)" : "",
       }}
       className={showShadow ? "with_shadow" : "with_no_shadow"}
     >
