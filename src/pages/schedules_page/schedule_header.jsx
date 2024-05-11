@@ -591,6 +591,7 @@ export default function ScheduleHeader() {
                         maxCount: checkboxLimitEnabled ? limit : null,
                       };
                       await dispatch(createSchedule(request));
+                      console.log("createSchedule request ==>", request);
                       //resetdatas
                       await dispatch(getSchedules(gymState.currentGym.id));
                       dispatch(resetDatasAfterSubmitting());
