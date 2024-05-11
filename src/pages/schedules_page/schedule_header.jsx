@@ -67,9 +67,9 @@ export default function ScheduleHeader() {
 
   // use effect 
   useEffect(() => { 
-    if (scheduleState.selectedEvent == null) {
+   //if (scheduleState.selectedEvent == null) {
       dispatch(setEndTimeAutomatically());
-    }
+    //}
     
   }, [scheduleState.startTimeHoursTmp, scheduleState.startTimeMinutesTmp]);
 
@@ -369,12 +369,14 @@ export default function ScheduleHeader() {
             <TextAndTextfield
               value={scheduleState.description}
               onChange={(event) => {
-                if (event.target.value.length > 0 && isFormNotValidated) {
+                let inputValue = event.target.value;
+                if (inputValue.length > 0 && isFormNotValidated) {
                   setFormNotValidated(false);
                 }
-                if (event.target.value.length <= 250) {
-                  dispatch(setDescription(event.target.value));
+                if (inputValue.length > 250) {
+                  inputValue = inputValue.substring(0, 250);
                 }
+                  dispatch(setDescription(inputValue));
               }}
               showTextArea={true}
               fontSize={"13px"}

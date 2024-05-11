@@ -296,8 +296,12 @@ export default function GymDetailesBodySecondContainer({
                     value={activityDescribtion}
                     isNotValidated={activityDescribtionNotValidated}
                     onChange={(e) => {
-                      if (e.target.value?.length <= 250) {
-                        dispatch(changeActivityDescribtion(e.target.value))}}}
+                      let inputValue = e.target.value;
+                      if (inputValue.length > 250) {
+                        inputValue = inputValue.substring(0, 250);
+                      }
+                      dispatch(changeActivityDescribtion(inputValue));
+                    }}
                       onButtonClicked={async () => {
                         if (activityDescribtion === "") {
                           setActivityDescribtionNotValidated(true);

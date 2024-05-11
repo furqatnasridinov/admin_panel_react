@@ -273,9 +273,11 @@ export default function Employees({ listOfEmployees, gymId }) {
                         Уровень доступа сотрудника{" "}
                       </div>
                       <CustomDropdownForRef
-                        currentRole={employeesSlice.selectedRoleName !== null ? employeesSlice.selectedRoleName
+                        currentRole={ employeesSlice.selectedEmployee.roles[0].name
+                          
+                          /* employeesSlice.selectedRoleName !== null ? employeesSlice.selectedRoleName
                             : employeesSlice.selectedEmployee === null ? "": employeesSlice.selectedEmployee.roles.length === 0
-                            ? "Нет роли" : employeesSlice.selectedEmployee.roles[0].name
+                            ? "Нет роли" : employeesSlice.selectedEmployee.roles[0].name */
                         }
                         isDropDownOpened={isDropDown2Opened}
                         openCloseDropDown={openCloseDropDown2}
@@ -312,7 +314,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                             </div>
                           </div>
                         );
-                      } else {
+                      } /* else {
                         const isAvailable = priveledgesOfEmployee.includes(priveledge.id);
                         return (
                           <div
@@ -327,7 +329,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                             </div>
                           </div>
                         );
-                      }
+                      } */
                     })}
                   </div>
                 </>
@@ -667,7 +669,8 @@ export function TextAndTextfield({
   showTextArea,
   fontSize,
   fontWeight,
-  textfieldsMinHeight
+  textfieldsMinHeight,
+  onKeyDown,
 }) {
 
   const inputRef = useRef(null);
@@ -717,6 +720,7 @@ export function TextAndTextfield({
             onFocus={requestFocus}
             onBlur={removeFocus}
             onChange={onChange}
+            onKeyDown={onKeyDown}
           />
         )}
         {!isPhoneTextfield && !showTextArea && (

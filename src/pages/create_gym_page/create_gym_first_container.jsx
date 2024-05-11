@@ -295,9 +295,6 @@ export default function CreateGymFirstContainer() {
                   if (!isNameConfirmed) {
                     setName("");
                   }
-                  /* if (name === "" && !isNameNotValidated) {
-                    setIsNameNotValidated(true);
-                  } */
                 }}
                 secondText={name !== "" && isNameConfirmed ? "Изменить" : "Добавить"}
                 isEnabled={isNameEdittingEnabled}
@@ -307,9 +304,11 @@ export default function CreateGymFirstContainer() {
                 <EditableTextfield
                   value={name}
                   onChange={(e) => {
-                    if (e.target.value.length <= 70) {
-                      setName(e.target.value);
+                    let inputValue = e.target.value;
+                    if (inputValue.length > 70) {
+                      inputValue = inputValue.substring(0, 70);
                     }
+                    setName(inputValue);
                   }}
                   onButtonClicked={async () => {
                     setIsNameConfirmed(true);
@@ -351,9 +350,11 @@ export default function CreateGymFirstContainer() {
                 <EditableTextfield
                   value={description}
                   onChange={(e) => {
-                    if (e.target.value.length <= 250) {
-                      setDescription(e.target.value);
+                    let inputValue = e.target.value;
+                    if (inputValue.length > 250) {
+                      inputValue = inputValue.substring(0, 250);
                     }
+                    setDescription(inputValue);
                   }}
                   onButtonClicked={async () => {
                     setIsDescriptionConfirmed(true);

@@ -222,9 +222,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
             onClick={() => {
               if (currentGym.mainPictureUrl === "" || currentGym.mainPictureUrl === null) {
                 openFilePickerForMainPhoto();
-              } else {
-                openModalPhoto(true);
-              }
+              } else {openModalPhoto(true)}
             }}
             draggable={false}
             alt="mainPic" />
@@ -384,9 +382,12 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   maxLength={70}
                   isNotValidated={nameIsNotValidated}
                   onChange={(e) => {
-                    if (e.target.value.length <= 70) {
-                      dispatch(changeCurrentGymsName(e.target.value));
-                    }}}
+                    let inputValue = e.target.value;
+                    if (inputValue.length > 70) {
+                      inputValue = inputValue.substring(0, 70);
+                    }
+                    dispatch(changeCurrentGymsName(inputValue));
+                  }}
                   onButtonClicked={async () => {
                     if (currentGym.name === "") {
                       setNameIsNotValidated(true);
@@ -437,9 +438,12 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   isNotValidated={describtionIsNotValidated}
                   textFieldsMinWidth={"300px"}
                   onChange={(e) => {
-                    if (e.target.value.length <= 250) {
-                      dispatch(changeCurrentGymsDescription(e.target.value));
-                    }}}
+                    let inputValue = e.target.value;
+                    if (inputValue.length > 250) {
+                      inputValue = inputValue.substring(0, 250);
+                    }
+                    dispatch(changeCurrentGymsDescription(inputValue));
+                  }}
                   onButtonClicked={async () => {
                     if (currentGym.description === "") {
                       setDescribtionIsNotValidated(true);

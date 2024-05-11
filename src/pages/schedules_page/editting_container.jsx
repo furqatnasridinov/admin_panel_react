@@ -315,10 +315,13 @@ export default function EdittingContainer() {
           <TextAndTextfield
             textfieldHasFocus={true}
             value={scheduleState.selectedEvent.title}
+            
             onChange={(e) => {
-              if (e.target.value.length <= 250) {
-                dispatch(selectedEventSetTitle(e.target.value));
+              let inputValue = e.target.value;
+              if (inputValue.length > 250) {
+                inputValue = inputValue.substring(0, 250);
               }
+              dispatch(selectedEventSetTitle(inputValue));
             }}
             showTextArea={true}
             fontSize={"13px"}
