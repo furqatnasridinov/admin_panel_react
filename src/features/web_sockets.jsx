@@ -1,6 +1,7 @@
 import { addOrRemoveClient } from "./clients_slice";
 import { BookingData } from "../models/booking_data";
 import AppConstants from "../config/app_constants";
+import { toast } from "react-toastify";
 
 
 export default function NewClientsWebSocket({ dispatch, gymId }) {
@@ -8,6 +9,7 @@ export default function NewClientsWebSocket({ dispatch, gymId }) {
 
   ws.onopen = () => {
     console.log("WebSocket Connected");
+    //toast.success("WebSocket Connected");
   };
 
   ws.onmessage = (event) => {
@@ -40,11 +42,13 @@ export default function NewClientsWebSocket({ dispatch, gymId }) {
 
     } catch (error) {
       console.error("onmessage Error ", error);
+      //toast.error("Ошибка при обработке данных с сервера");
     }
   };
 
   ws.onerror = (error) => {
     console.error("WebSocket Error", error);
+    toast.error("ws.onerror");
   };
 
   ws.onclose = () => {

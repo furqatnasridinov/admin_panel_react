@@ -101,6 +101,18 @@ export default function Register1() {
     }
   }, [phone, isPhoneSent])
 
+  function sendPhoneFunc() {
+    if (phone.length === 11) {
+      sendPhone(true)
+      setSubmittedPhone(phone);
+      const body = {
+        login: `+${phone}`,
+        fcmToken: localStorage.getItem(AppConstants.keyFcmToken) ?? "",
+      }
+      dispatch(sendPhoneNumber(body));
+      localStorage.setItem(AppConstants.keyPhone, `+${phone}` );
+    }
+  }
 
   return (
     <div className='registerPage'>
@@ -125,28 +137,20 @@ export default function Register1() {
                 isPhoneTextfield={true}
                 showLogo={true}
                 textfieldHasFocus={phone.length === 11}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    sendPhoneFunc();
+                  }
+                }}
               />
               <img className=''
                 src={((phone.length === 11 && !isPhoneSent) || anotherPhoneAdded) ? enabledSendSvg :
                   isWaiting ? waitingSendSvg : disabledSendSvg}
                 alt=""
-                onClick={async () => {
-                  if (phone.length === 11) {
-                    sendPhone(true)
-                    setSubmittedPhone(phone);
-                    const body = {
-                      login: `+${phone}`,
-                      fcmToken: localStorage.getItem(AppConstants.keyFcmToken) ?? "",
-                    }
-                    dispatch(sendPhoneNumber(body));
-                    localStorage.setItem(AppConstants.keyPhone, `+${phone}` );
-                  }
-                }}
+                onClick={sendPhoneFunc}
               />
             </div>
-
           </div>
-
           {
             isPhoneSent && <div className='flex flex-col gap-[16px] items-center'>
               <div className=" whiteContainer text-[14px] font-normal leading-[16px]">
@@ -179,21 +183,13 @@ export default function Register1() {
                     Отправить ещё раз
                   </div>
                 }
-
               </div>
-
             </div>
           }
         </div>
-
-
         <img className='absolute bottom-0 w-full h-[300px] object-cover' src={wave} alt="" />
       </>
-
       }
-
-
-
     </div >
   )
 }
