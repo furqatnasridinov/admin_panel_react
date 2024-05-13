@@ -10,7 +10,7 @@ function SettingsPage() {
   const clientsSlice = useSelector((state) => state.clients);
   return (
     <div className="flex flex-col flex-1 pl-[10px] gap-[10px] h-[97vh] overflow-y-auto">
-      {clientsSlice.waitingForAccept.length > 0 && (
+      {clientsSlice.waitingForAccept?.length > 0 && (
         <MessageLikeTopContainer hideOpenSchedule={true} />
       )}
       <SettingsHeader />

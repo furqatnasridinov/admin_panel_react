@@ -22,7 +22,7 @@ import { getUser, sendPhoneNumber } from "../../features/register";
 import placeHolderImg from "../../assets/images/placeholder.jpg"
 import Notification from "../../firebase/push_notification";
 import AppConstants from "../../config/app_constants";
-import { getToken,getMessaging } from 'firebase/messaging';
+import { getToken, getMessaging } from 'firebase/messaging';
 
 const Sidebar = () => {
   const dispatch = useDispatch();
@@ -65,7 +65,6 @@ const Sidebar = () => {
     }
   };
 
-
   useEffect(() => {
     if (isSidebarOpened) {
       setTimeout(() => {
@@ -85,32 +84,32 @@ const Sidebar = () => {
     dispatch(getUser());
 
     // проверка на fcm token
-   /*  Notification.requestPermission().then((permission) => {
-      const fcmToken = localStorage.getItem(AppConstants.keyFcmToken);
-      if (permission === "granted" && !fcmToken) {
-        return getToken(messaging, { vapidKey: `BKtMN6wjJ9LaMI3lhESMVyzTEMxTwC45q1hjAxgKijOf-e2uEYAmXSZrHirgj4lzx6XIkfxfybYDUgxdQWdTi9g` })
-          .then((currentToken) => {
-            if (currentToken) {
-              // Сохраняем токен в localStorage
-              localStorage.setItem(AppConstants.keyFcmToken, currentToken);
-
-              const body = {
-                login: localStorage.getItem(AppConstants.keyPhone),
-                fcmToken: currentToken,
-              }
-              dispatch(sendPhoneNumber(body));
-              console.log('Client Token: ', currentToken);
-            } else {
-              console.log('Failed to generate the registration token.');
-            }
-          })
-          .catch((err) => {
-            console.log('An error occurred when requesting to receive the token.', err);
-          });
-      }else if (permission === "denied" && fcmToken) {
-        localStorage.removeItem(AppConstants.keyFcmToken);
-      }
-    }); */
+    /*  Notification.requestPermission().then((permission) => {
+       const fcmToken = localStorage.getItem(AppConstants.keyFcmToken);
+       if (permission === "granted" && !fcmToken) {
+         return getToken(messaging, { vapidKey: `BKtMN6wjJ9LaMI3lhESMVyzTEMxTwC45q1hjAxgKijOf-e2uEYAmXSZrHirgj4lzx6XIkfxfybYDUgxdQWdTi9g` })
+           .then((currentToken) => {
+             if (currentToken) {
+               // Сохраняем токен в localStorage
+               localStorage.setItem(AppConstants.keyFcmToken, currentToken);
+ 
+               const body = {
+                 login: localStorage.getItem(AppConstants.keyPhone),
+                 fcmToken: currentToken,
+               }
+               dispatch(sendPhoneNumber(body));
+               console.log('Client Token: ', currentToken);
+             } else {
+               console.log('Failed to generate the registration token.');
+             }
+           })
+           .catch((err) => {
+             console.log('An error occurred when requesting to receive the token.', err);
+           });
+       }else if (permission === "denied" && fcmToken) {
+         localStorage.removeItem(AppConstants.keyFcmToken);
+       }
+     }); */
 
     // Удаляем обработчик события при размонтировании
     return () => window.removeEventListener("resize", handleResize);
@@ -169,12 +168,14 @@ const Sidebar = () => {
 
             {isTextShown && (
               <div className="text-[14px] font-normal  line-clamp-2 text-ellipsis">
-                {registerState.user && (
-                  registerState.user?.firstName + " " +
-                  registerState.user?.lastName)}
-              </div>
+              {registerState.user && (
+                registerState.user?.firstName +
+                (registerState.user?.lastName ? " " + registerState.user?.lastName : "")
+              )}
+            </div>
             )}
           </button>
+
           {isMenuCompanyShown && (
             <MenuCompany
               sidebarHeaderRef={sidebarHeaderRef}
@@ -226,84 +227,68 @@ const Sidebar = () => {
           <div className="flex flex-col justify-between flex-grow">
             {/* Первые четыре элемена */}
             <div className="flex flex-col">
-              <NavLink
-                id="sidebarOnclick"
-                className={isClientsActive ? "sidebar_section active_sidebar_section" : "sidebar_section"}
-                onClick={() => { setClientsActive(true) }}>
-                <img src={userLogoSvg} alt="" />
-                {isTextShown && <div>Клиенты</div>}
-                {isTextShown && clientsSlice.waitingForAccept?.length > 0 && (
-                  <div className="badge">
-                    {clientsSlice.waitingForAccept?.length}
-                  </div>
-                )}
-              </NavLink>
-
-              {isClientsActive && isTextShown && (
-                <div>
-                  {/* Additional content to be shown when Клиенты is active */}
+              {localStorage.getItem(AppConstants.keyRoleId) !== "5" &&
+                <>
                   <NavLink
                     id="sidebarOnclick"
-                    to="/bookingPage"
-                    className={({ isActive }) => isActive ? "active_additional_block" : "additional_block"}>
-                    <li>
-                      <span>Бронирование</span>
-                    </li>
-                    {clientsSlice.waitingForAccept?.length > 0 && (
+                    className={isClientsActive ? "sidebar_section active_sidebar_section" : "sidebar_section"}
+                    onClick={() => { setClientsActive(true) }}>
+                    <img src={userLogoSvg} alt="" />
+                    {isTextShown && <div>Клиенты</div>}
+                    {isTextShown && clientsSlice.waitingForAccept?.length > 0 && (
                       <div className="badge">
                         {clientsSlice.waitingForAccept?.length}
                       </div>
                     )}
                   </NavLink>
 
+                  {isClientsActive && isTextShown && (
+                    <div>
+                      {/* Additional content to be shown when Клиенты is active */}
+                      <NavLink
+                        id="sidebarOnclick"
+                        to="/bookingPage"
+                        className={({ isActive }) => isActive ? "active_additional_block" : "additional_block"}>
+                        <li>
+                          <span>Бронирование</span>
+                        </li>
+                        {clientsSlice.waitingForAccept?.length > 0 && (
+                          <div className="badge">
+                            {clientsSlice.waitingForAccept?.length}
+                          </div>
+                        )}
+                      </NavLink>
+
+                      <NavLink
+                        id="sidebarOnclick"
+                        to="/waitingClientsPage"
+                        className={({ isActive }) => isActive ? "active_additional_block" : "additional_block"}>
+                        <li>
+                          <span>Посещения сегодня</span>
+                        </li>
+                      </NavLink>
+                    </div>
+                  )}
                   <NavLink
                     id="sidebarOnclick"
-                    to="/waitingClientsPage"
-                    className={({ isActive }) => isActive ? "active_additional_block" : "additional_block"}>
-                    <li>
-                      <span>Посещения сегодня</span>
-                    </li>
+                    to="/myGymsPage"
+                    className={({ isActive }) =>
+                      isActive && !isClientsActive
+                        ? "sidebar_section active_sidebar_section"
+                        : "sidebar_section"
+                    }
+                    onClick={() => {
+                      if (isClientsActive) {
+                        setClientsActive(false);
+                      }
+                    }}
+                  >
+                    <img src={locationIcon} alt="" />
+
+                    {isTextShown && <div>Мои заведения</div>}
                   </NavLink>
-                </div>
-              )}
-
-              {/*  <NavLink
-                id="sidebarOnclick"
-                to="/statisticksPage"
-                className={({ isActive }) =>
-                  isActive && !isClientsActive
-                    ? "sidebar_section active_sidebar_section"
-                    : "sidebar_section"
-                }
-                onClick={() => {
-                  if (isClientsActive) {
-                    setClientsActive(false);
-                  }
-                }}
-              >
-                <img src={statsLogo} alt="" />
-
-                {isTextShown && <div>Статистика</div>}
-              </NavLink> */}
-
-              <NavLink
-                id="sidebarOnclick"
-                to="/myGymsPage"
-                className={({ isActive }) =>
-                  isActive && !isClientsActive
-                    ? "sidebar_section active_sidebar_section"
-                    : "sidebar_section"
-                }
-                onClick={() => {
-                  if (isClientsActive) {
-                    setClientsActive(false);
-                  }
-                }}
-              >
-                <img src={locationIcon} alt="" />
-
-                {isTextShown && <div>Мои заведения</div>}
-              </NavLink>
+                </>
+              }
 
               <NavLink
                 id="sidebarOnclick"
@@ -421,6 +406,8 @@ const Sidebar = () => {
       <div className="flex flex-col justify-between flex-grow">
         {/* Первые четыре элемена */}
         <div className="flex flex-col">
+          {localStorage.getItem(AppConstants.keyRoleId) !== "5" &&
+          <>
           <NavLink
             id="sidebarOnclick"
             to="/bookingPage"
@@ -472,7 +459,7 @@ const Sidebar = () => {
           >
             <img src={locationIcon} alt="" />
           </NavLink>
-
+          </>}
           <NavLink
             id="sidebarOnclick"
             to="/schedulePage"

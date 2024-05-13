@@ -117,7 +117,7 @@ export default function Employees({ listOfEmployees, gymId }) {
       <div className="employees_container">
         <TextAndTextButton
           text1={"Сотрудники"}
-          text2={listOfEmployees?.length === 0 ? "" : "Редактировать"}
+          text2={listOfEmployees && listOfEmployees?.length === 0 ? "" : "Редактировать"}
           onclick={() => listOfEmployees?.length === 0 ? {} : openRefEmployeesDialog(true)}
         />
         {listOfEmployees?.length !== 0 && isRefEmployeesDialogOpened && (
@@ -146,7 +146,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                   </div>
                 </div>
                 <div className="employees_wrap">
-                  {listOfEmployees.filter((employee) =>
+                  {listOfEmployees?.filter((employee) =>
                         !employeesSlice.deletedEmployess.some(
                           (deletedEmployee) =>deletedEmployee.id === employee.id))
                     .map((employee) => {
@@ -356,7 +356,7 @@ export default function Employees({ listOfEmployees, gymId }) {
         )}
         <div className="employees_list">
           {listOfEmployees
-            .filter((employee) =>!employeesSlice.deletedEmployess.some(
+            ?.filter((employee) =>!employeesSlice.deletedEmployess.some(
                   (deletedEmployee) => deletedEmployee.id === employee.id))
             .map((employee) => {
               return (

@@ -2,11 +2,12 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../config/axios_client";
 import { toast } from "react-toastify";
 import AppConstants from "../config/app_constants";
+import { allRoles } from "../dummy_data/dymmy_data";
 
 
 export const sendPhoneNumber = createAsyncThunk(
     "login/sendPhoneNumber",
-    async ({login, fcmToken}) => {
+    async ({ login, fcmToken }) => {
         try {
             const data = {
                 login: login,
@@ -30,19 +31,23 @@ export const sendForConfirmation = createAsyncThunk(
             }
             const response = await axiosClient.post(`api/user/loginCodeConfirmation`, data);
             if (response.data["operationResult"] === "OK") {
-                if (response.data["object"]["user"]["roles"][0]["id"] != 2) {
+                const userRoles = response.data["object"]["user"]["roles"];
+                const allowEnter = allRoles.some((role) => 
+                    userRoles.some((userRole) => userRole.id === role.id));
+                const userRole = getMatchingRole({ allRoles, userRoles });
+                if (allowEnter) {
                     localStorage.setItem(AppConstants.keyToken, response.data["object"]["jwtToken"]);
                     localStorage.setItem(AppConstants.keyUserId, response.data["object"]["user"].id);
                     localStorage.setItem(AppConstants.keyPhone, response.data["object"]["user"].login);
                     localStorage.setItem(AppConstants.keyUserFirstname, response.data["object"]["user"].firstName);
-                    localStorage.setItem(AppConstants.keyUserLastname, response.data["object"]["user"].lastName);
+                    localStorage.setItem(AppConstants.keyUserLastname, response.data["object"]["user"].lastName ?? "");
                     localStorage.setItem(AppConstants.keyPatronymic, response.data["object"]["user"].patronymic);
+                    localStorage.setItem(AppConstants.keyRoleId, userRole.id);
                     localStorage.setItem(AppConstants.keyPhoto, response.data["object"]["user"].pictureUrl);
                     return response.data;
                 } else {
-                    toast("Вы не не подключены к системе MyFit Admin")
+                    toast("Вы не не подключены к системе MyFit Admin");
                 }
-
             }
         } catch (error) {
             toast(`sendForConfirmation ${error}`);
@@ -122,7 +127,7 @@ export const getUser = createAsyncThunk(
                     localStorage.setItem(AppConstants.keyUserFirstname, response.data["object"]["firstName"]);
                 }
                 if (response.data["object"].lastName !== localStorage.getItem(AppConstants.keyUserLastname)) {
-                    localStorage.setItem(AppConstants.keyUserLastname, response.data["object"]["lastName"]);
+                    localStorage.setItem(AppConstants.keyUserLastname, response.data["object"]["lastName"] ?? "");
                 }
                 if (response.data["object"].patronymic !== localStorage.getItem(AppConstants.keyPatronymic)) {
                     localStorage.setItem(AppConstants.keyPatronymic, response.data["object"]["patronymic"]);
@@ -218,6 +223,13 @@ export const sendPhoneCodeConfirmation2 = createAsyncThunk(
         }
     }
 );
+
+function getMatchingRole({ allRoles, userRoles }) {
+    const matchingRole = userRoles.find(userRole => 
+        allRoles.some(role => role.id === userRole.id)
+    );
+    return matchingRole;
+}
 
 
 const loginSlice = createSlice({
