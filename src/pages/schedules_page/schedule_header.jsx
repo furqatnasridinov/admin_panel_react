@@ -103,7 +103,7 @@ export default function ScheduleHeader() {
         <div className="slash"> / </div>
 
         {gymState.listOfGyms?.length === 1 && gymState.currentGym !== null && (
-          <div className=""> {gymState.currentGym.name} </div>
+          <div className=""> {gymState.currentGym?.name} </div>
         )}
 
         {gymState.listOfGyms?.length > 1 && (
@@ -154,7 +154,7 @@ export default function ScheduleHeader() {
       )}
 
       {/* show dropdown for choosing activity */}
-      {gymState.currentGym !== null && activitiesState.listOfActivities.length > 1 && (
+      {gymState.currentGym !== null && activitiesState.listOfActivities?.length > 1 && (
         <CustomDropdown
           isDropDownOpened={isActivitiesDropDownOpened}
           zIndex={"5"}

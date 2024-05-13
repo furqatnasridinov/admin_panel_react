@@ -117,21 +117,24 @@ const Sidebar = () => {
   }, []);
 
   useEffect(() => {
-    if (sessionStorage.getItem("currentGym") == null) {
+    if (gymsState.listOfGyms?.length > 0 && gymsState.currentGym === null) {
+      dispatch(setCurrentGymFromFirstItem());
+    }
+    /* if (sessionStorage.getItem("currentGym") == null) {
       if (gymsState.listOfGyms?.length > 0 && gymsState.currentGym === null) {
         dispatch(setCurrentGymFromFirstItem());
       }
     } else {
       // устанавливаем текущий зал из sessionStorage
-      dispatch(setCurrentGym(JSON.parse(sessionStorage.getItem("currentGym"))));
-    }
+      //dispatch(setCurrentGym(JSON.parse(sessionStorage.getItem("currentGym"))));
+    } */
   }, [gymsState.listOfGyms]);
 
   useEffect(() => {
     if (gymsState.currentGym !== null) {
       // сохраняем текущий зал в sessionStorage
       sessionStorage.setItem("currentGym", JSON.stringify(gymsState.currentGym));
-      dispatch(getNewClients(gymsState.currentGym.id));
+      dispatch(getNewClients(gymsState.currentGym?.id));
     }
   }, [gymsState.currentGym]);
 
