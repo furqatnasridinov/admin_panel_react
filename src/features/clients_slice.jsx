@@ -39,7 +39,7 @@ export const getNewClients = createAsyncThunk(
         return listToCollect;
       }
     } catch (error) {
-      toast(`getNewClients ${error}`);
+      //toast(`getNewClients ${error}`);
     }
   }
 );
