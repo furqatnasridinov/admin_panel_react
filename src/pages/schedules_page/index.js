@@ -136,9 +136,9 @@ export default function SchedulesPage() {
   // get new infos every time when currentGym changes
   useEffect(() => {
     if (gymState.currentGym !== null) {
-      dispatch(getSchedules(gymState.currentGym.id));
+      dispatch(getSchedules(gymState.currentGym?.id));
       //dispatch(getListOfEmployees(gymState.currentGym.id)); // to show in sidebar top
-      dispatch(getListOfActivities(gymState.currentGym.id));
+      dispatch(getListOfActivities(gymState.currentGym?.id));
     }
 
     if (sessionStorage.getItem("selectedActivity") !== null) {
