@@ -50,6 +50,10 @@ class AppConstants {
     return "notification";
   }
 
+  static get keyRoleId() {
+    return "roleId";
+  }
+
   // yandex geocoding api key
   static get yandexApiKey() {
     return "55bfdcdc-b638-4a5e-81f0-404dc3e9060e";

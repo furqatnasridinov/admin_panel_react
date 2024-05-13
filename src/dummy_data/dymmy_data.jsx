@@ -154,9 +154,9 @@ export const priveledges = [
 export const allRoles = [
   {
     id: 1,
-    code: "ROLE_ADMIN",
-    name: "Администратор",
-    priveledges: [1, 2, 3, 4],
+    code: "ROLE_OWNER",
+    name: "Владелец",
+    priveledges: [1, 2, 3, 4, 5,6],
   },
   /* {
     id: 2,
@@ -170,18 +170,24 @@ export const allRoles = [
     name: "Директор",
     priveledges: [1, 2, 3, 4, 5, 6],
   },
-  /* {
+  {
     id: 4,
-    code: "ROLE_MANAGER",
-    name: "Менеджер",
+    code: "ROLE_ADMIN",
+    name: "Администратор",
     priveledges: [1, 2, 3, 4],
-  }, */
+  },
   {
     id: 5,
     code: "ROLE_WORKER",
-    name: "Работник",
+    name: "Сотрудник",
     priveledges: [1, 2, 3],
   },
+  /* {
+    id: 6,
+    code: "ROLE_USER_PREMIUM",
+    name: "Пользователь премиум", 
+    priveledges: [],
+  }, */
 ];
 
 export const DUMMY_LESSONS = [

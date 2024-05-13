@@ -96,6 +96,7 @@ export default function ScheduleHeader() {
   return (
     console.log("start time hours", scheduleState.startTimeHoursTmp),
     console.log("start time minutes", scheduleState.startTimeMinutesTmp),
+    console.log("gymState.currentGym", gymState.currentGym),
     <div className="schedule_header">
       <div className="flex flow-row gap-[10px] items-center">
         <div className="">Расписание</div>
@@ -117,7 +118,7 @@ export default function ScheduleHeader() {
                 ? "Выберите заведение"
                 : gymState.currentGym.name
             }
-            map={gymState.listOfGyms.map((item, index) => (
+            map={gymState.listOfGyms?.map((item, index) => (
               <div
                 key={index}
                 className="gymNames"
@@ -157,12 +158,10 @@ export default function ScheduleHeader() {
         <CustomDropdown
           isDropDownOpened={isActivitiesDropDownOpened}
           zIndex={"5"}
-          openCloseDropDown={() => {
-            openActivitiesDropDown(!isActivitiesDropDownOpened);
-          }}
+          openCloseDropDown={() => {openActivitiesDropDown(!isActivitiesDropDownOpened)}}
           map={
             activitiesState.listOfActivities &&
-            activitiesState.listOfActivities.map((item, index) => (
+            activitiesState.listOfActivities?.map((item, index) => (
               <div
                 key={index}
                 className="gymNames"

@@ -11,10 +11,13 @@ export default function Splash() {
         if (localStorage.getItem(AppConstants.keyToken) === null) {
             navigate("/registerPage");
         } else {
-            navigate("/myGymsPage");
+            if (localStorage.getItem(AppConstants.keyRoleId == "5")) {
+                navigate("/schedulePage")
+            } else {
+                navigate("/myGymsPage");
+            }
         }
     }, [])
-
     return (
         <div></div>
     )

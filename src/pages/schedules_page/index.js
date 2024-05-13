@@ -3,6 +3,7 @@ import "./styles.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect, useRef } from "react";
 import {
+  getListOfGyms,
   setCurrentGym,
 } from "../../features/current_gym_slice";
 import {
@@ -25,6 +26,7 @@ import {
   disableScheduleEditting,
   getTimeDiffers
 } from "../../features/schedule_slice";
+import AppConstants from "../../config/app_constants";
 import previousSvg from "../../assets/svg/previous.svg";
 import nextSvg from "../../assets/svg/next.svg";
 import { Calendar, momentLocalizer } from "react-big-calendar";
@@ -120,22 +122,12 @@ export default function SchedulesPage() {
 
   // get initial data`s
   useEffect(() => {
-    if (
-      scheduleState.isNavigationFromBooking &&
-      scheduleState.eventFromBooking !== null
-    ) {
-      if (
-        scheduleState.eventFromBooking.lessonType !==
-        activitiesState.selectedActivity
-      ) {
+    if (scheduleState.isNavigationFromBooking && scheduleState.eventFromBooking !== null) {
+      if (scheduleState.eventFromBooking.lessonType !== activitiesState.selectedActivity) {
         dispatch(selectAnActivity(scheduleState.eventFromBooking.lessonType));
       }
       if (gymState.currentGym.id !== scheduleState.eventFromBooking.gymId) {
         dispatch(setCurrentGym(scheduleState.eventFromBooking.gymName));
-       /*  sessionStorage.setItem(
-          "currentGym",
-          scheduleState.eventFromBooking.gymName
-        ); */
       }
       setCurrentDate(scheduleState.eventFromBooking.startTime);
     }
@@ -260,8 +252,8 @@ export default function SchedulesPage() {
       const container = pageRef.current;
       container.scrollTop = container.scrollHeight;
     }
-    // 
     dispatch(getStartTimeToSendToServer())
+
   }, [scheduleState.selectedEvent]);
 
   useEffect(() => {
@@ -272,6 +264,7 @@ export default function SchedulesPage() {
   return (
     console.log("len", activitiesState.listOfActivities?.length),
     console.log("dataalo >> ", scheduleState.lessonStartTimeSendToServer),
+    console.log(`jwt token ${localStorage.getItem(AppConstants.keyToken)}`),
     (
       <div ref={pageRef} className="schedule_page">
         {clientsSlice.waitingForAccept?.length > 0 && (

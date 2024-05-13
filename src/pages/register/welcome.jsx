@@ -2,14 +2,16 @@ import React from 'react'
 import myfit from "../../assets/svg/myfit.svg"
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import AppConstants from '../../config/app_constants';
 
 export default function WelcomePage() {
     const navigate = useNavigate();
 
     useEffect(() => {
         setTimeout(() => {
+            const nextLink = localStorage.getItem(AppConstants.keyRoleId) === "5" ? "/schedulePage" : "/myGymsPage";
             // Перенаправляем пользователя
-            window.history.pushState({}, "", "/myGymsPage");
+            window.history.pushState({}, "", nextLink);
             // Перезагружаем страницу
             window.location.reload();
         }, 3500);
