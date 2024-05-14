@@ -41,7 +41,10 @@ export default function GymDetails() {
     dispatch(getCurrentGym(gymId));
 
     // function to get employees based on gymId
-    dispatch(getListOfEmployees(gymId));
+    if (localStorage.getItem(AppConstants.keyRoleId) === "1" || 
+      localStorage.getItem(AppConstants.keyRoleId) === "3") {
+      dispatch(getListOfEmployees(gymId));
+    }
 
     // function to get activities based on gymId
     dispatch(getListOfActivities(gymId));
@@ -65,7 +68,10 @@ export default function GymDetails() {
       dispatch(getCurrentGym(gym.id));
 
       // function to get List Of Employees based on gymnewSelected gymid
-      dispatch(getListOfEmployees(gym.id));
+      if (localStorage.getItem(AppConstants.keyRoleId) === "1" || 
+      localStorage.getItem(AppConstants.keyRoleId) === "3") {
+        dispatch(getListOfEmployees(gymId));
+      }
 
       // function to get List Of Activities based on gymnewSelected gymid
       dispatch(getListOfActivities(gym.id));
@@ -80,7 +86,7 @@ export default function GymDetails() {
 
   useEffect(() => {
     dispatch(makeFirstItemAsActive());
-  }, [activitiesSlice.listOfActivities]); 
+  }, [activitiesSlice.listOfActivities]);
 
   useEffect(() => {
     if (activitiesSlice.selectedActivity !== "") {
@@ -119,10 +125,12 @@ export default function GymDetails() {
               selectAnotherGym={selectAnotherGym}
             />
 
-            <Employees
-              listOfEmployees={employeesSlice.employees}
-              gymId={gymState.currentGym.id}
-            />
+            {(localStorage.getItem(AppConstants.keyRoleId) === "1"
+              || localStorage.getItem(AppConstants.keyRoleId) === "3") &&
+              <Employees
+                listOfEmployees={employeesSlice.employees}
+                gymId={gymState.currentGym.id}
+              />}
 
             <GymDetailesBodyFirstContainer currentGym={gymState.currentGym} />
 
