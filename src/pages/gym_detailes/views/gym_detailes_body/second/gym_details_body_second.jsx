@@ -5,8 +5,6 @@ import { useState, useRef } from "react";
 import { EditableTextfield } from "../first/gym_detailes_body_first";
 import deleteSvg from "../../../../../assets/svg/delete.svg";
 import removeActivitySvg from "../../../../../assets/svg/remove_activities.svg";
-import editActivitySvg from "../../../../../assets/svg/edit_activities.svg";
-import AddActivitySvg from "../../../../../assets/svg/add_activity.svg";
 import addPhotoSvg from "../../../../../assets/svg/add_photo.svg";
 import CustomButton from "../../../../../components/button/button";
 import CustomDialog from "../../../../../components/dialog/dialog";
@@ -15,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FeaturesTextField } from "../features_textfield";
 import { dragAndDropGymPictures } from "../../../../../features/current_gym_slice";
 import closePng from "../../../../../assets/images/close.png"
+import AppConstants from "../../../../../config/app_constants";
 import {
   dragAndDropActivities,
   selectAnActivity,
@@ -47,6 +46,7 @@ export default function GymDetailesBodySecondContainer({
   const dispatch = useDispatch();
   const activitiesSlice = useSelector((state) => state.activities);
   const gymState = useSelector((state) => state.currentGym);
+  const canEdit = localStorage.getItem(AppConstants.keyRoleId) === "1" || localStorage.getItem(AppConstants.keyRoleId) === "3";
 
   // use states
   const [isDescribtionEdittingEnabled, setDescribtionEditting] =
@@ -135,6 +135,7 @@ export default function GymDetailesBodySecondContainer({
           text1={"Активности"}
           text2={activitiesSlice.selectedActivity === null ? "Добавить активности" : "Редактировать список активностей"}
           onclick={() => {openActivitiesModal(true)}}
+          showText2 = {canEdit}
         />
         <div className="chips_row ">
           {listOfActivities
@@ -278,6 +279,7 @@ export default function GymDetailesBodySecondContainer({
                   text1={"Описание"}
                   text2={isDescribtionEdittingEnabled ? "Отменить" : "Изменить"}
                   isRedText={isDescribtionEdittingEnabled}
+                  showText2 = {canEdit}
                   onclick={() => {
                     if (!isDescribtionEdittingEnabled) {
                       setDescribtionEditting(true);
@@ -331,6 +333,7 @@ export default function GymDetailesBodySecondContainer({
                   text1={"Особенности посещения"}
                   text2={isFeaturesEdittingEnabled ? "Отменить" : "Изменить"}
                   isRedText={isFeaturesEdittingEnabled}
+                  showText2 = {canEdit}
                   onclick={() =>{
                     if (isFeaturesEdittingEnabled) {
                       if (activitiesSlice.isChangesOcurred) {
@@ -367,8 +370,8 @@ export default function GymDetailesBodySecondContainer({
             <div className="flex flex-col gap-[10px] w-[609px] ">
               <TextAndTextButton
                 text1={"Фотографии"}
-                text2={isEdittingPhotosEnabled ? "Готово" :
-                  activitiesSlice.photosOfSelectedActivity.length > 0 ? "Удалить фото и редактировать порядок" : ""}
+                text2={isEdittingPhotosEnabled ? "Готово" : activitiesSlice.photosOfSelectedActivity.length > 0 ? "Удалить фото и редактировать порядок" : ""}
+                showText2 = {canEdit}
                 onclick={() =>{
                   if (isEdittingPhotosEnabled) {
                     setPhotosEditting(false)
@@ -486,7 +489,7 @@ export default function GymDetailesBodySecondContainer({
                       }
                     })}
                     {/* plus image (to upload photo) */}
-                  {!isEdittingPhotosEnabled && (
+                      {canEdit &&  !isEdittingPhotosEnabled && 
                         <>
                             <img
                               src={addPhotoSvg}
@@ -536,7 +539,7 @@ export default function GymDetailesBodySecondContainer({
                               style={{ display: "none" }} // Скрываем input
                               accept="image/png, image/jpeg"/>
                         </>
-                  )} 
+                      } 
 
                 {/* Dialog when click photo */}
                 {isPhotoShownInDialog && (

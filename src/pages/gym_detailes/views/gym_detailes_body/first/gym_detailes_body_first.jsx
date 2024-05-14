@@ -1,7 +1,6 @@
 import React from "react";
 import "./gym_details_body_first.css";
 import TextAndTextButton from "../../../components/text_and_textbutton";
-import SizeOfPicture from "../../../components/size_of_picture";
 import mainPicPlaceHolder from "../../../../../assets/svg/main_photo_placeholder.svg";
 import logoPlaceholder from "../../../../../assets/svg/logo_placeholder.svg";
 import phoneSvg from "../../../../../assets/svg/phone.svg";
@@ -46,10 +45,12 @@ import {
 } from "../../../../../features/current_gym_slice";
 import ReactInputMask from "react-input-mask";
 import { toast } from "react-toastify";
+import AppConstants from "../../../../../config/app_constants";
 
 export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const dispatch = useDispatch();
   const currentGymState = useSelector((state) => state.currentGym);
+  const canEdit = localStorage.getItem(AppConstants.keyRoleId) === "1" || localStorage.getItem(AppConstants.keyRoleId) === "3";
 
   // use states
   const [isNameEditingEnabled, setNameEditing] = useState(false);
@@ -198,7 +199,6 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   }, [currentGym.address]);
 
   return (
-
     <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
       {/* Photos and Logos */}
 
@@ -214,15 +214,18 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
           <TextAndTextButton
             text1={"Фоновая фотография"}
             text2={currentGym.mainPictureUrl === "" || currentGym.mainPictureUrl === null ? "Добавить фото" : "Изменить фотографию"}
-            onclick={() => (currentGym.mainPictureUrl !== "" && currentGym.mainPictureUrl !== null) ? openModalPhoto(true) : openFilePickerForMainPhoto()} />
+            onclick={() => (currentGym.mainPictureUrl !== "" && currentGym.mainPictureUrl !== null) ? openModalPhoto(true) : openFilePickerForMainPhoto()}
+            showText2 = {canEdit} />
           <img
             className="main_pic"
             src={(currentGym.mainPictureUrl === "" || currentGym.mainPictureUrl === null) ? mainPicPlaceHolder : `http://77.222.53.122/image/${currentGym.mainPictureUrl}`}
             style={{ cursor: "pointer" }}
             onClick={() => {
-              if (currentGym.mainPictureUrl === "" || currentGym.mainPictureUrl === null) {
-                openFilePickerForMainPhoto();
-              } else {openModalPhoto(true)}
+              if (canEdit) {
+                if (currentGym.mainPictureUrl === "" || currentGym.mainPictureUrl === null) {
+                  openFilePickerForMainPhoto();
+                } else {openModalPhoto(true)}
+              }
             }}
             draggable={false}
             alt="mainPic" />
@@ -267,14 +270,21 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
           <TextAndTextButton
             text1={"Логотип"}
             text2={(currentGym.logoUrl === "" || currentGym.logoUrl === null) ? "Добавить логотип" : "Изменить"}
-            onclick={() => (currentGym.logoUrl !== "" && currentGym.logoUrl !== null) ? openModalLogo(true) : openFilePickerForLogo()} />
+            onclick={() => (currentGym.logoUrl !== "" && currentGym.logoUrl !== null) ? openModalLogo(true) : openFilePickerForLogo()} 
+            showText2 = {canEdit} />
 
           {/* Big logo */}
           <img
             className="logo_rounded180"
             src={(currentGym.logoUrl === "" || currentGym.logoUrl === null) ? logoPlaceholder : `http://77.222.53.122/image/${currentGym.logoUrl}`}
             style={{ cursor: "pointer" }}
-            onClick={()=>(currentGym.logoUrl === "" || currentGym.logoUrl === null) ? openFilePickerForLogo() : openModalLogo(true)}
+            onClick={()=>{
+              if (canEdit) {
+                if (currentGym.logoUrl === "" || currentGym.logoUrl === null) {
+                  openFilePickerForLogo();
+                } else {openModalLogo(true)}
+              }
+            }}
             draggable={false}
             alt="logo180"/>
           <input
@@ -298,7 +308,11 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
             {/* Medium logo */}
             <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
               <img
-                onClick={() => openModalLogo(true)}
+                onClick={() => {
+                  if (canEdit) {
+                    openModalLogo(true)
+                  }
+                }}
                 className="logo_rounded90"
                 style={{ cursor: "pointer" }}
                 src={`http://77.222.53.122/image/${imageToCompressedFormatM}`}
@@ -307,7 +321,11 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
             </div>
             <div className="flex flex-col gap-[10px] ml-[10px] justify-end">
               <img
-                onClick={() => openModalLogo(true)}
+                onClick={() => {
+                  if (canEdit) {
+                    openModalLogo(true)
+                  }
+                }}
                 className="logo_rounded50"
                 style={{ cursor: "pointer" }}
                 src={`http://77.222.53.122/image/${imageToCompressedFormatS}`}
@@ -359,7 +377,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   text1={"Название заведения"}
                   text2={"Изменить"}
                   isRedText={isNameEditingEnabled}
-                  onclick={() => setNameEditing(true)}/>
+                  onclick={() => setNameEditing(true)}
+                  showText2 = {canEdit} />
                 <div className="text-[13px] font-normal font-inter">
                   {currentGym.name}
                 </div>
@@ -371,6 +390,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   text1={"Название заведения"}
                   text2={"Отменить"}
                   isRedText={isNameEditingEnabled}
+                  showText2 = {canEdit} 
                   onclick={() => {
                     if (currentGymState.isChangesOccured) {
                       dispatch(getCurrentGym(currentGym.id));
@@ -415,7 +435,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   text1={"Описание"}
                   text2={"Изменить"}
                   isRedText={isDescribtionEdittingEnabled}
-                  onclick={() => {setDescribtionEditing(true)}}/>
+                  onclick={() => {setDescribtionEditing(true)}} 
+                  showText2 = {canEdit} />
                 <div className="leading-[14px] text-[13px] font-normal font-inter">
                   {currentGym.description}
                 </div>
@@ -427,6 +448,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   text1={"Описание"}
                   text2={"Отменить"}
                   isRedText={isDescribtionEdittingEnabled}
+                  showText2 = {canEdit} 
                   onclick={() => {
                     if (currentGymState.isChangesOccured) {
                       dispatch(getCurrentGym(currentGym.id));
@@ -471,7 +493,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   text1={"Адрес"}
                   text2={"Изменить"}
                   isRedText={isAddressEdittingEnabled}
-                  onclick={() => {setAddressEditting(true)}}/>
+                  onclick={() => {setAddressEditting(true)}} 
+                  showText2 = {canEdit} />
                 <div className="leading-[16px] text-[13px] font-normal font-inter">
                   {currentGym.address}
                 </div>
@@ -483,6 +506,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   text1={"Адрес"}
                   text2={"Отменить"}
                   isRedText={isAddressEdittingEnabled}
+                  showText2 = {canEdit} 
                   onclick={() => {
                     if (currentGymState.isChangesOccured) {
                       dispatch(getCurrentGym(currentGym.id));
@@ -515,14 +539,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                                 latitude: lat,
                                 longitude: lon,
                               };
-                              await dispatch(
-                                patchGymAddress({
-                                  id,
-                                  address,
-                                  latitude,
-                                  longitude,
-                                })
-                              );
+                              await dispatch(patchGymAddress({id,address,latitude,longitude}));
                               dispatch(getCurrentGym(currentGym.id));
                               setAddressEditting(false);
                               dispatch(resetChanges())}}>
@@ -541,7 +558,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
               <TextAndTextButton
                 text1={"Контакты"}
                 text2={"Изменить"}
-                onclick={() => setContactsEditting(true)}/>
+                onclick={() => setContactsEditting(true)}
+                showText2 = {canEdit} />
               <div className="flex flex-row gap-[24px]">
                 {/* Phone */}
                 <div className="icon_and_tag">

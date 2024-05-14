@@ -17,7 +17,7 @@ import TextAndTextButton from "../../../components/text_and_textbutton";
 import CustomDialog from "../../../../../components/dialog/dialog";
 import ReactInputMask from "react-input-mask";
 import { useDispatch, useSelector } from "react-redux";
-
+import AppConstants from "../../../../../config/app_constants";
 import {
   selectAnEmployee,
   changeSelectedEmployeesName,
@@ -41,6 +41,7 @@ import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 export default function Employees({ listOfEmployees, gymId }) {
   const dispatch = useDispatch();
   const employeesSlice = useSelector((state) => state.employees);
+  const canEdit = localStorage.getItem(AppConstants.keyRoleId) === "1" || localStorage.getItem(AppConstants.keyRoleId) === "3";
 
   // use state for add employees dialog
   const [nameTextfieldHasFocus, setNameFocus] = useState(false);
@@ -119,6 +120,7 @@ export default function Employees({ listOfEmployees, gymId }) {
           text1={"Сотрудники"}
           text2={listOfEmployees && listOfEmployees?.length === 0 ? "" : "Редактировать"}
           onclick={() => listOfEmployees?.length === 0 ? {} : openRefEmployeesDialog(true)}
+          showText2={canEdit}
         />
         {listOfEmployees?.length !== 0 && isRefEmployeesDialogOpened && (
           <CustomDialog
@@ -341,8 +343,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                   title={employeesSlice.isChangesOccured ? "Применять изменения" : "Завершить редактирование"}
                   onСlick={async () => {
                     if (employeesSlice.isChangesOccured) {
-                      const { id, roles, firstName, lastName, login } =
-                        employeesSlice.selectedEmployee;
+                      const { id, roles, firstName, lastName, login } = employeesSlice.selectedEmployee;
                       await dispatch(editEmployee({gymId,id,roles,firstName,lastName,login}));
                       dispatch(getListOfEmployees(gymId));
                     }
@@ -561,8 +562,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                             },
                           ],
                         };
-                        await dispatch(
-                          addEmployee({gymId,firstName,lastName,login,roles}));
+                        await dispatch(addEmployee({gymId,firstName,lastName,login,roles}));
                         dispatch(getListOfEmployees(gymId));
                         openAddEmployeesDialog(false);
                         if (isFromRef) {

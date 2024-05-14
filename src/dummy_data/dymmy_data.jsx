@@ -156,7 +156,7 @@ export const allRoles = [
     id: 1,
     code: "ROLE_OWNER",
     name: "Владелец",
-    priveledges: [1, 2, 3, 4, 5,6],
+    priveledges: [1, 2, 3, 4, 5, 6],
   },
   /* {
     id: 2,

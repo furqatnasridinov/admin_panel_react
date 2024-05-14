@@ -134,7 +134,9 @@ const Sidebar = () => {
     if (gymsState.currentGym !== null) {
       // сохраняем текущий зал в sessionStorage
       sessionStorage.setItem("currentGym", JSON.stringify(gymsState.currentGym));
-      dispatch(getNewClients(gymsState.currentGym?.id));
+      if (localStorage.getItem(AppConstants.keyRoleId) !== "5"){
+        dispatch(getNewClients(gymsState.currentGym?.id));
+      }
     }
   }, [gymsState.currentGym]);
 
