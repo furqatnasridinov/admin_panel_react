@@ -329,26 +329,6 @@ const Sidebar = () => {
                   </button>
                 </div>
               </div>
-
-              {/* <NavLink
-                id="sidebarOnclick"
-                to="/help"
-                className={({ isActive }) =>
-                  isActive && !isClientsActive
-                    ? "sidebar_section active_sidebar_section"
-                    : "sidebar_section"
-                }
-                onClick={(sidebarOnclick) => {
-                  if (isClientsActive) {
-                    setClientsActive(false);
-                  }
-                }}
-              >
-                <img src={questionLogo} alt="" />
-
-                {isTextShown && <div>Помощь</div>}
-              </NavLink> */}
-
               <NavLink
                 id="sidebarOnclick"
                 to="/settingsPage"
@@ -358,13 +338,9 @@ const Sidebar = () => {
                     : "sidebar_section"
                 }
                 onClick={() => {
-                  if (isClientsActive) {
-                    setClientsActive(false);
-                  }
-                }}
-              >
+                  if (isClientsActive) {setClientsActive(false)}
+                }}>
                 <img src={settingsLogo} alt="" />
-
                 {isTextShown && <div>Настройки</div>}
               </NavLink>
             </div>
@@ -373,8 +349,7 @@ const Sidebar = () => {
       ))
   ) : (
     <div
-      className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}
-    >
+      className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}>
       {/* Название ИП */}
       <button
         onClick={handleClickMenuCompany}
@@ -430,24 +405,6 @@ const Sidebar = () => {
               </div>
             )}
           </NavLink>
-
-          {/* <NavLink
-            id="sidebarOnclick"
-            to="/statisticksPage"
-            className={({ isActive }) =>
-              isActive
-                ? "sidebar_section_closed active_sidebar_section"
-                : "sidebar_section_closed"
-            }
-            onClick={() => {
-              if (isClientsActive) {
-                setClientsActive(false);
-              }
-            }}
-          >
-            <img src={statsLogo} alt="" />
-          </NavLink> */}
-
           <NavLink
             id="sidebarOnclick"
             to="/myGymsPage"
@@ -501,38 +458,17 @@ const Sidebar = () => {
             </div>
           </div>
 
-          {/* <NavLink
-            id="sidebarOnclick"
-            to="/help"
-            className={({ isActive }) =>
-              isActive
-                ? "sidebar_section_closed active_sidebar_section"
-                : "sidebar_section_closed"
-            }
-            onClick={() => {
-              if (isClientsActive) {
-                setClientsActive(false);
-              }
-            }}
-          >
-            <img src={questionLogo} alt="" />
-          </NavLink> */}
-
           <NavLink
             id="sidebarOnclick"
             to="/settingsPage"
             className={({ isActive }) =>
-              isActive
-                ? "sidebar_section_closed active_sidebar_section"
-                : "sidebar_section_closed"
+              isActive ? "sidebar_section_closed active_sidebar_section" : "sidebar_section_closed"
             }
             onClick={() => {
-              if (isClientsActive) {
-                setClientsActive(false);
-              }
+              if (isClientsActive) {setClientsActive(false)}
             }}
           >
-            <img src={settingsLogo} alt="" />
+            <img src={settingsLogo} alt="settingsLogo" />
           </NavLink>
         </div>
       </div>

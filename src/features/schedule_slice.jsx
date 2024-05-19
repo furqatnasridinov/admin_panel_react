@@ -8,7 +8,7 @@ export const getSchedules = createAsyncThunk(
   "scheduleSlice/getSchedules",
   async (gymId) => {
     try {
-      const response = await axiosClient.get(`api/gym/${gymId}/schedule`);
+      const response = await axiosClient.get(`api/admin/gyms/${gymId}/schedule`);
       if (response.data["operationResult"] === "OK") {
         const listToCollect = [];
         function parseDuration(duration) {
