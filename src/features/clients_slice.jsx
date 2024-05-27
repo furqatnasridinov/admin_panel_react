@@ -59,10 +59,10 @@ export const acceptClient = createAsyncThunk(
 
 export const rejectClient = createAsyncThunk(
   "clientsSlice/rejectClient",
-  async ({ gymId, waitingId }) => {
+  async ({ gymId, waitingId, reason }) => {
     try {
       const response = await axiosClient.patch(
-        `api/admin/gyms/${gymId}/waiting/${waitingId}/false`
+        `api/admin/gyms/${gymId}/waiting/${waitingId}/false?reason=${reason}`
       );
     } catch (error) {
       toast(`rejectClient ${error}`);
