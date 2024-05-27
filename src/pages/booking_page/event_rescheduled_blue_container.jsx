@@ -331,6 +331,7 @@ export default function EventRescheduledBlueContainer({
                 const rejectingRequest = {
                   gymId: reScheduledEvent.gymId,
                   waitingId: reScheduledEvent.id,
+                  reason : "lesson_rescheduled",
                 };
                 await dispatch(rejectClient(rejectingRequest));
                 dispatch(getNewClients(reScheduledEvent.gymId));

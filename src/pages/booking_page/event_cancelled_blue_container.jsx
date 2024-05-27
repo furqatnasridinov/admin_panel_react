@@ -80,6 +80,7 @@ export default function EventCancelledBlueContainer({
             const request = {
               gymId: event.gymId,
               waitingId: event.id,
+              reason : "lesson_cancelled",
             };
             await dispatch(rejectClient(request));
 

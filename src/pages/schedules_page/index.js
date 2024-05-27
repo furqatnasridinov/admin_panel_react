@@ -446,17 +446,17 @@ export default function SchedulesPage() {
 
 function Navigation({ onPreviousClick, onNextClick }) {
   return (
-    <div className="flex flex-row ">
+    <div className="flex flex-row justify-center items-center">
       <img
         onClick={onPreviousClick}
         src={previousSvg}
-        className="cursor-pointer"
+        className="cursor-pointer w-[33px] h-[33px]"
         alt=""
       ></img>
       <img
         onClick={onNextClick}
         src={nextSvg}
-        className="cursor-pointer"
+        className="cursor-pointer w-[33px] h-[33px]"
         alt=""
       ></img>
     </div>

@@ -203,6 +203,7 @@ export default function NoPlacesBlueContainer({ event, onPop }) {
             const request = {
               gymId: event.gymId,
               waitingId: event.id,
+              reason: "no_places_left",
             };
             await dispatch(rejectClient(request));
             dispatch(getSchedules(event.gymId));
