@@ -5,6 +5,7 @@ import activitiesSlice from "../features/activities_slice";
 import scheduleSlice from "../features/schedule_slice";
 import clientsSlice from "../features/clients_slice";
 import loginSlice from "../features/register"
+import statsSlice from "../features/statisticks"
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     schedule: scheduleSlice,
     clients: clientsSlice,
     login : loginSlice,
+    stats : statsSlice,
   },
 });

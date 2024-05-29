@@ -31,13 +31,10 @@ export default function GymDetailesHeader({
   function openCloseDropDown() {
     openDropDown(!isDropDownOpened);
   }
-
   function setCurrentGymAndPop(gym) {
     selectAnotherGym(gym);
     openCloseDropDown();
   }
-
-
   const handleDownload = () => {
     try {
       const fileName = `qrcode_${gym.name}.jpg`
@@ -81,6 +78,7 @@ export default function GymDetailesHeader({
           <div className="text-[14px font-normal]">{gym.name}</div>
         )}
       </div>
+
       <div className="flex flex-row items-center gap-2">
         <CustomButton
           width={"340px"}
@@ -100,6 +98,7 @@ export default function GymDetailesHeader({
           />
         </div>
       </div>
+
       {isTooltipVisible && (
         <div
           className="overlay"
