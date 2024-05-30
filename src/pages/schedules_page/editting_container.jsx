@@ -37,7 +37,6 @@ import backButton from "../../assets/svg/back_button.svg";
 import psych from "../../assets/images/american_psycho.jpg";
 import { WEEK_DAYS } from "../../dummy_data/dymmy_data";
 import questionLogo from "../../assets/svg/questionModal.svg";
-import { isEqual } from 'lodash';
 import alertSvg from "../../assets/svg/alert.svg"
 import groupSvg from "../../assets/svg/autoAccept2.svg"
 import hiddenSvg from "../../assets/svg/hidden.svg"
