@@ -2,7 +2,7 @@ import "./index.css";
 import Sidebar from "./components/sidebar/sidebar";
 import { BrowserRouter, Routes, Route,useLocation } from "react-router-dom";
 import MyGymsPage from "./pages/my_gyms_page/my_gyms_page";
-import StatisticksPage from "./pages/statisticks_page/statisticks_page";
+import StatisticksPage from "./pages/statisticks_page/index";
 import SchedulesPage from "./pages/schedules_page";
 import Help from "./pages/help";
 import SettingsPage from "./pages/settings_page";
@@ -36,10 +36,7 @@ function Content() {
             <Route path="/bookingPage" element={<BookingPage />}></Route>
             
             <Route path="/waitingClientsPage" element={<ClientsPage />}></Route>
-            <Route
-              path="/statisticksPage"
-              element={<StatisticksPage />}
-            ></Route>
+            <Route path="/statisticksPage" element={<StatisticksPage />}></Route>
             <Route path="/myGymsPage" element={<MyGymsPageLayout />}>
               {/* we declare nested navigation because MyGymsPage has two screens */}
               <Route index element={<MyGymsPage />} />

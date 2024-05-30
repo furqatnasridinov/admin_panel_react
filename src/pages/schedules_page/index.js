@@ -419,12 +419,7 @@ export default function SchedulesPage() {
         {gymState.currentGym !== null &&
           activitiesState.selectedActivity !== "" && (
             <div
-              className={
-                scheduleState.isEdittingContainerShown
-                  ? "zoomButtons right-[400px]"
-                  : "zoomButtons right-[1.5%]"
-              }
-            >
+              className={scheduleState.isEdittingContainerShown ? "zoomButtons right-[400px]" : "zoomButtons right-[1.5%]"}>
               <img
                 src={ZoomINSvg}
                 alt="zoomIn"

@@ -3,6 +3,7 @@ import "../sidebar/sidebar.css";
 import locationIcon from "../../assets/svg/location.svg";
 import calendarLogo from "../../assets/svg/calendar.svg";
 import settingsLogo from "../../assets/svg/settings.svg";
+import statisticksLogo from "../../assets/svg/statisticks.svg"
 import sidebarOpenedLogo from "../../assets/svg/sidebar_opened.svg";
 import sidebarClosedLogo from "../../assets/svg/sidebar_closed.svg";
 import userLogoSvg from "../../assets/svg/contacts.svg";
@@ -152,7 +153,7 @@ const Sidebar = () => {
         <div
           id="sidebar"
           ref={sideBarRef}
-          className={`${sidebarWidth} h-[96vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}>
+          className={`${sidebarWidth} h-[97vh] pb-[10px] bg-white rounded-[16px] flex flex-col`}>
           {/* Название ИП */}
           <button
             ref={sidebarHeaderRef}
@@ -173,10 +174,7 @@ const Sidebar = () => {
 
             {isTextShown && (
               <div className="text-[14px] font-normal  line-clamp-2 text-ellipsis">
-              {registerState.user && (
-                registerState.user?.firstName +
-                (registerState.user?.lastName ? " " + registerState.user?.lastName : "")
-              )}
+              {registerState.user && (registerState.user?.firstName +(registerState.user?.lastName ? " " + registerState.user?.lastName : ""))}
             </div>
             )}
           </button>
@@ -274,13 +272,28 @@ const Sidebar = () => {
                       </NavLink>
                     </div>
                   )}
+
+                  <NavLink
+                    id="sidebarOnclick"
+                    to="/statisticksPage"
+                    className={({ isActive }) =>
+                      isActive && !isClientsActive ? "sidebar_section active_sidebar_section" : "sidebar_section"
+                    }
+                    onClick={() => {
+                      if (isClientsActive) {
+                        setClientsActive(false);
+                      }
+                    }}
+                  >
+                    <img src={statisticksLogo} alt="" />
+                    {isTextShown && <div>Статистика</div>}
+                  </NavLink>
+                  
                   <NavLink
                     id="sidebarOnclick"
                     to="/myGymsPage"
                     className={({ isActive }) =>
-                      isActive && !isClientsActive
-                        ? "sidebar_section active_sidebar_section"
-                        : "sidebar_section"
+                      isActive && !isClientsActive ? "sidebar_section active_sidebar_section" : "sidebar_section"
                     }
                     onClick={() => {
                       if (isClientsActive) {
@@ -289,7 +302,6 @@ const Sidebar = () => {
                     }}
                   >
                     <img src={locationIcon} alt="" />
-
                     {isTextShown && <div>Мои заведения</div>}
                   </NavLink>
                 </>
@@ -312,7 +324,7 @@ const Sidebar = () => {
                   }
                 }}
               >
-                <img src={calendarLogo} alt="" />
+                <img src={calendarLogo} alt="calendarLogo" />
 
                 {isTextShown && <div>Расписание</div>}
               </NavLink>
@@ -386,17 +398,15 @@ const Sidebar = () => {
       <div className="flex flex-col justify-between flex-grow">
         {/* Первые четыре элемена */}
         <div className="flex flex-col">
-          {localStorage.getItem(AppConstants.keyRoleId) !== "5" &&
+        {localStorage.getItem(AppConstants.keyRoleId) !== "5" &&
           <>
-          <NavLink
-            id="sidebarOnclick"
-            to="/bookingPage"
-            className={({ isActive }) =>
-              isActive || isClientsActive
-                ? "sidebar_section_closed active_sidebar_section"
-                : "sidebar_section_closed relative"
-            }
-          >
+            <NavLink
+              id="sidebarOnclick"
+              to="/bookingPage"
+              className={({ isActive }) =>
+                isActive || isClientsActive ? "sidebar_section_closed active_sidebar_section"
+                  : "sidebar_section_closed relative"}
+            >
             <img src={userLogoSvg} alt="" />
 
             {clientsSlice.waitingForAccept?.length > 0 && (
@@ -404,39 +414,41 @@ const Sidebar = () => {
                 {clientsSlice.waitingForAccept?.length}
               </div>
             )}
-          </NavLink>
-          <NavLink
-            id="sidebarOnclick"
-            to="/myGymsPage"
-            className={({ isActive }) =>
-              isActive
-                ? "sidebar_section_closed active_sidebar_section"
-                : "sidebar_section_closed"
-            }
-            onClick={() => {
-              if (isClientsActive) {
-                setClientsActive(false);
+            </NavLink>
+            <NavLink
+              id="sidebarOnclick"
+              to="/statisticksPage"
+              className={({ isActive }) =>
+                isActive ? "sidebar_section_closed active_sidebar_section" : "sidebar_section_closed"
               }
-            }}
-          >
-            <img src={locationIcon} alt="" />
-          </NavLink>
+              onClick={() => {
+                if (isClientsActive) {setClientsActive(false)}
+              }}
+            >
+              <img src={statisticksLogo} alt="" />
+            </NavLink>
+            <NavLink
+              id="sidebarOnclick"
+              to="/myGymsPage"
+              className={({ isActive }) =>
+                isActive ? "sidebar_section_closed active_sidebar_section" : "sidebar_section_closed"
+              }
+              onClick={() => {
+                if (isClientsActive) {setClientsActive(false)}
+              }}
+            >
+              <img src={locationIcon} alt="" />
+            </NavLink>
           </>}
           <NavLink
             id="sidebarOnclick"
             to="/schedulePage"
             className={({ isActive }) =>
-              isActive
-                ? "sidebar_section_closed active_sidebar_section"
-                : "sidebar_section_closed"
+              isActive ? "sidebar_section_closed active_sidebar_section" : "sidebar_section_closed"
             }
             onClick={() => {
-              if (isClientsActive) {
-                setClientsActive(false);
-              }
-              if (scheduleState.isNavigationFromBooking) {
-                dispatch(setNavigationFromBooking(false));
-              }
+              if (isClientsActive) {setClientsActive(false)}
+              if (scheduleState.isNavigationFromBooking) {dispatch(setNavigationFromBooking(false))}
             }}
           >
             <img src={calendarLogo} alt="" />
@@ -464,9 +476,7 @@ const Sidebar = () => {
             className={({ isActive }) =>
               isActive ? "sidebar_section_closed active_sidebar_section" : "sidebar_section_closed"
             }
-            onClick={() => {
-              if (isClientsActive) {setClientsActive(false)}
-            }}
+            onClick={() => {if (isClientsActive) {setClientsActive(false)}}}
           >
             <img src={settingsLogo} alt="settingsLogo" />
           </NavLink>

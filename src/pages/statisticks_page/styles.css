@@ -1,0 +1,115 @@
+.statistickPage {
+    height: 97vh;
+    margin-left: 10px;
+    overflow-y: auto;
+}
+
+.statistickHeader {
+    height: 82px;
+    margin-bottom: 10px;
+    padding-left: 35px;
+    padding-right: 19px;
+    padding-top: 21px;
+    padding-bottom: 21px;
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 16px;
+}
+
+.card {
+    height: fit-content;
+    width: 100%;
+    background-color: white;
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.indicatorBg {
+    position: relative;
+    background-color: rgba(245, 249, 255, 1);
+    width: 100%;
+    height: 30px;
+    border-radius: 32px;    
+    border: 1px solid rgba(212, 229, 255, 1);
+}
+
+.indicator {
+    position: absolute;
+    left: 0;
+    background-color: rgba(212, 229, 255, 1);
+    height: 100%;
+    border-radius: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cirlce {
+    position: absolute;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: rgba(157, 193, 245, 1);
+    margin-right: 8px;
+}
+
+.buttonCongrats {
+    position: relative;
+    background-color: rgba(119, 170, 249, 1);
+    width: 100%;
+    height: 30px;
+    border-radius: 32px;    
+    border: 1px solid  rgba(62, 134, 245, 1);
+    box-shadow: 0px 1px 3.3px 0px rgba(212, 229, 255, 1);
+    box-shadow: 0px 11px 15.9px -10px rgba(157, 193, 245, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.periodText{
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(62, 134, 245, 1);
+    cursor: pointer;
+}
+
+.selectedPeriod{
+    padding: 5px 5px;
+    background-color: rgba(119, 170, 249, 1);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+}
+
+.secondaryCard{
+    height: 124px;
+    width: fit-content;
+    background-color: rgba(245, 249, 255, 1);
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    align-items: center;
+}
+
+.donutBg{
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: 1px solid  rgba(212, 229, 255, 1);
+    background-color: rgba(245, 249, 255, 1);
+    position: relative;
+}
+
+.centerIcon{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
