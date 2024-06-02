@@ -32,7 +32,7 @@ export const getNewClients = createAsyncThunk(
               item.lessonId,
               item.repeat,
               item.usersCount,
-              item.description
+              item.description,
             )
           );
         });
