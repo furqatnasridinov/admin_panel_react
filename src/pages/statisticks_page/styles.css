@@ -72,6 +72,7 @@
 }
 
 .periodText{
+    padding: 5px 5px;
     font-size: 14px;
     font-weight: 400;
     color: rgba(62, 134, 245, 1);
@@ -112,4 +113,29 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.popularDestinationsBlock{
+    height: 124px;
+    width: fit-content;
+    min-width: 402px;
+    background-color: rgba(245, 249, 255, 1);
+    border-radius: 16px;
+    padding: 16px 32px 16px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.scrollableBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 32px;
+    width: 900px;
+    overflow-x: auto;
+    /* hide scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    
 }
