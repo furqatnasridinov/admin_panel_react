@@ -10,11 +10,12 @@ import { RequestForToken } from "../../firebase/firebase";
 export default function MyGymsPage() {
   const clientsSlice = useSelector((state) => state.clients);
   const dispatch = useDispatch();
-  useEffect(()=>{
+
+/*   useEffect(()=>{
     // request for fcm
     dispatch(getListOfGyms());
       //RequestForToken();
-  },[])
+  },[]) */
 
   return (
     console.log(`jwt token ${localStorage.getItem(AppConstants.keyToken)}`),

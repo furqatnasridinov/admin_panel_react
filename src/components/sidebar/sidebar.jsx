@@ -80,7 +80,7 @@ const Sidebar = () => {
   useEffect(() => {
     // Добавляем обработчик события при монтировании
     window.addEventListener("resize", handleResize);
-
+    
     dispatch(getListOfGyms());
     dispatch(getUser());
 
