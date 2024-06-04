@@ -63,10 +63,13 @@ export default function StatisticksPage() {
               );
             })}
           </div>
-
-          <Visitors stat={statsState.stat} /> 
-          <VisitsSummary selectedPeriod={statsState.selectedPeriod} /> 
-          <AdminsWorksStats stat={statsState.stat} />         
+          {statsState.stat && 
+             <>
+                <Visitors stat={statsState.stat} /> 
+                <VisitsSummary selectedPeriod={statsState.selectedPeriod} stat={statsState.stat} /> 
+                <AdminsWorksStats stat={statsState.stat} /> 
+             </>
+          }       
        </div>
     </div>
   );

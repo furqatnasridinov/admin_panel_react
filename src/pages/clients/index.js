@@ -6,11 +6,6 @@ import WillCome from "./will_come";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import {
-  getListOfGyms,
-  setCurrentGymFromFirstItem,
-
-} from "../../features/current_gym_slice";
-import {
   getAlreadyCameToday,
   getWillComeToday,
   getNewClients

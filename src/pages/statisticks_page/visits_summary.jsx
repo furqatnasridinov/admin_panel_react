@@ -6,7 +6,7 @@ import { useRef } from 'react';
 import nextButton from "../../assets/images/nextButtonStats.svg";
 import { DAYS_OF_MONTH, DAYS_OF_WEEK, MONTHS_OF_YEAR } from '../../dummy_data/dymmy_data'
 
-export default function VisitsSummary({selectedPeriod}) {
+export default function VisitsSummary({selectedPeriod, stat}) {
   const scrollContainerRef = useRef(null);
 
 
@@ -40,15 +40,16 @@ export default function VisitsSummary({selectedPeriod}) {
       }
     }
 
-
-  const data = selectedPeriod === "year" ? MONTHS_OF_YEAR.map(month => month[Object.keys(month)[0]]) : selectedPeriod === "month" ? 
+/*   const data = selectedPeriod === "year" ? MONTHS_OF_YEAR.map(month => month[Object.keys(month)[0]]) : selectedPeriod === "month" ? 
       DAYS_OF_MONTH.map(day => day[Object.keys(day)[0]]) : selectedPeriod === "week" ? DAYS_OF_WEEK.map(day => day[Object.keys(day)[0]]) : [12];
 
   const labels = selectedPeriod === "year" ? MONTHS_OF_YEAR.map(month => Object.keys(month)[0]) : selectedPeriod === "month" ? 
-      DAYS_OF_MONTH.map(day => Object.keys(day)[0]) : selectedPeriod === "week" ? DAYS_OF_WEEK.map(day => Object.keys(day)[0]) : ['Сегодня'];
+      DAYS_OF_MONTH.map(day => Object.keys(day)[0]) : selectedPeriod === "week" ? DAYS_OF_WEEK.map(day => Object.keys(day)[0]) : ['Сегодня']; */
+  const data = Object.values(stat?.summaryVisitors);
+  const labels = Object.keys(stat?.summaryVisitors);
 
   return (
-    <div className="flex flex-row gap-[20px] items-center">
+    <div style={{/* width : "65%" */}} className="flex flex-row gap-[20px] items-center">
       <div ref={scrollContainerRef} className='scrollableBlock'>
         <span className='text-[14px] font-bold'>Сводка по посещениям:</span>
 

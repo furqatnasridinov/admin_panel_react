@@ -132,10 +132,11 @@
     flex-direction: column;
     gap: 16px;
     margin-top: 32px;
-    width: 900px;
+    /* width: 900px; */
+    max-width: 1200px;
     overflow-x: auto;
     /* hide scrollbar */
     scrollbar-width: none;
     -ms-overflow-style: none;
-    
+    /* background-color: violet; */
 }

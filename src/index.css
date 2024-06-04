@@ -7,13 +7,14 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Raleway;
+  font-family: "Raleway", sans-serif, "Inter", sans-serif;
   color: rgba(37, 37, 37, 1);
   font-variant-numeric: lining-nums proportional-nums;
   /* Изменение полосы прокрутки для всего документа */
   ::-webkit-scrollbar {
     width: 7px; /* ширина полосы прокрутки */
   }
+
 
   ::-webkit-scrollbar-thumb {
     background: #888; /* цвет ползунка полосы прокрутки */
