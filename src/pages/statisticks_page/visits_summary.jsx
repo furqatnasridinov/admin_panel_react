@@ -100,9 +100,11 @@ export default function VisitsSummary({selectedPeriod, stat, loading}) {
                     drawOnChartArea: false,
                   },
                   ticks: {
+                    // Даты
                     color: 'black',
                     font: {
-                      size: 13,
+                      size: 14,
+                      lineHeight: 1.2,
                       weight: 'normal',
                       family: 'Raleway'
                     }
@@ -118,9 +120,11 @@ export default function VisitsSummary({selectedPeriod, stat, loading}) {
                     borderDash: [5, 5],  // стиль линий сетки на оси Y
                   },
                   ticks: {
+                    // Цыфры
                     color: 'black',
                     font: {
-                      size: 13,
+                      size: 10,
+                      lineHeight: 1.2,
                       weight: 'normal',
                       family: 'Raleway'
                     },
@@ -159,7 +163,7 @@ export default function VisitsSummary({selectedPeriod, stat, loading}) {
 function getMaxWidth(selectedPeriod) {
   switch (selectedPeriod) {
     case "year":
-      return "900px";
+      return "1000px";
     case "month":
       return "2100px";
     case "week":
