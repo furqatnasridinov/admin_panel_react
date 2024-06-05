@@ -52,41 +52,43 @@ export function getColorOfActivity({activityName}) {
 export function getMonthName(month) {
     switch (month) {
         case 1:
+        case "January":
             return "Январь";
-            break;
         case 2:
+        case "February":
             return "Февраль";
-            break;
         case 3:
+        case "March":
             return "Март";
-            break;
         case 4:
+        case "April":
             return "Апрель";
-            break;
         case 5:
+        case "May":
             return "Май";
-            break;
         case 6:
+        case "June":
             return "Июнь";
-            break;
         case 7:
+        case "July":
             return "Июль";
-            break;
         case 8:
+        case "August":
             return "Август";
-            break;
         case 9:
+        case "September":
             return "Сентябрь";
-            break;
         case 10:
+        case "October":
             return "Октябрь";
-            break;
         case 11:
+        case "November":
             return "Ноябрь";
-            break;
         case 12:
+        case "December": 
             return "Декабрь";
-            break;
+        default:
+            return "";
     }
 }
 
@@ -143,13 +145,117 @@ export function getDayAndMonth(day) {
    }
 }
 
-export function getSortedKeys( arr ) {
-  const todayInt = new Date().getDate();
-  return arr.sort((a, b) => {
-    if (a > todayInt && b > todayInt) {
-      return a - b;
-    }else{
-      return b - a;
+export function getAllKeysForYearperiod() {
+    const currentMonth = new Date().getMonth() + 1; // getMonth() returns month index starting from 0
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = 0; i < 13; i++) {
+        const month = (currentMonth - i - 1 + 12) % 12 + 1; // calculate the month for each key
+        const year = currentYear - ((month > currentMonth || i == 0) ? 1 : 0); // subtract 1 from the year if the month is greater than the current month
+        years.unshift(`${month}.${year}`); // add the key to the start of the array
     }
-  });
+    return years;
+}
+
+export function reorderObjectByDate(obj){
+    //{April 2024 : "1", August 2023 : "12", December 2023 : "4", February 2024 : "12",}
+    // to
+    // {August 2023 : "12", December 2023 : "4", February 2024 : "12", April 2024 : "1"}
+    const ordered = {};
+    Object.keys(obj)
+        .sort((a, b) => new Date(a) - new Date(b)) // convert keys to Date objects for sorting
+        .forEach(function(key) {
+            ordered[key] = obj[key];
+        });
+    return ordered;
+}
+
+export function getMonthWord(date) {
+    if (date) {
+        // from April 2024 to Апрель and if it is the current month $currenday $month
+        try {
+            const dateObj = new Date(date);
+            const today = new Date();
+            const todayMonth = today.getMonth();
+            const todayYear = today.getFullYear();
+            const month = dateObj.getMonth();
+            const year = dateObj.getFullYear();
+            if (todayMonth === month && todayYear === year) {
+                return `${today.getDate()} ${getMonthName(month + 1)}`;
+            }
+            return `${getMonthName(month + 1)}`;
+        } catch (error) {
+            throw new Error(`getMonthWord ${error}`);
+        }
+    }
+}
+
+export function getAllKeysForMonthperiod() {
+    // if today is 5.6.2024 then from 4.5.2024 to 5.6.2024
+    const currentDate = new Date();
+    const days = [];
+    for (let i = 0; i <= getMonthMaxDays(); i++) {
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - i);
+        const day = date.getDate();
+        const month = date.getMonth() + 1; // getMonth() returns month index starting from 0
+        const year = date.getFullYear();
+        days.unshift(`${day}.${month}.${year}`);
+    }
+    return days;
+}
+
+export function getDayAndMonth2(date){
+    // from 1.6.2024 to 1 June
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const parts = date.split('.');
+    const day = parts[0];
+    const monthIndex = parts[1] - 1; // getMonth() returns month index starting from 0
+    const monthName = monthNames[monthIndex];
+    return `${day} ${monthName}`;
+}
+
+export function reorderObjectByDate2(obj){
+    //{1 June  : "1", 10 May : "12", 2 June  : "4",}
+    // to
+    // {10 May : "12", 2 June  : "4", 1 June  : "1"}
+    const ordered = {};
+    Object.keys(obj)
+        .sort((a, b) => new Date(a) - new Date(b)) // convert keys to Date objects for sorting
+        .forEach(function(key) {
+            ordered[key] = obj[key];
+        });
+    return ordered;
+}
+
+export function getTranslatedDayAndMonth(date) {
+    // from 1 June to 1 Июня
+    const parts = date.split(' ');
+    const day = parts[0];
+    const month = parts[1];
+    return `${day} ${getMonthName(month)}`;
+}
+
+
+
+export function getAllKeysForWeekperiod() {
+    // if today is 5.6.2024 then from 29.5.2024 to 5.6.2024, 8 days (from Monday to Monday)
+    const currentDate = new Date();
+    const days = [];
+    for (let i = 0; i <= 7; i++) {
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - i);
+        const day = date.getDate();
+        const month = date.getMonth() + 1; // getMonth() returns month index starting from 0
+        const year = date.getFullYear();
+        days.unshift(`${day}.${month}.${year}`);
+    }
+    return days;
+}
+
+export function getAllKeysForDayPeriod(){
+    // from 00:00 to 23:00 => [0:00, 1:00, 2:00, ... 23:00]
+    const hours = [];
+    for (let i = 0; i <= 23; i++) {
+        hours.push(`${i}:00`);
+    }
+    return hours;
 }

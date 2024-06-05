@@ -13,7 +13,7 @@ export default function Visitors({stat}) {
         <div className="flex flex-wrap gap-[16px]">
                 {/* Популярные направления donut  */}
                   <div className='popularDestinationsBlock'>
-                      <span className='text-nowrap text-[14px] font-medium'>Популярные направления</span>
+                      <span className='text-nowrap text-[14px] font-medium '>Популярные направления</span>
 
                       <div className="flex flex-wrap gap-[20px] items-center">
                           <div className='donutBg p-1'>
@@ -63,7 +63,7 @@ export default function Visitors({stat}) {
                {/* Всего посетителей */}
               <div className="secondaryCard">
                 <div className="flex flex-col gap-[10px]">
-                    <span className='text-[20px] font-semibold leading-[16px]'>Всего посетителей :</span>
+                    <span style={{fontWeight : "600"}} className='text-[20px]  leading-[16px] font-raleway'>Всего посетителей :</span>
                     <span className='text-[20px] font-semibold leading-[16px]'>{stat?.allVisits ?? "0"}</span>
                 </div>
               </div>

@@ -66,7 +66,7 @@ export default function StatisticksPage() {
           {statsState.stat && 
              <>
                 <Visitors stat={statsState.stat} /> 
-                <VisitsSummary selectedPeriod={statsState.selectedPeriod} stat={statsState.stat} /> 
+                <VisitsSummary selectedPeriod={statsState.selectedPeriod} stat={statsState.stat} loading={statsState.isLoading} /> 
                 <AdminsWorksStats stat={statsState.stat} /> 
              </>
           }       
