@@ -3,7 +3,11 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../config/axios_client";
 import { toast } from "react-toastify";
 import { Stat } from "../models/stats";
-import { getDayAndMonth, getMonthMaxDays, getMonthName, reOrderObject } from "../config/apphelpers";
+import { getAllKeysForDayPeriod, getAllKeysForMonthperiod, getAllKeysForWeekperiod, getAllKeysForYearperiod, 
+    getDayAndMonth2, 
+    reorderObjectByDate, 
+    reorderObjectByDate2
+} from "../config/apphelpers";
 
 export const getStats = createAsyncThunk(
     "stats/getStats",
@@ -38,7 +42,6 @@ const statsSlice = createSlice({
             state.isLoading = true;
         });
         builder.addCase(getStats.fulfilled, (state, action) => {
-            state.isLoading = false;
             const payload = action.payload;
             if (payload["operationResult"] === "OK") {
                 const data = payload["object"];
@@ -46,33 +49,65 @@ const statsSlice = createSlice({
                     if (data) {
                         const selectedPeriod = state.selectedPeriod;
                         if (selectedPeriod === "year") {
-                            const allKeys = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+                            const allKeys = getAllKeysForYearperiod();
                             allKeys.forEach(key => {
-                                if (!Object.keys(data.summaryVisitors).includes(String(key))) {
+                                if (!Object.keys(data.summaryVisitors).includes(key)) {
                                     data.summaryVisitors[key] = 0;
                                 }
                             });
-                            // заменить на цифры на названия месяцев
-                            data.summaryVisitors = Object.keys(data.summaryVisitors).reduce((acc, key) => {
-                                acc[getMonthName(Number(key))] = data.summaryVisitors[key];
+                             var newData = Object.keys(data.summaryVisitors).reduce((acc, key) => {
+                                const [month, year] = key.split(".");
+                                const date = new Date(year, month - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                                acc[date] = data.summaryVisitors[key];
                                 return acc;
-                            }, {});
+                              }, {});
+                              // сортировка по дате, по возрастанию
+                             newData = reorderObjectByDate(newData);
+                             data.summaryVisitors = newData;
+                             state.isLoading = false;
                         }
                         if (selectedPeriod === "month") {
-                            const allKeys = Array.from({ length: getMonthMaxDays() }, (_, i) => i + 1);
+                            const allKeys = getAllKeysForMonthperiod();
                             allKeys.forEach(key => {
-                                if (!Object.keys(data.summaryVisitors).includes(String(key))) {
+                                if (!Object.keys(data.summaryVisitors).includes(key)) {
                                     data.summaryVisitors[key] = 0;
                                 }
                             });
-                            
-                            // заменить на цифры на дни 25 мая
-                            data.summaryVisitors = Object.keys(data.summaryVisitors).reduce((acc, key) => {
-                                acc[getDayAndMonth(key)] = data.summaryVisitors[key];
+                            var newData = Object.keys(data.summaryVisitors).reduce((acc, key) => {
+                                const date = getDayAndMonth2(key);
+                                acc[date] = data.summaryVisitors[key];
                                 return acc;
                             }, {});
+                            newData = reorderObjectByDate2(newData);
+                            data.summaryVisitors = newData;
+                            state.isLoading = false;
                         }
-                        
+                        if (selectedPeriod === "week") {
+                            const allKeys = getAllKeysForWeekperiod();
+                            allKeys.forEach(key => {
+                                if (!Object.keys(data.summaryVisitors).includes(key)) {
+                                    data.summaryVisitors[key] = 0;
+                                }
+                            });
+                            var newData = Object.keys(data.summaryVisitors).reduce((acc, key) => {
+                                const date = getDayAndMonth2(key);
+                                acc[date] = data.summaryVisitors[key];
+                                return acc;
+                            }, {});
+                            newData = reorderObjectByDate2(newData);
+                            data.summaryVisitors = newData;
+                            state.isLoading = false;
+                        }
+                        if (selectedPeriod === "day") {
+                            const allKeys = getAllKeysForDayPeriod();
+                            const newData = {};
+                            allKeys.forEach(key => {
+                                const hour = key.split(':')[0];
+                                newData[key] = data.summaryVisitors[hour] || 0;
+                            });
+                            data.summaryVisitors = newData;
+                            state.isLoading = false;
+                        }
                         let stat = new Stat({
                             countBid: data.countBid,
                             visitByType: data.visitByType,
@@ -89,8 +124,8 @@ const statsSlice = createSlice({
                     }
                 } catch (error) {
                     toast(`getStats fulfilled ${error}`);
+                    state.isLoading = false;
                 }
-
             }
         });
         builder.addCase(getStats.rejected, (state) => {
