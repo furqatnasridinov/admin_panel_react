@@ -67,6 +67,26 @@ export default function BarSkeleton() {
             <div className="w-[50px] h-[50px] rounded-[8px] bg-blue-200"></div>
             {/* <div className="w-[50px] h-[10px] bg-purple-500"></div> */}
         </div>
+
+        <div className="absolute left-[760px] bottom-[8px] flex-col gap-[30px]">
+            <div className="w-[50px] h-[50px] rounded-[8px] bg-blue-200"></div>
+            {/* <div className="w-[50px] h-[10px] bg-purple-500"></div> */}
+        </div>
+
+        <div className="absolute left-[840px] bottom-[8px] flex-col gap-[30px]">
+            <div className="w-[50px] h-[60px] rounded-[8px] bg-blue-200"></div>
+            {/* <div className="w-[50px] h-[10px] bg-purple-500"></div> */}
+        </div>
+
+        <div className="absolute left-[920px] bottom-[8px] flex-col gap-[30px]">
+            <div className="w-[50px] h-[65px] rounded-[8px] bg-blue-200"></div>
+            {/* <div className="w-[50px] h-[10px] bg-purple-500"></div> */}
+        </div>
+
+        <div className="absolute left-[1000px] bottom-[8px] flex-col gap-[30px]">
+            <div className="w-[50px] h-[95px] rounded-[8px] bg-blue-200"></div>
+            {/* <div className="w-[50px] h-[10px] bg-purple-500"></div> */}
+        </div>
     </div>
   )
 }

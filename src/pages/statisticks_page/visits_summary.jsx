@@ -9,53 +9,60 @@ import BarSkeleton from './bar_skeleton';
 
 export default function VisitsSummary({selectedPeriod, stat, loading}) {
   const scrollContainerRef = useRef(null);
-
+  const barRef = useRef(null);
 
     // functions
     const handleNextButtonClick = () => {
-      if (scrollContainerRef.current) {
-        const node = scrollContainerRef.current;
-        const toScroll = 350;  // сколько прокрутить
-    
-        // сначала прокрутить
-        node.scrollTo({
-          left: node.scrollLeft + toScroll,
-          behavior: 'smooth'
-        });
-    
-        // затем проверить, достигли ли конца
-        const maxScrollLeft = node.scrollWidth - node.clientWidth;  // максимальное значение scrollLeft
+      const ref = barRef.current;
+      var len = ref.config.data.labels.length;
+      var Xmax = ref.config.options.scales.x.max;
+      if (Xmax >= len) {
+        return;
       }
+      ref.config.options.scales.x.min += 4;
+      ref.config.options.scales.x.max += 4;
+      ref.update();
+      console.log(ref);
     }
     
     const handlePrevButtonClick = () => {
-      if (scrollContainerRef.current) {
-        const node = scrollContainerRef.current;
-    
-        // сначала прокрутить
-        node.scrollTo({
-          left: node.scrollLeft - 350,
-          behavior: 'smooth'
-        });
-  
+      const ref = barRef.current;
+      var Xmin = ref.config.options.scales.x.min;
+      if (Xmin <= 1) {
+        return;
       }
+      ref.config.options.scales.x.min -= 4;
+      ref.config.options.scales.x.max -= 4;
+      ref.update();
+      console.log(ref);
     }
 
   const data = Object.values(stat?.summaryVisitors);
-  const labels = selectedPeriod === "year" ? 
+  const labels = loading ? Object.keys(stat?.summaryVisitors).map(key => "") :
+  selectedPeriod === "year" ? 
   Object.keys(stat?.summaryVisitors).map(key => getMonthWord(key)) : selectedPeriod === "month" ? 
   Object.keys(stat?.summaryVisitors).map(key => getTranslatedDayAndMonth(key)) : selectedPeriod === "week" ?
   Object.keys(stat?.summaryVisitors).map(key => getTranslatedDayAndMonth(key)) :
   Object.keys(stat?.summaryVisitors).map(key => getFormattedTime(key));
 
   return (
+    console.log(),
     <div style={{/* width : "65%" */}} className="flex flex-row gap-[20px] items-center">
       <div ref={scrollContainerRef} className='scrollableBlock'>
         <span className='text-[14px] font-bold'>Сводка по посещениям:</span>
 
-        {loading ? <BarSkeleton /> :
-          <div style={{maxHeight: "250px", display : "flex", flexDirection : "row", width : getMaxWidth(selectedPeriod)}}>
+        {/* loading ? <BarSkeleton /> : */
+          <div style={{
+            //backgroundColor: "red",
+            maxHeight: "250px", 
+            display : "flex", 
+            flexDirection : "row", 
+            minWidth : "1000px",
+            //width : "100%",
+            //width : getMaxWidth(selectedPeriod) 
+            }}>
           <Bar
+            ref={barRef}
             data={{
               labels: labels,
               datasets: [
@@ -80,18 +87,12 @@ export default function VisitsSummary({selectedPeriod, stat, loading}) {
                 legend: {
                   display: false
                 },
-                zoom: {
-                  pan: {
-                    enabled: true
-                  },
-                  zoom: {
-                    enabled: true
-                  }
-              }
               },
               scales: {
                 x: {
-                  barThickness: 50,
+                  min: 0,
+                  max : 12,
+                  barThickness: "flex",
                   border: {
                     display: false,
                   },
@@ -165,15 +166,24 @@ function getMaxWidth(selectedPeriod) {
     case "year":
       return "1000px";
     case "month":
-      return "2100px";
+      return "1000px";
     case "week":
       return "600px";
     case "day":
-      return "1500px";
+      return "1000px";
   }
 }
 
 function getFormattedTime(time){
   // from 1:00 to 01:00
   return time.split(":").map(el => el.length === 1 ? "0" + el : el).join(":");
+}
+
+ function timeSkeleron() {
+  return (
+    <div className="flex flex-row gap-1 items-center">
+      <div className="w-[20px] h-[7px] bg-skeleton-main"></div>
+      <div className="w-full h-[1px] bg-bg-color"></div>
+    </div>
+  );
 }
