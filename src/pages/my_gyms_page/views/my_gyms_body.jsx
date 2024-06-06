@@ -7,70 +7,63 @@ import "../index.css";
 
 const MyGymsBody = () => {
   const gymState = useSelector((state) => state.currentGym);
-  const [sortByName, setSortByName] = useState(true);
-  const [sortByActivitiesForMonth, setSortByActivitiesForMonth] = useState(false);
-  const [sortByActivitiesForWeek, setSortByActivitiesForWeek] = useState(false);
-  const [sortByActivitiesForDay, setSortByActivitiesForDay] = useState(false);
+  const [sortByName, setSortByName] = useState("desc");
+  const [sortByActivitiesForMonth, setSortByActivitiesForMonth] = useState(null);
+  const [sortByActivitiesForWeek, setSortByActivitiesForWeek] = useState(null);
+  const [sortByActivitiesForDay, setSortByActivitiesForDay] = useState(null);
 
   // functions
   function handleSortByName() {
-    if (!sortByName) {
-      setSortByName(true);
-      setSortByActivitiesForMonth(false);
-      setSortByActivitiesForWeek(false);
-      setSortByActivitiesForDay(false);
-    }else{
-      setSortByName(false);
-      setSortByActivitiesForMonth(false);
-      setSortByActivitiesForWeek(false);
-      setSortByActivitiesForDay(false);
+    if (sortByName === null || sortByName === "asc") {
+      setSortByName("desc");
+    }else if (sortByName === "desc") {
+      setSortByName("asc");
     }
-  } 
+    setSortByActivitiesForMonth(null);
+    setSortByActivitiesForWeek(null);
+    setSortByActivitiesForDay(null);
+  }
+  
 
   function handleSortByActivitiesForMonth() {
-    if (!sortByActivitiesForMonth) {
-      setSortByActivitiesForMonth(true);
-      setSortByName(false);
-      setSortByActivitiesForWeek(false);
-      setSortByActivitiesForDay(false);
+    if (sortByActivitiesForMonth === null || sortByActivitiesForMonth === "asc") {
+      setSortByActivitiesForMonth("desc");
     }else{
-      setSortByActivitiesForMonth(false);
-      setSortByName(true);
-      setSortByActivitiesForWeek(false);
-      setSortByActivitiesForDay(false);
+      setSortByActivitiesForMonth("asc");
     }
+    setSortByName(null);
+    setSortByActivitiesForWeek(null);
+    setSortByActivitiesForDay(null);
   }
 
   function handleSortByActivitiesForWeek() {
-    if (!sortByActivitiesForWeek) {
-      setSortByActivitiesForWeek(true);
-      setSortByName(false);
-      setSortByActivitiesForMonth(false);
-      setSortByActivitiesForDay(false);
+    if (sortByActivitiesForWeek === null || sortByActivitiesForWeek === "asc") {
+      setSortByActivitiesForWeek("desc");
     }else{
-      setSortByActivitiesForWeek(false);
-      setSortByName(true);
-      setSortByActivitiesForMonth(false);
-      setSortByActivitiesForDay(false);
+      setSortByActivitiesForWeek("asc");
     }
-
+    setSortByName(null);
+    setSortByActivitiesForMonth(null);
+    setSortByActivitiesForDay(null);
   }
 
   function handleSortByActivitiesForDay() {
-    if (!sortByActivitiesForDay) {
-      setSortByActivitiesForDay(true);
-      setSortByName(false);
-      setSortByActivitiesForMonth(false);
-      setSortByActivitiesForWeek(false);
+    if (sortByActivitiesForDay === null || sortByActivitiesForDay === "asc") {
+      setSortByActivitiesForDay("desc");
     }else{
-      setSortByActivitiesForDay(false);
-      setSortByName(true);
-      setSortByActivitiesForMonth(false);
-      setSortByActivitiesForWeek(false);
+      setSortByActivitiesForDay("asc");
     }
+    setSortByName(null);
+    setSortByActivitiesForMonth(null);
+    setSortByActivitiesForWeek(null);
   }
 
   return (
+    console.log(`sortByName ${sortByName}`),
+    console.log(`sortByActivitiesForMonth ${sortByActivitiesForMonth}`),
+    console.log(`sortByActivitiesForWeek ${sortByActivitiesForWeek}`),
+    console.log(`sortByActivitiesForDay ${sortByActivitiesForDay}`),
+    
     <div className="px-[30px] bg-white rounded-[16px] flex flex-col gap-3 h-[86vh]">
       {/* Top section */}
 
@@ -80,37 +73,45 @@ const MyGymsBody = () => {
 
             <div className="flex flex-row items-center gap-[10px] w-[25%] ">
               <div onClick={handleSortByName} className="text-[14px] font-medium cursor-pointer">Название заведения</div>
-              <img className={`arrow-icon ${sortByName ? "arrow-up" : ""}`}
-                style={{cursor: "pointer"}} 
-                onClick={handleSortByName}
-                src={ArrowDownSvg} alt="ArrowDownSvg"/>
+              {(sortByName === "desc" || sortByName === "asc") && 
+                <img className={`arrow-icon ${sortByName === "desc" ? "arrow-up" : ""}`}
+                  style={{cursor: "pointer"}} 
+                  onClick={handleSortByName}
+                  src={ArrowDownSvg} alt="ArrowDownSvg"/>
+              }
             </div>
             
             <div className="flex flex-row items-center gap-[10px] w-[25%] justify-center">
               <div onClick={handleSortByActivitiesForMonth} className="text-[14px] font-medium cursor-pointer">Записей за месяц</div>
-              <img 
-                className={`arrow-icon ${sortByActivitiesForMonth ? "arrow-up" : ""}`}
-                style={{cursor: "pointer"}}
-                onClick={handleSortByActivitiesForMonth}
-              src={ArrowDownSvg} alt="ArrowDownSvg"/>
+              {(sortByActivitiesForMonth === "desc" || sortByActivitiesForMonth === "asc") &&
+                <img 
+                  className={`arrow-icon ${sortByActivitiesForMonth === "desc" ? "arrow-up" : ""}`}
+                  style={{cursor: "pointer"}}
+                  onClick={handleSortByActivitiesForMonth}
+                  src={ArrowDownSvg} alt="ArrowDownSvg"/>
+              }
             </div>
 
             <div className="flex flex-row items-center gap-[10px] w-[25%] justify-center">
               <div onClick={handleSortByActivitiesForWeek} className="text-[14px] font-medium cursor-pointer">За неделю</div>
-              <img 
-                className={`arrow-icon ${sortByActivitiesForWeek ? "arrow-up" : ""}`}
+              {(sortByActivitiesForWeek === "desc" || sortByActivitiesForWeek === "asc") &&
+                <img 
+                className={`arrow-icon ${sortByActivitiesForWeek === "desc" ? "arrow-up" : ""}`}
                 style={{cursor: "pointer"}}
                 onClick={handleSortByActivitiesForWeek}
-              src={ArrowDownSvg} alt="ArrowDownSvg"/>
+                src={ArrowDownSvg} alt="ArrowDownSvg"/>
+              }
             </div>
 
             <div className="flex flex-row items-center gap-[10px] w-[25%] justify-center">
               <div onClick={handleSortByActivitiesForDay} className="text-[14px] font-medium cursor-pointer">За день</div>
-              <img 
-                className={`arrow-icon ${sortByActivitiesForDay ? "arrow-up" : ""}`}
+              {(sortByActivitiesForDay === "desc" || sortByActivitiesForDay === "asc") &&
+                <img 
+                className={`arrow-icon ${sortByActivitiesForDay === "desc" ? "arrow-up" : ""}`}
                 style={{cursor: "pointer"}}
                 onClick={handleSortByActivitiesForDay}
-              src={ArrowDownSvg} alt="ArrowDownSvg"/>
+                src={ArrowDownSvg} alt="ArrowDownSvg"/>
+              }
             </div>
 
           </div>
@@ -119,11 +120,14 @@ const MyGymsBody = () => {
 
           <div className="overflow-y-auto pt-[20px]">
             {[...gymState.listOfGyms]
-            .sort((a, b)=> (sortByName && (!sortByActivitiesForMonth && !sortByActivitiesForWeek && !sortByActivitiesForDay)) ? a.name.localeCompare(b.name) : 
-            (!sortByName && (!sortByActivitiesForMonth && !sortByActivitiesForWeek && !sortByActivitiesForDay)) ? b.name.localeCompare(a.name) : 
-            sortByActivitiesForMonth ? b.gymStatShortDto?.month - a.gymStatShortDto?.month : 
-            sortByActivitiesForWeek ? b.gymStatShortDto?.week - a.gymStatShortDto?.week : 
-            sortByActivitiesForDay ? b.gymStatShortDto?.day - a.gymStatShortDto?.day : 0)
+            .sort((a, b)=> (sortByName === "desc" ? a.name.localeCompare(b.name) : 
+            sortByName === "asc" ? b.name.localeCompare(a.name) : 
+            sortByActivitiesForMonth === "desc" ? b.gymStatShortDto?.month - a.gymStatShortDto?.month :
+            sortByActivitiesForMonth === "asc" ? a.gymStatShortDto?.month - b.gymStatShortDto?.month : 
+            sortByActivitiesForWeek === "desc" ? b.gymStatShortDto?.week - a.gymStatShortDto?.week : 
+            sortByActivitiesForWeek === "asc" ? a.gymStatShortDto?.week - b.gymStatShortDto?.week :
+            sortByActivitiesForDay === "desc" ? b.gymStatShortDto?.day - a.gymStatShortDto?.day : 
+            sortByActivitiesForDay === "asc" ? a.gymStatShortDto?.day - b.gymStatShortDto?.day : 0))
             .map((gym) => (
               <Gym
                 key={gym.id}
