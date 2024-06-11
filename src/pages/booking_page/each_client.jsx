@@ -16,6 +16,7 @@ export default function EachClient({
   onDecline,
   onNavigation,
   hideOpenSchedule,
+  loading,
 }) {
   return (
     <div className="eachClient">
@@ -55,9 +56,12 @@ export default function EachClient({
           <div className="defaultText">Отклонить</div>
           <img className="w-[15px] h-[15px]" src={cancelSvg} alt="" />
         </div>
-        <div className="acceptButton" onClick={onAccept}>
-          <div className="defaultText text-white">Одобрить</div>
-          <img className="w-[15px] h-[15px]" src={done} alt="" />
+        <div style={{opacity : loading ? "0.7" : "1"}} className="acceptButton" onClick={loading ? null : onAccept }>
+          {loading && <span className="defaultText text-white">Одобрение... </span>}
+          {!loading && <>
+            <div className="defaultText text-white">Одобрить</div>
+            <img className="w-[15px] h-[15px]" src={done} alt="" />
+          </>}
         </div>
       </div>
     </div>

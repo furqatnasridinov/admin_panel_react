@@ -22,6 +22,7 @@ export default function BookingBody({ clientsList, doNotShowBlock }) {
 
   // use states
   const [dialogOpened, openDialog] = useState(false);
+  const [acceptingWaingId, setAcceptingWaitingId] = useState(null);
 
   if (doNotShowBlock) {
     return null;
@@ -86,14 +87,17 @@ export default function BookingBody({ clientsList, doNotShowBlock }) {
                 endTIme={`${endHours}:${endMinutes}`}
                 gym={client.gymName}
                 event={client.lessonType}
+                loading = {acceptingWaingId === client.id}
                 onAccept={async () => {
                   const request = {
                     gymId: client.gymId,
                     waitingId: client.id,
                   };
+                  setAcceptingWaitingId(client.id);
                   await dispatch(acceptClient(request));
                   // getting new data
                   dispatch(getNewClients(gymState.currentGym.id));
+                  setAcceptingWaitingId(null);
                 }}
                 onDecline={async () => {
                   openDialog(true);

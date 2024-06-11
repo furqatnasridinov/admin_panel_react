@@ -20,6 +20,7 @@ export default function MessageLikeTopContainer({ hideOpenSchedule }) {
   const gymState = useSelector((state) => state.currentGym);
   // use states
   const [dialogOpened, openDialog] = useState(false);
+  const [acceptingWaingId, setAcceptingWaitingId] = useState(null);
 
   const createClientCard = (client) => {
     let day = client.startTime.getDate();
@@ -62,13 +63,16 @@ export default function MessageLikeTopContainer({ hideOpenSchedule }) {
         endTIme={`${endHours}:${endMinutes}`}
         gym={client.gymName}
         event={client.lessonType}
+        loading={acceptingWaingId === client.id}
         onAccept={async () => {
           const request = {
             gymId: client.gymId,
             waitingId: client.id,
           };
+          setAcceptingWaitingId(client.id);
           await dispatch(acceptClient(request));
           dispatch(getNewClients(gymState.currentGym.id));
+          setAcceptingWaitingId(null);
           dispatch(getSchedules(client.gymId));
         }}
         onDecline={async () => {
