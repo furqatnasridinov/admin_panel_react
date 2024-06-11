@@ -20,6 +20,7 @@ export default function CustomButton({
         width: width,
         height: height,
         zIndex: zIndex,
+        opacity: isLoading ? 0.7 : 1,
         backgroundColor: isDidsabled ? "rgba(220, 220, 220, 1)" : "",
         borderColor: isDidsabled ? "rgba(220, 220, 220, 1)" : "",
       }}

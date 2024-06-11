@@ -5,10 +5,8 @@ import { Bar } from 'react-chartjs-2'
 import { useRef } from 'react';
 import nextButton from "../../assets/images/nextButtonStats.svg";
 import { getMonthWord, getTranslatedDayAndMonth } from '../../config/apphelpers';
-import BarSkeleton from './bar_skeleton';
 
 export default function VisitsSummary({selectedPeriod, stat, loading}) {
-  const scrollContainerRef = useRef(null);
   const barRef = useRef(null);
 
     // functions
@@ -47,21 +45,17 @@ export default function VisitsSummary({selectedPeriod, stat, loading}) {
 
   return (
     console.log(),
-    <div style={{/* width : "65%" */}} className="flex flex-row gap-[20px] items-center">
-      <div ref={scrollContainerRef} className='scrollableBlock'>
+    <div className="flex flex-row gap-[20px] items-center w-full">
+
+      <div style={{width : "96%"}} className='flex flex-col mt-[32px] gap-4 '>
         <span className='text-[14px] font-bold'>Сводка по посещениям:</span>
 
         {/* loading ? <BarSkeleton /> : */
-          <div style={{
-            //backgroundColor: "red",
-            maxHeight: "250px", 
-            display : "flex", 
-            flexDirection : "row", 
-            minWidth : "1000px",
-            //width : "100%",
-            //width : getMaxWidth(selectedPeriod) 
-            }}>
+          <div >
           <Bar
+            style={{
+              //backgroundColor: "red",
+            }}
             ref={barRef}
             data={{
               labels: labels,
@@ -79,7 +73,7 @@ export default function VisitsSummary({selectedPeriod, stat, loading}) {
               ],
             }}
             //height={"250px"}
-            //width={400}
+            //width={"100%"}
             options={{
               responsive: true,
               maintainAspectRatio: false,
@@ -112,6 +106,7 @@ export default function VisitsSummary({selectedPeriod, stat, loading}) {
                   },
                 },
                 y: {
+                  min: 0,
                   max: data.reduce((a, b) => Math.max(a, b)),
                   border: {
                     display: false,

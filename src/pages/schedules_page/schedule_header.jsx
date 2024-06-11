@@ -43,6 +43,7 @@ export default function ScheduleHeader() {
   const gymState = useSelector((state) => state.currentGym);
   const activitiesState = useSelector((state) => state.activities);
   const scheduleState = useSelector((state) => state.schedule);
+  const [loading, setLoading] = useState(false);
 
   // use state
   const [isGymsDropDownOpened, openGymsDropDown] = useState(false);
@@ -94,9 +95,6 @@ export default function ScheduleHeader() {
   let numbers = Array.from({ length: 100 }, (_, i) => i + 1);
 
   return (
-    console.log("start time hours", scheduleState.startTimeHoursTmp),
-    console.log("start time minutes", scheduleState.startTimeMinutesTmp),
-    console.log("gymState.currentGym", gymState.currentGym),
     <div className="schedule_header">
       <div className="flex flow-row gap-[10px] items-center">
         <div className="">Расписание</div>
@@ -268,11 +266,7 @@ export default function ScheduleHeader() {
                   Дата проведения:
                 </div>
                 <CustomDropdown
-                  text={
-                    scheduleState.selectedDay === ""
-                      ? "Выберите дату"
-                      : scheduleState.selectedDay
-                  }
+                  text={scheduleState.selectedDay === "" ? "Выберите дату" : scheduleState.selectedDay}
                   isDropDownOpened={false}
                   openCloseDropDown={() => {
                     setDatePickerShown(!datePickerShown);
@@ -565,6 +559,7 @@ export default function ScheduleHeader() {
                 <CustomButton
                   width={"100%"}
                   height={"40px"}
+                  isLoading={loading}
                   title={"Добавить Занятие"}
                   onСlick={async () => {
                     if (scheduleState.description === "") {
@@ -573,11 +568,8 @@ export default function ScheduleHeader() {
                     if (scheduleState.selectedDay === "") {
                       setDateNotSelected(true);
                     }
-
-                    if (
-                      scheduleState.description !== "" &&
-                      scheduleState.selectedDay !== "" &&
-                      !scheduleState.endTimeIsBeforeStartTime
+                    if (scheduleState.description !== "" &&
+                      scheduleState.selectedDay !== "" &&!scheduleState.endTimeIsBeforeStartTime
                     ) {
                       // post lesson
                       const request = {
@@ -591,10 +583,12 @@ export default function ScheduleHeader() {
                         limitCountUser: checkboxLimitEnabled,
                         maxCount: checkboxLimitEnabled ? limit : null,
                       };
+                      setLoading(true);
                       await dispatch(createSchedule(request));
                       console.log("createSchedule request ==>", request);
                       //resetdatas
                       await dispatch(getSchedules(gymState.currentGym.id));
+                      setLoading(false);
                       dispatch(resetDatasAfterSubmitting());
                       openModal(false);
                     }
