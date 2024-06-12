@@ -677,7 +677,7 @@ export function TextAndTextfield({
   // for autofocus calls when component first renders
   useEffect(() => {
     const input = inputRef.current;
-    if (input) {
+    if (input && !isPhoneTextfield) {
       input.focus();
       // Set the cursor to the end of the text
       const length = input.value.length;
@@ -686,29 +686,28 @@ export function TextAndTextfield({
       input.style.height = "inherit"; // Reset height to recalculate
       input.style.height = `${input.scrollHeight}px`; // Set new height based on scroll height
     }
+    if (input && isPhoneTextfield) {
+      const length = value.length; //79999999999
+      const selection = input.getSelection();
+      //input.setSelectionRange(length, length);
+      console.log(selection);
+      
+    }
   }, [value]);
+
+
 
 
   return (
     <div className="flex flex-col gap-[5px] w-full ">
       <div
-        className={
-          isError
-            ? "text-[14px] font-bold text-red-text"
-            : "text-[14px] font-bold"
-        }
+        className={isError ? "text-[14px] font-bold text-red-text" : "text-[14px] font-bold"}
       >
         {text}
       </div>
       <div
       style={{minHeight : textfieldsMinHeight}}
-        className={
-          textfieldHasFocus
-            ? "icon_and_textfield_row_focused"
-            : isError
-              ? "error"
-              : "icon_and_textfield_row"
-        }
+        className={textfieldHasFocus ? "icon_and_textfield_row_focused" : isError ? "error" : "icon_and_textfield_row"}
       >
         {showLogo && <img src={logo} className="userlogo" alt="" />}
         {isPhoneTextfield && (
@@ -716,6 +715,8 @@ export function TextAndTextfield({
             className="textfiled"
             mask="+7 (999) 999 99-99"
             placeholder="+7 (900) 855 45-58"
+            ref={inputRef}
+            maskChar={null}
             value={value}
             onFocus={requestFocus}
             onBlur={removeFocus}
@@ -725,7 +726,7 @@ export function TextAndTextfield({
         )}
         {!isPhoneTextfield && !showTextArea && (
           <input
-          ref={inputRef}
+            ref={inputRef}
             value={value}
             type="text"
             required

@@ -85,7 +85,7 @@ export default function VisitsSummary({selectedPeriod, stat, loading}) {
               scales: {
                 x: {
                   min: 0,
-                  max : 12,
+                  max : 16,
                   barThickness: "flex",
                   border: {
                     display: false,

@@ -67,6 +67,9 @@ export default function EdittingContainer() {
   const [tooltip4Position, setTooltip4Position] = useState({ top: 0, left: 0 });
   const [isLimitDropDownOpened, setIsLimitDropDownOpened] = useState(false);
   const [timeChangesOccur, setTimeChangesOcur] = useState(false);
+  const [deleteSingleLoding, setDeleteSingleLoding ] = useState(false);
+  const [deleteAllLoding, setDeleteAllLoding ] = useState(false);
+  const [updateLoding, setUpdateLoding ] = useState(false);
 
   // use effect 
   useEffect(() => {
@@ -140,7 +143,7 @@ export default function EdittingContainer() {
           src={roundedGarbage}
           alt="roundedGarbage"
           className="cursor-pointer"
-          onClick={async () => {
+          onClick={ () => {
             // if event is repeating show modal
             openDeleteModal(true);
           }}
@@ -154,8 +157,8 @@ export default function EdittingContainer() {
       >
         <div className="deleteModalContainer">
           <div className="flex flex-col gap-[5px]">
-            <div className="">{`userscount : ${scheduleState.selectedEvent.usersCount} repeat: ${scheduleState.selectedEvent.repeat.length}`}</div>
-            {/* <div className="text-[16px] font-semibold">Удаление занятия</div> */}
+            {/* <div className="">{`userscount : ${scheduleState.selectedEvent.usersCount} repeat: ${scheduleState.selectedEvent.repeat.length}`}</div> */}
+            <div className="text-[16px] font-semibold">Удаление занятия</div>
             {scheduleState.selectedEvent?.repeat?.length > 0 && <div className="text-[14px] font-normal leading-[16px]">
               Это занятие было скопировано на несколько недель вперёд. Вы хотите
               удалить только это занятие, или так же все его копии?
@@ -194,17 +197,22 @@ export default function EdittingContainer() {
               height={"40px"}
               width={"100%"}
               title={"Удалить только выбранное занятие"}
+              loading={deleteSingleLoding}
               onСlick={async () => {
                 const { gymId, lessonId, all } = {
                   gymId: gymState.currentGym.id,
                   lessonId: scheduleState.selectedEvent.id,
                   all: false,
                 };
+                setDeleteSingleLoding(true);
                 await dispatch(deleteSchedule({ gymId, lessonId, all }));
-                dispatch(resetSelectedEvent());
-                dispatch(hideEdittingContainer());
-                dispatch(getSchedules(gymState.currentGym.id));
-                openDeleteModal(false);
+                await dispatch(getSchedules(gymState.currentGym.id));
+                setTimeout(() => {
+                  dispatch(resetSelectedEvent());
+                  dispatch(hideEdittingContainer());
+                  setDeleteSingleLoding(false);
+                  openDeleteModal(false);
+                }, 500);
               }}
             />}
 
@@ -213,17 +221,22 @@ export default function EdittingContainer() {
               width={"100%"}
               title={scheduleState.selectedEvent?.repeat?.length > 1 ? "Удалить занятие и все его копии" : "Подтвердить удаление"}
               fontSize={"14px"}
+              isLoading={deleteAllLoding}
               onСlick={async () => {
                 const { gymId, lessonId, all } = {
                   gymId: gymState.currentGym.id,
                   lessonId: scheduleState.selectedEvent.id,
                   all: true,
                 };
+                setDeleteAllLoding(true);
                 await dispatch(deleteSchedule({ gymId, lessonId, all }));
-                dispatch(resetSelectedEvent());
-                dispatch(hideEdittingContainer());
-                dispatch(getSchedules(gymState.currentGym.id));
-                openDeleteModal(false);
+                await  dispatch(getSchedules(gymState.currentGym.id));
+                setTimeout(() => {
+                  dispatch(resetSelectedEvent());
+                  dispatch(hideEdittingContainer());
+                  setDeleteAllLoding(false);
+                  openDeleteModal(false);
+                }, 500);
               }}
             />
           </div>
@@ -601,6 +614,7 @@ export default function EdittingContainer() {
                 width={"100%"}
                 height={"40px"}
                 title={"Сохранить"}
+                isLoading={updateLoding}
                 /* isDidsabled={
                   isEqual(scheduleState.selectedEvent, scheduleState.selectedEventCopy) 
                 } */
@@ -622,12 +636,14 @@ export default function EdittingContainer() {
                         1 : scheduleState.selectedEvent.maxCount
                     };
                     console.log(`updateSchedule request ${JSON.stringify(body)}`);
+                    setUpdateLoding(true);
                     await dispatch(updateSchedule({ body }));
+                    await dispatch(getSchedules(gymState.currentGym.id));
                     dispatch(disableScheduleEditting());
                     dispatch(hideEdittingContainer());
                     dispatch(resetSelectedEvent());
                     dispatch(resetDatasAfterSubmitting());
-                    dispatch(getSchedules(gymState.currentGym.id));
+                    setUpdateLoding(false);
                   }
                 }}
                 fontSize={"14px"}
