@@ -1,7 +1,7 @@
 class AppConstants {
   // base url
   static get baseUrl() {
-    return "http://77.222.53.122:/";
+    return "https://myfit-russia.ru/";
   }
 
   // end points

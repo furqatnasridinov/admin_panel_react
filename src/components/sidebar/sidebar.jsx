@@ -162,7 +162,7 @@ const Sidebar = () => {
             onClick={handleClickMenuCompany}>
             {registerState.avatar &&
               <div className="w-[24px] h-[24px] bg-button-color rounded-[50%] p-[2px]">
-                <img className="w-full h-full rounded-[50%] object-cover" src={`http://77.222.53.122/image/${registerState.avatar}`} alt="" />
+                <img className="w-full h-full rounded-[50%] object-cover" src={`${AppConstants.baseUrl}image/${registerState.avatar}`} alt="" />
               </div>
             }
 
@@ -371,7 +371,7 @@ const Sidebar = () => {
       >
         {registerState.avatar &&
           <div className="w-[24px] h-[24px] bg-button-color rounded-[50%] p-[2px]">
-            <img className="w-full h-full rounded-[50%]" src={`http://77.222.53.122/image/${registerState.avatar}`} alt="" />
+            <img className="w-full h-full rounded-[50%]" src={`${AppConstants.baseUrl}image/${registerState.avatar}`} alt="" />
           </div>
         }
 

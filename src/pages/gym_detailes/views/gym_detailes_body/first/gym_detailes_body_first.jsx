@@ -218,7 +218,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
             showText2 = {canEdit} />
           <img
             className="main_pic"
-            src={(currentGym.mainPictureUrl === "" || currentGym.mainPictureUrl === null) ? mainPicPlaceHolder : `http://77.222.53.122/image/${currentGym.mainPictureUrl}`}
+            src={(currentGym.mainPictureUrl === "" || currentGym.mainPictureUrl === null) ? mainPicPlaceHolder : `${AppConstants.baseUrl}image/${currentGym.mainPictureUrl}`}
             style={{ cursor: "pointer" }}
             onClick={() => {
               if (canEdit) {
@@ -276,7 +276,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
           {/* Big logo */}
           <img
             className="logo_rounded180"
-            src={(currentGym.logoUrl === "" || currentGym.logoUrl === null) ? logoPlaceholder : `http://77.222.53.122/image/${currentGym.logoUrl}`}
+            src={(currentGym.logoUrl === "" || currentGym.logoUrl === null) ? logoPlaceholder : `${AppConstants.baseUrl}image/${currentGym.logoUrl}`}
             style={{ cursor: "pointer" }}
             onClick={()=>{
               if (canEdit) {
@@ -315,7 +315,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                 }}
                 className="logo_rounded90"
                 style={{ cursor: "pointer" }}
-                src={`http://77.222.53.122/image/${imageToCompressedFormatM}`}
+                src={`${AppConstants.baseUrl}image/${imageToCompressedFormatM}`}
                 alt=""/>
               {/* <SizeOfPicture size="90x90px" /> */}
             </div>
@@ -328,7 +328,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                 }}
                 className="logo_rounded50"
                 style={{ cursor: "pointer" }}
-                src={`http://77.222.53.122/image/${imageToCompressedFormatS}`}
+                src={`${AppConstants.baseUrl}image/${imageToCompressedFormatS}`}
                 alt=""/>
               {/*  <SizeOfPicture size="50x50px" /> */}
             </div>
@@ -934,7 +934,7 @@ function ChangeMainPhotoModal({
       {photo !== "" && (
         <img
           className=" h-[250px] rounded-t-[16px] object-cover"
-          src={`http://77.222.53.122/image/${photo}`}
+          src={`${AppConstants.baseUrl}image/${photo}`}
           alt=""
         ></img>
       )}
@@ -1006,7 +1006,7 @@ function ChangeLogoModal({
       <div className="w-full flex justify-center">
         <img
           className="logo"
-          src={`http://77.222.53.122/image/${logo}`}
+          src={`${AppConstants.baseUrl}image/${logo}`}
           alt=""
         ></img>
       </div>
