@@ -4,6 +4,7 @@ import placeHolder from "../../assets/images/placeholder.jpg"
 import { useState } from "react";
 import CustomDialog from "../../components/dialog/dialog";
 import closePng from "../../assets/images/close.png"
+import AppConstants from "../../config/app_constants";
 
 export default function EachClientWhoWillCome({
   startTime,
@@ -24,7 +25,7 @@ export default function EachClientWhoWillCome({
             <img 
               className="object-cover h-full w-full rounded-[6px]" alt="pic"
               style={{ cursor: (picture === "" || picture === null) ? "default" : "pointer" }}
-              src={(picture === "" || picture === null) ? placeHolder : `http://77.222.53.122/image/${picture}`}
+              src={(picture === "" || picture === null) ? placeHolder : `${AppConstants.baseUrl}image/${picture}`}
               onClick={() => {
                 if (picture !== "" && picture !== null) {
                   setCurrentPhoto(picture);
@@ -52,7 +53,7 @@ export default function EachClientWhoWillCome({
           <div className="w-[400px] h-[400px] relative">
             <img
               className="object-cover h-full w-full rounded-lg "
-              src={`http://77.222.53.122/image/${currentPhoto}`} alt="photoInModal" />
+              src={`${AppConstants.baseUrl}image/${currentPhoto}`} alt="photoInModal" />
             <div 
               style={{ cursor: "pointer", backgroundColor: "rgba(42, 42, 43, 0.6)"}}
               className="w-[50px] h-[50px] absolute top-0 right-0 p-3">

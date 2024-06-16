@@ -70,7 +70,7 @@ export default function GymDetails() {
       // function to get List Of Employees based on gymnewSelected gymid
       if (localStorage.getItem(AppConstants.keyRoleId) === "1" || 
       localStorage.getItem(AppConstants.keyRoleId) === "3") {
-        dispatch(getListOfEmployees(gymId));
+        dispatch(getListOfEmployees(gym.id));
       }
 
       // function to get List Of Activities based on gymnewSelected gymid

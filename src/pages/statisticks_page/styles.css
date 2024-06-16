@@ -120,11 +120,15 @@
     width: fit-content;
     min-width: 402px;
     background-color: rgba(245, 249, 255, 1);
+    /* background-color: red; */
     border-radius: 16px;
-    padding: 16px 32px 16px 32px;
+    /* padding: 16px 32px 16px 32px; */
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    padding-left: 32px;
+    padding-right: 32px;
+    justify-content: center;
+    gap: 10px;
 }
 
 .scrollableBlock {

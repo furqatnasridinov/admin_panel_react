@@ -442,7 +442,7 @@ export default function GymDetailesBodySecondContainer({
                             <img
                               className="activity_each_photo"
                               key={index}
-                              src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                              src={`${AppConstants.baseUrl}image/${imageToCompressedFormat}`}
                               alt=""
                               onClick={() => {
                                 showPhotoInDialog(true);
@@ -453,7 +453,7 @@ export default function GymDetailesBodySecondContainer({
                         return (
                           <div key={index} className="activity_each_photo_editting">
                             <img
-                              src={`http://77.222.53.122/image/${imageToCompressedFormat}`}
+                              src={`${AppConstants.baseUrl}image/${imageToCompressedFormat}`}
                               alt=""
                               className="rounded-[8px] h-full w-full object-cover"
                               draggable={true}
@@ -549,7 +549,7 @@ export default function GymDetailesBodySecondContainer({
                     <div className="relative min-h-[600px] min-w-[600px]">
                       <img
                         className="outline-none border-none w-full h-full object-cover"
-                        src={`http://77.222.53.122/image/${photoToShowInDialog}`}
+                        src={`${AppConstants.baseUrl}image/${photoToShowInDialog}`}
                         alt=""/>
                       <div
                         className="closeButton"

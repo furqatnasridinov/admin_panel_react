@@ -192,7 +192,7 @@ export default function PersonalInfos() {
           {registerState.avatar &&
             <div className="flex flex-row relative">
               <img
-                src={`http://77.222.53.122/image/${registerState.avatar}`}
+                src={`${AppConstants.baseUrl}image/${registerState.avatar}`}
                 alt=""
                 className="logo_rounded90 cursor-pointer"
                 onClick={() => {
@@ -202,7 +202,7 @@ export default function PersonalInfos() {
               />
 
               <img
-                src={`http://77.222.53.122/image/${registerState.avatar}`}
+                src={`${AppConstants.baseUrl}image/${registerState.avatar}`}
                 alt=""
                 className="logo_rounded50 cursor-pointer absolute bottom-0 left-[100px]"
                 onClick={() => {
@@ -291,7 +291,7 @@ function ModalBody({
       <div className="w-full flex justify-center">
         <img
           className="logo"
-          src={`http://77.222.53.122/image/${logo}`}
+          src={`${AppConstants.baseUrl}image/${logo}`}
           alt=""
         ></img>
       </div>
