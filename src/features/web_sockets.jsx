@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 
 export default function NewClientsWebSocket({ dispatch, gymId }) {
-  const ws = new WebSocket(`ws://77.222.53.122:8080/adminPanel/${gymId}?token=${localStorage.getItem(AppConstants.keyToken)}`);
+  const ws = new WebSocket(`wss://77.222.53.122:8080/adminPanel/${gymId}?token=${localStorage.getItem(AppConstants.keyToken)}`);
 
   ws.onopen = () => {
     console.log("WebSocket Connected");
