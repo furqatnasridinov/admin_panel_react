@@ -37,9 +37,7 @@ export default function NewClientsWebSocket({ dispatch, gymId }) {
         data.usersCount,
         data.description
       );
-      dispatch(
-        addOrRemoveClient(booking));
-
+      dispatch(addOrRemoveClient(booking));
     } catch (error) {
       console.error("onmessage Error ", error);
       //toast.error("Ошибка при обработке данных с сервера");

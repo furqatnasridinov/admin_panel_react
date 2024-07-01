@@ -37,12 +37,12 @@ export default function Register1() {
   const dispatch = useDispatch();
   const loginState = useSelector((state) => state.login);
 
-  useEffect(() => {
+/*   useEffect(() => {
     const fcmtoken = localStorage.getItem(AppConstants.keyFcmToken);
     if (!fcmtoken || !fcmtoken?.length) {
       //RequestForToken();
     }
-  }, [])
+  }, []) */
 
   useEffect(() => {
     if (isPhoneSent || resetCode) {

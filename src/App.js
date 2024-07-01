@@ -19,6 +19,7 @@ import CreateGymPage from "./pages/create_gym_page";
 import Register1 from "./pages/register/register1";
 import Splash from "./pages/splash";
 import WelcomePage from "./pages/register/welcome";
+import PushNotification from "./firebase/push_notification";
 
 
 function Content() {
@@ -80,8 +81,8 @@ function App() {
   }, [currentGymState.currentGym?.id]); 
 
   return (
-    console.log("sessio storage",JSON.stringify(sessionStorage.getItem("currentGym"))),
     <BrowserRouter>
+      <PushNotification />
       <Content />
     </BrowserRouter>
   );

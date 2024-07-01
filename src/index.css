@@ -46,8 +46,23 @@
   font-size: 14px;
   font-weight: 500;
 }
+
 .Toastify__toast--success svg {
   fill: white !important;
+}
+
+.Toastify__toast--info {
+  background-color: white !important; 
+}
+
+.Toastify__toast--info div {
+  color: black;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.Toastify__toast--info svg {
+  fill: #08a13d !important;
 }
 
 @font-face {

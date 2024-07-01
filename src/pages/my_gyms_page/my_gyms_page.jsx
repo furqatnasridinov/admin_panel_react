@@ -11,11 +11,12 @@ export default function MyGymsPage() {
   const clientsSlice = useSelector((state) => state.clients);
   const dispatch = useDispatch();
 
-/*   useEffect(()=>{
-    // request for fcm
-    dispatch(getListOfGyms());
-      //RequestForToken();
-  },[]) */
+  useEffect(() => {
+    const fcmtoken = localStorage.getItem(AppConstants.keyFcmToken);
+    if (!fcmtoken || !fcmtoken?.length) {
+      RequestForToken();
+    }
+  }, [])
 
   return (
     console.log(`jwt token ${localStorage.getItem(AppConstants.keyToken)}`),

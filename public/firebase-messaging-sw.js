@@ -1,4 +1,4 @@
-/* // Give the service worker access to Firebase Messaging.
+// Give the service worker access to Firebase Messaging.
 // Note that you can only use Firebase Messaging here, other Firebase libraries
 // are not available in the service worker.
 importScripts('https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js');
@@ -18,7 +18,7 @@ firebase.initializeApp({
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.
-//const messaging = firebase.messaging();
+const messaging = firebase.messaging();
 
 // Handle incoming messages while the app is not in focus (i.e in the background, hidden behind other tabs, or completely closed).
 messaging.onBackgroundMessage(function (payload) {
@@ -28,5 +28,5 @@ messaging.onBackgroundMessage(function (payload) {
       //icon : "",
     };
   
-   return  self.registration.showNotification(notificationTitle, notificationOptions);
-  }); */
+   return self.registration.showNotification(notificationTitle, notificationOptions);
+  });
