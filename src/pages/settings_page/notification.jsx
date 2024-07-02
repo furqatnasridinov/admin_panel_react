@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import toggledOnSvg from "../../assets/svg/toggle_on.svg"
 import toggledfOffSvg from "../../assets/svg/toggle_off.svg"
 import { toast } from "react-toastify";
+import { RequestForToken } from '../../firebase/firebase';
 
 export default function NotificationBlock() {
   const [toggledOn, setToggleOn] = useState(false);
@@ -11,7 +12,7 @@ export default function NotificationBlock() {
     if ("Notification" in window) {
       if (Notification.permission === "granted") {
         setToggleOn(true);
-      }else if (Notification.permission === "denied") {
+      }else if (Notification.permission === "denied" || Notification.permission === "default") {
         setToggleOn(false);
       }
     }
@@ -21,10 +22,11 @@ export default function NotificationBlock() {
     checkBrowserPermission();
   },[])
 
+  async function whentoggleOff(){
+    await RequestForToken();
+    checkBrowserPermission();
+  }
 
-  useEffect(() => {
-    
-  }, [toggledOn]);
 
   return (
     <div className='personalInfos'>
@@ -40,23 +42,28 @@ export default function NotificationBlock() {
       <div className="flex flex-row gap-[10px] items-center">
         {toggledOn &&
           <img src={toggledOnSvg}
-            style={{ backgroundColor: "rgba(119, 170, 249, 1)", height: "fit-content", borderRadius: "100px" }}
-            alt=""
-            onClick={() => setToggleOn(!toggledOn)}
+            style={{ 
+              backgroundColor: "rgba(119, 170, 249, 1)", 
+              height: "fit-content", 
+              borderRadius: "100px",
+              opacity: "0.5"}}
+            alt="toggledOnSvg"
+            onClick={() => {}}
             draggable={false}
           />
         }
         {!toggledOn &&
           <img src={toggledfOffSvg}
-            style={{ height: "fit-content", borderRadius: "100px" }}
-            alt=""
-            onClick={() => setToggleOn(!toggledOn)}
+            style={{ height: "fit-content", borderRadius: "100px",}}
+            alt="toggledfOffSvg"
+            onClick={whentoggleOff}
             draggable={false} />
-
         }
 
         <div className="text-[13px] font-medium leading-[15px]">
-          Присылать уведомления в браузер (Нужно будет дать разрешение на получение уведомлений)
+          {toggledOn ? 
+          "Уведомления в браузер включены, вы можете отключить их в настройках браузера" : 
+          "Присылать уведомления в браузер (Нужно будет дать разрешение на получение уведомлений"}
         </div>
 
       </div>
