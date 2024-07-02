@@ -20,6 +20,19 @@ export const sendPhoneNumber = createAsyncThunk(
     }
 );
 
+export const updateFcmToken = createAsyncThunk(
+    "login/updateFcmToken",
+    async ({fcmToken}) => {
+        try {
+            const data = {fcmToken: fcmToken}
+            const response = await axiosClient.post(`api/user/updateFcmToken`, data);
+            return response.data;
+        } catch (error) {
+            toast(`updateFcmToken ${error}`);
+        }
+    }
+);
+
 export const sendForConfirmation = createAsyncThunk(
     "login/sendForConfirmation",
     async ({ phone, otp }) => {
