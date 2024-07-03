@@ -695,8 +695,24 @@ export function TextAndTextfield({
     }
   }, [value]);
 
+  // Обработчик события вставки
+  const handlePaste = (e) => {
+    if (!isPhoneTextfield) return;
 
+    e.preventDefault(); // Предотвратить стандартное поведение вставки
+    const text = e.clipboardData.getData('text'); // Получить текст из буфера обмена
+    const cleanedText = text.replace(/\D/g, ''); // Очистить текст от нецифровых символов
 
+    // Программно установить значение, учитывая маску
+    if (cleanedText) {
+      const formattedNumber = `+7${cleanedText.substring(1)}`; // Форматировать номер, добавив +7
+      onChange({ target: { value: formattedNumber } }); // Имитировать событие изменения для обновления состояния
+      // Проверьте, существует ли input элемент и метод setSelectionRange
+    if (inputRef.current && inputRef.current.input && typeof inputRef.current.input.setSelectionRange === 'function') {
+      inputRef.current.input.setSelectionRange(formattedNumber.length, formattedNumber.length);
+    }
+    }
+  };
 
   return (
     <div className="flex flex-col gap-[5px] w-full ">
@@ -715,13 +731,14 @@ export function TextAndTextfield({
             className="textfiled"
             mask="+7 (999) 999 99-99"
             placeholder="+7 (900) 855 45-58"
-            ref={inputRef}
+            ref={(ref) => inputRef.current = ref} 
             maskChar={null}
             value={value}
             onFocus={requestFocus}
             onBlur={removeFocus}
             onChange={onChange}
             onKeyDown={onKeyDown}
+            onPaste={handlePaste}
           />
         )}
         {!isPhoneTextfield && !showTextArea && (

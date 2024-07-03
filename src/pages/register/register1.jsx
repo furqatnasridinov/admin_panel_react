@@ -27,8 +27,6 @@ export default function Register1() {
   const [submittedPhone, setSubmittedPhone] = useState("");
   const [anotherPhoneAdded, setAnotherPhoneAdded] = useState(false);
   const [isWaiting, setWaiting] = useState(false);
-  const [token, setToken] = useState(localStorage.getItem(AppConstants.keyToken));
-  const [tokenSaved, setTokenSaved] = useState(false);
 
   // use navigation
   const navigate = useNavigate();
@@ -84,10 +82,11 @@ export default function Register1() {
 
 
   useEffect(() => {
+    console.log("phone", phone);
+    console.log("phoneLen", phone.length);
     if (phone.length !== 11 && isPhoneSent) {
       sendPhone(false);
       setTimer(59);
-
     }
     if (phone.length === 11) {
       setWaiting(true);
@@ -116,7 +115,6 @@ export default function Register1() {
 
   return (
     <div className='registerPage'>
-
       {!goToWellcome && <>
         <div className="flex flex-col gap-[20px] items-center justify-center absolute top-[20%]">
           <div className="">Авторизация в MyFit Admin</div>

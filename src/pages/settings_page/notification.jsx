@@ -25,6 +25,9 @@ export default function NotificationBlock() {
   async function whentoggleOff(){
     await RequestForToken();
     checkBrowserPermission();
+    if (Notification.permission === "denied") {
+      toast.info("Уведомления в браузере отключены. Включите их в настройках браузера, чтобы получать уведомления о событиях на сайте.");
+    }
   }
 
 
@@ -54,7 +57,7 @@ export default function NotificationBlock() {
         }
         {!toggledOn &&
           <img src={toggledfOffSvg}
-            style={{ height: "fit-content", borderRadius: "100px",}}
+            style={{ height: "fit-content", borderRadius: "100px", cursor: "pointer"}}
             alt="toggledfOffSvg"
             onClick={whentoggleOff}
             draggable={false} />
