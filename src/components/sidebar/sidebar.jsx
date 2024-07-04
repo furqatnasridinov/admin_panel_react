@@ -12,18 +12,16 @@ import { NavLink, json } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setNavigationFromBooking } from "../../features/schedule_slice";
-import { getListOfGyms, setCurrentGymFromFirstItem, setCurrentGym } from "../../features/current_gym_slice";
+import { getListOfGyms, setCurrentGymFromFirstItem } from "../../features/current_gym_slice";
 import { getNewClients } from "../../features/clients_slice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomDialog from "../dialog/dialog";
 import BackButton from "../../components/button/back_button";
 import CustomButton from "../button/button";
-import { getUser, sendPhoneNumber } from "../../features/register";
+import { getUser } from "../../features/register";
 import placeHolderImg from "../../assets/images/placeholder.jpg"
-import Notification from "../../firebase/push_notification";
 import AppConstants from "../../config/app_constants";
-import { getToken, getMessaging } from 'firebase/messaging';
 
 const Sidebar = () => {
   const dispatch = useDispatch();
@@ -41,7 +39,8 @@ const Sidebar = () => {
   const clientsSlice = useSelector((state) => state.clients);
   const scheduleState = useSelector((state) => state.schedule);
   const registerState = useSelector((state) => state.login);
-  //const messaging = getMessaging();
+
+
   const handleClick = () => {
     if (isSidebarOpened) {
       openCloseSearchBar(false);
@@ -83,35 +82,6 @@ const Sidebar = () => {
     
     dispatch(getListOfGyms());
     dispatch(getUser());
-
-    // проверка на fcm token
-    /*  Notification.requestPermission().then((permission) => {
-       const fcmToken = localStorage.getItem(AppConstants.keyFcmToken);
-       if (permission === "granted" && !fcmToken) {
-         return getToken(messaging, { vapidKey: `BKtMN6wjJ9LaMI3lhESMVyzTEMxTwC45q1hjAxgKijOf-e2uEYAmXSZrHirgj4lzx6XIkfxfybYDUgxdQWdTi9g` })
-           .then((currentToken) => {
-             if (currentToken) {
-               // Сохраняем токен в localStorage
-               localStorage.setItem(AppConstants.keyFcmToken, currentToken);
- 
-               const body = {
-                 login: localStorage.getItem(AppConstants.keyPhone),
-                 fcmToken: currentToken,
-               }
-               dispatch(sendPhoneNumber(body));
-               console.log('Client Token: ', currentToken);
-             } else {
-               console.log('Failed to generate the registration token.');
-             }
-           })
-           .catch((err) => {
-             console.log('An error occurred when requesting to receive the token.', err);
-           });
-       }else if (permission === "denied" && fcmToken) {
-         localStorage.removeItem(AppConstants.keyFcmToken);
-       }
-     }); */
-
     // Удаляем обработчик события при размонтировании
     return () => window.removeEventListener("resize", handleResize);
 
