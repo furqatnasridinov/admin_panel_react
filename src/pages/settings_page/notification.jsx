@@ -1,9 +1,10 @@
 import React from 'react'
 import { useState, useEffect, useCallback } from 'react'
-import toggledOnSvg from "../../assets/svg/toggle_on.svg"
-import toggledfOffSvg from "../../assets/svg/toggle_off.svg"
+import toggledOnSvg from "../../assets/svg/toggleOn.svg"
+import toggledfOffSvg from "../../assets/svg/toggleOff.svg"
 import { toast } from "react-toastify";
 import { RequestForToken } from '../../firebase/firebase';
+import AppConstants from '../../config/app_constants';
 
 export default function NotificationBlock() {
   const [toggledOn, setToggleOn] = useState(false);
@@ -12,6 +13,9 @@ export default function NotificationBlock() {
     if ("Notification" in window) {
       if (Notification.permission === "granted") {
         setToggleOn(true);
+        if (!localStorage.getItem(AppConstants.keyFcmToken)) {
+          RequestForToken();
+        }
       }else if (Notification.permission === "denied" || Notification.permission === "default") {
         setToggleOn(false);
       }
@@ -30,6 +34,10 @@ export default function NotificationBlock() {
     }
   }
 
+  function whenToggleOn() {
+    toast.info("Уведомления в браузере включены, вы можете отключить их в настройках браузера");
+  }
+
 
   return (
     <div className='personalInfos'>
@@ -45,19 +53,15 @@ export default function NotificationBlock() {
       <div className="flex flex-row gap-[10px] items-center">
         {toggledOn &&
           <img src={toggledOnSvg}
-            style={{ 
-              backgroundColor: "rgba(119, 170, 249, 1)", 
-              height: "fit-content", 
-              borderRadius: "100px",
-              opacity: "0.5"}}
+            style={{cursor:"pointer"}}
             alt="toggledOnSvg"
-            onClick={() => {}}
+            onClick={whenToggleOn}
             draggable={false}
           />
         }
         {!toggledOn &&
           <img src={toggledfOffSvg}
-            style={{ height: "fit-content", borderRadius: "100px", cursor: "pointer"}}
+            style={{cursor:"pointer"}}
             alt="toggledfOffSvg"
             onClick={whentoggleOff}
             draggable={false} />

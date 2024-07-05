@@ -1,0 +1,43 @@
+.greenButton {
+    /* flex flex-row h-[46px] w-fit bg-crm-main items-center gap-[10px] pr-[24px] pl-[24px] */
+    display: flex;
+    flex-direction: row;
+    height: 46px;
+    width: fit-content;
+    background-color: rgba(94, 220, 145, 1);
+    align-items: center;
+    gap: 10px;
+    padding-right: 24px;
+    padding-left: 24px;
+    border: 1px solid rgba(58, 185, 109, 1);
+    border-radius: 8px;
+    opacity: 0.9;
+    cursor: pointer;
+    transition: opacity 0.3s; 
+}
+
+.greenButton:hover {
+    opacity: 1.2;
+}
+
+.crmClientsBody{
+    padding: 32px;
+    padding-top: 32px;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    height: 86vh;
+}
+
+.greenMiniButton{
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    background-color: white;
+    cursor: pointer;
+    border: 1px solid rgba(58, 185, 109, 1);
+}

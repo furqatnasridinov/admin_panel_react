@@ -6,6 +6,7 @@ import scheduleSlice from "../features/schedule_slice";
 import clientsSlice from "../features/clients_slice";
 import loginSlice from "../features/register"
 import statsSlice from "../features/statisticks"
+import appSlice from "../features/app";
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +17,6 @@ export const store = configureStore({
     clients: clientsSlice,
     login : loginSlice,
     stats : statsSlice,
+    app : appSlice,
   },
 });
