@@ -16,7 +16,9 @@ module.exports = {
         "grey-text": "rgba(176, 176, 176, 1)",
         "red-text": "rgba(255, 136, 136, 1)",
         "grey-container" : "rgba(244, 244, 244, 1)",
-        "skeleton-main" : "rgba(218, 233, 255, 1)"
+        "skeleton-main" : "rgba(218, 233, 255, 1)",
+        "crm-main" : "rgba(94, 220, 145, 1)",
+        "crm-link" : "rgba(58, 185, 109, 1)",
       },
     },
   },

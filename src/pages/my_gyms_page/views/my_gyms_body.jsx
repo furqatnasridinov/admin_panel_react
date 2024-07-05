@@ -59,11 +59,6 @@ const MyGymsBody = () => {
   }
 
   return (
-    console.log(`sortByName ${sortByName}`),
-    console.log(`sortByActivitiesForMonth ${sortByActivitiesForMonth}`),
-    console.log(`sortByActivitiesForWeek ${sortByActivitiesForWeek}`),
-    console.log(`sortByActivitiesForDay ${sortByActivitiesForDay}`),
-    
     <div className="px-[30px] bg-white rounded-[16px] flex flex-col gap-3 h-[86vh]">
       {/* Top section */}
 

@@ -2,8 +2,6 @@ import React from "react";
 import TitleText from "../create_gym_page/title_text";
 import { useState, useEffect } from "react";
 import ReactInputMask from "react-input-mask";
-import toggleOn from "../../assets/svg/toggle_on.svg"
-import toggleOff from "../../assets/svg/toggle_off.svg"
 import CustomDialog from "../../components/dialog/dialog";
 import BackButton from "../../components/button/back_button";
 import CustomButton from "../../components/button/button";
@@ -18,7 +16,6 @@ import {
   sendPhoneCodeConfirmation1,
   sendPhoneStage2,
   sendPhoneCodeConfirmation2,
-  getUser
 } from "../../features/register";
 
 

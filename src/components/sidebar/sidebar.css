@@ -1,4 +1,4 @@
-.sidebar_section {
+.sidebar_section_myfit {
   margin-top: 16px;
   margin-left: 16px;
   margin-right: 16px;
@@ -17,7 +17,7 @@
   font-weight: 400;
 }
 
-.sidebar_section_closed {
+.sidebar_section_closed_myfit  {
   margin-top: 16px;
   margin-left: 16px;
   margin-right: 16px;
@@ -35,12 +35,57 @@
   transition: border-color 0.3s ease;
 }
 
-.sidebar_section:hover {
+.sidebar_section_myfit:hover {
   border: 1px solid rgba(89, 154, 254, 1);
 }
 
-.sidebar_section_closed:hover {
+.sidebar_section_closed_myfit:hover {
   border: 1px solid rgba(89, 154, 254, 1);
+}
+
+.sidebar_section_crm {
+  margin-top: 16px;
+  margin-left: 16px;
+  margin-right: 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: border-color 0.3s ease;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.sidebar_section_closed_crm  {
+  margin-top: 16px;
+  margin-left: 16px;
+  margin-right: 16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* justify-content: center; */
+  gap: 5px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.sidebar_section_crm:hover {
+  border: 1px solid rgba(94, 220, 145, 1);
+}
+
+.sidebar_section_closed_crm:hover {
+  border: 1px solid rgba(94, 220, 145, 1);
 }
 
 .sidebar_opened {
@@ -55,8 +100,14 @@
   transition: width 0.3s ease;
 }
 
-.active_sidebar_section {
+.active_sidebar_section_myfit {
   background-color: rgba(245, 249, 255, 1);
+}
+
+.active_sidebar_section_crm {
+  background-color: rgba(242, 255, 247, 1);
+  border: 1px solid rgba(94, 220, 145, 1);
+
 }
 
 .sidebar_header {
@@ -118,7 +169,7 @@
   left: -12px;
 }
 
-.active_additional_block {
+.active_additional_block_myfit {
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -128,7 +179,7 @@
   cursor: pointer;
 }
 
-.active_additional_block li span {
+.active_additional_block_myfit li span {
   font-size: 14px;
   font-weight: 500;
   line-height: 16px;
@@ -137,8 +188,31 @@
   left: -12px;
 }
 
-.active_additional_block li {
+.active_additional_block_myfit li {
   color: rgba(62, 134, 245, 1);
+}
+
+.active_additional_block_crm {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 16px;
+  margin-left: 26px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.active_additional_block_crm li span {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+  color: rgba(94, 220, 145, 1);
+  position: relative;
+  left: -12px;
+}
+
+.active_additional_block_crm li {
+  color: rgba(94, 220, 145, 1);
 }
 
 .additional_block li  {
@@ -155,4 +229,81 @@
   padding: 32px;
   gap: 32px;
   width: fit-content;
+}
+
+.tabbar {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  border-radius: 8px;
+  height: 40px;
+  padding: 5px;
+  margin-top: 16px;
+  margin-left: 16px;
+  margin-right: 16px;
+  transition: border-color 0.3s ease;
+}
+
+
+.tabbar div {
+  transition: background-color 0.5s ease, color 0.5s ease;
+  cursor: pointer;
+}
+
+
+.tabbar_item{
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.tabbar_item span {
+  font-size: 14px;
+  font-weight: 400;
+  color: black;
+}
+
+.selected_tabbar_item_crm {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 6px;
+  background-color: rgba(94, 220, 145, 1);
+  color: white;
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.15), 0px 15px 18px -15px rgba(109, 212, 113, 1);
+}
+
+.selected_tabbar_item_myfit {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 6px;
+  background-color: rgba(119, 170, 249, 1);
+  color: white;
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.15), 0px 15px 18px -15px rgba(119, 170, 249, 1);
+}
+
+.selected_tabbar_item_myfit span {
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+}
+
+.selected_tabbar_item_crm span {
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
 }

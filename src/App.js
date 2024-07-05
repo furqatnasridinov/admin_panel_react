@@ -20,6 +20,7 @@ import Register1 from "./pages/register/register1";
 import Splash from "./pages/splash";
 import WelcomePage from "./pages/register/welcome";
 import PushNotification from "./firebase/push_notification";
+import CrmClients from "./pages/crm/clients";
 
 
 function Content() {
@@ -30,30 +31,25 @@ function Content() {
       {(location.pathname !== '/registerPage' && location.pathname !== '/welcomePage') && <Sidebar />}
 
       <div className="flex-1 h-full">
-      <Routes>
-            <Route path="/" element = {<Splash />}></Route>
-            <Route path="/registerPage" element = {<Register1 />}></Route>
-            <Route path="/welcomePage" element = {<WelcomePage />}></Route>
-            <Route path="/bookingPage" element={<BookingPage />}></Route>
-            
-            <Route path="/waitingClientsPage" element={<ClientsPage />}></Route>
-            <Route path="/statisticksPage" element={<StatisticksPage />}></Route>
+        <Routes>
+            <Route path="/" element = {<Splash />} />
+            <Route path="/registerPage" element = {<Register1 />} />
+            <Route path="/welcomePage" element = {<WelcomePage />} />
+            <Route path="/bookingPage" element={<BookingPage />} />
+            <Route path="/waitingClientsPage" element={<ClientsPage />} />
+            <Route path="/statisticksPage" element={<StatisticksPage />} />
             <Route path="/myGymsPage" element={<MyGymsPageLayout />}>
               {/* we declare nested navigation because MyGymsPage has two screens */}
               <Route index element={<MyGymsPage />} />
               <Route path="createGym" element={<CreateGymPage />} />
               <Route path="gymDetails/:gymId" element={<GymDetails />} />
             </Route>
-            <Route path="/schedulePage" element={<SchedulesPage />}>
-              {" "}
-            </Route>
-            <Route path="/help" element={<Help />}>
-              {" "}
-            </Route>
-            <Route path="/settingsPage" element={<SettingsPage />}>
-              {" "}
-            </Route>
-          </Routes>
+            <Route path="/schedulePage" element={<SchedulesPage />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/settingsPage" element={<SettingsPage />} />
+
+            <Route path="/crmClientsPage" element={<CrmClients />} />
+         </Routes>
         <ToastContainer autoClose={2500} hideProgressBar />
       </div>
     </div>
