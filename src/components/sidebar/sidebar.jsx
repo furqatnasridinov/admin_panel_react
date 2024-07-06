@@ -52,6 +52,7 @@ const Sidebar = () => {
       openCloseSearchBar(true);
     }
   };
+  
   const handleClickMenuCompany = () => {
     if (!isMenuCompanyShown) {
       showMenuCompany(true);

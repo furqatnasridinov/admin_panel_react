@@ -3,18 +3,9 @@ import MyGymsBody from "./views/my_gyms_body";
 import MyGymsHeader from "./views/my_gyms_header";
 import MessageLikeTopContainer from "../booking_page/message_like_top_container";
 import { useSelector} from "react-redux";
-import { useEffect } from "react";
-import { RequestForToken } from "../../firebase/firebase";
 
 export default function MyGymsPage() {
   const clientsSlice = useSelector((state) => state.clients);
-
-/*   useEffect(() => {
-    const fcmtoken = localStorage.getItem(AppConstants.keyFcmToken);
-    if (!fcmtoken || !fcmtoken?.length) {
-      RequestForToken();
-    }
-  }, []) */
 
   return (
     console.log(`jwt token ${localStorage.getItem(AppConstants.keyToken)}`),

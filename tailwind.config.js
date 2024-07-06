@@ -19,6 +19,7 @@ module.exports = {
         "skeleton-main" : "rgba(218, 233, 255, 1)",
         "crm-main" : "rgba(94, 220, 145, 1)",
         "crm-link" : "rgba(58, 185, 109, 1)",
+        "text-faded-dark" : "rgba(125, 125, 125, 1)"
       },
     },
   },

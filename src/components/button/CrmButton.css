@@ -1,0 +1,23 @@
+.button {
+    /* background-color: white; */
+    border-radius: 8px;
+    border-width: 1px;
+    /* border-color: rgba(119, 170, 249, 1); */
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+  }
+  
+  
+  .button_with_no_hover {
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: rgba(119, 170, 249, 1);
+    color: black;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  
+  

@@ -28,6 +28,7 @@
     display: flex;
     flex-direction: column;
     height: 86vh;
+    overflow-y: auto;
 }
 
 .greenMiniButton{
@@ -40,4 +41,36 @@
     background-color: white;
     cursor: pointer;
     border: 1px solid rgba(58, 185, 109, 1);
+}
+
+.crmClientBlock{
+    width: 100%;
+    height: 64px;
+    min-height: 64px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 16px;
+    margin-top: 10px;
+    border: 1px solid  rgba(244, 244, 244, 1);
+    background-color: rgba(252, 252, 252, 1);
+}
+
+.tooltip{
+    position: absolute;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+    right: 20px;
+    top: 5px;
+    /* width: 285px;
+    height: 136px; */
+    background-color:  white;
+    box-shadow: 0px 0px 13.7px 0px rgba(0, 0, 0, 0.18);
+    box-shadow: 0px 21px 17px -12px rgba(0, 0, 0, 0.25);
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
 }
