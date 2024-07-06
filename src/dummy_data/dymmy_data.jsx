@@ -529,3 +529,56 @@ export const DAYS_OF_WEEK = [
   {"26 мая" : 18},
 ];
 
+
+export const CRM_CLIENTS = [
+  {
+    id: 1,
+    name : "Борис",
+    surname : "Ельцин",
+    patronymic : "Иванович",
+    avatar: cristianTate,
+    phone: "+7 999 999 99 99",
+    email: "demoemail@gmail.com",
+    activities: ["Бокс", "Смешанные единоборства"],
+    age: "25",
+    gyms: ["Ленинград", "GymBo"],
+  },
+  {
+    id: 2,
+    name : "Анатолий",
+    surname : "Демидов",
+    patronymic : "Иванович",
+    avatar: cristianTate,
+    phone: "+7 999 999 99 99",
+    email: "demoemail@gmail.com",
+    activities: ["Бокс", "Смешанные единоборства", "Силовые тренировки"],
+    age: "27",
+    gyms: ["Ленинград"],
+  },
+  {
+    id: 3,
+    name : "Леонид",
+    surname : "Жуков",
+    patronymic : "Ivanovich",
+    avatar: cristianTate,
+    phone: "+7 999 999 99 99",
+    email: "demoemail@gmail.com",
+    activities: ["Смешанные единоборства"],
+    age: "40",
+    gyms: ["Abdullo ako"],
+  },
+
+  {
+    id: 4,
+    name : "Константин",
+    surname : "Зюганов",
+    patronymic : "Иванович",
+    avatar: cristianTate,
+    phone: "+7 999 999 99 99",
+    email: "demoemail@gmail.com",
+    activities: ["Бокс"],
+    age: "35",
+    gyms: ["Ленинград", "Abdullo ako"],
+  },
+
+];

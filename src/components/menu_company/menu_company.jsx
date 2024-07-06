@@ -3,10 +3,9 @@ import { useRef, useEffect } from "react";
 import "./menu_company.css";
 import Events from "./events/events.jsx";
 import leaveSvg from "../../assets/svg/leave.svg";
-import settingSvg from "../../assets/svg/settings.svg";
 
 
-export default function MenuCompany({ onClose, sidebarHeaderRef, navigateToGymDetails, onLeave }) {
+export default function MenuCompany({ onClose, sidebarHeaderRef,onLeave }) {
   const menuRef = useRef();
 
   useEffect(() => {
