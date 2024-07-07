@@ -539,9 +539,10 @@ export const CRM_CLIENTS = [
     avatar: cristianTate,
     phone: "+7 999 999 99 99",
     email: "demoemail@gmail.com",
-    activities: ["Бокс", "Смешанные единоборства"],
+    activities: ["Бокс", "Баня", "Силовые тренировки"],
     age: "25",
     gyms: ["Ленинград", "GymBo"],
+    note : "",
   },
   {
     id: 2,
@@ -554,6 +555,7 @@ export const CRM_CLIENTS = [
     activities: ["Бокс", "Смешанные единоборства", "Силовые тренировки"],
     age: "27",
     gyms: ["Ленинград"],
+    note : "Этот Гигачад служит нам всем вдохновением, ведь в свои 60 лет он не пропустил ни одной тренировки (ходит к нам с 2016-го), живая Легенда.",
   },
   {
     id: 3,
@@ -566,6 +568,7 @@ export const CRM_CLIENTS = [
     activities: ["Смешанные единоборства"],
     age: "40",
     gyms: ["Abdullo ako"],
+    note : "",
   },
 
   {
@@ -578,7 +581,8 @@ export const CRM_CLIENTS = [
     email: "demoemail@gmail.com",
     activities: ["Бокс"],
     age: "35",
-    gyms: ["Ленинград", "Abdullo ako"],
+    gyms: ["Ленинград", "Abdullo ako", "GymBo", "И-Талия"],
+    note : "Этот Гигачад служит нам всем вдохновением, ведь в свои 60 лет он не пропустил ни одной тренировки (ходит к нам с 2016-го), живая Легенда.",
   },
 
 ];

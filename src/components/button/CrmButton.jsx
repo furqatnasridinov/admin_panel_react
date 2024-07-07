@@ -7,7 +7,6 @@ export default function CrmButton({
   width,
   height,
   isDidsabled,
-  hideHover,
   ref,
   loading,
   backgroundColor = "rgba(94, 220, 145, 1)",
@@ -27,10 +26,8 @@ export default function CrmButton({
           color : isDidsabled ? "rgba(176, 176, 176, 1)" : textColor,
           backgroundColor: isDidsabled ? "rgba(220, 220, 220, 1)" : backgroundColor,
           borderColor: isDidsabled ? "rgba(220, 220, 220, 1)" : borderColor,
-          opacity : loading ? 0.6 : 1,
         }}
-        className={hideHover ? "button_with_no_hover outline-none" : "button outline-none"
-        }
+        className="button outline-none"
     >
       {loading ? "Загрузка..." : title}
     </button>
