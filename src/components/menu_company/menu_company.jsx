@@ -3,10 +3,14 @@ import { useRef, useEffect } from "react";
 import "./menu_company.css";
 import Events from "./events/events.jsx";
 import leaveSvg from "../../assets/svg/leave.svg";
+import { useSelector } from "react-redux";
 
 
 export default function MenuCompany({ onClose, sidebarHeaderRef,onLeave }) {
   const menuRef = useRef();
+  const appState = useSelector((state) => state.app);
+  const isMyfit = appState.appType === "MYFIT";
+  const border = isMyfit ? "1px solid #D4E5FF" : "1px solid rgba(193, 249, 215, 1)";
 
   useEffect(() => {
     // Function to call onClose if clicked outside of menuRef
@@ -30,9 +34,12 @@ export default function MenuCompany({ onClose, sidebarHeaderRef,onLeave }) {
   }, [onClose]);
 
   return (
-    <div ref={menuRef} className="main">
-      {/* <Events icon={settingSvg} text="Настройки компании" onClick={navigateToGymDetails} /> */}
-      <Events icon={leaveSvg} text="Выйти из аккаунта" onClick={onLeave} />
+    <div 
+      style={{border : border}}
+      ref={menuRef} className="main">
+      <Events isMyfit={isMyfit} text="Выйти из аккаунта" onClick={onLeave} />
     </div>
   );
 }
+
+

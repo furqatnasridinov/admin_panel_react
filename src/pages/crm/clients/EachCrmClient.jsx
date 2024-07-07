@@ -4,6 +4,7 @@ import crmDocs from "../../../assets/svg/crmDocs.svg"
 import { useState, useEffect, useRef } from 'react'
 import "./index.css"
 import CrmButton from '../../../components/button/CrmButton'
+import VerticalSpace from '../../../components/VerticalSpace'
 
 export default function EachCrmClient({
     name,
@@ -15,6 +16,7 @@ export default function EachCrmClient({
     activities,
     age,
     gyms,
+    note,
 }) {
     const [moreActions, setMoreActions] = useState(false);
     const [notesActions, setNotesActions] = useState(false);
@@ -48,10 +50,8 @@ export default function EachCrmClient({
 
         </div>
 
-        <div className="h-full w-[17%] flex flex-col justify-center overflow-hidden">
-            {activities.slice(0, 2).map((activity, index) => (
-                <span key={index} className='text-[14px] leading-4'>{activity}</span>
-            ))}
+        <div className="h-full w-[17%] flex flex-col justify-center">
+            <Expandable list={activities} />
         </div>
 
         <div className="h-full w-[8%] flex justify-center items-center">
@@ -59,15 +59,13 @@ export default function EachCrmClient({
         </div>
 
         <div className="h-full w-[12%] flex flex-col justify-center">
-            {gyms.map((gym, index) => {
-                    return <span key={index} className='text-[14px] leading-4'>{gym}</span>
-            })}
+            <Expandable list={gyms} isGym = {true} />
         </div>
 
         <div className="h-full w-[8%] flex flow-row items-center justify-center gap-4">
-        <   div className="relative">
+            <div className="relative">
                 <img className='cursor-pointer' onClick={()=>setNotesActions(true)} src={crmDocs} alt="crmDocs" />
-                {notesActions && <NotesAction closeFunction={()=>setNotesActions(false)} />}
+                {notesActions && <NotesAction closeFunction={()=>setNotesActions(false)} note={note} />}
             </div>
             <div className="relative">
                 <img className='cursor-pointer' onClick={()=>setMoreActions(true)} src={threeDots} alt="threeDots" />
@@ -99,7 +97,7 @@ const MoreAction = ({closeFunction}) => {
     }, [closeFunction]);
 
     return (
-        <div className='tooltip w-[285px] h-[136px]' ref={menuRef}>
+        <div className='tooltipCrm w-[285px] h-[136px]' ref={menuRef}>
             <IconAndText icon={<CartSvg />} text='Открыть карточку клиента' />
             <IconAndText icon={<NextSvg />} text='Продлить абонемент' />
             <IconAndText icon={<CalendarSvg />} text='Записать на занятие' />
@@ -107,8 +105,73 @@ const MoreAction = ({closeFunction}) => {
     )
 }
 
-const NotesAction = ({closeFunction}) => {
+const NotesAction = ({closeFunction, note}) => {
     const menuRef = useRef();
+    const [showInput, setShowInput] = useState(note === "" ? true : false);
+    const [text, setText] = useState(note);
+    const leftButtonText = text === "" ? 'Отменить' : showInput ? "Сохранить" : 'Изменить';
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                closeFunction();
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [closeFunction]);
+
+    function toggleShowInput() {
+        if (showInput) {
+            if (text === "") {
+                closeFunction();
+            }
+            setShowInput(false);
+        }else{
+            setShowInput(true);
+        }
+        
+    }
+
+    function handleOnChange(e) {
+        setText(e.target.value);
+    }
+
+    return (
+        <div className='tooltipCrm w-[435px] h-fit' ref={menuRef}>
+            <span className='text-[16px] font-semibold'>Заметка о клиенте</span>
+            <VerticalSpace height='10px' />
+            <TextToInput 
+                showInput={showInput} 
+                text={text} 
+                placeholder='Добавить заметку' 
+                onChange={handleOnChange} />
+            <VerticalSpace height='10px' />
+            <div className="flex flex-row justify-between gap-[5px] ">
+                <CrmButton 
+                    height={"40px"} 
+                    width={"100%"} 
+                    title= {leftButtonText}
+                    backgroundColor='white' 
+                    textColor='black'
+                    onСlick={toggleShowInput}
+                     />
+
+                <CrmButton 
+                    height={"40px"} 
+                    width={"100%"} 
+                    title='Удалить'  
+                    onClick={()=>{}} />
+            </div>
+        </div>
+    )
+}
+
+const SeeMoreAction = ({closeFunction, list, isGym}) => {
+    const menuRef = useRef();
+    const text = isGym ? "Заведения, которые посещает клиент:" : "Активности, которые посещает клиент:"
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -123,61 +186,93 @@ const NotesAction = ({closeFunction}) => {
     }, [closeFunction]);
 
     return (
-        <div className='tooltip w-[435px] h-fit' ref={menuRef}>
-            <span className='text-[16px] font-semibold'>Заметка о клиенте</span>
-            <span className='text-[14px] leading-4'>Этот Гигачад служит нам всем вдохновением, ведь в свои 60 лет он не пропустил ни одной тренировки (ходит к нам с 2016-го), живая Легенда.</span>
-            <div className="flex flex-row justify-between gap-[5px] ">
-                <CrmButton 
-                    height={"40px"} 
-                    width={"100%"} 
-                    title='Изменить' 
-                    backgroundColor='white' 
-                    textColor='black'
-                    onClick={()=>{}} />
-
-                <CrmButton 
-                    height={"40px"} 
-                    width={"100%"} 
-                    title='Удалить'  
-                    onClick={()=>{}} />
-            </div>
+        <div style={{
+           right: '100%',
+        }} className='tooltipCrm w-[285px] h-fit' ref={menuRef}>
+           <span className='font-semibold text-[16px] leading-4'>{text}</span>
+           <VerticalSpace height='16px' />
+            {list.map((current, index) => (
+                <div key={index} className='text-[14px] leading-4'>{current}</div>
+            ))}
         </div>
     )
 }
 
-
 const IconAndText = ({icon, text}) => {
     return (
-        <div className="flex flex-row gap-[10px] items-center w-[250px] cursor-pointer">
+        <div className="iconAndTextCrm">
             {icon}
             <span className='text-[14px] leadin-4'>{text}</span>
         </div>
     )
 }
 
-const Expandable = ({ activities }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+const Expandable = ({ list, isGym = false }) => {
+    const [seeMore, setSeeMore] = useState(false);
 
-    const toggleModal = () => setIsModalOpen(!isModalOpen);
 
     return (
         <div>
-            {activities.slice(0, 2).map((activity, index) => (
-                <span key={index} className='mr-1 text-[14px]'>{activity}</span>
+            {list.slice(0, 2).map((current, index) => (
+                <div key={index} className='text-[14px] leading-4'>{current}</div> 
             ))}
-            {activities.length > 2 && (
-                <button onClick={toggleModal} className="text-[14px] text-crm-main">Еще</button>
-            )}
-            {isModalOpen && (
-                <div className="modal">
-                    {activities.map((activity, index) => (
-                        <span key={index} className='text-[14px] leading-4'>{activity}</span>
-                    ))}
+            {list.length > 2 && (
+                <div className="relative">
+                    <div onClick={()=>setSeeMore(true)} className="text-[14px] leading-4 text-crm-main cursor-pointer">Еще</div>
+                    {seeMore && <SeeMoreAction closeFunction={()=>setSeeMore(false)} list={list} isGym={isGym} />}
                 </div>
             )}
         </div>
     );
 };
+
+const TextToInput = ({ showInput, text, placeholder, onChange, lineHeight = "16px" }) => {
+    const inputRef = useRef(null);
+    const isTextEmpty = text === "";
+    const border = showInput ? "1px solid rgba(58, 185, 109, 1)" : "1px solid white";
+    
+    useEffect(() => {
+        const input = inputRef.current;
+        if (input) {
+          input.focus();
+          // Set the cursor to the end of the text
+          const length = input.value.length;
+          input.setSelectionRange(length, length);
+          // set the height relatively textfields content
+          input.style.height = "inherit"; // Reset height to recalculate
+          input.style.height = `${input.scrollHeight}px`; // Set new height based on scroll height
+        }
+      }, [text]);
+
+    return  (
+        <textarea
+            className='textAreaCrm'
+            type="text"
+            disabled={!showInput}
+            ref={inputRef}
+            value={text}
+            readOnly={!showInput}
+            placeholder={placeholder}
+            onChange={onChange}
+            style={{
+                border : border,
+                // scrollbar 
+                scrollbarWidth: "none",
+                lineHeight: lineHeight,
+                height: "auto",
+                maxHeight: `${10 * lineHeight}px`, // Set max height to 10 lines 
+                overflow: 'auto',
+            }}
+        />
+    ) ;/* : (
+        <span 
+            style={{
+                color : isTextEmpty ? "rgba(0, 0, 0, 0.5)" : "black",
+            }}
+            className="text-[14px] leading-4">{isTextEmpty ? "Заметок нету" : text}
+        </span>
+    ); */
+}
 
 
 // svg icons 

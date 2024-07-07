@@ -126,6 +126,7 @@ const Sidebar = () => {
   const activeAdditionalBlock = isMyfit ? "active_additional_block_myfit" : "active_additional_block_crm";
   const sidebarSectionClasses = isMyfit ? "sidebar_section_myfit" : "sidebar_section_crm";
   const sidebarSectionClosedClasses = isMyfit ? "sidebar_section_closed_myfit" : "sidebar_section_closed_crm";
+  const fadedColor = isMyfit ? "#F5F9FF" : "rgba(210, 252, 227, 0.5)";
 
   return isSidebarOpened ? (
     (
@@ -138,7 +139,7 @@ const Sidebar = () => {
           <button
             ref={sidebarHeaderRef}
             className="sidebar_header"
-            style={{ backgroundColor: isMenuCompanyShown ? "#F5F9FF" : "white" }}
+            style={{ backgroundColor: isMenuCompanyShown ? fadedColor : "white" }}
             onClick={handleClickMenuCompany}>
               <div
                 className="w-[24px] h-[24px] rounded-[50%] p-[2px] transition-all duration-300 ease-in-out"

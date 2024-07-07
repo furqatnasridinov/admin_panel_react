@@ -8,7 +8,6 @@
     display: flex;
     flex-direction: column;
     background-color: white;
-    border: 1px solid  #D4E5FF;
     border-radius:  4px 16px 16px 16px;
     box-shadow: 0px 4px 13px -6px rgba(0, 0, 0, 0.25), 0px 21px 17px -12px rgba(0, 0, 0, 0.07);
     padding: 24px 24px 14px 24px;
