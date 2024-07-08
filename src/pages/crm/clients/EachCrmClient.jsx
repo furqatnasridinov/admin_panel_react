@@ -228,7 +228,6 @@ const Expandable = ({ list, isGym = false }) => {
 
 const TextToInput = ({ showInput, text, placeholder, onChange, lineHeight = "16px" }) => {
     const inputRef = useRef(null);
-    const isTextEmpty = text === "";
     const border = showInput ? "1px solid rgba(58, 185, 109, 1)" : "1px solid white";
     
     useEffect(() => {
@@ -261,17 +260,10 @@ const TextToInput = ({ showInput, text, placeholder, onChange, lineHeight = "16p
                 lineHeight: lineHeight,
                 height: "auto",
                 maxHeight: `${10 * lineHeight}px`, // Set max height to 10 lines 
-                overflow: 'auto',
+                overflow: showInput ? 'auto' : "hidden"
             }}
         />
-    ) ;/* : (
-        <span 
-            style={{
-                color : isTextEmpty ? "rgba(0, 0, 0, 0.5)" : "black",
-            }}
-            className="text-[14px] leading-4">{isTextEmpty ? "Заметок нету" : text}
-        </span>
-    ); */
+    )
 }
 
 

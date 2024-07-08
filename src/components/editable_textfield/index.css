@@ -1,0 +1,26 @@
+.textArea {
+    width: 100%;
+    padding: 10px 16px 10px 8px;
+    border: 1px solid #77aaf9;
+    border-radius: 8px;
+    outline: none;
+    resize: none;
+    overflow-y: auto;
+   /* Firefox */
+  }
+  
+  .button40 {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    border-radius: 8px;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    transition: border 0.3s ease;
+  }
+  
+  
+  .textArea::-webkit-scrollbar {
+    display: none;
+  }

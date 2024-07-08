@@ -42,9 +42,8 @@
 .describtion_and_features_column {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 16px;
   /* background-color: aqua; */
-  width: 337px;
   height: fit-content;
 }
 

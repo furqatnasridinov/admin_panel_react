@@ -2,7 +2,7 @@ import React from "react";
 import "./styles.css";
 import TitleText from "../create_gym_page/title_text";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { EditableTextfield } from "../gym_detailes/views/gym_detailes_body/first/gym_detailes_body_first";
+import { EditableTextfield } from "../../components/editable_textfield/EditableTextfield";
 import goggins from "../../assets/images/goggins.jpg";
 import AppConstants from "../../config/app_constants";
 import {

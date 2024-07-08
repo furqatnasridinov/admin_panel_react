@@ -6,7 +6,6 @@ import logoPlaceholder from "../../../../../assets/svg/logo_placeholder.svg";
 import phoneSvg from "../../../../../assets/svg/phone.svg";
 import tgSvg from "../../../../../assets/svg/tg.svg";
 import vkSvg from "../../../../../assets/svg/vk.svg";
-import doneSvg from "../../../../../assets/svg/done.svg";
 import arrowDownSvg from "../../../../../assets/svg/arrow_down.svg";
 import redBasketSvg from "../../../../../assets/svg/red_basket.svg";
 import plusSvg from "../../../../../assets/svg/plus.svg";
@@ -17,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 import ProgressSnackbar from "../../../../../components/snackbar/progress_snackbar";
 import { AddressSearching } from "./address_searching";
+import { EditableTextfield } from "../../../../../components/editable_textfield/EditableTextfield";
 
 import {
   addGymPicture,
@@ -371,36 +371,25 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
         <div className="flex flex-row  gap-[32px]">
           {/* Name  */}
           <div className="name ">
-            {!isNameEditingEnabled && (
-              <>
                 <TextAndTextButton
                   text1={"Название заведения"}
-                  text2={"Изменить"}
-                  isRedText={isNameEditingEnabled}
-                  onclick={() => setNameEditing(true)}
-                  showText2 = {canEdit} />
-                <div className="text-[13px] font-normal font-inter">
-                  {currentGym.name}
-                </div>
-              </>
-            )}
-            {isNameEditingEnabled && (
-              <>
-                <TextAndTextButton
-                  text1={"Название заведения"}
-                  text2={"Отменить"}
+                  text2={isNameEditingEnabled ? "Отменить" : "Изменить"}
                   isRedText={isNameEditingEnabled}
                   showText2 = {canEdit} 
                   onclick={() => {
-                    if (currentGymState.isChangesOccured) {
-                      dispatch(getCurrentGym(currentGym.id));
-                    }
-                    setNameEditing(false)}}/>
+                    if (isNameEditingEnabled) {
+                      if (currentGymState.isChangesOccured) {
+                        dispatch(getCurrentGym(currentGym.id));
+                      }
+                      setNameEditing(false)
+                    }else{
+                      setNameEditing(true)}}}/>
                 <EditableTextfield
                   textFieldsMinWidth={"250px"}
                   value={currentGym.name}
                   maxLength={70}
                   isNotValidated={nameIsNotValidated}
+                  isActive={isNameEditingEnabled}
                   onChange={(e) => {
                     let inputValue = e.target.value;
                     if (inputValue.length > 70) {
@@ -424,40 +413,29 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     }}}
                   lineheight={"16px"}
                 />
-              </>
-            )}
           </div>
           {/* Describtion  */}
           <div className="describtion">
-            {!isDescribtionEdittingEnabled && (
-              <>
                 <TextAndTextButton
                   text1={"Описание"}
-                  text2={"Изменить"}
-                  isRedText={isDescribtionEdittingEnabled}
-                  onclick={() => {setDescribtionEditing(true)}} 
-                  showText2 = {canEdit} />
-                <div className="leading-[14px] text-[13px] font-normal font-inter">
-                  {currentGym.description}
-                </div>
-              </>
-            )}
-            {isDescribtionEdittingEnabled && (
-              <>
-                <TextAndTextButton
-                  text1={"Описание"}
-                  text2={"Отменить"}
+                  text2={isDescribtionEdittingEnabled ? "Отменить" : "Изменить"}
                   isRedText={isDescribtionEdittingEnabled}
                   showText2 = {canEdit} 
                   onclick={() => {
-                    if (currentGymState.isChangesOccured) {
-                      dispatch(getCurrentGym(currentGym.id));
+                    if (isDescribtionEdittingEnabled) {
+                      if (currentGymState.isChangesOccured) {
+                        dispatch(getCurrentGym(currentGym.id));
+                      }
+                      setDescribtionEditing(false)
+                    }else{
+                      setDescribtionEditing(true)
                     }
-                    setDescribtionEditing(false);}}/>
+                    }}/>
                 <EditableTextfield
                   maxLength={250}
                   value={currentGym.description}
                   isNotValidated={describtionIsNotValidated}
+                  isActive={isDescribtionEdittingEnabled}
                   textFieldsMinWidth={"300px"}
                   onChange={(e) => {
                     let inputValue = e.target.value;
@@ -481,9 +459,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       setDescribtionIsNotValidated(false);
                     }}}
                   lineheight={"16px"}
-                />
-              </>
-            )}
+                />            
           </div>
           {/* Address  */}
           <div className="address">
@@ -730,85 +706,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   );
 }
 
-export function EditableTextfield({
-  value,
-  onChange,
-  fontsize,
-  lineheight,
-  onButtonClicked,
-  hideButton,
-  height,
-  placeholder,
-  showTextfield,
-  isNotValidated,
-  maxLength,
-  textFieldsMinWidth,
-}) {
-  const inputRef = useRef(null);
-  // for autofocus calls when component first renders
-  useEffect(() => {
-    const input = inputRef.current;
-    if (input) {
-      input.focus();
-      // Set the cursor to the end of the text
-      const length = input.value.length;
-      input.setSelectionRange(length, length);
-      // set the height relatively textfields content
-      input.style.height = "inherit"; // Reset height to recalculate
-      input.style.height = `${input.scrollHeight}px`; // Set new height based on scroll height
-    }
-  }, [value]);
 
-  return (
-    <div className="flex flex-row  gap-[10px] items-start">
-      {!showTextfield &&
-        <div className="flex flex-col">
-          <textarea
-            className="textArea text-[13px] font-normal font-inter"
-            ref={inputRef}
-            value={value}
-            placeholder={placeholder}
-            onChange={onChange}
-            style={{
-              border: isNotValidated ? "1px solid rgba(255, 136, 136, 1)" : "1px solid #77aaf9",
-              fontSize: fontsize,
-              lineHeight: lineheight,
-              height: "auto",
-              maxHeight: `${10 * lineheight}px`, // Set max height to 10 lines 
-              minWidth: textFieldsMinWidth,
-              overflow: 'auto',
-            }}
-          />
-          <div className="text-[12px] font-normal text-grey-text">{`${value?.length ?? 0}/${maxLength ?? 100}`}</div>
-        </div>
-
-      }
-
-      {showTextfield && (
-        <input
-          type="text"
-          className="textArea text-[13px] font-normal font-inter"
-          ref={inputRef}
-          value={value}
-          placeholder={placeholder}
-          onChange={onChange}
-          style={{
-            border: isNotValidated ? "1px solid rgba(255, 136, 136, 1)" : "1px solid #77aaf9",
-            fontSize: fontsize,
-            lineHeight: lineheight,
-            height: height,
-          }}
-        />
-      )}
-
-      {!hideButton && (
-        <button onClick={onButtonClicked}>
-          <img src={doneSvg} alt="" />
-        </button>
-      )}
-    </div>
-  );
-}
 
 export function EditableContacts({
   text,
