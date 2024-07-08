@@ -2,7 +2,7 @@ import React from "react";
 import "./gym_details_body_second.css";
 import TextAndTextButton from "../../../components/text_and_textbutton";
 import { useState, useRef } from "react";
-import { EditableTextfield } from "../first/gym_detailes_body_first";
+import { EditableTextfield } from "../../../../../components/editable_textfield/EditableTextfield";
 import deleteSvg from "../../../../../assets/svg/delete.svg";
 import removeActivitySvg from "../../../../../assets/svg/remove_activities.svg";
 import addPhotoSvg from "../../../../../assets/svg/add_photo.svg";
@@ -288,15 +288,11 @@ export default function GymDetailesBodySecondContainer({
                       dispatch(getInfoForType(gymState.currentGym.id))}
                       setDescribtionEditting(false)}
                   }}/>
-                {!isDescribtionEdittingEnabled && 
-                <div className="text-[13px] font-normal font-inter leading-[14px]">
-                  {activityDescribtion}
-                </div>}
-
-                {isDescribtionEdittingEnabled && 
+               
                   <EditableTextfield
                     value={activityDescribtion}
                     isNotValidated={activityDescribtionNotValidated}
+                    isActive={isDescribtionEdittingEnabled}
                     onChange={(e) => {
                       let inputValue = e.target.value;
                       if (inputValue.length > 250) {
@@ -324,7 +320,7 @@ export default function GymDetailesBodySecondContainer({
                       lineheight={"16px"}
                       maxLength={250}
                       textFieldsMinWidth={"300px"}
-                    />}
+                    />
               </div>
 
               {/* features */}

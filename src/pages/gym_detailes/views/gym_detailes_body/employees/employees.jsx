@@ -107,6 +107,13 @@ export default function Employees({ listOfEmployees, gymId }) {
     openDropDown2(!isDropDown2Opened);
   }
 
+  function getCorrectRole(userRoles){
+    const firstFoundRole = allRoles.find(role => 
+      userRoles.some(userRole => userRole.id === role.id)
+    );
+    return firstFoundRole;
+  }
+
   useEffect(() => {
     if (employeesSlice.selectedEmployee !== null) {
       dispatch(selectAPriveledge(employeesSlice.selectedEmployee.roles[0].privilegesId));
@@ -366,14 +373,16 @@ export default function Employees({ listOfEmployees, gymId }) {
                   photo={goggins}
                   name={employee.firstName}
                   lastName={employee.lastName}
-                  job={employee.roles.length === 0 ? "Нет роли" : employee.roles[0].name
-                  }
+                  job={getCorrectRole(employee.roles).name}
                 //isThatYou={localStorage.id === employee.id} <== maybe?
                 />
               );
             })}
           {/* Add button */}
           <div
+            style={{
+              borderRadius: "16px",
+            }}
             className="button"
             onClick={() => {
               openAddEmployeesDialog(true);

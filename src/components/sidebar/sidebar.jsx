@@ -24,6 +24,7 @@ import StatsSvg from "./stats_svg";
 import LocationSvg from "./location_svg";
 import CalendarSvg from "./calendar_svg";
 import SettingsSvg from "./settings_svg";
+import TabbarSectionClosed from "./TabbarClosed";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
@@ -372,6 +373,8 @@ const Sidebar = () => {
       <div className="mt-[18px] px-[16px] opacity-50">
         {!isMenuCompanyShown && <hr />}
       </div>
+
+      <TabbarSectionClosed />
 
       <div className="flex flex-col justify-between flex-grow">
         {/* Первые четыре элемена */}

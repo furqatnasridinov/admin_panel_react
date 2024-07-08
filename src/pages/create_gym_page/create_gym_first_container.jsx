@@ -5,7 +5,7 @@ import mainPicPlaceHolder from "../../assets/svg/main_photo_placeholder.svg";
 import logoPlaceholder from "../../assets/svg/logo_placeholder.svg";
 import { useRef, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { EditableTextfield } from "../gym_detailes/views/gym_detailes_body/first/gym_detailes_body_first";
+import { EditableTextfield } from "../../components/editable_textfield/EditableTextfield";
 import { AddressSearching } from "../gym_detailes/views/gym_detailes_body/first/address_searching";
 import { useDispatch, useSelector } from "react-redux";
 import { searchingForAddress } from "../../features/current_gym_slice";
