@@ -7,6 +7,7 @@ import clientsSlice from "../features/clients_slice";
 import loginSlice from "../features/register"
 import statsSlice from "../features/statisticks"
 import appSlice from "../features/app";
+import crmClients from "../features/CrmClients";
 
 export const store = configureStore({
   reducer: {
@@ -18,5 +19,6 @@ export const store = configureStore({
     login : loginSlice,
     stats : statsSlice,
     app : appSlice,
+    crmClients : crmClients,
   },
 });
