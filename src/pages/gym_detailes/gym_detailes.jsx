@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import { useParams } from "react-router-dom";
 import "./gym_details.css";
 import GymDetailesHeader from "./views/gym_detailes_header/gym_detailes_header";
 import GymDetailesBodyFirstContainer from "./views/gym_detailes_body/first/gym_detailes_body_first";
@@ -24,13 +23,13 @@ import MessageLikeTopContainer from "../booking_page/message_like_top_container"
 import AppConstants from "../../config/app_constants";
 
 export default function GymDetails() {
-  let { gymId } = useParams(); // This hooks allows you to extract params from the URL
 
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
   const employeesSlice = useSelector((state) => state.employees);
   const activitiesSlice = useSelector((state) => state.activities);
   const clientsSlice = useSelector((state) => state.clients);
+  const gymId = gymState.currentGym?.id || JSON.parse(sessionStorage.getItem("currentGym"))?.id;
 
   // this useeffect will trigger only once at the beginning
   useEffect(() => {
@@ -121,7 +120,7 @@ export default function GymDetails() {
             <GymDetailesHeader
               gym={gymState.currentGym}
               listOfGyms={gymState.listOfGyms}
-              showDropDown={gymState.listOfGyms?.length > 1}
+              showDropDown={gymState.listOfGyms?.length > 1 && !gymState.listOfGymsLoading}
               selectAnotherGym={selectAnotherGym}
             />
 
