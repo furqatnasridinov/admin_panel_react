@@ -268,6 +268,7 @@ const currentGymSlice = createSlice({
     isLoading: false,
     listOfGyms: [],
     isGymsLoading: false,
+    listOfGymsLoading: false,
     isMainPicLoading: false,
     isLogoLoading: false,
     currentGym: null,
@@ -402,14 +403,14 @@ const currentGymSlice = createSlice({
 
     // getListOfGyms
     builder.addCase(getListOfGyms.pending, (state) => {
-      state.isGymsLoading = true;
+      state.listOfGymsLoading = true;
     });
     builder.addCase(getListOfGyms.fulfilled, (state, action) => {
-      state.isGymsLoading = false;
+      state.listOfGymsLoading = false;
       state.listOfGyms = action.payload;
     });
     builder.addCase(getListOfGyms.rejected, (state) => {
-      state.isGymsLoading = false;
+      state.listOfGymsLoading = false;
       state.isError = true;
     });
 

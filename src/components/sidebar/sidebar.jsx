@@ -7,7 +7,7 @@ import { NavLink } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setNavigationFromBooking } from "../../features/schedule_slice";
-import { getListOfGyms, setCurrentGymFromFirstItem } from "../../features/current_gym_slice";
+import { getListOfGyms, setCurrentGymFromFirstItem, setCurrentGym } from "../../features/current_gym_slice";
 import { getNewClients } from "../../features/clients_slice";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -93,23 +93,26 @@ const Sidebar = () => {
   }, []);
 
   useEffect(() => {
-    if (gymsState.listOfGyms?.length > 0 && gymsState.currentGym === null) {
-      dispatch(setCurrentGymFromFirstItem());
-    }
-    /* if (sessionStorage.getItem("currentGym") == null) {
+    if (sessionStorage.getItem("currentGym") == null) {
       if (gymsState.listOfGyms?.length > 0 && gymsState.currentGym === null) {
         dispatch(setCurrentGymFromFirstItem());
       }
     } else {
-      // устанавливаем текущий зал из sessionStorage
-      //dispatch(setCurrentGym(JSON.parse(sessionStorage.getItem("currentGym"))));
-    } */
+      if (gymsState.currentGym === null) {
+        // устанавливаем текущий зал из sessionStorage
+        dispatch(setCurrentGym(JSON.parse(sessionStorage.getItem("currentGym"))));
+      }
+      
+    }
   }, [gymsState.listOfGyms]);
 
   useEffect(() => {
     if (gymsState.currentGym !== null) {
-      // сохраняем текущий зал в sessionStorage
-      sessionStorage.setItem("currentGym", JSON.stringify(gymsState.currentGym));
+      const gymIdFromStorage = JSON.parse(sessionStorage.getItem("currentGym"))?.id;
+      if (gymsState.currentGym.id !== gymIdFromStorage) {
+        // сохраняем текущий зал в sessionStorage
+        sessionStorage.setItem("currentGym", JSON.stringify(gymsState.currentGym));
+      }
       if (localStorage.getItem(AppConstants.keyRoleId) !== "5"){
         dispatch(getNewClients(gymsState.currentGym?.id));
       }

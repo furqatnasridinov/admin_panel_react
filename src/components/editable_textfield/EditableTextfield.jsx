@@ -36,15 +36,18 @@ export function EditableTextfield({
       const buttonborder = isActive ? "1px solid #77aaf9" : "1px solid white";
       const buttonBg = isActive ? "#77aaf9" : "white";
       const textColor = isActive ? "rgba(176, 176, 176, 1)" : "white";
+      const padding = isActive ? "10px 16px 10px 8px" : "";
+      
   
     return (
       <div className="flex flex-row  gap-[10px] items-start">
         {!showTextfield &&
           <div className="flex flex-col">
             <textarea
-              className="textArea text-[13px] font-normal font-inter"
+              className="text-[13px] font-normal font-inter"
               ref={inputRef}
               value={value}
+              disabled={!isActive}
               placeholder={placeholder}
               onChange={onChange}
               readOnly={!isActive}
@@ -53,10 +56,17 @@ export function EditableTextfield({
                 fontSize: fontsize,
                 lineHeight: lineheight,
                 transition : "border 0.3s",
+                width: "100%",
+                padding: padding,
+                borderRadius: "8px",
+                outline: "none",
+                resize: "none",
+                backgroundColor: "white",
                 height: "auto",
                 maxHeight: `${10 * lineheight}px`, // Set max height to 10 lines 
                 minWidth: textFieldsMinWidth,
                 overflow: isActive ?  'auto' : 'hidden',
+                scrollbarWidth: "none",
               }}
             />
               <div 
@@ -73,7 +83,7 @@ export function EditableTextfield({
         {showTextfield && (
           <input
             type="text"
-            className="textArea text-[13px] font-normal font-inter"
+            className="text-[13px] font-normal font-inter"
             ref={inputRef}
             value={value}
             placeholder={placeholder}

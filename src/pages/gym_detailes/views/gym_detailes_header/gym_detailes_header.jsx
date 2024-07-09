@@ -5,12 +5,13 @@ import CustomDropdown from "../../../../components/dropdown/custom_dropdown";
 import { toast } from "react-toastify";
 import CustomButton from "../../../../components/button/button"
 import questionLogo from "../../../../assets/svg/questionModal.svg";
+import AppConstants from "../../../../config/app_constants";
 
 
 export default function GymDetailesHeader({
   gym,
   listOfGyms,
-  showDropDown,
+  showDropDown = true,
   selectAnotherGym,
 }) {
 
@@ -39,7 +40,7 @@ export default function GymDetailesHeader({
     try {
       const fileName = `qrcode_${gym.name}.jpg`
       const link = document.createElement('a');
-      link.href = `http://77.222.53.122/image/${gym.qrcode}`;
+      link.href = `${AppConstants.baseUrl}/image/${gym.qrcode}`;
       link.setAttribute('download', fileName); //or any other extension
       link.target = '_blank';
       document.body.appendChild(link);
