@@ -7,8 +7,7 @@ import {useDispatch} from "react-redux";
 
 function Gym(props) {
   const dispatch = useDispatch();
-  /* const nextLink = `/myGymsPage/gymDetails/${props.id}`; */
-  const nextLink = `/myGymsPage/gymDetails`;
+  const nextLink = `/myGymsPageMyfit/gymDetails/${props.id}`;
   return (
     <Link to={nextLink}>
       <div

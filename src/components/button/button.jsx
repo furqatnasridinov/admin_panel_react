@@ -23,6 +23,7 @@ export default function CustomButton({
         opacity: isLoading ? 0.7 : 1,
         backgroundColor: isDidsabled ? "rgba(220, 220, 220, 1)" : "",
         borderColor: isDidsabled ? "rgba(220, 220, 220, 1)" : "",
+        transition: "all 0.3s",
       }}
       className={showShadow ? "with_shadow" : "with_no_shadow"}
     >

@@ -104,10 +104,19 @@
   background-color: rgba(245, 249, 255, 1);
 }
 
-.active_sidebar_section_crm {
-  background-color: rgba(242, 255, 247, 1);
-  border: 1px solid rgba(94, 220, 145, 1);
+.active_sidebar_section_myfit span {
+  color: rgba(62, 134, 245, 1)
+}
 
+
+.active_sidebar_section_crm {
+  background-color: rgba(239, 255, 245, 1);
+  color: red;
+  /* border: 1px solid rgba(94, 220, 145, 1); */
+}
+
+.active_sidebar_section_crm span {
+  color: rgba(58, 185, 109, 1);
 }
 
 .sidebar_header {
@@ -148,6 +157,20 @@
   align-items: center;
   color: white;
   font-size: 12px;
+}
+
+.badgeInTab {
+  width: 16px;
+  height: 16px;
+  background-color: rgba(255, 136, 136, 1);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 12px;
+  margin-bottom: 5px;
+  margin-left: 5px;
 }
 
 .additional_block {
@@ -206,13 +229,13 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 16px;
-  color: rgba(94, 220, 145, 1);
+  color: rgba(58, 185, 109, 1);
   position: relative;
   left: -12px;
 }
 
 .active_additional_block_crm li {
-  color: rgba(94, 220, 145, 1);
+  color: rgba(58, 185, 109, 1);
 }
 
 .additional_block li  {

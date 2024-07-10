@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
-import doneSvg from "../../../../assets/svg/done.svg";
 
 export function FeaturesTextField({
   onChanged,
   peculiarities,
   onButtonClicked,
+  isActive,
 }) {
   const inputRef = useRef(null);
 
@@ -66,6 +66,12 @@ export function FeaturesTextField({
     }
   };
 
+    const border = isActive ? "1px solid #77aaf9" : "1px solid white";
+    const buttonborder = isActive ? "1px solid #77aaf9" : "1px solid white";
+    const buttonBg = isActive ? "#77aaf9" : "white";
+    const padding = isActive ? "10px 16px 10px 16px" : "";
+    const lineHeight = 14;
+
   return (
     <div className="flex flex-row justify-between gap-[10px] items-start">
       <textarea
@@ -73,22 +79,45 @@ export function FeaturesTextField({
         value={peculiarities}
         onChange={onChangedHandler}
         onKeyDown={handleKeyDown}
+        autoFocus={false}
+        readOnly={!isActive}
+        disabled={!isActive}
         style={{
-          width: "100%",
-          padding: "10px 16px 10px 8px",
-          border: "1px solid #77AAF9",
+          //width: "100%",
+          padding: padding,
+          border: border,
           borderRadius: "8px",
           outline: "none",
           maxHeight: "200px",
           resize: "none",
           fontSize: "13px",
-          lineHeight: "14px",
+          lineHeight: `${lineHeight}px`,
+          width: "300px",
           fontFamily: "Inter, sans-serif",
+          backgroundColor: "white",
+          overflow: isActive ?  'auto' : 'hidden',
+          scrollbarWidth: "none",
+          transition: "all 0.3s",
+          minHeight: "40px",
+          maxHeight: `${10 * lineHeight}px`, // Set max height to 10 lines 
         }}
       />
-      <button onClick={onButtonClicked}>
-        <img src={doneSvg} alt="" />
-      </button>
+      <div
+        style={{
+          border: buttonborder,
+          backgroundColor: buttonBg,
+          cursor: isActive ? "pointer" : "default",
+        }}
+        className="button40" onClick={onButtonClicked}>
+        <DoneSvg />
+      </div>
     </div>
   );
+}
+
+const DoneSvg = () => {
+  return <svg width="15" height="12" viewBox="0 0 15 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0.972412 6.91669L4.63908 10.5834L13.8057 1.41669" stroke="white" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+  
 }

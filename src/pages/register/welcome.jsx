@@ -9,7 +9,7 @@ export default function WelcomePage() {
 
     useEffect(() => {
         setTimeout(() => {
-            const nextLink = localStorage.getItem(AppConstants.keyRoleId) === "5" ? "/schedulePage" : "/myGymsPage";
+            const nextLink = localStorage.getItem(AppConstants.keyRoleId) === "5" ? "/schedulePageMyfit" : "/myGymsPageMyfit";
             // Перенаправляем пользователя
             window.history.pushState({}, "", nextLink);
             // Перезагружаем страницу
