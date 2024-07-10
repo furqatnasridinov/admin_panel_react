@@ -374,7 +374,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                   name={employee.firstName}
                   lastName={employee.lastName}
                   job={getCorrectRole(employee.roles).name}
-                //isThatYou={localStorage.id === employee.id} <== maybe?
+                  isThatYou={localStorage.getItem(AppConstants.keyPhone) === employee.login}
                 />
               );
             })}

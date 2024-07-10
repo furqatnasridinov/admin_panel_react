@@ -16,7 +16,7 @@ export function EditableTextfield({
     maxLength,
     textFieldsMinWidth,
     isActive,
-    minHeight = "35px",
+    minHeight,
   }) {
     const inputRef = useRef(null);
     // for autofocus calls when component first renders
@@ -31,7 +31,7 @@ export function EditableTextfield({
           // set the height relatively textfields content
           input.style.height = "inherit"; // Reset height to recalculate
           input.style.height = `${input.scrollHeight}px`; // Set new height based on scroll height
-        }, 100);
+        }, 150);
       }
     }, [value, isActive]);
   
@@ -41,7 +41,6 @@ export function EditableTextfield({
       const textColor = isActive ? "rgba(176, 176, 176, 1)" : "white";
       const padding = isActive ? "10px 16px 10px 16px" : "";
       
-  
     return (
       <div className="flex flex-row gap-[10px] items-start">
         {!showTextfield &&
@@ -77,7 +76,7 @@ export function EditableTextfield({
               <span
                 style={{
                   color: textColor,
-                  transition: "color 0.3s",
+                  transition: "all 0.3s",
                 }}
                 className="text-[12px] font-normal ">{`${value?.length ?? 0}/${maxLength ?? 100}`}
               </span>}

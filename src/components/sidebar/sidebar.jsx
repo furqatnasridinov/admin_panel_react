@@ -16,7 +16,7 @@ import CustomButton from "../button/button";
 import { getUser } from "../../features/register";
 import placeHolderImg from "../../assets/images/placeholder.jpg"
 import AppConstants from "../../config/app_constants";
-
+import { setAppType } from "../../features/app";
 import TabbarSection from "./tabbar_section";
 import ClientsSvg from "./clients_svg";
 import StatsSvg from "./stats_svg";
@@ -86,6 +86,10 @@ const Sidebar = () => {
     
     dispatch(getListOfGyms());
     dispatch(getUser());
+    const appStateFromSession = sessionStorage.getItem(AppConstants.keyAppState);
+    if (appStateFromSession != appState.appType) {
+      dispatch(setAppType(appStateFromSession));
+    }
     // Удаляем обработчик события при размонтировании
     return () => window.removeEventListener("resize", handleResize);
 
@@ -118,26 +122,67 @@ const Sidebar = () => {
     }
   }, [gymsState.currentGym]);
 
-  function clickOnFirstBlock(){
-    setClientsActive(true);
-    if (isMyfit && location.pathname !== "/bookingPage") {
-      navigate("/bookingPage");
-    }
-  }
-
   useEffect(() => {
-    if (isClientsActive && isMyfit && location.pathname !== "/bookingPage") {
-      navigate("/bookingPage");
+    if (isClientsActive && isMyfit && location.pathname !== "/clientsPageMyfit") {
+      navigate("/clientsPageMyfit");
     }
-    if (isClientsActive && !isMyfit && location.pathname !== "/crmClientsPage") {
-      navigate("/crmClientsPage");
+    if (isClientsActive && !isMyfit && location.pathname !== "/clientsPageCrm") {
+      navigate("/clientsPageCrm");
     }
   }, [isClientsActive]);
 
-/*   useEffect(() => {
-    console.log(appState.appType)
-  }, [appState.appType]) */
-  
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const isMyfit = appState.appType === "MYFIT";
+    const appStateFromSession = sessionStorage.getItem(AppConstants.keyAppState);
+    if (isMyfit) {
+      switch (currentPath) {
+        case "/clientsPageCrm":
+          navigate("/clientsPageMyfit")
+          break;
+        case "/todayEventsPageCrm":
+          navigate("/todayEventsPageMyfit")
+          break;
+        case "/statisticksPageCrm":
+          navigate("/statisticksPageMyfit")
+          break;
+        case "/myGymsPageCrm":
+          navigate("/myGymsPageMyfit")
+          break;
+        case "/schedulePageCrm":
+          navigate("/schedulePageMyfit")
+          break;
+        case "/settingsPageCrm":
+          navigate("/settingsPageMyfit")
+          break;
+        default:
+          break;
+      }
+    }else{
+      switch (currentPath) {
+        case "/clientsPageMyfit":
+          navigate("/clientsPageCrm")
+          break;
+        case "/todayEventsPageMyfit":
+          navigate("/todayEventsPageCrm")
+          break;
+        case "/statisticksPageMyfit":
+          navigate("/statisticksPageCrm")
+          break;
+        case "/schedulePageMyfit":
+          navigate("/schedulePageCrm")
+          break;
+        case "/settingsPageMyfit":
+          navigate("/settingsPageCrm")
+          break;
+      }
+      if (currentPath === "/myGymsPageMyfit" ||
+        currentPath.includes("/myGymsPageMyfit/gymDetails/") ||
+        currentPath === "/myGymsPageMyfit/createGym") {
+        navigate("/myGymsPageCrm");
+      }
+    }
+  }, [appState.appType])
   
 
   // This function will be passed to MenuCompany to close it
@@ -188,11 +233,11 @@ const Sidebar = () => {
               onClose={closeMenuCompany}
               navigateToGymDetails={() => {
                 // проверяем не открыто ли уже этот роут
-                if (location.pathname === `/myGymsPage/gymDetails/${gymsState.currentGym.id}`) {
+                if (location.pathname === `/myGymsPageMyfit/gymDetails/${gymsState.currentGym.id}`) {
                   toast("Вы находитесь на странице заведения, выберите что хотите изменить")
                   showMenuCompany(false);
                 } else {
-                  navigate(`/myGymsPage/gymDetails/${gymsState.currentGym.id}`);
+                  navigate(`/myGymsPageMyfit/gymDetails/${gymsState.currentGym.id}`);
                   showMenuCompany(false);
                 }
               }}
@@ -243,6 +288,7 @@ const Sidebar = () => {
                     id="sidebarOnclick"
                     className={isClientsActive ? `${sidebarSectionClasses} ${activeSideBar}` : `${sidebarSectionClasses}`}
                     onClick={()=>setClientsActive(true)}>
+                    
                     <ClientsSvg />
                     {isTextShown && <span>Клиенты</span>}
                     {isTextShown && clientsSlice.waitingForAccept?.length > 0 && isMyfit &&  (
@@ -257,7 +303,7 @@ const Sidebar = () => {
                       {/* Additional content to be shown when Клиенты is active */}
                       <NavLink
                         id="sidebarOnclick"
-                        to= {isMyfit ? "/bookingPage" : "/crmClientsPage"} 
+                        to= {isMyfit ? "/clientsPageMyfit" : "/clientsPageCrm"} 
                         className={({ isActive }) => isActive ? `${activeAdditionalBlock}` : "additional_block"}>
                         <li>
                           <span>{isMyfit ? "Бронирование" : "Наша база клиентов"}</span>
@@ -271,10 +317,10 @@ const Sidebar = () => {
 
                       <NavLink
                         id="sidebarOnclick"
-                        to="/waitingClientsPage"
+                        to= {isMyfit ? "/todayEventsPageMyfit" : "/todayEventsPageCrm"}
                         className={({ isActive }) => isActive ? `${activeAdditionalBlock}` : "additional_block"}>
                         <li>
-                          <span>Посещения сегодня</span>
+                          <span>Придут сегодня</span>
                         </li>
                       </NavLink>
                     </div>
@@ -282,7 +328,7 @@ const Sidebar = () => {
 
                   <NavLink
                     id="sidebarOnclick"
-                    to="/statisticksPage"
+                    to={isMyfit ? "/statisticksPageMyfit" : "/statisticksPageCrm"}
                     className={({ isActive }) =>
                       isActive && !isClientsActive ? `${sidebarSectionClasses} ${activeSideBar}` :`${sidebarSectionClasses}`
                     }
@@ -298,7 +344,7 @@ const Sidebar = () => {
                   
                   <NavLink
                     id="sidebarOnclick"
-                    to="/myGymsPage"
+                    to={isMyfit ? "/myGymsPageMyfit" : "/myGymsPageCrm"}
                     className={({ isActive }) =>
                       isActive && !isClientsActive ? `${sidebarSectionClasses} ${activeSideBar}` :`${sidebarSectionClasses}`
                     }
@@ -316,7 +362,7 @@ const Sidebar = () => {
 
               <NavLink
                 id="sidebarOnclick"
-                to="/schedulePage"
+                to={isMyfit ? "/schedulePageMyfit" : "/schedulePageCrm"}
                 className={({ isActive }) =>
                   isActive && !isClientsActive ? `${sidebarSectionClasses} ${activeSideBar}` :`${sidebarSectionClasses}`
                 }
@@ -348,7 +394,7 @@ const Sidebar = () => {
               </div>
               <NavLink
                 id="sidebarOnclick"
-                to="/settingsPage"
+                to={isMyfit ? "/settingsPageMyfit" : "/settingsPageCrm"}
                 className={({ isActive }) =>
                   isActive && !isClientsActive ? `${sidebarSectionClasses} ${activeSideBar}` :`${sidebarSectionClasses}`
                 }
@@ -406,9 +452,10 @@ const Sidebar = () => {
           <>
             <NavLink
               id="sidebarOnclick"
-              to="/bookingPage"
+              onClick={()=>setClientsActive(true)}
+              to={isMyfit ? "/clientsPageMyfit" : "/clientsPageCrm"}
               className={({ isActive }) =>
-                isActive || isClientsActive ? `${sidebarSectionClosedClasses} ${activeSideBar}` : `${sidebarSectionClosedClasses} relative`}
+                isActive  ? `${sidebarSectionClosedClasses} ${activeSideBar}` : `${sidebarSectionClosedClasses} relative`}
             >
             <ClientsSvg />
 
@@ -418,9 +465,10 @@ const Sidebar = () => {
               </div>
             )}
             </NavLink>
+
             <NavLink
               id="sidebarOnclick"
-              to="/statisticksPage"
+              to={isMyfit ? "/statisticksPageMyfit" : "/statisticksPageCrm"}
               className={({ isActive }) =>
                 isActive ? `${sidebarSectionClosedClasses} ${activeSideBar}` : `${sidebarSectionClosedClasses}`
               }
@@ -430,9 +478,10 @@ const Sidebar = () => {
             >
              <StatsSvg />
             </NavLink>
+
             <NavLink
               id="sidebarOnclick"
-              to="/myGymsPage"
+              to={isMyfit ? "/myGymsPageMyfit" : "/myGymsPageCrm"}
               className={({ isActive }) =>
                 isActive ? `${sidebarSectionClosedClasses} ${activeSideBar}` : `${sidebarSectionClosedClasses}`
               }
@@ -445,7 +494,7 @@ const Sidebar = () => {
           </>}
           <NavLink
             id="sidebarOnclick"
-            to="/schedulePage"
+            to={isMyfit ? "/schedulePageMyfit" : "/schedulePageCrm"}
             className={({ isActive }) =>
               isActive ? `${sidebarSectionClosedClasses} ${activeSideBar}` : `${sidebarSectionClosedClasses}`
             }
@@ -475,7 +524,7 @@ const Sidebar = () => {
 
           <NavLink
             id="sidebarOnclick"
-            to="/settingsPage"
+            to={isMyfit ? "/settingsPageMyfit" : "/settingsPageCrm"}
             className={({ isActive }) =>
               isActive ? `${sidebarSectionClosedClasses} ${activeSideBar}` : `${sidebarSectionClosedClasses}`
             }

@@ -2,6 +2,7 @@ import React from 'react'
 import "../sidebar/sidebar.css";
 import { setAppType } from "../../features/app";
 import { useDispatch, useSelector } from "react-redux";
+import AppConstants from '../../config/app_constants';
 
 export default function TabbarSection() {
     const dispatch = useDispatch();
@@ -10,10 +11,12 @@ export default function TabbarSection() {
 
     function setMyfit() {
         dispatch(setAppType("MYFIT"));
+        sessionStorage.setItem(AppConstants.keyAppState, "MYFIT")
     };
 
     function setCRM() {
         dispatch(setAppType("CRM"));
+        sessionStorage.setItem(AppConstants.keyAppState, "CRM")
     };
 
     const myfitClassname = appState.appType === "MYFIT" ? "selected_tabbar_item_myfit" : "tabbar_item";

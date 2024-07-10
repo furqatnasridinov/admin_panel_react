@@ -12,9 +12,9 @@ export default function Splash() {
             navigate("/registerPage");
         } else {
             if (localStorage.getItem(AppConstants.keyRoleId)=== "5") {
-                navigate("/schedulePage")
+                navigate("/schedulePageMyfit")
             } else {
-                navigate("/myGymsPage");
+                navigate("/myGymsPageMyfit");
             }
         }
     }, [])

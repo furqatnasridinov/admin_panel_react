@@ -10,7 +10,7 @@ const MyGymsHeader = () => {
       <div className="text-[14px] font-normal">Ваши заведения
       </div>
       {(localStorage.getItem(AppConstants.keyRoleId) === "1" || localStorage.getItem(AppConstants.keyRoleId) === "3") &&
-        <Link to={"/myGymsPage/createGym"}>
+        <Link to={"/myGymsPageMyfit/createGym"}>
         <CustomButton
           title="Добавить"
           width={"203px"}

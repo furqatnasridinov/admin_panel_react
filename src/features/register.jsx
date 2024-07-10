@@ -45,12 +45,11 @@ export const sendForConfirmation = createAsyncThunk(
             const response = await axiosClient.post(`api/user/loginCodeConfirmation`, data);
             if (response.data["operationResult"] === "OK") {
                 const userRoles = response.data["object"]["user"]["roles"];
-                const allowEnter = allRoles.some((role) => 
-                    userRoles.some((userRole) => userRole.id === role.id));
+                const allowEnter = allRoles.some((role) => userRoles.some((userRole) => userRole.id === role.id));
                 const userRole = getMatchingRole({ allRoles, userRoles });
                 if (allowEnter) {
                     localStorage.setItem(AppConstants.keyToken, response.data["object"]["jwtToken"]);
-                    localStorage.setItem(AppConstants.keyUserId, response.data["object"]["user"].id);
+                    localStorage.setItem(AppConstants.keyUserId, userRole.id);
                     localStorage.setItem(AppConstants.keyPhone, response.data["object"]["user"].login);
                     localStorage.setItem(AppConstants.keyUserFirstname, response.data["object"]["user"].firstName);
                     localStorage.setItem(AppConstants.keyUserLastname, response.data["object"]["user"].lastName ?? "");

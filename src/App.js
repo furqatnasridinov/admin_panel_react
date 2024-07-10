@@ -21,6 +21,11 @@ import Splash from "./pages/splash";
 import WelcomePage from "./pages/register/welcome";
 import PushNotification from "./firebase/push_notification";
 import CrmClients from "./pages/crm/clients";
+import TodayEventsCrm from "./pages/crm/today_events";
+import StatisticksPageCrm from "./pages/crm/statisticks";
+import MyGymsPageCrm from "./pages/crm/my_gyms";
+import SchedulesPageCrm from "./pages/crm/schedule_page";
+import SettingsPageCrm from "./pages/crm/settings";
 
 
 function Content() {
@@ -37,21 +42,26 @@ function Content() {
             <Route path="/welcomePage" element = {<WelcomePage />} />
             
             {/* MYFIT */}
-            <Route path="/bookingPage" element={<BookingPage />} />
-            <Route path="/waitingClientsPage" element={<ClientsPage />} />
-            <Route path="/statisticksPage" element={<StatisticksPage />} />
-            <Route path="/myGymsPage" element={<MyGymsPageLayout />}>
+            <Route path="/clientsPageMyfit" element={<BookingPage />} />
+            <Route path="/todayEventsPageMyfit" element={<ClientsPage />} />
+            <Route path="/statisticksPageMyfit" element={<StatisticksPage />} />
+            <Route path="/myGymsPageMyfit" element={<MyGymsPageLayout />}>
               {/* we declare nested navigation because MyGymsPage has two screens */}
               <Route index element={<MyGymsPage />} />
               <Route path="createGym" element={<CreateGymPage />} />
               <Route path="gymDetails/:gymId" element={<GymDetails />} />
             </Route>
-            <Route path="/schedulePage" element={<SchedulesPage />} />
+            <Route path="/schedulePageMyfit" element={<SchedulesPage />} />
             <Route path="/help" element={<Help />} />
-            <Route path="/settingsPage" element={<SettingsPage />} />
+            <Route path="/settingsPageMyfit" element={<SettingsPage />} />
 
             {/* CRM */}
-            <Route path="/crmClientsPage" element={<CrmClients />} />
+            <Route path="/clientsPageCrm" element={<CrmClients />} />
+            <Route path="/todayEventsPageCrm" element={<TodayEventsCrm />} />
+            <Route path="/statisticksPageCrm" element={<StatisticksPageCrm />} />
+            <Route path="/myGymsPageCrm" element={<MyGymsPageCrm />} />
+            <Route path="/schedulePageCrm" element={<SchedulesPageCrm />} />
+            <Route path="/settingsPageCrm" element={<SettingsPageCrm />} />
             
          </Routes>
         <ToastContainer autoClose={2500} hideProgressBar />

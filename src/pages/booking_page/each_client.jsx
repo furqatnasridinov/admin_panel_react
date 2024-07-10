@@ -41,7 +41,7 @@ export default function EachClient({
           {!hideOpenSchedule && (
             <NavLink
               to={{
-                pathname: "/schedulePage",
+                pathname: "/schedulePageMyfit",
               }}
               onClick={onNavigation}
               className="defaultText text-blue-text cursor-pointer"

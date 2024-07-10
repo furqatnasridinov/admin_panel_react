@@ -50,6 +50,10 @@ class AppConstants {
     return "notification";
   }
 
+  static get keyAppState() {
+    return "appState";
+  }
+
   static get keyRoleId() {
     return "roleId";
   }

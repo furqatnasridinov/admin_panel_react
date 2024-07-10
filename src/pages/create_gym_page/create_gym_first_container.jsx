@@ -598,7 +598,7 @@ export default function CreateGymFirstContainer() {
                       };
                       await dispatch(addGymLogo(req2));
                     }
-                    navigate(`/myGymsPage/gymDetails/${localStorage.getItem(AppConstants.keyGymId)}`);
+                    navigate(`/myGymsPageMyfit/gymDetails/${localStorage.getItem(AppConstants.keyGymId)}`);
                   }
                 }}
               />
