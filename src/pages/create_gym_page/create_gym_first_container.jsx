@@ -300,8 +300,9 @@ export default function CreateGymFirstContainer() {
                 isEnabled={isNameEdittingEnabled}
                 isNotValidated={isNameNotValidated}
               />
-              {isNameEdittingEnabled && (
                 <EditableTextfield
+                  isActive={isNameEdittingEnabled}
+                  minHeight="40px"
                   value={name}
                   onChange={(e) => {
                     let inputValue = e.target.value;
@@ -318,12 +319,7 @@ export default function CreateGymFirstContainer() {
                   maxLength={70}
                   textFieldsMinWidth={"200px"}
                 />
-              )}
-              {!isNameEdittingEnabled && name !== "" && isNameConfirmed && (
-                <div className="leading-[14px] text-[13px] font-normal font-inter">
-                  {name}
-                </div>
-              )}
+             
             </div>
 
             {/* Описание */}
@@ -346,8 +342,9 @@ export default function CreateGymFirstContainer() {
                 isEnabled={isDescriptionEdittingEnabled}
                 isNotValidated={isDescriptionNotValidated}
               />
-              {isDescriptionEdittingEnabled && (
+             
                 <EditableTextfield
+                  isActive={isDescriptionEdittingEnabled}
                   value={description}
                   onChange={(e) => {
                     let inputValue = e.target.value;
@@ -364,14 +361,6 @@ export default function CreateGymFirstContainer() {
                   textFieldsMinWidth={"300px"}
                   maxLength={250}
                 />
-              )}
-              {!isDescriptionEdittingEnabled &&
-                description !== "" &&
-                isDescriptionConfirmed && (
-                  <div className="leading-[14px] text-[13px] font-normal font-inter">
-                    {description}
-                  </div>
-                )}
             </div>
 
             {/* Адрес */}

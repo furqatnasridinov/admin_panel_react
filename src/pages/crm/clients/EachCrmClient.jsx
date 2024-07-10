@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import "./index.css"
 import CrmButton from '../../../components/button/CrmButton'
 import VerticalSpace from '../../../components/VerticalSpace'
+import crmDocsEmpty from "../../../assets/svg/crmDocsEmpty.svg"
 
 export default function EachCrmClient({
     name,
@@ -21,6 +22,7 @@ export default function EachCrmClient({
     const [moreActions, setMoreActions] = useState(false);
     const [notesActions, setNotesActions] = useState(false);
     const fullName = `${surname} ${name} ${patronymic}`;
+    const noteSvg = note === "" ? crmDocsEmpty : crmDocs;
 
   return (
     <div className="crmClientBlock">
@@ -64,7 +66,7 @@ export default function EachCrmClient({
 
         <div className="h-full w-[8%] flex flow-row items-center justify-center gap-4">
             <div className="relative">
-                <img className='cursor-pointer' onClick={()=>setNotesActions(true)} src={crmDocs} alt="crmDocs" />
+                <img className='cursor-pointer' onClick={()=>setNotesActions(true)} src={noteSvg} alt="crmDocs" />
                 {notesActions && <NotesAction closeFunction={()=>setNotesActions(false)} note={note} />}
             </div>
             <div className="relative">
@@ -187,7 +189,7 @@ const SeeMoreAction = ({closeFunction, list, isGym}) => {
 
     return (
         <div style={{
-           right: '100%',
+           right: '101%',
         }} className='tooltipCrm w-[285px] h-fit' ref={menuRef}>
            <span className='font-semibold text-[16px] leading-4'>{text}</span>
            <VerticalSpace height='16px' />

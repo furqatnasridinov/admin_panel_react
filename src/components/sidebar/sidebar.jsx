@@ -3,13 +3,12 @@ import "../sidebar/sidebar.css";
 import sidebarOpenedLogo from "../../assets/svg/sidebar_opened.svg";
 import sidebarClosedLogo from "../../assets/svg/sidebar_closed.svg";
 import MenuCompany from "../menu_company/menu_company";
-import { NavLink } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setNavigationFromBooking } from "../../features/schedule_slice";
 import { getListOfGyms, setCurrentGymFromFirstItem, setCurrentGym } from "../../features/current_gym_slice";
 import { getNewClients } from "../../features/clients_slice";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, NavLink, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import CustomDialog from "../dialog/dialog";
 import BackButton from "../../components/button/back_button";
@@ -119,6 +118,27 @@ const Sidebar = () => {
     }
   }, [gymsState.currentGym]);
 
+  function clickOnFirstBlock(){
+    setClientsActive(true);
+    if (isMyfit && location.pathname !== "/bookingPage") {
+      navigate("/bookingPage");
+    }
+  }
+
+  useEffect(() => {
+    if (isClientsActive && isMyfit && location.pathname !== "/bookingPage") {
+      navigate("/bookingPage");
+    }
+    if (isClientsActive && !isMyfit && location.pathname !== "/crmClientsPage") {
+      navigate("/crmClientsPage");
+    }
+  }, [isClientsActive]);
+
+/*   useEffect(() => {
+    console.log(appState.appType)
+  }, [appState.appType]) */
+  
+  
 
   // This function will be passed to MenuCompany to close it
   const closeMenuCompany = () => showMenuCompany(false);
@@ -222,10 +242,10 @@ const Sidebar = () => {
                   <NavLink
                     id="sidebarOnclick"
                     className={isClientsActive ? `${sidebarSectionClasses} ${activeSideBar}` : `${sidebarSectionClasses}`}
-                    onClick={() => { setClientsActive(true) }}>
+                    onClick={()=>setClientsActive(true)}>
                     <ClientsSvg />
-                    {isTextShown && <div>Клиенты</div>}
-                    {isTextShown && clientsSlice.waitingForAccept?.length > 0 && (
+                    {isTextShown && <span>Клиенты</span>}
+                    {isTextShown && clientsSlice.waitingForAccept?.length > 0 && isMyfit &&  (
                       <div className="badge">
                         {clientsSlice.waitingForAccept?.length}
                       </div>
@@ -242,7 +262,7 @@ const Sidebar = () => {
                         <li>
                           <span>{isMyfit ? "Бронирование" : "Наша база клиентов"}</span>
                         </li>
-                        {clientsSlice.waitingForAccept?.length > 0 && (
+                        {clientsSlice.waitingForAccept?.length > 0 && isMyfit && (
                           <div className="badge">
                             {clientsSlice.waitingForAccept?.length}
                           </div>
@@ -273,7 +293,7 @@ const Sidebar = () => {
                     }}
                   >
                     <StatsSvg />
-                    {isTextShown && <div>Статистика</div>}
+                    {isTextShown && <span>Статистика</span>}
                   </NavLink>
                   
                   <NavLink
@@ -289,7 +309,7 @@ const Sidebar = () => {
                     }}
                   >
                     <LocationSvg />
-                    {isTextShown && <div>Мои заведения</div>}
+                    {isTextShown && <span>Мои заведения</span>}
                   </NavLink>
                 </>
               }
@@ -311,7 +331,7 @@ const Sidebar = () => {
               >
                 <CalendarSvg />
 
-                {isTextShown && <div>Расписание</div>}
+                {isTextShown && <span>Расписание</span>}
               </NavLink>
             </div>
 
@@ -336,7 +356,7 @@ const Sidebar = () => {
                   if (isClientsActive) {setClientsActive(false)}
                 }}>
                 <SettingsSvg />
-                {isTextShown && <div>Настройки</div>}
+                {isTextShown && <span>Настройки</span>}
               </NavLink>
             </div>
           </div>

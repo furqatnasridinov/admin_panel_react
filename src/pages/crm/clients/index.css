@@ -1,5 +1,4 @@
 .greenButton {
-    /* flex flex-row h-[46px] w-fit bg-crm-main items-center gap-[10px] pr-[24px] pl-[24px] */
     display: flex;
     flex-direction: row;
     height: 46px;
@@ -11,13 +10,15 @@
     padding-left: 24px;
     border: 1px solid rgba(58, 185, 109, 1);
     border-radius: 8px;
-    opacity: 1;
     cursor: pointer;
-    transition: opacity 0.3s; 
+    transition: all 0.3s; 
+    box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 15px 18px -15px rgba(108, 209, 149, 1);
 }
 
 .greenButton:hover {
-    opacity: 0.8;
+    background-color: rgba(58, 185, 109, 1);
+    box-shadow: none;
 }
 
 .crmClientsBody{
@@ -67,8 +68,7 @@
     /* width: 285px;
     height: 136px; */
     background-color:  white;
-    box-shadow: 0px 0px 13.7px 0px rgba(0, 0, 0, 0.18);
-    box-shadow: 0px 21px 17px -12px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 2px 12px 5px rgba(0, 0, 0, 0.08);
     border-top-left-radius: 16px;
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
@@ -102,5 +102,5 @@
 }
 
 .iconAndTextCrm:hover{
-    background-color: rgba(193, 249, 215, 1);
+    background-color: rgba(239, 255, 245, 1);
 }

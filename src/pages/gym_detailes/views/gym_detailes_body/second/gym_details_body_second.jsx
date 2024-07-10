@@ -339,13 +339,13 @@ export default function GymDetailesBodySecondContainer({
                         setFeaturesEditting(true)
                       }
                   }}/>  
-                {!isFeaturesEdittingEnabled && activityPeculiarities?.trim() !== "" && (
+                {/* {!isFeaturesEdittingEnabled && activityPeculiarities?.trim() !== "" && (
                   <div
                     className="text-[13px] font-normal font-inter"
                     style={{ whiteSpace: "pre-wrap" }}>
                     {activityPeculiarities}
-                  </div>)}
-                {isFeaturesEdittingEnabled && 
+                  </div>)} */}
+                
                   <FeaturesTextField
                     onButtonClicked={async () => {
                       const { id, lessonType, peculiarities } = {
@@ -359,7 +359,8 @@ export default function GymDetailesBodySecondContainer({
                     dispatch(resetChanges())}}
                     onChanged={(e) => {dispatch(changeActivityPeculiarities(e.target.value))}}
                     peculiarities={activityPeculiarities}
-                    />}
+                    isActive={isFeaturesEdittingEnabled}
+                    />
               </div>
             </div>
 

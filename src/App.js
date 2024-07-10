@@ -35,6 +35,8 @@ function Content() {
             <Route path="/" element = {<Splash />} />
             <Route path="/registerPage" element = {<Register1 />} />
             <Route path="/welcomePage" element = {<WelcomePage />} />
+            
+            {/* MYFIT */}
             <Route path="/bookingPage" element={<BookingPage />} />
             <Route path="/waitingClientsPage" element={<ClientsPage />} />
             <Route path="/statisticksPage" element={<StatisticksPage />} />
@@ -42,13 +44,15 @@ function Content() {
               {/* we declare nested navigation because MyGymsPage has two screens */}
               <Route index element={<MyGymsPage />} />
               <Route path="createGym" element={<CreateGymPage />} />
-              <Route path="gymDetails" element={<GymDetails />} />  {/* <Route path="gymDetails/:gymId" element={<GymDetails />} /> */}
+              <Route path="gymDetails/:gymId" element={<GymDetails />} />
             </Route>
             <Route path="/schedulePage" element={<SchedulesPage />} />
             <Route path="/help" element={<Help />} />
             <Route path="/settingsPage" element={<SettingsPage />} />
 
+            {/* CRM */}
             <Route path="/crmClientsPage" element={<CrmClients />} />
+            
          </Routes>
         <ToastContainer autoClose={2500} hideProgressBar />
       </div>

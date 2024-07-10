@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 
 export default function SettingsSvg() {
     const appState = useSelector((state) => state.app);
-    const baseColor = appState.appType === "MYFIT" ? "rgba(119, 170, 249, 1)" : "rgba(94, 220, 145, 1)";
+    const baseColor = appState.appType === "MYFIT" ? "rgba(119, 170, 249, 1)" : "rgba(58, 185, 109, 1)";
     const bgColor = appState.appType === "MYFIT" ? "#F5F9FF" : "rgba(242, 255, 247, 1)";
   return (
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 export default function TabbarSection() {
     const dispatch = useDispatch();
     const appState = useSelector((state) => state.app);
+    const myFitClientsSlice = useSelector((state) => state.clients);
 
     function setMyfit() {
         dispatch(setAppType("MYFIT"));
@@ -18,7 +19,7 @@ export default function TabbarSection() {
     const myfitClassname = appState.appType === "MYFIT" ? "selected_tabbar_item_myfit" : "tabbar_item";
     const crmClassname = appState.appType === "CRM" ? "selected_tabbar_item_crm" : "tabbar_item";
     const borderTab = appState.appType === "MYFIT" ? "1px solid rgba(119, 170, 249, 1)" : "1px solid rgba(193, 249, 215, 1)";
-
+    const showBagde = myFitClientsSlice.waitingForAccept?.length > 0 && appState.appType === "CRM";
 
   return (
       <div
@@ -29,6 +30,7 @@ export default function TabbarSection() {
       >
           <div className={`${myfitClassname}`} onClick={setMyfit}>
               <span>Myfit</span>
+              {showBagde && <div className="badgeInTab">{myFitClientsSlice.waitingForAccept?.length}</div>}
           </div>
 
           <div className={`${crmClassname}`} onClick={setCRM}>
