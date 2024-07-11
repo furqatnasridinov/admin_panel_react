@@ -34,8 +34,7 @@ export default function WillCome({ clientsList, doNotShowBlock }) {
             day = day < 10 ? "0" + day : day;
             month = month < 10 ? "0" + month : month;
             startHours = startHours < 10 ? "0" + startHours : startHours;
-            startMinutes =
-              startMinutes < 10 ? "0" + startMinutes : startMinutes;
+            startMinutes = startMinutes < 10 ? "0" + startMinutes : startMinutes;
             endHours = endHours < 10 ? "0" + endHours : endHours;
             endMinutes = endMinutes < 10 ? "0" + endMinutes : endMinutes;
             return (

@@ -87,7 +87,7 @@ const Sidebar = () => {
     dispatch(getListOfGyms());
     dispatch(getUser());
     const appStateFromSession = sessionStorage.getItem(AppConstants.keyAppState);
-    if (appStateFromSession != appState.appType) {
+    if (appStateFromSession != appState.appType && appStateFromSession !== null) {
       dispatch(setAppType(appStateFromSession));
     }
     // Удаляем обработчик события при размонтировании

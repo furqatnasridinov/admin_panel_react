@@ -99,7 +99,7 @@ const MoreAction = ({closeFunction}) => {
     }, [closeFunction]);
 
     return (
-        <div className='tooltipCrm w-[285px] h-[136px]' ref={menuRef}>
+        <div className='tooltipCrm w-[285px] h-fit gap-[10px]' ref={menuRef}>
             <IconAndText icon={<CartSvg />} text='Открыть карточку клиента' />
             <IconAndText icon={<NextSvg />} text='Продлить абонемент' />
             <IconAndText icon={<CalendarSvg />} text='Записать на занятие' />

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import "./gym_details_body_first.css";
 
 export function AddressSearching({ value, onChange, map, notFound, showDropDown }) {
   return (
@@ -14,22 +14,24 @@ export function AddressSearching({ value, onChange, map, notFound, showDropDown 
       }}
     >
       <input
-        className="textAreaForAddress text-[13px] font-normal font-inter"
+        className="textAreaForAddress text-[14px] font-medium"
         value={value}
+        style={{
+          boxShadow : "0px 18px 14px -13px rgba(0, 0, 0, 0.25)",
+          zIndex : "3"
+        }}
         onChange={onChange}
         placeholder="Введите адрес заведения"
       />
 
       {showDropDown && <div
-        className="dropdownBody"
         style={{
           zIndex: "2",
           maxHeight: "260px",
           display: "flex",
           flexDirection: "column",
-          gap: "10px",
           position: "absolute",
-          top: "32px",
+          top: "33px",
           width: "100%",
           height: "fit-content",
           minHeight: "40px",
@@ -37,7 +39,6 @@ export function AddressSearching({ value, onChange, map, notFound, showDropDown 
           paddingLeft: "16px",
           paddingRight: "16px",
           paddingTop: "12px",
-          paddingBottom: "12px",
           borderRadius: "8px",
           border: "1px solid #77aaf9",
           overflowY: "auto",

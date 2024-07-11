@@ -97,7 +97,7 @@ export default function ScheduleHeader() {
   return (
     <div className="schedule_header">
       <div className="flex flow-row gap-[10px] items-center">
-        <div className="">Расписание</div>
+        <div className="text-[14px] font-medium">Расписание</div>
         <div className="slash"> / </div>
 
         {gymState.listOfGyms?.length === 1 && gymState.currentGym !== null && (
