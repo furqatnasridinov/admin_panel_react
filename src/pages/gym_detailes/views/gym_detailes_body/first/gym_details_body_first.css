@@ -303,3 +303,23 @@ select {
 .dropdown_body::-webkit-scrollbar {
   display: none;
 }
+
+
+
+.addresses {
+  font-size: 14px;
+  font-weight: 500;
+  color: #252525;
+  width: fit-content;
+  padding-left: 7px;
+  padding-right: 7px;
+  border-radius: 4px;
+  text-align: start;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.addresses:hover {
+  background-color: #d4e5ff;
+  transition: background-color 0.5s ease;
+}

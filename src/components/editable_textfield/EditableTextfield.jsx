@@ -28,9 +28,10 @@ export function EditableTextfield({
           // Set the cursor to the end of the text
           const length = input.value.length;
           input.setSelectionRange(length, length);
-          // set the height relatively textfields content
+          const isMoreThanOneLine = input.scrollHeight > input.clientHeight;
+          console.log("isMoreThanOneLine");
           input.style.height = "inherit"; // Reset height to recalculate
-          input.style.height = `${input.scrollHeight}px`; // Set new height based on scroll height
+          input.style.height = `${input.scrollHeight}px`;
         }, 150);
       }
     }, [value, isActive]);
@@ -39,7 +40,7 @@ export function EditableTextfield({
       const buttonborder = isActive ? "1px solid #77aaf9" : "1px solid white";
       const buttonBg = isActive ? "#77aaf9" : "white";
       const textColor = isActive ? "rgba(176, 176, 176, 1)" : "white";
-      const padding = isActive ? "10px 16px 10px 16px" : "";
+      const padding = isActive ? "12px 16px 12px 16px" : "";
       
     return (
       <div className="flex flex-row gap-[10px] items-start">

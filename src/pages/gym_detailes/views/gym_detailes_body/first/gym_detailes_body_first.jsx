@@ -67,6 +67,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const [isDropDownOpened, openDropDown] = useState(false);
   const [nameIsNotValidated, setNameIsNotValidated] = useState(false);
   const [describtionIsNotValidated, setDescribtionIsNotValidated] = useState(false);
+  const [adressChangesOccured, setAdressChangesOccured] = useState(false);
 
   // use refs
   const deleteMainPicSnackbarRef = useRef(null);
@@ -487,14 +488,22 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     if (currentGymState.isChangesOccured) {
                       dispatch(getCurrentGym(currentGym.id));
                     }
+                    if (adressChangesOccured) {
+                      setAdressChangesOccured(false);
+                    }
                     setAddressEditting(false)}}/>
 
                 {/* address searching dropdown */}
                 <AddressSearching
                   value={currentGym.address}
                   notFound={currentGymState.addressesFromSearch && currentGymState.addressesFromSearch.length === 0 && currentGym.address.length > 1}
-                  onChange={(e) => {dispatch(changeCurrentGymsAddress(e.target.value))}}
-                  showDropDown={currentGym.address.length > 1}
+                  onChange={(e) => {
+                    dispatch(changeCurrentGymsAddress(e.target.value));
+                    if (!adressChangesOccured) {
+                      setAdressChangesOccured(true);
+                    }
+                  }}
+                  showDropDown={currentGym.address.length > 1 && adressChangesOccured}
                   map={
                     currentGymState.addressesFromSearch &&
                     currentGymState.addressesFromSearch.length > 0 &&
@@ -503,7 +512,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       .map((geocode) => {
                         return (
                           <div
-                            className="gym_names"
+                            className="addresses"
                             key={geocode.GeoObject.Point}
                             onClick={async () => {
                               const position = geocode.GeoObject.Point.pos.split(" ");
@@ -518,6 +527,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                               await dispatch(patchGymAddress({id,address,latitude,longitude}));
                               dispatch(getCurrentGym(currentGym.id));
                               setAddressEditting(false);
+                              setAdressChangesOccured(false);
                               dispatch(resetChanges())}}>
                             {geocode.GeoObject.metaDataProperty.GeocoderMetaData.text}
                           </div>

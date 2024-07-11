@@ -27,9 +27,7 @@ export default function CustomDropdown({
           backgroundColor: backgroundColor,
           padding: padding,
         }}
-        className={
-          isDropDownOpened ? "dropdown_header_opened" : "dropdown_header"
-        }
+        className={isDropDownOpened ? "dropdown_header_opened" : "dropdown_header"}
         onClick={openCloseDropDown}
       >
         <div className="text-[14px] font-medium">{text}</div>
