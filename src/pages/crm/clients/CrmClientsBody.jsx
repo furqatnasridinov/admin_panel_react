@@ -4,6 +4,7 @@ import FilterIndicators from './FilterIndicators'
 import EachCrmClient from './EachCrmClient'
 import { CRM_CLIENTS } from '../../../dummy_data/dymmy_data'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 
 
 export default function CrmClientsBody() {
@@ -13,6 +14,8 @@ export default function CrmClientsBody() {
     const [sortByActivities, setSortByActivities] = useState(null);
     const [sortByGyms, setSortByGyms] = useState(null);
     const [sortByNotes, setSortByNotes] = useState(null);
+    const clients = useSelector((state) => state.crmClients.listOfUsers);
+    const loading = useSelector((state) => state.crmClients.listOfUsersLoading);
 
     // functions
     function handleSortByName() {
@@ -23,7 +26,7 @@ export default function CrmClientsBody() {
         }
         setSortBySurname(null);
         setSortByAge(null);
-        handleSortByActivities(null);
+        setSortByActivities(null);
         setSortByGyms(null);
         setSortByNotes(null);
     }
@@ -172,23 +175,38 @@ export default function CrmClientsBody() {
         </div>
 
         {
-            [...CRM_CLIENTS]
+            [...clients]
             .sort((a, b) => (
-                sortByName === "desc" ? a.name.localeCompare(b.name) :
-                sortByName === "asc" ? b.name.localeCompare(a.name) :
-                sortBySurname === "desc" ? a.surname.localeCompare(b.surname) :
-                sortBySurname === "asc" ? b.surname.localeCompare(a.surname) :
+                sortByName === "desc" ? a.firstName?.localeCompare(b.firstName) :
+                sortByName === "asc" ? b.firstName?.localeCompare(a.firstName) :
+                sortBySurname === "desc" ? a.surname?.localeCompare(b.surname) :
+                sortBySurname === "asc" ? b.surname?.localeCompare(a.surname) :
                 sortByAge === "desc" ? a.age - b.age :
                 sortByAge === "asc" ? b.age - a.age : 
-                sortByActivities === "desc" ? a.activities[0].localeCompare(b.activities[0]) :
-                sortByActivities === "asc" ? b.activities[0].localeCompare(a.activities[0]) : 
-                sortByGyms === "desc" ? a.gyms[0].localeCompare(b.gyms[0]) :
-                sortByGyms === "asc" ? b.gyms[0].localeCompare(a.gyms[0]) : 
-                sortByNotes === "desc" ? b.note.localeCompare(a.note) :
-                sortByNotes === "asc" ? a.note.localeCompare(b.note) : 0
+                sortByActivities === "desc" ? a.activities[0]?.localeCompare(b.activities[0]) :
+                sortByActivities === "asc" ? b.activities[0]?.localeCompare(a.activities[0]) : 
+                sortByGyms === "desc" ? a.gyms[0]?.localeCompare(b.gyms[0]) :
+                sortByGyms === "asc" ? b.gyms[0]?.localeCompare(a.gyms[0]) : 
+                sortByNotes === "desc" ? b.note?.localeCompare(a.note) :
+                sortByNotes === "asc" ? a.note?.localeCompare(b.note) : 0
             ))
             .map((client, index) => {
-                return <EachCrmClient key={index} {...client} />
+                return <EachCrmClient 
+                key={index} 
+                activities={client.lessonTypes ?? []} 
+                age={client.age ?? 0}
+                gyms={client.gyms ?? []}
+                avatar={client.avatar ?? ""} 
+                email={client.email ?? ""}
+                name={client.firstName ?? ""}
+                surname={client.lastName ?? ""}
+                patronymic={client.patronymic ?? ""}
+                phone={client.contactPhone ?? ""}
+                note={client.note ?? ""}
+                gray={client.gray ?? 0}
+                green={client.green ?? 0}
+                red={client.red ?? 0}
+                />
             })
         }
     </div>

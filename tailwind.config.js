@@ -20,7 +20,9 @@ module.exports = {
         "crm-main" : "rgba(94, 220, 145, 1)",
         "crm-link" : "rgba(58, 185, 109, 1)",
         "crm-fade" : "rgba(193, 249, 215, 1)",
-        "text-faded-dark" : "rgba(125, 125, 125, 1)"
+        "text-faded-dark" : "rgba(125, 125, 125, 1)",
+        "green-indicator" : "rgba(104, 226, 153, 1)",
+        "gray-indicator" : "rgba(220, 220, 220, 1)"
       },
     },
   },

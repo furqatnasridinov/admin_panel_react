@@ -189,7 +189,7 @@
   line-height: 16px;
   color: black;
   position: relative;
-  left: -12px;
+  left: 0px;
 }
 
 .active_additional_block_myfit {
@@ -208,12 +208,24 @@
   line-height: 16px;
   color: rgba(62, 134, 245, 1);
   position: relative;
-  left: -12px;
+  left: 30px;
 }
 
 .active_additional_block_myfit li {
-  color: rgba(62, 134, 245, 1);
+  list-style: none; /* Отключаем стандартные маркеры */
+  position: relative; 
+}
 
+.active_additional_block_myfit li::before {
+  content: ''; /* Необходимо для отображения псевдоэлемента */
+  position: absolute; /* Абсолютное позиционирование относительно li */
+  left: 20px; /* Расположение слева от текста, значение можно настроить */
+  top: 50%; /* Центрирование по вертикали */
+  transform: translateY(-50%); /* Точное центрирование по вертикали */
+  width: 4px; /* Уменьшенный размер кружочка */
+  height: 4px; /* Уменьшенный размер кружочка */
+  border-radius: 50%; /* Делаем кружочек круглым */
+  background-color: #3E86F5; /* Цвет фона кружочка, можно изменить */
 }
 
 .active_additional_block_crm {
@@ -232,18 +244,30 @@
   line-height: 16px;
   color: rgba(58, 185, 109, 1);
   position: relative;
-  left: -12px;
+  left: 30px;
 }
 
 .active_additional_block_crm li {
-  color: rgba(58, 185, 109, 1);
+  list-style: none; /* Отключаем стандартные маркеры */
+  position: relative; 
 }
+
+.active_additional_block_crm li::before {
+  content: ''; /* Необходимо для отображения псевдоэлемента */
+  position: absolute; /* Абсолютное позиционирование относительно li */
+  left: 20px; /* Расположение слева от текста, значение можно настроить */
+  top: 50%; /* Центрирование по вертикали */
+  transform: translateY(-50%); /* Точное центрирование по вертикали */
+  width: 4px; /* Уменьшенный размер кружочка */
+  height: 4px; /* Уменьшенный размер кружочка */
+  border-radius: 50%; /* Делаем кружочек круглым */
+  background-color: rgba(58, 185, 109, 1); /* Цвет фона кружочка, можно изменить */
+}
+
 
 .additional_block li  {
   color: transparent;
 }
-
-
 
 .modalContainer {
   background-color: white;

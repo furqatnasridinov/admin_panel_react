@@ -26,7 +26,8 @@ import StatisticksPageCrm from "./pages/crm/statisticks";
 import MyGymsPageCrm from "./pages/crm/my_gyms";
 import SchedulesPageCrm from "./pages/crm/schedule_page";
 import SettingsPageCrm from "./pages/crm/settings";
-
+import AddClientCrm from "./pages/crm/add_client";
+import ClientPageLayoutCrm from "./pages/crm/clients_layout";
 
 function Content() {
   const location = useLocation();
@@ -56,7 +57,10 @@ function Content() {
             <Route path="/settingsPageMyfit" element={<SettingsPage />} />
 
             {/* CRM */}
-            <Route path="/clientsPageCrm" element={<CrmClients />} />
+            <Route path="/clientsPageCrm" element={<ClientPageLayoutCrm />} >
+              <Route index element={<CrmClients />} />
+              <Route path="new" element={<AddClientCrm />} />
+            </Route>
             <Route path="/todayEventsPageCrm" element={<TodayEventsCrm />} />
             <Route path="/statisticksPageCrm" element={<StatisticksPageCrm />} />
             <Route path="/myGymsPageCrm" element={<MyGymsPageCrm />} />

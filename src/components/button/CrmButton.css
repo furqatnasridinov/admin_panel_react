@@ -1,19 +1,11 @@
 .button {
-    /* background-color: white; */
     border-radius: 8px;
     border-width: 1px;
-    /* border-color: rgba(119, 170, 249, 1); */
     font-size: 14px;
     font-weight: 500;
-    opacity: 1;
     display: flex;
     justify-content: center;
-    transition: opacity 0.3s;
-  }
-
-  .button:hover {
-    /* background-color: rgba(119, 170, 249, 0.1); */
-    opacity: 0.8;
+    transition: all 0.3s;
   }
   
   

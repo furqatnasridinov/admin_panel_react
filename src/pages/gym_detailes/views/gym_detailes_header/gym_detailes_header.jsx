@@ -65,13 +65,13 @@ export default function GymDetailesHeader({
             isDropDownOpened={isDropDownOpened}
             openCloseDropDown={openCloseDropDown}
             map={listOfGyms.map((item, index) => (
-              <button
+              <div
                 key={index}
                 className="gym_names"
                 onClick={() => setCurrentGymAndPop(item)}
               >
                 {item.name}
-              </button>
+              </div>
             ))}
           />
         )}
