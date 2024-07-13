@@ -9,10 +9,13 @@
   font-weight: 500;
   color: #252525;
   padding-left: 7px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   padding-right: 7px;
-  border-radius: 4px;
+  border-radius: 8px;
   text-align: start;
   min-width: 100%;
+  cursor: pointer;
 }
 
 .gym_names:hover {

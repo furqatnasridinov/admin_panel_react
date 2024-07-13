@@ -12,7 +12,6 @@ const MyGymsHeader = () => {
       {(localStorage.getItem(AppConstants.keyRoleId) === "1" || localStorage.getItem(AppConstants.keyRoleId) === "3") &&
         <Link to={"/myGymsPageMyfit/createGym"}>
         <CustomButton
-
           title="Добавить"
           width={"230px"}
           height={"46px"}

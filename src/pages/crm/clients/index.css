@@ -105,3 +105,15 @@
 .iconAndTextCrm:hover{
     background-color: rgba(239, 255, 245, 1);
 }
+
+
+.indicator-container {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+  }
+  
+  .indicator-chip {
+    height: 4px;
+    border-radius: 2px;
+  }

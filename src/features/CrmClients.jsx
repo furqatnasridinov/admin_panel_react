@@ -47,6 +47,7 @@ const srmClientsSlice = createSlice({
   name: "srmClients",
   initialState: {
     listOfUsers : [],
+    listOfUsersLoading: false,
     clientGotById: null,
   },
 
@@ -58,8 +59,17 @@ const srmClientsSlice = createSlice({
 
   extraReducers: (builder) => {
     // Get clients
+    builder.addCase(getClients.pending, (state) => {
+        state.listOfUsersLoading = true;
+    });
+
     builder.addCase(getClients.fulfilled, (state, action) => {
-      state.listOfUsers = action.payload;
+        state.listOfUsers = action.payload;
+        state.listOfUsersLoading = false;
+    });
+
+    builder.addCase(getClients.rejected, (state) => {
+        state.listOfUsersLoading = false;
     });
 
     // Get client by id

@@ -543,6 +543,9 @@ export const CRM_CLIENTS = [
     age: "25",
     gyms: ["Ленинград", "GymBo"],
     note : "",
+    green : 3,
+    red : 5,
+    gray : 3,
   },
   {
     id: 2,
@@ -556,6 +559,9 @@ export const CRM_CLIENTS = [
     age: "27",
     gyms: ["Ленинград"],
     note : "Этот Гигачад служит нам всем вдохновением, ведь в свои 60 лет он не пропустил ни одной тренировки (ходит к нам с 2016-го), живая Легенда.",
+    green : 3,
+    red : 3,
+    gray : 3,
   },
   {
     id: 3,
@@ -569,6 +575,9 @@ export const CRM_CLIENTS = [
     age: "40",
     gyms: ["Abdullo ako"],
     note : "",
+    green : 5,
+    red : 10,
+    gray : 4,
   },
 
   {
@@ -583,6 +592,9 @@ export const CRM_CLIENTS = [
     age: "35",
     gyms: ["Ленинград", "Abdullo ako", "GymBo", "И-Талия"],
     note : "Этот Гигачад служит нам всем вдохновением, ведь в свои 60 лет он не пропустил ни одной тренировки (ходит к нам с 2016-го), живая Легенда.",
+    green : 3,
+    red : 2,
+    gray : 0,
   },
 
 ];

@@ -195,6 +195,9 @@ export default function Employees({ listOfEmployees, gymId }) {
                     })}
                   <div
                     className="button"
+                    style={{
+                      borderRadius : "16px"
+                    }}
                     onClick={() => {
                       openRefEmployeesDialog(false);
                       setIsFromRef(true);
@@ -202,7 +205,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                     }}
                   >
                     <img src={addSvg} alt="" />
-                    <div className="">Добавить</div>
+                    <span className="text-[14px] font-medium">Добавить</span>
                   </div>
                 </div>
               </div>
@@ -220,7 +223,7 @@ export default function Employees({ listOfEmployees, gymId }) {
                       <div className="flex flex-row gap-[32px] ">
                         {/* Name */}
                         <TextAndTextfield
-                        textfieldsMinHeight={"40px"}
+                          textfieldsMinHeight={"40px"}
                           value={employeesSlice.selectedEmployee !== null ? employeesSlice.selectedEmployee.firstName : ""}
                           onChange={(event) => {dispatch(changeSelectedEmployeesName(event.target.value))}}
                           textfieldHasFocus={nameTextfield2HasFocus}
