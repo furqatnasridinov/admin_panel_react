@@ -259,3 +259,13 @@ export function getAllKeysForDayPeriod(){
     }
     return hours;
 }
+
+
+export function getBirthdayFormatted(date){
+    // from 18.11.2003 to 2003-11-18
+    const parts = date.split('.');
+    const day = parts[0];
+    const month = parts[1];
+    const year = parts[2];
+    return `${year}-${month}-${day}`;
+}

@@ -2,7 +2,7 @@ import React from 'react'
 import CrmClientsHeader from './CrmClientsHeader'
 import CrmClientsBody from './CrmClientsBody'
 import { useDispatch } from 'react-redux'
-import { getClients } from '../../../features/CrmClients'
+import { getClients } from '../../../features/crm/CrmClients'
 import { useEffect } from 'react'
 
 export default function CrmClients() {
