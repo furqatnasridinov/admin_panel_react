@@ -156,21 +156,77 @@
 
   .fileToolTip{
     position: absolute;
-    top: -61px;
+    top: -60px;
     z-index: 999;
     background-color: white;
     height: 60px;
     width: 140px;
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
+    justify-content: space-between;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 16px;
+    padding: 0 16px;
     box-shadow: 0px 0px 13.7px 0px rgba(0, 0, 0, 0.18),0px 16px 17px -12px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s;
   }
+
+  .garbageContainer{
+    width: 28px;
+    height: 28px;
+    background-color: rgba(255, 136, 136, 1);
+    border: 1px solid rgba(255, 61, 0, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  .garbageContainer:hover{
+    background-color: rgba(255, 61, 0, 1);
+  }
+
+  .greenMiniCard{
+    width: 28px;
+    height: 28px;
+    background-color: rgba(94, 220, 145, 1);
+    border: 1px solid rgba(58, 185, 109, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+.greenMiniCard:hover{
+    background-color: rgba(58, 185, 109, 1);
+}
+
+.greenMiniCard40x40{
+    width: 40px;
+    height: 40px;
+    background-color: rgba(94, 220, 145, 1);
+    border: 1px solid rgba(58, 185, 109, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+.greenMiniCard40x40:hover{
+    background-color: rgba(58, 185, 109, 1);
+}
+
+
+
 
 /* layots */
 
@@ -178,6 +234,19 @@
     display: flex;
     flex-direction: column;
     gap: 0;
+}
+
+.rowSpaceBetween{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.rowGap4{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
 }
 
 .rowGap10{
@@ -211,7 +280,6 @@
 .rowGap32{
     display: flex;
     flex-direction: row;
-    align-items: center;
     gap: 32px;
 }
 
@@ -220,3 +288,17 @@
     flex-direction: column;
     gap: 10px;
 }
+
+
+
+
+
+.react-datepicker {
+    font-size: 14px;
+    background-color: #a66;
+    color: #000;
+    border: 0px;
+    border-radius: 0;
+    display: inline-block;
+    position: relative;
+  }

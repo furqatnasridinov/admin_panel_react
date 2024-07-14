@@ -9,6 +9,7 @@ export default function CrmTextField({
     onFocus: propOnFocus,
     onBlur: propOnBlur,
     hasFocus: propHasFocus = false,
+    isError = false,
 }) {
     const [hasFocus, setHasFocus] = useState(propHasFocus);
 
@@ -22,10 +23,10 @@ export default function CrmTextField({
         if (propOnBlur) propOnBlur(e);
     };
 
-    const border = hasFocus ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
+    const border = isError ? '1px solid rgba(255, 61, 0, 1)' : hasFocus ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
 
     return (
-        <label className="input-container" style={{ width: width }}>
+        <label  className="input-container" style={{ width: width }}>
         <span className={`input-label ${hasFocus || value ? 'focused' : ''}`}>
             {label}
         </span>

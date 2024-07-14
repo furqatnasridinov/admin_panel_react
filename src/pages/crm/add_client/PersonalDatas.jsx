@@ -8,36 +8,83 @@ import { useState, useEffect, useRef} from 'react'
 import TextareaAutosize from 'react-textarea-autosize';
 import ReactInputMask from 'react-input-mask'
 import arrowDownSvg from "../../../assets/svg/arrow_down.svg"
+import DatePicker from "react-datepicker";
+import previousMoth from "../../../assets/svg/navigate_prev_month.svg"
+import nextMoth from "../../../assets/svg/navigate_next_month.svg";
+import { useDispatch, useSelector } from 'react-redux';
+import { setName,
+    setSurname,
+    setPatronymic,
+    setEmail,
+    setPhone,
+    setNote,
+    setBirth,
+    setGender,
+    checkMissingFieldsPersonalData,
+ } from '../../../features/crm/CrmClients'
+import { getBirthdayFormatted } from '../../../config/apphelpers'
 
 export default function PersonalDatas({
     showaAvatar = true,
 }) {
-    const [name, setName] = useState('');
-    const [surname, setSurname] = useState('');
-    const [patronymic, setPatronymic] = useState('');
+    const dispatch = useDispatch();
     const [currenFocus, setCurrenFocus] = useState('') // ['name', 'surname', 'patronymic', 'birthday'...
-    const [note, setNote] = useState('')
-    const [phone, setPhone] = useState('')
-    const [birth, setBirth] = useState('')
-    const [gender, setGender] = useState('') 
-    const [genderDropDownOpened, setGenderDropDownOpened] = useState(false)
-    const phoneRef = useRef(null)
+    const [isPhoneError, setIsPhoneError] = useState(false);
+    const [isBirthError, setIsBirthError] = useState(false);
+    const [isGenderError, setIsGenderError] = useState(false);
+    const [isNameError, setIsNameError] = useState(false);
+    const [isSurnameError, setIsSurnameError] = useState(false);
+    const [isPatronymicError, setIsPatronymicError] = useState(false);
+    const [genderDropDownOpened, setGenderDropDownOpened] = useState(false);
+    const phoneRef = useRef(null);
+    const state = useSelector((state) => state.crmClients);
+    const showButtons = state.changesOccuredPersonalData;
+    const showError = state.missingFieldsPersonalData?.length > 0;
+    const phoneInputBorder = isPhoneError ? "1px solid rgba(255, 61, 0, 1)" : currenFocus === 'phone' ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
+    const birthInputBorder = isBirthError ? "1px solid rgba(255, 61, 0, 1)" : currenFocus === 'birth' ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
+
 
     // functions 
     const handleNameChange = (e) => {
-        setName(e.target.value)
+        dispatch(setName(e.target.value));
+        if (showError) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
     }
 
     const handleSurnameChange = (e) => {
-        setSurname(e.target.value)
+        dispatch(setSurname(e.target.value));
+        if (showError) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
     }
 
     const handlePatronymicChange = (e) => {
-        setPatronymic(e.target.value)
+        dispatch(setPatronymic(e.target.value));
+        if (showError) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
     }
 
     const handlePhoneChange = (e) => {
-        setPhone(e.target.value)
+        dispatch(setPhone(e.target.value));
+        if (showError) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
+    }
+
+    const handleGenderChange = (value) => {
+        dispatch(setGender(value));
+        if (showError) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
+    }
+
+    const handleBirthChange = (e) => {
+        dispatch(setBirth(e.target.value));
+        if (showError) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
     }
 
     const toggleGenderDropDown = () => {
@@ -63,7 +110,18 @@ export default function PersonalDatas({
     }
   };
 
+  useEffect(() => {
+    const arr = state.missingFieldsPersonalData;
+    setIsNameError(arr?.includes('name'));
+    setIsSurnameError(arr?.includes('surname'));
+    setIsPatronymicError(arr?.includes('patronymic'));
+    setIsPhoneError(arr?.includes('phone'));
+    setIsBirthError(arr?.includes('birth'));
+    setIsGenderError(arr?.includes("gender"));
+  }, [state.missingFieldsPersonalData]);
+  
   return (
+    console.log(state.birth),
     <div className='customCard'>
         <div className="columnWithNoGap">
             <span className='headerH2'>Персональные данные</span>
@@ -106,88 +164,95 @@ export default function PersonalDatas({
                 </div>
             }
             <div className="colGap16">
-                <div className="colGap10">
-                    <span className='label2bPlus'>Фамилия, Имя, Отчество</span>
-                    <div className="rowGap10">
-                    <CrmTextField 
-                            value={surname} 
-                            hasFocus={currenFocus === 'surname'}
-                            onFocus={() => setCurrenFocus('surname')}
-                            onBlur={() => setCurrenFocus('')}
-                            label='Фамилия'
-                            onChange={handleSurnameChange} />
+                  <div className="colGap10">
+                      <span className='label2bPlus'>Фамилия, Имя, Отчество</span>
+                      <div className="rowGap10">
+                          <CrmTextField
+                              value={state.surname}
+                              hasFocus={currenFocus === 'surname'}
+                              onFocus={() => setCurrenFocus('surname')}
+                              onBlur={() => setCurrenFocus('')}
+                              label='Фамилия'
+                              isError={isSurnameError}
+                              onChange={handleSurnameChange} />
 
-                        <CrmTextField 
-                            value={name} 
-                            hasFocus={currenFocus === 'name'}
-                            onFocus={() => setCurrenFocus('name')}
-                            onBlur={() => setCurrenFocus('')}
-                            label='Имя'
-                            onChange={handleNameChange} />   
+                          <CrmTextField
+                              value={state.name}
+                              hasFocus={currenFocus === 'name'}
+                              onFocus={() => setCurrenFocus('name')}
+                              onBlur={() => setCurrenFocus('')}
+                              label='Имя'
+                              width='205px'
+                              isError={isNameError}
+                              onChange={handleNameChange} />
 
-                        <CrmTextField
-                            hasFocus={currenFocus === 'patronymic'}
-                            onFocus={() => setCurrenFocus('patronymic')}
-                            onBlur={() => setCurrenFocus('')}
-                            label='Отчество' 
-                            value={patronymic}
-                            onChange={handlePatronymicChange}
-                            />                 
-                    </div>
-                </div>
+                          <CrmTextField
+                              hasFocus={currenFocus === 'patronymic'}
+                              onFocus={() => setCurrenFocus('patronymic')}
+                              onBlur={() => setCurrenFocus('')}
+                              label='Отчество'
+                              value={state.patronymic}
+                              isError={isPatronymicError}
+                              onChange={handlePatronymicChange}
+                          />
+                      </div>
+                  </div>
                 <VerticalSpace height={16} />
                 <div className="rowGap10">
                     <GenderDropDown  
                         isOpened={genderDropDownOpened}
                         toggleDropDown={toggleGenderDropDown}
                         closeDropDown={() => setGenderDropDownOpened(false)}
-                        value={gender}
-                        onSelect={setGender}
+                        value={state.gender}
+                        isError={isGenderError}
+                        onSelect={handleGenderChange} 
                         />
                     <div className="colGap10">
                         <span className='label2bPlus'>Телефон</span>
-                          <ReactInputMask
-                              mask={'+7 (999) 999-99-99'}
-                              value={phone}
-                              maskChar={null}
-                              onChange={(e) => {
-                                  const onlyDigits = e.target.value.replace(/\D/g, "");
-                                  setPhone(onlyDigits)
-                              }}
-                              placeholder='Введите номер '
-                              onFocus={() => setCurrenFocus('phone')}
-                              onBlur={() => setCurrenFocus('')}
-                              onPaste={handlePaste}
-                              style={{
-                                width: "200px",
-                                height: "40px",
-                                border : currenFocus === 'phone' ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)',
-                                outline: 'none',
-                                borderRadius: '8px',
-                                fontSize: '14px',
-                                fontWeight: '400',
-                                padding: '12px 16px',
-                                color : "rgba(176, 176, 176, 1)"
-                              }}
-                          />
+                          <div className="rowGap4">
+                              <ReactInputMask
+                                  mask={'+7 (999) 999-99-99'}
+                                  value={state.phone}
+                                  maskChar={null}
+                                  onChange={(e) => {
+                                      const onlyDigits = e.target.value.replace(/\D/g, "");
+                                        handlePhoneChange({ target: { value: onlyDigits } });
+                                  }}
+                                  placeholder='Введите номер '
+                                  onFocus={() => setCurrenFocus('phone')}
+                                  onBlur={() => setCurrenFocus('')}
+                                  onPaste={handlePaste}
+                                  style={{
+                                      width: "160px",
+                                      height: "40px",
+                                      border: phoneInputBorder,
+                                      outline: 'none',
+                                      borderRadius: '8px',
+                                      fontSize: '14px',
+                                      fontWeight: '400',
+                                      padding: '12px 16px',
+                                      color: "rgba(176, 176, 176, 1)"
+                                  }}
+                              />
+                              <div className="greenMiniCard40x40">
+                                    <SendSvg />
+                              </div>
+                          </div>
                     </div>
                     <div className="colGap10">
                         <span className='label2bPlus'>Дата рождения </span>
                         <ReactInputMask
                               mask={'99.99.9999'}
                               maskChar={null}
-                              value={birth}
-                              onChange={(e) => {
-                                  const onlyDigits = e.target.value.replace(/\D/g, "");
-                                  setBirth(onlyDigits)
-                              }}
+                              value={state.birth}
+                              onChange={handleBirthChange}
                               placeholder='18.11.2003 '
                               onFocus={() => setCurrenFocus('birth')}
                               onBlur={() => setCurrenFocus('')}
                               style={{
                                 width: "200px",
                                 height: "40px",
-                                border : currenFocus === 'birth' ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)',
+                                border : birthInputBorder,
                                 outline: 'none',
                                 borderRadius: '8px',
                                 fontSize: '14px',
@@ -196,15 +261,23 @@ export default function PersonalDatas({
                               }}
                           />
                     </div>
+                    
                 </div>
             </div>
+            {/* <CrmDatePicker 
+                isShown={true}
+                selectedDate={birth}
+                onChange={(date) => setBirth(date)}
+                onSelect={(date) => setBirth(date)}
+                onClose={() => setCurrenFocus('')}
+            /> */}
         </div>
         <VerticalSpace height={32} />
         <div className="colGap10">
             <span className='label2bPlus'>Заметка о клиенте</span>
             <CustomCrmTextArea 
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
+                value={state.note}
+                onChange={(e) => dispatch(setNote(e.target.value))}
                 onFocus={() => setCurrenFocus('note')}
                 onBlur={() => setCurrenFocus('')}
                 currenFocus={currenFocus === 'note'}
@@ -212,18 +285,92 @@ export default function PersonalDatas({
                 height='40px'
             />
         </div>
-        <VerticalSpace height={32} />
-        <div className="rowGap12">
-            <WhiteButton  onClick={() => {}} />
-            <GreenButton text='Сохранить' />
-        </div>
-        
-        <VerticalSpace height={32} />
-        <span className='errorText'>Чтобы продолжить - необходимо заполнить все обязательные поля, выделенные красным</span>
 
+          {showButtons &&
+              <>
+                  <VerticalSpace height={32} />
+                  <div className="rowGap12">
+                      <WhiteButton onClick={() => { }} />
+                      <GreenButton
+                          text='Сохранить'
+                          onClick={() => {
+                              dispatch(checkMissingFieldsPersonalData())
+                          }} />
+                  </div>
+                  {showError &&
+                      <>
+                          <VerticalSpace height={32} />
+                          <span className='errorText'>Чтобы продолжить - необходимо заполнить все обязательные поля, выделенные красным</span>
+                      </>
+                  }
+
+              </>
+          }
 
     </div>
   )
+}
+
+function CrmDatePicker({
+    selectedDate,
+    onChange,
+    onSelect,
+    isShown,
+    onClose,
+}) {
+    return (
+        <DatePicker
+            className='bg-red-200'
+            minDate={new Date()}
+            selected={selectedDate}
+            onChange={onChange}
+            open={isShown}
+            shouldCloseOnSelect={true}
+            onSelect={onSelect}
+            locale={"ru"}
+            popperPlacement="top-start"
+            renderDayContents={(day, date) => {
+                return (
+                    <span className="text-[16px] font-normal">
+                        {day}
+                    </span>
+                )
+            }}
+            renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
+                <div className="h-[40px] w-full flex flex-row pl-[5px] pr-[10px] items-center justify-between">
+                    <div className="flex flex-row items-center gap-[4px]">
+                        <img
+                            className="cursor-pointer"
+                            src={previousMoth}
+                            alt="prev"
+                            onClick={() => decreaseMonth()}
+                        />
+
+                        <div className="text-[14px] font-medium uppercase text-grey-text w-[65px]">
+                            {date.toLocaleString("ru", { month: "long" })}
+                        </div>
+
+                        <img
+                            className="cursor-pointer"
+                            src={nextMoth}
+                            alt="next"
+                            onClick={() => increaseMonth()}
+                        />
+
+                        <div className="text-[14px] font-medium uppercase text-grey-text">
+                            {date.getFullYear()}
+                        </div>
+                    </div>
+
+                    <div
+                        className="text-[14px] font-medium text-button-color cursor-pointer"
+                        onClick={onClose}>
+                        Закрыть
+                    </div>
+                </div>
+            )}
+        />
+    )
 }
 
 function CustomCrmTextArea({
@@ -259,12 +406,14 @@ function GenderDropDown({
     closeDropDown,
     onSelect,
     value = "",
+    isError = false,
 }){
     const shadow = isOpened ? '0px 18px 14px -13px rgba(0, 0, 0, 0.25)' : 'none';
     const genders = ['Мужской', 'Женский'];
     const iconClasses = isOpened ? 'rotate-icon' : 'arrow-icon';
     const text = value || 'Выберите пол';
     const ref = useRef(null);
+    const border = isError ? '1px solid rgba(255, 61, 0, 1)' : isOpened ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
 
     useEffect(() => {
       // close dropdown when click outside
@@ -287,7 +436,7 @@ function GenderDropDown({
                 <div 
                      style={{
                         boxShadow: shadow,
-                        border: isOpened ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)',
+                        border: border,
                         borderRadius: '8px',
                         transition: 'border 0.3s',
                         zIndex: "3",
@@ -328,5 +477,14 @@ function WhiteButton({
         <div className="whiteButton" onClick={onClick}>
             {text}
         </div>
+    )
+}
+
+function SendSvg() {
+    return (
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.49946 11L4.33138 5.74397C4.06059 4.52546 5.30972 3.5286 6.43779 4.06295L18.2208 9.64439C19.3647 10.1862 19.3647 11.8138 18.2208 12.3556L6.43779 17.9371C5.30971 18.4714 4.06059 17.4745 4.33138 16.256L5.49946 11ZM5.49946 11H10.9993" stroke="white" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+
     )
 }

@@ -256,7 +256,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                       dispatch(removeGymMainPic({ gymId }));
                       dispatch(removePhotoCopy());
                     });
-                  setCancelDeleteTimeoutPhoto(() => cancelTimeout)}}
+                  setCancelDeleteTimeoutPhoto(() => cancelTimeout)
+                }}
                 openFilePicker={openFilePickerForMainPhoto}
                 photo={currentGym.mainPictureUrl === "" || currentGym.mainPictureUrl === null ? "" : currentGym.mainPictureUrl}
                 fileInputRef={fileInputMainPhotoRef}

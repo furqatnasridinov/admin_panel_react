@@ -14,8 +14,9 @@ export default function CrmClientsBody() {
     const [sortByActivities, setSortByActivities] = useState(null);
     const [sortByGyms, setSortByGyms] = useState(null);
     const [sortByNotes, setSortByNotes] = useState(null);
+    const [sortByIndicators, setSortByIndicators] = useState(null);
     const clients = useSelector((state) => state.crmClients.listOfUsers);
-    const loading = useSelector((state) => state.crmClients.listOfUsersLoading);
+    //const loading = useSelector((state) => state.crmClients.listOfUsersLoading);
 
     // functions
     function handleSortByName() {
@@ -29,6 +30,7 @@ export default function CrmClientsBody() {
         setSortByActivities(null);
         setSortByGyms(null);
         setSortByNotes(null);
+        setSortByIndicators(null);
     }
 
     function handleSortBySurname() {
@@ -42,6 +44,7 @@ export default function CrmClientsBody() {
         setSortByActivities(null);
         setSortByGyms(null);
         setSortByNotes(null);
+        setSortByIndicators(null);
     }
 
     function handleSortByAge() {
@@ -55,7 +58,7 @@ export default function CrmClientsBody() {
         setSortByActivities(null);
         setSortByGyms(null);
         setSortByNotes(null);
-
+        setSortByIndicators(null);
     }
 
     function handleSortByActivities() {
@@ -69,6 +72,7 @@ export default function CrmClientsBody() {
         setSortByAge(null);
         setSortByGyms(null);
         setSortByNotes(null);
+        setSortByIndicators(null);
     }
 
     function handleSortByGyms() {
@@ -82,6 +86,7 @@ export default function CrmClientsBody() {
         setSortByAge(null);
         setSortByActivities(null);
         setSortByNotes(null);
+        setSortByIndicators(null);
     }
 
     function handleSortByNotes() {
@@ -95,6 +100,21 @@ export default function CrmClientsBody() {
         setSortByAge(null);
         setSortByActivities(null);
         setSortByGyms(null);
+        setSortByIndicators(null);
+    }
+
+    function handleSortByIndicators() {
+        if (sortByIndicators === null || sortByIndicators === "asc") {
+            setSortByIndicators("desc");
+        } else if (sortByIndicators === "desc") {
+            setSortByIndicators("asc");
+        }
+        setSortByName(null);
+        setSortBySurname(null);
+        setSortByAge(null);
+        setSortByActivities(null);
+        setSortByGyms(null);
+        setSortByNotes(null);
     }
   
   return (
@@ -122,8 +142,12 @@ export default function CrmClientsBody() {
                     <FilterIndicators topActive={sortByName === "asc"} bottomActive={sortByName === "desc"} />
                 </div>
                 <div className="flex flex-row items-center gap-1 cursor-pointer">
-                    <span className='text-[13px] font-medium'>Постоянство</span>
-                    <FilterIndicators  />
+                    <span 
+                        style={{
+                            color: !sortByIndicators ? "black" : "rgba(58, 185, 109, 1)",
+                        }}
+                        className='text-[13px] font-medium' onClick={handleSortByIndicators}>Постоянство</span>
+                    <FilterIndicators topActive={sortByIndicators === "asc"} bottomActive={sortByIndicators === "desc"}  />
                 </div>
             </div>
 
@@ -188,7 +212,9 @@ export default function CrmClientsBody() {
                 sortByGyms === "desc" ? a.gyms[0]?.localeCompare(b.gyms[0]) :
                 sortByGyms === "asc" ? b.gyms[0]?.localeCompare(a.gyms[0]) : 
                 sortByNotes === "desc" ? b.note?.localeCompare(a.note) :
-                sortByNotes === "asc" ? a.note?.localeCompare(b.note) : 0
+                sortByNotes === "asc" ? a.note?.localeCompare(b.note) : 
+                sortByIndicators === "desc" ? b.green - a.green :
+                sortByIndicators === "asc" ? a.green - b.green : 0
             ))
             .map((client, index) => {
                 return <EachCrmClient 
