@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 import axiosClient from "../../config/axios_client";
-import { getBirthdayFormatted2 } from "../../config/apphelpers";
+import { getBirthdayFormatted2, getGenderTranslated } from "../../config/apphelpers";
 import { toast } from "react-toastify";
 
 export const getClients = createAsyncThunk(
@@ -236,7 +236,7 @@ const srmClientsSlice = createSlice({
         state.phone = client?.contactPhone; 
         state.note = client?.note;
         state.birth = getBirthdayFormatted2(client?.birthdayDate) || "";
-        state.gender = client?.gender || "";
+        state.gender =  getGenderTranslated(client?.gender) || "";
         state.serie = client?.series || "";
         state.number = client?.number || "";
         state.address = client?.issuedBy || "";
