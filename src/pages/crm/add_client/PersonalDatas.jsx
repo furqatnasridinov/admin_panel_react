@@ -12,6 +12,10 @@ import DatePicker from "react-datepicker";
 import previousMoth from "../../../assets/svg/navigate_prev_month.svg"
 import nextMoth from "../../../assets/svg/navigate_next_month.svg";
 import { useDispatch, useSelector } from 'react-redux';
+import CustomDialog from '../../../components/dialog/dialog';
+import { getBirthdayFormatted, translateGender } from '../../../config/apphelpers'
+import OTPInput from 'react-otp-input'
+import { toast } from 'react-toastify';
 import { setName,
     setSurname,
     setPatronymic,
@@ -21,11 +25,11 @@ import { setName,
     setBirth,
     setGender,
     checkMissingFieldsPersonalData,
+    updateClient,
  } from '../../../features/crm/CrmClients'
-import { getBirthdayFormatted } from '../../../config/apphelpers'
 
 export default function PersonalDatas({
-    showaAvatar = true,
+    showaAvatar = false,
 }) {
     const dispatch = useDispatch();
     const [currenFocus, setCurrenFocus] = useState('') // ['name', 'surname', 'patronymic', 'birthday'...
@@ -33,62 +37,92 @@ export default function PersonalDatas({
     const [isBirthError, setIsBirthError] = useState(false);
     const [isGenderError, setIsGenderError] = useState(false);
     const [isNameError, setIsNameError] = useState(false);
+    const [modalShown, setModalShown] = useState(false);
     const [isSurnameError, setIsSurnameError] = useState(false);
     const [isPatronymicError, setIsPatronymicError] = useState(false);
     const [genderDropDownOpened, setGenderDropDownOpened] = useState(false);
+    const [otp, setOtp] = useState("");
+    const [isOtpError, setIsOtpError] = useState(false);
     const phoneRef = useRef(null);
     const state = useSelector((state) => state.crmClients);
     const showButtons = state.changesOccuredPersonalData;
     const showError = state.missingFieldsPersonalData?.length > 0;
     const phoneInputBorder = isPhoneError ? "1px solid rgba(255, 61, 0, 1)" : currenFocus === 'phone' ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
     const birthInputBorder = isBirthError ? "1px solid rgba(255, 61, 0, 1)" : currenFocus === 'birth' ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
+    const isPhoneEntered = state.phone?.length === 11;
+    const isOtpPassed = otp.length === 4 && isOtpError===false;
+
 
 
     // functions 
     const handleNameChange = (e) => {
         dispatch(setName(e.target.value));
-        if (showError) {
-            dispatch(checkMissingFieldsPersonalData());
-        }
+        dispatch(checkMissingFieldsPersonalData());
     }
 
     const handleSurnameChange = (e) => {
         dispatch(setSurname(e.target.value));
-        if (showError) {
-            dispatch(checkMissingFieldsPersonalData());
-        }
+        dispatch(checkMissingFieldsPersonalData());
     }
 
     const handlePatronymicChange = (e) => {
         dispatch(setPatronymic(e.target.value));
-        if (showError) {
-            dispatch(checkMissingFieldsPersonalData());
-        }
+        dispatch(checkMissingFieldsPersonalData());
     }
 
     const handlePhoneChange = (e) => {
         dispatch(setPhone(e.target.value));
-        if (showError) {
-            dispatch(checkMissingFieldsPersonalData());
-        }
+        dispatch(checkMissingFieldsPersonalData());
     }
 
     const handleGenderChange = (value) => {
         dispatch(setGender(value));
-        if (showError) {
-            dispatch(checkMissingFieldsPersonalData());
-        }
+        dispatch(checkMissingFieldsPersonalData());
     }
 
     const handleBirthChange = (e) => {
         dispatch(setBirth(e.target.value));
-        if (showError) {
-            dispatch(checkMissingFieldsPersonalData());
-        }
+        dispatch(checkMissingFieldsPersonalData());
     }
 
     const toggleGenderDropDown = () => {
         setGenderDropDownOpened(!genderDropDownOpened)
+    }
+
+    const handleOtpChange = (otp) => {
+        setOtp(otp)
+        if (otp.length < 4 && isOtpError) {
+            setIsOtpError(false)
+        }
+        if (otp.length === 4) {
+            if (otp !== '1234') {
+                setIsOtpError(true)
+            }else{
+                setIsOtpError(false);
+            }
+        }
+    }
+
+    function updateClientFunc() {
+        const canSend = state.missingFieldsPersonalData.length === 0;
+        if (canSend) {
+            const formattedDate = getBirthdayFormatted(state.birth);
+            const translatedGender = translateGender(state.gender)
+            const body = {
+                "id": state.currentClientId,
+                "firstName": state.name,
+                "lastName": state.surname,
+                "patronymic": state.patronymic,
+                "birthdayDate": formattedDate,
+                "contactPhone": state.phone,
+                "gender" : translatedGender,
+                "note": state.note,
+            }
+            dispatch(updateClient(body));
+            console.log(`Отправлено: ${JSON.stringify(body)}`);
+        }else{
+            toast.error("Заполните все обязательные поля")
+        }
     }
 
 
@@ -207,38 +241,65 @@ export default function PersonalDatas({
                         isError={isGenderError}
                         onSelect={handleGenderChange} 
                         />
-                    <div className="colGap10">
+                    <div className="colGap10 w-[210px]">
                         <span className='label2bPlus'>Телефон</span>
-                          <div className="rowGap4">
-                              <ReactInputMask
-                                  mask={'+7 (999) 999-99-99'}
-                                  value={state.phone}
-                                  maskChar={null}
-                                  onChange={(e) => {
-                                      const onlyDigits = e.target.value.replace(/\D/g, "");
-                                        handlePhoneChange({ target: { value: onlyDigits } });
-                                  }}
-                                  placeholder='Введите номер '
-                                  onFocus={() => setCurrenFocus('phone')}
-                                  onBlur={() => setCurrenFocus('')}
-                                  onPaste={handlePaste}
-                                  style={{
-                                      width: "160px",
-                                      height: "40px",
-                                      border: phoneInputBorder,
-                                      outline: 'none',
-                                      borderRadius: '8px',
-                                      fontSize: '14px',
-                                      fontWeight: '400',
-                                      padding: '12px 16px',
-                                      color: "rgba(176, 176, 176, 1)"
-                                  }}
-                              />
-                              <div className="greenMiniCard40x40">
-                                    <SendSvg />
-                              </div>
+                          <div className="flex flex-row">
+                                  <div className="relative">
+                                      <ReactInputMask
+                                          mask={'+7 (999) 999-99-99'}
+                                          value={state.phone}
+                                          maskChar={null}
+                                          readOnly={isOtpPassed}
+                                          onChange={(e) => {
+                                              const onlyDigits = e.target.value.replace(/\D/g, "");
+                                              handlePhoneChange({ target: { value: onlyDigits } });
+                                          }}
+                                          placeholder='Введите номер '
+                                          onFocus={() => setCurrenFocus('phone')}
+                                          onBlur={() => setCurrenFocus('')}
+                                          onPaste={handlePaste}
+                                          style={{
+                                              width: isPhoneEntered && !isOtpPassed ? "165px" : "205px",
+                                              height: "40px",
+                                              border: phoneInputBorder,
+                                              transition: "width 0.3s ease",
+                                              outline: 'none',
+                                              borderRadius: '8px',
+                                              fontSize: '14px',
+                                              fontWeight: '400',
+                                              padding: '12px 16px',
+                                              color: isOtpPassed ? 'rgba(176, 176, 176, 1)' : 'rgba(0, 0, 0, 1)',
+                                          }}
+                                      />
+                                      
+                                      {isOtpPassed &&
+                                          <div className="absolute top-2 right-4">
+                                              <DoneSvg />
+                                          </div>
+                                      }
+
+                                  </div>
+                                  {isPhoneEntered && !isOtpPassed &&
+                                      <div className="greenMiniCard40x40" onClick={()=>setModalShown(true)}>
+                                          <SendSvg />
+                                      </div>
+                                  }
                           </div>
                     </div>
+                    {modalShown && 
+                        <CustomDialog
+                            isOpened={modalShown}
+                            closeOnTapOutside={() => setModalShown(false)}
+                        >
+                            <ModalBody 
+                                otp={otp} 
+                                setOtp={handleOtpChange} 
+                                isOtpError ={isOtpError} 
+                                closeFunction={() => setModalShown(false)}  
+                                isOtpPassed= {isOtpPassed}
+                            />
+                        </CustomDialog>
+                    }
                     <div className="colGap10">
                         <span className='label2bPlus'>Дата рождения </span>
                         <ReactInputMask
@@ -294,7 +355,7 @@ export default function PersonalDatas({
                       <GreenButton
                           text='Сохранить'
                           onClick={() => {
-                              dispatch(checkMissingFieldsPersonalData())
+                              updateClientFunc();
                           }} />
                   </div>
                   {showError &&
@@ -469,12 +530,121 @@ function GenderDropDown({
     )
 }
 
+function ModalBody({
+    closeFunction,
+    isOtpError = false,
+    otp,
+    setOtp,
+    isOtpPassed = false,
+    onSendRef,
+}){
+    const [stage, setStage] = useState(1);
+    const [timer, setTimer] = useState(5);
+
+    useEffect(() => {
+      if (stage === 2) {
+        const interval = setInterval(() => {
+            setTimer((prev) => {
+                if (prev === 0) {
+                    clearInterval(interval);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+        return () => clearInterval(interval);
+      }
+    }, [stage])
+
+
+    useEffect(() => {
+        if (isOtpPassed) {
+            setStage(3);
+        }
+    }, [isOtpPassed])
+    
+    return (
+        <div className="modalContainerPhone">
+            {stage === 1 &&
+                <>
+                    <span className='headerH2'>Подтверждение по СМС</span>
+                    <span className='label2'>Для внесения в базу номера телефона - нужно согласие клиента.</span>
+                    <span className='label2'>В качестве запроса на согласие мы отправим ему СМС, в котором будет код из четырёх цифр, вам нужно будет ввести эти цифры на следующем экране.</span>
+                    <div className="rowGap10">
+                        <WhiteButton text='Отменить' onClick={closeFunction} />
+                        <GreenButton text='Хорошо, отправить СМС с кодом' onClick={()=>{setStage(2)}} />
+                    </div>
+                </>
+            }
+            {stage === 2 &&
+                <>
+                    <span className='headerH2'>Подтверждение по СМС</span>
+                    <div className="greyBorderedContainerPhone">
+                        Дождитесь, пока клиент получит смс и попросите его озвучить код, чтобы вписать его в поле ниже:
+                    </div>
+                    <OTPInput
+                        value={otp}
+                        onChange={setOtp}
+                        numInputs={4}
+                        renderInput={(props) => <input {...props} />}
+                        inputStyle={isOtpError ? "pinputStyleError" : "pinputStyleCrm"}
+                        shouldAutoFocus={true}
+                    />
+                    <div className="colGap5">
+                        <span className='interBody3'>Не пришла смс в течении 1 минуты? </span>
+                        {timer !== 0 &&
+                            <div className="interBody3 text-crm-link">
+                                {`Отправить ещё раз через ${timer}с`}
+                            </div>
+                        }
+
+
+                        {timer === 0 &&
+                            <div className="interBody3 text-crm-link cursor-pointer" onClick={() => {
+                                setTimer(59);
+                            }}>
+                                Отправить заново
+                            </div>}
+                    </div>
+                    
+                    <WhiteButton text='Отменить' onClick={closeFunction} width='120px'  />
+                </>
+            }
+
+            {stage === 3 &&
+                <>
+                    <span className='headerH2'>Отлично! Мы привязали этот номер телефона к карточке клиента.</span>
+                    <div className="columnWithNoGap">
+                        <span className='label2'>Можете предложить ему принять ссылку на скачивание приложения MyFit, для удобного управления своим абонементом и отслеживания расписания.</span>
+                        <span className='label2bPlus'>Не отправляйте ссылку без согласия клиента, это расценится как спам.</span>
+                    </div>
+                    <div className="rowGap10">
+                        <WhiteButton text='Отправить ссылку для скачивания MyFit' width='320px' onClick={onSendRef} />
+                        <GreenButton text='Закрыть это окно' onClick={()=>{
+                            setStage(1);
+                            //setOtp('');
+                            closeFunction();
+                        }} />
+                    </div>
+                </>
+            }
+        </div>
+    )
+}
+
 function WhiteButton({
     text = "Отменить",
     onClick,
+    width = "200px",
+    height = "40px",
 }) {
     return (
-        <div className="whiteButton" onClick={onClick}>
+        <div 
+            style={{
+                width: width,
+                height: height,
+            }}
+            className="whiteButton" onClick={onClick}>
             {text}
         </div>
     )
@@ -486,5 +656,14 @@ function SendSvg() {
             <path d="M5.49946 11L4.33138 5.74397C4.06059 4.52546 5.30972 3.5286 6.43779 4.06295L18.2208 9.64439C19.3647 10.1862 19.3647 11.8138 18.2208 12.3556L6.43779 17.9371C5.30971 18.4714 4.06059 17.4745 4.33138 16.256L5.49946 11ZM5.49946 11H10.9993" stroke="white" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
 
+    )
+}
+
+
+function DoneSvg() {
+    return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 13L9 17L19 7" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
     )
 }

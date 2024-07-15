@@ -1,5 +1,7 @@
-import {createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 import axiosClient from "../../config/axios_client";
+import { getBirthdayFormatted2 } from "../../config/apphelpers";
+import { toast } from "react-toastify";
 
 export const getClients = createAsyncThunk(
     "srmClients/getClients",
@@ -43,12 +45,27 @@ export const addNewClient = createAsyncThunk(
     },
 );
 
+export const updateClient = createAsyncThunk(
+    "srmClients/createClient",
+    async (requestBody) => {
+        try {
+            const response = await axiosClient.patch(`api/crm/client/update`, requestBody);
+            if (response.status === 200) {
+                return response.data["object"];
+            }
+        } catch (error) {
+            console.log(`srmClients/createClient ${error}`);
+        }
+    },
+);
+
 const srmClientsSlice = createSlice({
   name: "srmClients",
   initialState: {
     listOfUsers : [],
     listOfUsersLoading: false,
     clientGotById: null,
+    currentClientId: null,
     name: "",
     surname: "",
     patronymic: "",
@@ -72,6 +89,10 @@ const srmClientsSlice = createSlice({
   reducers: {   
     setListOfUsers(state, action) {
       state.listOfUsers = action.payload;
+    },
+
+    setCurrentClientId(state, action) {
+        state.currentClientId = action.payload;
     },
 
       setName(state, action) {
@@ -178,7 +199,7 @@ const srmClientsSlice = createSlice({
         const fieldsWithMinLength = {
             serie: 4,
             number: 6,
-            address: 6,
+            address: 1,
             date: 10,
             code: 6,
         };
@@ -206,7 +227,33 @@ const srmClientsSlice = createSlice({
 
     // Get client by id
     builder.addCase(getClientById.fulfilled, (state, action) => {
-      state.listOfUsers = action.payload;
+      const client = action.payload;
+      if (client) {
+        state.name = client?.firstName;
+        state.surname = client?.lastName;
+        state.patronymic = client?.patronymic;
+        state.email = client?.email;
+        state.phone = client?.contactPhone; 
+        state.note = client?.note;
+        state.birth = getBirthdayFormatted2(client?.birthdayDate) || "";
+        state.gender = client?.gender || "";
+        state.serie = client?.series || "";
+        state.number = client?.number || "";
+        state.address = client?.issuedBy || "";
+        state.date =  getBirthdayFormatted2(client?.dateOfIssue) || "";
+        state.code = client?.departmentCode || "";
+        // file also
+        state.clientGotById = client;
+      }
+    });
+
+    // update client
+    builder.addCase(updateClient.fulfilled, (state, action) => {
+        const updatedClient = action.payload;
+        // надо обновить список клиентов в стейте
+        const index = state.listOfUsers.findIndex((client) => client.id === updatedClient.id);
+        state.listOfUsers[index] = updatedClient;
+        toast.success("Данные успешно обновлены");
     });
   },
 
@@ -229,7 +276,7 @@ export const {
     setDate,
     setCode,
     checkMissingFieldsPassportData,
-
+    setCurrentClientId,
 } = srmClientsSlice.actions;
 
 export default srmClientsSlice.reducer;

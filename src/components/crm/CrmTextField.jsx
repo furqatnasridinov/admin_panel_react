@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './CrmTextField.css';
+import ReactInputMask from 'react-input-mask';
 
 export default function CrmTextField({
     label = "Введите текст", // Добавлен параметр label
@@ -10,6 +11,8 @@ export default function CrmTextField({
     onBlur: propOnBlur,
     hasFocus: propHasFocus = false,
     isError = false,
+    showInputMask = false,
+    mask = "+7 (999) 999-99-99",
 }) {
     const [hasFocus, setHasFocus] = useState(propHasFocus);
 
@@ -30,7 +33,8 @@ export default function CrmTextField({
         <span className={`input-label ${hasFocus || value ? 'focused' : ''}`}>
             {label}
         </span>
-        <input
+        {!showInputMask && 
+            <input
             style={{
                 border: border,
             }}
@@ -40,6 +44,20 @@ export default function CrmTextField({
             onChange={onChange}
             className='input'
             type="text" />
+        }
+        {showInputMask && 
+            <ReactInputMask
+            style={{
+                border: border,
+            }}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            value={value}
+            onChange={onChange}
+            className='input'
+            maskChar={null}
+            mask={mask} />
+        }
     </label>
     );
 }

@@ -232,6 +232,7 @@ export default function CrmClientsBody() {
                 gray={client.gray ?? 0}
                 green={client.green ?? 0}
                 red={client.red ?? 0}
+                id={client.id ?? 0}
                 />
             })
         }

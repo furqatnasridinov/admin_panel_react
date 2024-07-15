@@ -85,11 +85,15 @@ import React, {
           >
             <DeleteSvg />
 
-            <span className="text-[14px] font-medium">{snackbar.message}</span>
+            <span style={{
+              maxWidth: "300px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }} className="text-[14px] font-medium">{snackbar.message}</span>
 
             <div className="flex flex-row gap-[18px] items-center h-full w-fit">
               <div
-                className="text-[14px] font-medium text-crm-link cursor-pointer"
+                className="text-[14px] leading-4 max-h-[32px] font-medium text-crm-link cursor-pointer"
                 onClick={() => {
                   // Вызываем функцию undoAction, переданную из родительского компонента
                   if (props.undoAction) props.undoAction();

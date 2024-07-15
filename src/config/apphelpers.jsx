@@ -269,3 +269,34 @@ export function getBirthdayFormatted(date){
     const year = parts[2];
     return `${year}-${month}-${day}`;
 }
+
+export const getBirthdayFormatted2 = (date) => {
+    // from 2003-11-18 to 18.11.2003
+    if (date) {
+        const parts = date.split('-');
+        const year = parts[0];
+        const month = parts[1];
+        const day = parts[2];
+        return `${day}.${month}.${year}`;
+    }
+}
+
+export function getGenderTranslated(gender) {
+    if (gender) {
+        if (gender === "MALE") {
+            return "Мужской";
+        }else{
+            return "Женский";
+        }
+    }
+}
+
+export function translateGender(gender){
+    if (gender) {
+        if (gender === "Мужской") {
+            return "MALE";
+        }else{
+            return "FEMALE";
+        }
+    }
+}
