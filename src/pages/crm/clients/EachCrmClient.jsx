@@ -9,6 +9,9 @@ import crmDocsEmpty from "../../../assets/svg/crmDocsEmpty.svg"
 import Indicator from './Indicator'
 import placeHolderImg from "../../../assets/images/placeholder.jpg"
 import AppConstants from '../../../config/app_constants'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { setCurrentClientId } from '../../../features/crm/CrmClients'
 
 export default function EachCrmClient({
     name,
@@ -23,10 +26,13 @@ export default function EachCrmClient({
     note,
     green,
     red,
-    gray
+    gray,
+    id,
 }) {
     const [moreActions, setMoreActions] = useState(false);
     const [notesActions, setNotesActions] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const fullName = `${surname} ${name} ${patronymic}`;
     const noteSvg = note === "" ? crmDocsEmpty : crmDocs;
     const _avatar = avatar ? `${AppConstants.baseUrl}image/${avatar}`: placeHolderImg;
@@ -78,7 +84,15 @@ export default function EachCrmClient({
             </div>
             <div className="relative">
                 <img className='cursor-pointer' onClick={()=>setMoreActions(true)} src={threeDots} alt="threeDots" />
-                {moreActions && <MoreAction closeFunction={()=>setMoreActions(false)} />}
+                  {moreActions &&
+                      <MoreAction
+                          closeFunction={() => setMoreActions(false)}
+                          onOpenClientCard={()=>{
+                            dispatch(setCurrentClientId(id));
+                            navigate("/clientsPageCrm/clientCard");
+                          }}
+                      />
+                  }
             </div>
         </div>
 
@@ -90,7 +104,10 @@ export default function EachCrmClient({
 
 // components
 
-const MoreAction = ({closeFunction}) => {
+const MoreAction = ({
+    closeFunction,
+    onOpenClientCard,
+}) => {
     const menuRef = useRef();
 
     useEffect(() => {
@@ -107,7 +124,7 @@ const MoreAction = ({closeFunction}) => {
 
     return (
         <div className='tooltipCrm w-[285px] h-fit gap-[10px]' ref={menuRef}>
-            <IconAndText icon={<CartSvg />} text='Открыть карточку клиента' />
+            <IconAndText icon={<CartSvg />} text='Открыть карточку клиента' onClick={onOpenClientCard}/>
             <IconAndText icon={<NextSvg />} text='Продлить абонемент' />
             <IconAndText icon={<CalendarSvg />} text='Записать на занятие' />
         </div>
@@ -207,9 +224,13 @@ const SeeMoreAction = ({closeFunction, list, isGym}) => {
     )
 }
 
-const IconAndText = ({icon, text}) => {
+const IconAndText = ({
+    icon, 
+    text,
+    onClick,
+}) => {
     return (
-        <div className="iconAndTextCrm">
+        <div className="iconAndTextCrm" onClick={onClick}>
             {icon}
             <span className='text-[14px] leadin-4'>{text}</span>
         </div>
@@ -222,10 +243,10 @@ const Expandable = ({ list, isGym = false }) => {
 
     return (
         <div>
-            {list.slice(0, 2).map((current, index) => (
+            {list.slice(0, 1).map((current, index) => (
                 <div key={index} className='text-[14px] leading-4'>{current}</div> 
             ))}
-            {list.length > 2 && (
+            {list.length > 1 && (
                 <div className="relative">
                     <div onClick={()=>setSeeMore(true)} className="text-[14px] leading-4 text-crm-main cursor-pointer">Еще</div>
                     {seeMore && <SeeMoreAction closeFunction={()=>setSeeMore(false)} list={list} isGym={isGym} />}

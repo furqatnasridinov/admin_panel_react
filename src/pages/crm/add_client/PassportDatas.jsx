@@ -15,6 +15,7 @@ import {     setAddress,
     setCode,
     checkMissingFieldsPassportData, 
     addNewClient,
+    updateClient
 } 
 from '../../../features/crm/CrmClients'
 import { getBirthdayFormatted } from '../../../config/apphelpers'
@@ -39,6 +40,7 @@ export default function PassportDatas() {
     const fileInputRef = useRef(null);
     const deleteFileRef = useRef(null);
     const dateInputBorder = isDateError ? "1px solid rgba(255, 61, 0, 1)" : currentFocus === 'date' ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
+    
     function handleMouseEnter() {
         if (!showFileTooltip) {
             setShowFileTooltip(true);
@@ -85,38 +87,32 @@ export default function PassportDatas() {
     }
 
     function handleSeriesChange(e) {
-        dispatch(setSerie(e.target.value));
-        if (showError) {
-            dispatch(checkMissingFieldsPassportData());
-        }
+        const numbers = e.target.value.replace(/\D/g, '');
+        dispatch(setSerie(numbers));
+        dispatch(checkMissingFieldsPassportData());
+    
     }
 
     function handleNumberChange(e) {
         dispatch(setNumber(e.target.value));
-        if (showError) {
-            dispatch(checkMissingFieldsPassportData());
-        }
+        dispatch(checkMissingFieldsPassportData());
+    
     }
 
     function handleDateChange(e) {
         dispatch(setDate(e.target.value));
-        if (showError) {
-            dispatch(checkMissingFieldsPassportData());
-        }
+        dispatch(checkMissingFieldsPassportData());
     }
 
     function handleCodeChange(e) {
-        dispatch(setCode(e.target.value));
-        if (showError) {
-            dispatch(checkMissingFieldsPassportData());
-        }
+        const numbers = e.target.value.replace(/\D/g, '');
+        dispatch(setCode(numbers));
+        dispatch(checkMissingFieldsPassportData()); 
     }
 
     function handleAddressChange(e) {
         dispatch(setAddress(e.target.value));
-        if (showError) {
-            dispatch(checkMissingFieldsPassportData());
-        }
+        dispatch(checkMissingFieldsPassportData());
     }
 
     function addNewClientFunc() {
@@ -140,6 +136,7 @@ export default function PassportDatas() {
                 "email": ""
             }
             dispatch(addNewClient(body));
+            console.log(`Отправлено: ${JSON.stringify(body)}`);
         }else{
             toast.error("Заполните все обязательные поля")
         }
@@ -164,8 +161,24 @@ export default function PassportDatas() {
         setIsAddressError(arr.includes("address"));
     }, [state.missingFieldsPassportData]);
 
-
-
+    function updateClientFunc() {
+        const canSend = state.missingFieldsPassportData.length === 0;
+        if (canSend) {
+            const formattedDate = getBirthdayFormatted(state.date);
+            const body = {
+                "id": state.currentClientId,
+                "series": state.serie,
+                "number": state.number,
+                "dateOfIssue": formattedDate,
+                "departmentCode": state.code,
+                "issuedBy": state.address,
+            }
+            dispatch(updateClient(body));
+            console.log(`Отправлено: ${JSON.stringify(body)}`);
+        }else{
+            toast.error("Заполните все обязательные поля")
+        }
+    }
 
   return (
     <div className='customCard'>
@@ -188,6 +201,8 @@ export default function PassportDatas() {
                     hasFocus={currentFocus === "serie"}
                     isError={isSeriesError}
                     width='75px'
+                    mask='99 99'
+                    showInputMask = {true}
                 />
                 <CrmTextField 
                     label='Номер'
@@ -197,28 +212,11 @@ export default function PassportDatas() {
                     onBlur={() => setCurrentFocus("")}
                     hasFocus={currentFocus === "number"}
                     isError={isNumberError}
-                    width='78px'
+                    width='90px'
+                    showInputMask = {true}
+                    mask='999999'
                 />
-                  <ReactInputMask
-                      mask={'99.99.9999'}
-                      maskChar={null}
-                      value={state.date}
-                      onChange={handleDateChange}
-                      placeholder='18.11.2003 '
-                      onFocus={() => setCurrentFocus('birth')}
-                      onBlur={() => setCurrentFocus('')}
-                      style={{
-                          width: "200px",
-                          height: "40px",
-                          border: dateInputBorder,
-                          outline: 'none',
-                          borderRadius: '8px',
-                          fontSize: '14px',
-                          fontWeight: '400',
-                          padding: '12px 16px',
-                      }}
-                  />
-                {/* <CrmTextField 
+                <CrmTextField 
                     label='Дата выдачи'
                     onChange={handleDateChange}
                     value={state.date}
@@ -227,7 +225,9 @@ export default function PassportDatas() {
                     hasFocus={currentFocus === "date"}
                     isError={isDateError}
                     width='130px'
-                /> */}
+                    showInputMask = {true}
+                    mask = '99.99.9999'
+                />
                 <CrmTextField 
                     label='Код подразделения'
                     onChange={handleCodeChange}
@@ -237,6 +237,8 @@ export default function PassportDatas() {
                     hasFocus={currentFocus === "code"}
                     isError={isCodeError}
                     width='170px'
+                    mask='999-999'
+                    showInputMask = {true}
                     />
                 <CrmTextField 
                     label='Кем выдан'
@@ -263,7 +265,9 @@ export default function PassportDatas() {
                               onMouseEnter={handleMouseEnter}>
                               <div className="rowGap10">
                                   <DocSvg />
-                                  <span className='body4'>{file?.name || "Неизвестное название файла"}</span>
+                                  <div className='twoLineTextWithEllipsis'>
+                                    {file?.name || "Неизвестное название файла"}
+                                 </div>
                               </div>
                           </div>
                           {showFileTooltip &&
@@ -301,7 +305,7 @@ export default function PassportDatas() {
                           text='Сохранить'
                           onClick={() => {
                               dispatch(checkMissingFieldsPassportData());
-                              addNewClientFunc();
+                              updateClientFunc();
                           }} />
                   </div>
                   {showError &&
@@ -325,9 +329,16 @@ export default function PassportDatas() {
 function WhiteButton({
     text = "Отменить",
     onClick,
+    width = "200px",
+    height = "40px",
 }) {
     return (
-        <div className="whiteButton" onClick={onClick}>
+        <div 
+            style={{
+                width: width,
+                height: height,
+            }}
+            className="whiteButton" onClick={onClick}>
             {text}
         </div>
     )

@@ -366,7 +366,7 @@ export default function Security() {
                       setResetSecondCode(true);
                       setSecondTimer(59);
                     }}>
-                      Отправить ещё раз через
+                      Отправить заново
                     </div>}
                 </div>
 

@@ -59,7 +59,7 @@ function Content() {
             {/* CRM */}
             <Route path="/clientsPageCrm" element={<ClientPageLayoutCrm />} >
               <Route index element={<CrmClients />} />
-              <Route path="new" element={<AddClientCrm />} />
+              <Route path="clientCard" element={<AddClientCrm />} />
             </Route>
             <Route path="/todayEventsPageCrm" element={<TodayEventsCrm />} />
             <Route path="/statisticksPageCrm" element={<StatisticksPageCrm />} />
