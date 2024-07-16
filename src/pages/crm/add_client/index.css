@@ -106,6 +106,8 @@
 }
 
 .eachGender{
+    font-size: 14px;
+    line-height: 16px;
     cursor: pointer;
     padding: 10px 8px;
     border-radius: 4px;
@@ -163,13 +165,14 @@
     max-width: 200px;
     display: -webkit-box;
     max-height: 33px;
-    line-clamp: 2; /* Максимальное количество строк */
+    line-clamp: 3; 
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 10px;
     font-weight: 500;
-    line-height: 11px; /* Можете настроить в зависимости от вашего дизайна */
+    line-height: 11px;
+    word-wrap: break-word;
   }
 
   .fileToolTip{
@@ -350,7 +353,7 @@
 
 
 
-.react-datepicker {
+/* .react-datepicker {
     font-size: 14px;
     background-color: #a66;
     color: #000;
@@ -358,4 +361,20 @@
     border-radius: 0;
     display: inline-block;
     position: relative;
+  } */
+
+
+ /*  .react-datepicker__month-container{
+    background-color: rgba(239, 255, 245, 1);
+  }
+
+  .react-datepicker__header{
+    background-color: rgba(239, 255, 245, 1);
+  } */
+
+  .pickerEachDay{
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+
   }

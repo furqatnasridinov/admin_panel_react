@@ -5,11 +5,14 @@ import PassportDatas from './PassportDatas'
 import { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getClientById } from '../../../features/crm/CrmClients'
+import { useParams } from "react-router-dom";
 
 export default function AddClientCrm() {
+  let { clientIdParam } = useParams(); // This hooks allows you to extract params from the URL
   const blockRef = useRef(null);
   const dispatch = useDispatch();
-  const currentClientId = useSelector((state) => state.crmClients.currentClientId);
+  const clientIdFromState = useSelector((state) => state.crmClients.currentClientId);
+  const clientId = clientIdFromState || clientIdParam;
 
   function handleScrollBottom() {
     // with animation
@@ -17,9 +20,9 @@ export default function AddClientCrm() {
   }
 
   useEffect(() => {
-    if (currentClientId) {
+    if (clientId) {
       // fetch client data by id
-      dispatch(getClientById(currentClientId));
+      dispatch(getClientById(clientId));
     }
   }, []);
 
@@ -28,8 +31,8 @@ export default function AddClientCrm() {
   return (
     <div ref={blockRef} className="flex flex-col flex-1 pl-[10px] gap-[10px] h-[97vh] overflow-y-auto">
       <AddClientHeader />
-      <PersonalDatas />
-      <PassportDatas />
+      <PersonalDatas id={clientId} />
+      <PassportDatas id={clientId} />
     </div>
   )
 }

@@ -50,7 +50,7 @@ function Content() {
               {/* we declare nested navigation because MyGymsPage has two screens */}
               <Route index element={<MyGymsPage />} />
               <Route path="createGym" element={<CreateGymPage />} />
-              <Route path="gymDetails/:gymId" element={<GymDetails />} />
+              <Route path="gymDetails/:gymIdParam" element={<GymDetails />} />
             </Route>
             <Route path="/schedulePageMyfit" element={<SchedulesPage />} />
             <Route path="/help" element={<Help />} />
@@ -59,7 +59,7 @@ function Content() {
             {/* CRM */}
             <Route path="/clientsPageCrm" element={<ClientPageLayoutCrm />} >
               <Route index element={<CrmClients />} />
-              <Route path="clientCard" element={<AddClientCrm />} />
+              <Route path="clientCard/:clientIdParam" element={<AddClientCrm />} />
             </Route>
             <Route path="/todayEventsPageCrm" element={<TodayEventsCrm />} />
             <Route path="/statisticksPageCrm" element={<StatisticksPageCrm />} />

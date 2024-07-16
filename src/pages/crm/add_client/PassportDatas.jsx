@@ -14,15 +14,17 @@ import {     setAddress,
     setDate,
     setCode,
     checkMissingFieldsPassportData, 
-    addNewClient,
-    updateClient
+    resertPassportInfos,
+    updateClient,
 } 
 from '../../../features/crm/CrmClients'
 import { getBirthdayFormatted } from '../../../config/apphelpers'
 import { toast } from 'react-toastify'
 
 
-export default function PassportDatas() {
+export default function PassportDatas({
+    id
+}) {
     const dispatch = useDispatch();
     const state = useSelector((state) => state.crmClients); 
     const [currentFocus, setCurrentFocus] = useState("");
@@ -115,32 +117,6 @@ export default function PassportDatas() {
         dispatch(checkMissingFieldsPassportData());
     }
 
-    function addNewClientFunc() {
-        const canSend = state.missingFieldsPassportData.length === 0 &&
-            state.missingFieldsPersonalData.length === 0;
-        if (canSend) {
-            const formattedBirth = getBirthdayFormatted(state.birth);
-            const formattedDate = getBirthdayFormatted(state.date);
-            const body = {
-                "firstName": state.name,
-                "lastName": state.surname,
-                "patronymic": state.patronymic,
-                "birthdayDate": formattedBirth,
-                "contactPhone": `+${state.phone}`,
-                "note": state.note,
-                "series": state.serie,
-                "number": state.number,
-                "dateOfIssue": formattedDate,
-                "departmentCode": state.code,
-                "issuedBy": state.address,
-                "email": ""
-            }
-            dispatch(addNewClient(body));
-            console.log(`Отправлено: ${JSON.stringify(body)}`);
-        }else{
-            toast.error("Заполните все обязательные поля")
-        }
-    }
 
     const undoDeleteFile = useCallback(() => {
         setFile(fileCopy);
@@ -166,7 +142,7 @@ export default function PassportDatas() {
         if (canSend) {
             const formattedDate = getBirthdayFormatted(state.date);
             const body = {
-                "id": state.currentClientId,
+                "id": id,
                 "series": state.serie,
                 "number": state.number,
                 "dateOfIssue": formattedDate,
@@ -300,7 +276,7 @@ export default function PassportDatas() {
               <>
                   <VerticalSpace height={32} />
                   <div className="rowGap12">
-                      <WhiteButton onClick={() => { }} />
+                      <WhiteButton onClick={() => {dispatch(resertPassportInfos())}} />
                       <GreenButton
                           text='Сохранить'
                           onClick={() => {
