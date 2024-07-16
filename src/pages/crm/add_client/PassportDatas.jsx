@@ -137,7 +137,7 @@ export default function PassportDatas({
         setIsAddressError(arr.includes("address"));
     }, [state.missingFieldsPassportData]);
 
-    function updateClientFunc() {
+    async function updateClientFunc() {
         const canSend = state.missingFieldsPassportData.length === 0;
         if (canSend) {
             const formattedDate = getBirthdayFormatted(state.date);
@@ -149,7 +149,8 @@ export default function PassportDatas({
                 "departmentCode": state.code,
                 "issuedBy": state.address,
             }
-            dispatch(updateClient(body));
+            await dispatch(updateClient(body));
+            dispatch(resertPassportInfos());
             console.log(`Отправлено: ${JSON.stringify(body)}`);
         }else{
             toast.error("Заполните все обязательные поля")

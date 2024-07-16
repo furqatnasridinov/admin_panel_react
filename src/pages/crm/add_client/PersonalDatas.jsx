@@ -108,7 +108,7 @@ export default function PersonalDatas({
         }
     }
 
-    function updateClientFunc() {
+    async function updateClientFunc() {
         const canSend = state.missingFieldsPersonalData.length === 0;
         if (canSend) {
             const formattedDate = getBirthdayFormatted(state.birth);
@@ -123,7 +123,8 @@ export default function PersonalDatas({
                 "gender" : translatedGender,
                 "note": state.note,
             }
-            dispatch(updateClient(body));
+            await dispatch(updateClient(body));
+            dispatch(resetPersonalInfos());
             console.log(`Отправлено: ${JSON.stringify(body)}`);
         }else{
             toast.error("Заполните все обязательные поля")
@@ -253,7 +254,7 @@ export default function PersonalDatas({
                         value={state.gender}
                         isError={isGenderError}
                         onSelect={handleGenderChange} 
-                        />
+                    />
                     <div className="colGap10 w-[210px]">
                         <span className='label2bPlus'>Телефон</span>
                           <div className="flex flex-row">
@@ -323,7 +324,13 @@ export default function PersonalDatas({
                                 onChange={handleBirthChange}
                                 placeholder='18.11.2003 '
                                 onFocus={() => setCurrenFocus('birth')}
-                                onBlur={() => setCurrenFocus('')}
+                                onBlur={() => {
+                                    // если кликаем пикер - не убирать фокус
+                                    if (currenFocus !== 'birth') {
+                                        setCurrenFocus('');
+                                    }
+                                    
+                                }}
                                 style={{
                                     width: "200px",
                                     height: "40px",
@@ -336,12 +343,21 @@ export default function PersonalDatas({
                                 }}
                             />
                         </div>
-                          {/* {currenFocus !== 'birth' &&
+                          {/* {currenFocus === 'birth' &&
                               <CrmDatePicker
                                   isShown={true}
                                   selectedDate={state.birth}
-                                  onChange={(date) => setBirth(date)}
-                                  onSelect={(date) => setBirth(date)}
+                                  onSelect={(date) => {
+                                    if (isNaN(date) || date === null) {
+                                      console.error('Invalid date object received');
+                                      return;
+                                    }
+                                    // date is a Date object to ===> 01.01.2022
+                                    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+                                    const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+                                    const formattedDate = `${day}.${month}.${date.getFullYear()}`;
+                                    dispatch(setBirth(formattedDate));
+                                  }}
                                   onClose={() => setCurrenFocus('')}
                               />
                           } */}
@@ -398,8 +414,30 @@ function CrmDatePicker({
     isShown,
     onClose,
 }) {
+
+    // Validate selectedDate before creating a Date object
+    const isValidDate = (dateString) => {
+        const date = new Date(dateString);
+        return date instanceof Date && !isNaN(date);
+    };
+    const initialDay = isValidDate(selectedDate) ? new Date(selectedDate) : new Date();
+    const ref = useRef(null);
+
+    useEffect(() => {
+        // close datepicker when click outside
+        function handleClickOutside(event) {
+            if (ref.current && !ref.current.contains(event.target)) {
+                onClose()
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+    }, [])
+
     return (
-        <div 
+        <div ref={ref}
         style={{
             position: 'absolute',
             top: '50%',
@@ -410,9 +448,10 @@ function CrmDatePicker({
 
         <DatePicker
             //className='bg-red-200'
-            minDate={new Date()}
-            selected={selectedDate ? new Date(selectedDate) : new Date()}
-            onChange={onChange}
+            minDate={new Date("1900-01-01")}
+            maxDate={new Date()}
+            selected={initialDay}
+            //onChange={onChange}
             open={isShown}
             shouldCloseOnSelect={true}
             onSelect={onSelect}
@@ -422,28 +461,23 @@ function CrmDatePicker({
             renderDayContents={(day, date) => {
                 return (
                     <span className="pickerEachDay">
-                        {day}
+                        {day ?? ""}
                     </span>
                 )
             }}
-            renderMonthContent={(month) => {
-                return (
-                    <div className="flex flex-row items-center justify-between bg-red-200">
-                    </div>
-                )
-            }}
+            
             renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
                 <div className="h-[40px] w-full flex flex-row pl-[5px] pr-[10px] items-center justify-between">
                     <div className="flex flex-row items-center gap-[4px]">
                         <PrevMonSvg onClick={() => decreaseMonth()} />
 
                         <div className="text-[14px] font-medium uppercase text-crm-link w-[65px]">
-                            {date.toLocaleString("ru", { month: "long" })}
+                            {date?.toLocaleString("ru", { month: "long" })}
                         </div>
 
                         <NextMonSvg onClick={() => increaseMonth()} />
 
-                        <div className="text-[14px] font-medium uppercase text-grey-text">
+                        <div className="text-[14px] font-medium uppercase text-crm-link">
                             {date?.getFullYear()}
                         </div>
                     </div>
