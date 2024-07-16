@@ -207,8 +207,8 @@ export default function CrmClientsBody() {
                 sortBySurname === "asc" ? b.surname?.localeCompare(a.surname) :
                 sortByAge === "desc" ? a.age - b.age :
                 sortByAge === "asc" ? b.age - a.age : 
-                sortByActivities === "desc" ? a.activities[0]?.localeCompare(b.activities[0]) :
-                sortByActivities === "asc" ? b.activities[0]?.localeCompare(a.activities[0]) : 
+                sortByActivities === "desc" ? (a.lessonTypes && b.lessonTypes && a.lessonTypes[0]?.localeCompare(b?.lessonTypes[0])) :
+                sortByActivities === "asc" ? (b.lessonTypes && a.lessonTypes && b.lessonTypes[0]?.localeCompare(a?.lessonTypes[0])) : 
                 sortByGyms === "desc" ? a.gyms[0]?.localeCompare(b.gyms[0]) :
                 sortByGyms === "asc" ? b.gyms[0]?.localeCompare(a.gyms[0]) : 
                 sortByNotes === "desc" ? b.note?.localeCompare(a.note) :
