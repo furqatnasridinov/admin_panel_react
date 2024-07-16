@@ -24,13 +24,13 @@ import MessageLikeTopContainer from "../booking_page/message_like_top_container"
 import AppConstants from "../../config/app_constants";
 
 export default function GymDetails() {
-  let { gymIdFromParams } = useParams(); // This hooks allows you to extract params from the URL
+  let { gymIdParam } = useParams(); // This hooks allows you to extract params from the URL
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
   const employeesSlice = useSelector((state) => state.employees);
   const activitiesSlice = useSelector((state) => state.activities);
   const clientsSlice = useSelector((state) => state.clients);
-  const gymId = gymState.currentGym?.id || JSON.parse(sessionStorage.getItem("currentGym"))?.id || gymIdFromParams;
+  const gymId = gymState.currentGym?.id || JSON.parse(sessionStorage.getItem("currentGym"))?.id || gymIdParam;
 
   // this useeffect will trigger only once at the beginning
   useEffect(() => {

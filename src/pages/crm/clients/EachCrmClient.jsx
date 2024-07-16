@@ -89,7 +89,7 @@ export default function EachCrmClient({
                           closeFunction={() => setMoreActions(false)}
                           onOpenClientCard={()=>{
                             dispatch(setCurrentClientId(id));
-                            navigate("/clientsPageCrm/clientCard");
+                            navigate(`/clientsPageCrm/clientCard/${id}`);
                           }}
                       />
                   }

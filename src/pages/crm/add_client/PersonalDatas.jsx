@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import { setName,
     setSurname,
     setPatronymic,
-    setEmail,
+    resetPersonalInfos,
     setPhone,
     setNote,
     setBirth,
@@ -27,9 +27,10 @@ import { setName,
     checkMissingFieldsPersonalData,
     updateClient,
  } from '../../../features/crm/CrmClients'
+import AppConstants from '../../../config/app_constants'
 
 export default function PersonalDatas({
-    showaAvatar = false,
+    id,
 }) {
     const dispatch = useDispatch();
     const [currenFocus, setCurrenFocus] = useState('') // ['name', 'surname', 'patronymic', 'birthday'...
@@ -47,11 +48,14 @@ export default function PersonalDatas({
     const state = useSelector((state) => state.crmClients);
     const showButtons = state.changesOccuredPersonalData;
     const showError = state.missingFieldsPersonalData?.length > 0;
+    const showAvatar = state.avatar;
     const phoneInputBorder = isPhoneError ? "1px solid rgba(255, 61, 0, 1)" : currenFocus === 'phone' ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
     const birthInputBorder = isBirthError ? "1px solid rgba(255, 61, 0, 1)" : currenFocus === 'birth' ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
     const isPhoneEntered = state.phone?.length === 11;
     const isOtpPassed = otp.length === 4 && isOtpError===false;
-
+    const showDoneButton = state.phone?.replace(/\+/g, '').length === 11 && state.phone.replace(/\+/g, '') === 
+        state.clientGotById?.contactPhone.replace(/\+/g, '');
+    const avatarUrlPath = `${AppConstants.baseUrl}image/${state.avatar}`;
 
 
     // functions 
@@ -99,6 +103,7 @@ export default function PersonalDatas({
                 setIsOtpError(true)
             }else{
                 setIsOtpError(false);
+                updatePhoneFunc();
             }
         }
     }
@@ -109,7 +114,7 @@ export default function PersonalDatas({
             const formattedDate = getBirthdayFormatted(state.birth);
             const translatedGender = translateGender(state.gender)
             const body = {
-                "id": state.currentClientId,
+                "id": id,
                 "firstName": state.name,
                 "lastName": state.surname,
                 "patronymic": state.patronymic,
@@ -123,6 +128,15 @@ export default function PersonalDatas({
         }else{
             toast.error("Заполните все обязательные поля")
         }
+    }
+
+    function updatePhoneFunc() {
+        const body = {
+            "id": id,
+            "contactPhone": `+${state.phone}`,
+        }
+        dispatch(updateClient(body));
+        console.log(`Отправлено: ${JSON.stringify(body)}`);
     }
 
 
@@ -155,7 +169,6 @@ export default function PersonalDatas({
   }, [state.missingFieldsPersonalData]);
   
   return (
-    console.log(state.birth),
     <div className='customCard'>
         <div className="columnWithNoGap">
             <span className='headerH2'>Персональные данные</span>
@@ -192,9 +205,9 @@ export default function PersonalDatas({
 
         {/* textfields */}
         <div className="rowGap32">
-            {showaAvatar && 
+            {showAvatar && 
                 <div className="ava">
-                    <img className='h-full w-full object-cover rounded-2xl' src={placeHolderImg} alt="imgAvarar" />
+                    <img className='h-full w-full object-cover rounded-2xl' src={avatarUrlPath} alt="imgAvarar" />
                 </div>
             }
             <div className="colGap16">
@@ -249,7 +262,6 @@ export default function PersonalDatas({
                                           mask={'+7 (999) 999-99-99'}
                                           value={state.phone}
                                           maskChar={null}
-                                          readOnly={isOtpPassed}
                                           onChange={(e) => {
                                               const onlyDigits = e.target.value.replace(/\D/g, "");
                                               handlePhoneChange({ target: { value: onlyDigits } });
@@ -259,7 +271,7 @@ export default function PersonalDatas({
                                           onBlur={() => setCurrenFocus('')}
                                           onPaste={handlePaste}
                                           style={{
-                                              width: isPhoneEntered && !isOtpPassed ? "165px" : "205px",
+                                              width: isPhoneEntered && !showDoneButton ? "165px" : "205px",
                                               height: "40px",
                                               border: phoneInputBorder,
                                               transition: "width 0.3s ease",
@@ -268,24 +280,25 @@ export default function PersonalDatas({
                                               fontSize: '14px',
                                               fontWeight: '400',
                                               padding: '12px 16px',
-                                              color: isOtpPassed ? 'rgba(176, 176, 176, 1)' : 'rgba(0, 0, 0, 1)',
                                           }}
                                       />
                                       
-                                      {isOtpPassed &&
+                                      {showDoneButton &&
                                           <div className="absolute top-2 right-4">
                                               <DoneSvg />
                                           </div>
                                       }
 
                                   </div>
-                                  {isPhoneEntered && !isOtpPassed &&
+
+                                  {isPhoneEntered && !showDoneButton &&
                                       <div className="greenMiniCard40x40" onClick={()=>setModalShown(true)}>
                                           <SendSvg />
                                       </div>
                                   }
                           </div>
                     </div>
+
                     {modalShown && 
                         <CustomDialog
                             isOpened={modalShown}
@@ -300,38 +313,44 @@ export default function PersonalDatas({
                             />
                         </CustomDialog>
                     }
-                    <div className="colGap10">
-                        <span className='label2bPlus'>Дата рождения </span>
-                        <ReactInputMask
-                              mask={'99.99.9999'}
-                              maskChar={null}
-                              value={state.birth}
-                              onChange={handleBirthChange}
-                              placeholder='18.11.2003 '
-                              onFocus={() => setCurrenFocus('birth')}
-                              onBlur={() => setCurrenFocus('')}
-                              style={{
-                                width: "200px",
-                                height: "40px",
-                                border : birthInputBorder,
-                                outline: 'none',
-                                borderRadius: '8px',
-                                fontSize: '14px',
-                                fontWeight: '400',
-                                padding: '12px 16px',
-                              }}
-                          />
+                    <div className="relative">
+                        <div className="colGap10">
+                            <span className='label2bPlus'>Дата рождения </span>
+                            <ReactInputMask
+                                mask={'99.99.9999'}
+                                maskChar={null}
+                                value={state.birth}
+                                onChange={handleBirthChange}
+                                placeholder='18.11.2003 '
+                                onFocus={() => setCurrenFocus('birth')}
+                                onBlur={() => setCurrenFocus('')}
+                                style={{
+                                    width: "200px",
+                                    height: "40px",
+                                    border : birthInputBorder,
+                                    outline: 'none',
+                                    borderRadius: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '400',
+                                    padding: '12px 16px',
+                                }}
+                            />
+                        </div>
+                          {/* {currenFocus !== 'birth' &&
+                              <CrmDatePicker
+                                  isShown={true}
+                                  selectedDate={state.birth}
+                                  onChange={(date) => setBirth(date)}
+                                  onSelect={(date) => setBirth(date)}
+                                  onClose={() => setCurrenFocus('')}
+                              />
+                          } */}
+                          
                     </div>
                     
                 </div>
             </div>
-            {/* <CrmDatePicker 
-                isShown={true}
-                selectedDate={birth}
-                onChange={(date) => setBirth(date)}
-                onSelect={(date) => setBirth(date)}
-                onClose={() => setCurrenFocus('')}
-            /> */}
+            
         </div>
         <VerticalSpace height={32} />
         <div className="colGap10">
@@ -351,7 +370,7 @@ export default function PersonalDatas({
               <>
                   <VerticalSpace height={32} />
                   <div className="rowGap12">
-                      <WhiteButton onClick={() => { }} />
+                      <WhiteButton onClick={() => {dispatch(resetPersonalInfos())}} />
                       <GreenButton
                           text='Сохранить'
                           onClick={() => {
@@ -380,57 +399,65 @@ function CrmDatePicker({
     onClose,
 }) {
     return (
+        <div 
+        style={{
+            position: 'absolute',
+            top: '50%',
+            left: '180%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000,
+          }}>
+
         <DatePicker
-            className='bg-red-200'
+            //className='bg-red-200'
             minDate={new Date()}
-            selected={selectedDate}
+            selected={selectedDate ? new Date(selectedDate) : new Date()}
             onChange={onChange}
             open={isShown}
             shouldCloseOnSelect={true}
             onSelect={onSelect}
             locale={"ru"}
-            popperPlacement="top-start"
+           // popperPlacement="top-start"
+            //strategy="absolute"
             renderDayContents={(day, date) => {
                 return (
-                    <span className="text-[16px] font-normal">
+                    <span className="pickerEachDay">
                         {day}
                     </span>
+                )
+            }}
+            renderMonthContent={(month) => {
+                return (
+                    <div className="flex flex-row items-center justify-between bg-red-200">
+                    </div>
                 )
             }}
             renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
                 <div className="h-[40px] w-full flex flex-row pl-[5px] pr-[10px] items-center justify-between">
                     <div className="flex flex-row items-center gap-[4px]">
-                        <img
-                            className="cursor-pointer"
-                            src={previousMoth}
-                            alt="prev"
-                            onClick={() => decreaseMonth()}
-                        />
+                        <PrevMonSvg onClick={() => decreaseMonth()} />
 
-                        <div className="text-[14px] font-medium uppercase text-grey-text w-[65px]">
+                        <div className="text-[14px] font-medium uppercase text-crm-link w-[65px]">
                             {date.toLocaleString("ru", { month: "long" })}
                         </div>
 
-                        <img
-                            className="cursor-pointer"
-                            src={nextMoth}
-                            alt="next"
-                            onClick={() => increaseMonth()}
-                        />
+                        <NextMonSvg onClick={() => increaseMonth()} />
 
                         <div className="text-[14px] font-medium uppercase text-grey-text">
-                            {date.getFullYear()}
+                            {date?.getFullYear()}
                         </div>
                     </div>
 
-                    <div
-                        className="text-[14px] font-medium text-button-color cursor-pointer"
+                    <span
+                        className="text-[14px] font-medium text-crm-link cursor-pointer"
                         onClick={onClose}>
                         Закрыть
-                    </div>
+                    </span>
                 </div>
             )}
         />
+        </div>
+        
     )
 }
 
@@ -489,11 +516,10 @@ function GenderDropDown({
         };
     }, [])
     
-
     return (
         <div className="colGap10">
             <span className='label2bPlus'>Пол</span>
-            <div className="relative" ref={ref}>
+            <div className="flex flex-col relative" ref={ref}>
                 <div 
                      style={{
                         boxShadow: shadow,
@@ -620,7 +646,7 @@ function ModalBody({
                     </div>
                     <div className="rowGap10">
                         <WhiteButton text='Отправить ссылку для скачивания MyFit' width='320px' onClick={onSendRef} />
-                        <GreenButton text='Закрыть это окно' onClick={()=>{
+                        <GreenButton width='260px' text='Закрыть это окно' onClick={()=>{
                             setStage(1);
                             //setOtp('');
                             closeFunction();
@@ -664,6 +690,26 @@ function DoneSvg() {
     return (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 13L9 17L19 7" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+    )
+}
+
+function PrevMonSvg({
+    onClick
+}){
+    return (
+        <svg className='cursor-pointer' onClick={onClick} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.7049 7.41L14.2949 6L8.29492 12L14.2949 18L15.7049 16.59L11.1249 12L15.7049 7.41Z" fill="#3AB96D" />
+        </svg>
+    )
+}
+
+function NextMonSvg({
+    onClick
+}){
+    return (
+        <svg className='cursor-pointer' onClick={onClick} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9.70492 6L8.29492 7.41L12.8749 12L8.29492 16.59L9.70492 18L15.7049 12L9.70492 6Z" fill="#3AB96D" />
         </svg>
     )
 }

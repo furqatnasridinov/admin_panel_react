@@ -70,6 +70,7 @@ const srmClientsSlice = createSlice({
     surname: "",
     patronymic: "",
     email: "",
+    avatar: "",
     phone: "",
     note : "",
     birth : "",
@@ -208,6 +209,50 @@ const srmClientsSlice = createSlice({
         }).map(([field]) => field);
         state.missingFieldsPassportData = missingFields;
     },
+
+    resetPersonalInfos(state) {
+        if (state.clientGotById?.lastName !== state.surname) {
+            state.surname = state.clientGotById?.lastName;
+        }
+        if (state.clientGotById?.firstName !== state.name) {
+            state.name = state.clientGotById?.firstName;
+        }
+        if (state.clientGotById?.patronymic !== state.patronymic) {
+            state.patronymic = state.clientGotById?.patronymic;
+        }
+        if (state.clientGotById?.contactPhone !== state.phone) {
+            state.phone = state.clientGotById?.contactPhone;
+        }
+        if (state.clientGotById?.note !== state.note) {
+            state.note = state.clientGotById?.note;
+        }
+        if (getBirthdayFormatted2(state.clientGotById?.birthdayDate)!== state.birth) {
+            state.birth = getBirthdayFormatted2(state.clientGotById?.birthdayDate);
+        }
+        if (getGenderTranslated(state.clientGotById?.gender) !== state.gender) {
+            state.gender = getGenderTranslated(state.clientGotById?.gender);
+        }
+        state.changesOccuredPersonalData = false;
+    },
+
+    resertPassportInfos(state) {
+        if (state.clientGotById?.series !== state.serie) {
+            state.serie = state.clientGotById?.series;
+        }
+        if (state.clientGotById?.number !== state.number) {
+            state.number = state.clientGotById?.number;
+        }
+        if (state.clientGotById?.issuedBy !== state.address) {
+            state.address = state.clientGotById?.issuedBy;
+        }
+        if (getBirthdayFormatted2(state.clientGotById?.dateOfIssue) !== state.date) {
+            state.date = getBirthdayFormatted2(state.clientGotById?.dateOfIssue);
+        }
+        if (state.clientGotById?.departmentCode !== state.code) {
+            state.code = state.clientGotById?.departmentCode;
+        }
+        state.changesOccuredPassportData = false;
+    },
   },
 
   extraReducers: (builder) => {
@@ -236,6 +281,7 @@ const srmClientsSlice = createSlice({
         state.phone = client?.contactPhone; 
         state.note = client?.note;
         state.birth = getBirthdayFormatted2(client?.birthdayDate) || "";
+        state.avatar = client?.avatar || "";
         state.gender =  getGenderTranslated(client?.gender) || "";
         state.serie = client?.series || "";
         state.number = client?.number || "";
@@ -253,6 +299,7 @@ const srmClientsSlice = createSlice({
         // надо обновить список клиентов в стейте
         const index = state.listOfUsers.findIndex((client) => client.id === updatedClient.id);
         state.listOfUsers[index] = updatedClient;
+        state.clientGotById = updatedClient;
         toast.success("Данные успешно обновлены");
     });
   },
@@ -277,6 +324,8 @@ export const {
     setCode,
     checkMissingFieldsPassportData,
     setCurrentClientId,
+    resetPersonalInfos,
+    resertPassportInfos
 } = srmClientsSlice.actions;
 
 export default srmClientsSlice.reducer;
