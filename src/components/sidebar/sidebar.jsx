@@ -357,6 +357,25 @@ const Sidebar = () => {
                     <LocationSvg />
                     {isTextShown && <span>Мои заведения</span>}
                   </NavLink>
+
+                {!isMyfit &&
+                  <NavLink
+                    id="sidebarOnclick"
+                    to={"/subscribtionPageCrm"}
+                    className={({ isActive }) =>
+                      isActive && !isClientsActive ? `${sidebarSectionClasses} ${activeSideBar}` : `${sidebarSectionClasses}`
+                    }
+                    onClick={() => {
+                      if (isClientsActive) {
+                        setClientsActive(false);
+                      }
+                    }}
+                  >
+                    <AbonementSvg />
+                    {isTextShown && <span>Абонементы</span>}
+                  </NavLink>
+                }
+
                 </>
               }
 
@@ -491,6 +510,21 @@ const Sidebar = () => {
             >
               <LocationSvg />
             </NavLink>
+
+            {!isMyfit &&
+              <NavLink
+                id="sidebarOnclick"
+                to="/subscribtionPageCrm"
+                className={({ isActive }) =>
+                  isActive ? `${sidebarSectionClosedClasses} ${activeSideBar}` : `${sidebarSectionClosedClasses}`
+                }
+                onClick={() => {
+                  if (isClientsActive) {setClientsActive(false)}
+                }}
+              >
+                <AbonementSvg />
+              </NavLink>
+            }
           </>}
           <NavLink
             id="sidebarOnclick"
@@ -539,3 +573,17 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
+
+
+function AbonementSvg() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="28" height="28" rx="6" fill="#EFFFF5" />
+      <path d="M18.9959 8.17041H9.00231C7.62248 8.17041 6.50391 9.28899 6.50391 10.6688V11.5016V17.3312C6.50391 18.7111 7.62248 19.8297 9.00231 19.8297H18.9959C20.3758 19.8297 21.4944 18.7111 21.4944 17.3312V11.5016V10.6688C21.4944 9.28899 20.3758 8.17041 18.9959 8.17041Z" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M17.7485 13.167H19.4141M17.3321 11.085H19.4141M16.834 15.249H19.4141M18.5813 16.9146H19.4141" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M11.4777 11.2985C11.6663 10.947 12.1703 10.947 12.3589 11.2985L12.6627 11.8649C12.8792 12.2684 13.2681 12.551 13.7187 12.6321L14.3512 12.7461C14.7438 12.8168 14.8996 13.2962 14.6236 13.5841L14.1788 14.0481C13.8619 14.3787 13.7134 14.8358 13.7754 15.2895L13.8626 15.9263C13.9166 16.3215 13.5088 16.6178 13.1496 16.4442L12.5709 16.1646C12.1586 15.9654 11.678 15.9654 11.2657 16.1646L10.687 16.4442C10.3278 16.6178 9.91999 16.3215 9.97406 15.9263L10.0612 15.2895C10.1232 14.8358 9.9747 14.3787 9.65785 14.0481L9.21306 13.5841C8.93701 13.2962 9.09278 12.8168 9.48537 12.7461L10.1179 12.6321C10.5686 12.551 10.9574 12.2684 11.1739 11.8649L11.4777 11.2985Z" stroke="#3AB96D" />
+    </svg>
+
+  )
+}
