@@ -13,7 +13,7 @@ import previousMoth from "../../../assets/svg/navigate_prev_month.svg"
 import nextMoth from "../../../assets/svg/navigate_next_month.svg";
 import { useDispatch, useSelector } from 'react-redux';
 import CustomDialog from '../../../components/dialog/dialog';
-import { getBirthdayFormatted, translateGender } from '../../../config/apphelpers'
+import { getBirthdayFormatted, removeHours, translateGender } from '../../../config/apphelpers'
 import OTPInput from 'react-otp-input'
 import { toast } from 'react-toastify';
 import { setName,
@@ -343,7 +343,7 @@ export default function PersonalDatas({
                                 }}
                             />
                         </div>
-                          {/* {currenFocus === 'birth' &&
+                          {currenFocus === 'birth' &&
                               <CrmDatePicker
                                   isShown={true}
                                   selectedDate={state.birth}
@@ -360,7 +360,7 @@ export default function PersonalDatas({
                                   }}
                                   onClose={() => setCurrenFocus('')}
                               />
-                          } */}
+                          }
                           
                     </div>
                     
@@ -420,7 +420,9 @@ function CrmDatePicker({
         const date = new Date(dateString);
         return date instanceof Date && !isNaN(date);
     };
-    const initialDay = isValidDate(selectedDate) ? new Date(selectedDate) : new Date();
+    const toDayMinus18Years = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
+    const formatted = getBirthdayFormatted(selectedDate);
+    const initialDay = isValidDate(formatted) ? new Date(formatted) : toDayMinus18Years;
     const ref = useRef(null);
 
     useEffect(() => {
@@ -444,26 +446,31 @@ function CrmDatePicker({
             left: '180%',
             transform: 'translate(-50%, -50%)',
             zIndex: 1000,
+            minHeight: '300px',
           }}>
 
         <DatePicker
             //className='bg-red-200'
             minDate={new Date("1900-01-01")}
-            maxDate={new Date()}
+            maxDate={new Date("2006-01-01")}
             selected={initialDay}
-            //onChange={onChange}
+            highlightDates={[]}
             open={isShown}
             shouldCloseOnSelect={true}
             onSelect={onSelect}
             locale={"ru"}
-           // popperPlacement="top-start"
-            //strategy="absolute"
             renderDayContents={(day, date) => {
+                /* const getTime = removeHours(date)?.getTime() || 0 ;
+                const getTime2 = removeHours(initialDay)?.getTime() || 1;
+                const isSelected = getTime === getTime2;
+                if (isSelected) {
+                    console.log('selected date:', date);
+                } */
                 return (
-                    <span className="pickerEachDay">
-                        {day ?? ""}
+                    <span className={`pickerEachDay`}>
+                        {day}
                     </span>
-                )
+                );
             }}
             
             renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
@@ -692,7 +699,7 @@ function ModalBody({
     )
 }
 
-function WhiteButton({
+export function WhiteButton({
     text = "Отменить",
     onClick,
     width = "200px",

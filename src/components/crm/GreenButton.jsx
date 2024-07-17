@@ -12,6 +12,7 @@ export default function GreenButton({
     padRight = '64px',
     width = 'fit-content',
     showShadow = false,
+    isDisabled = false,
 }) {
     const className = showShadow ? 'greenButtonComponent' : 'greenButtonComponentNoShadow'
   return (
@@ -21,12 +22,19 @@ export default function GreenButton({
             paddingLeft : padLeft,
             paddingRight : padRight,
             width : width,
+            display : 'flex',
+            alignItems : 'center',
+            justifyContent : 'center',
+            backgroundColor : isDisabled ? 'rgba(220, 220, 220, 1)' : '',
+            border : isDisabled ? 'none' : '',
+            cursor : isDisabled ? 'not-allowed' : 'pointer',
         }}
-        className={className} onClick={onClick}>
+        className={className} onClick={isDisabled ? null : onClick}>
         <span 
             style={{
                 fontSize : fontSize,
                 fontWeight : fontweight,
+                color : isDisabled ? 'rgba(176, 176, 176, 1)' : '',
             }}
             className="leading-[16px] text-white">{text}
         </span>

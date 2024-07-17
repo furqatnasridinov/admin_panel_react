@@ -281,6 +281,7 @@ export const getBirthdayFormatted2 = (date) => {
     }
 }
 
+
 export function getGenderTranslated(gender) {
     if (gender) {
         if (gender === "MALE") {
@@ -299,4 +300,10 @@ export function translateGender(gender){
             return "FEMALE";
         }
     }
+}
+
+export function removeHours(date){
+    const newDate = new Date(date);
+    newDate.setHours(0, 0, 0, 0);
+    return newDate;
 }

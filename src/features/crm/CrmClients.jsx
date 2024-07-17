@@ -297,7 +297,7 @@ const srmClientsSlice = createSlice({
     builder.addCase(updateClient.fulfilled, (state, action) => {
         const updatedClient = action.payload;
         // надо обновить список клиентов в стейте
-        const index = state.listOfUsers.findIndex((client) => client.id === updatedClient.id);
+        const index = state.listOfUsers.findIndex((client) => client?.id === updatedClient?.id);
         state.listOfUsers[index] = updatedClient;
         state.clientGotById = updatedClient;
         toast.success("Данные успешно обновлены");

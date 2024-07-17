@@ -117,6 +117,10 @@ export default function PassportDatas({
         dispatch(checkMissingFieldsPassportData());
     }
 
+    function handleViewDocument() {
+        window.open("https://docs.google.com/viewerng/viewer?url=https://myfit-russia.ru/doc/test.docx", "_blank");
+    }
+
 
     const undoDeleteFile = useCallback(() => {
         setFile(fileCopy);
@@ -251,7 +255,7 @@ export default function PassportDatas({
                               <DocsToolTip 
                                 onDelete={tmpDeleteFile}
                                 onDownload={handleDownloadFile} 
-                                onView={() => {}}
+                                onView={handleViewDocument}
                               />
                           }
                       </div>

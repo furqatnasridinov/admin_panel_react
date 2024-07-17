@@ -11,7 +11,10 @@ import placeHolderImg from "../../../assets/images/placeholder.jpg"
 import AppConstants from '../../../config/app_constants'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { setCurrentClientId } from '../../../features/crm/CrmClients'
+import { setCurrentClientId, updateClient } from '../../../features/crm/CrmClients'
+import GreenButton from '../../../components/crm/GreenButton'
+import TextareaAutosize from 'react-textarea-autosize';
+
 
 export default function EachCrmClient({
     name,
@@ -53,10 +56,14 @@ export default function EachCrmClient({
                 <span className='text-[14px] leading-4 overflow-hidden whitespace-nowrap overflow-ellipsis'>{fullName}</span>
                 <div className="flex flex-row items-center gap-[5px]">
                     <span className='text-[10px] font-medium text-text-faded-dark'>{phone}</span>
-                    <svg width="7" height="8" viewBox="0 0 7 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6.05 0.9L1.25 8H0.27L5.06 0.9H6.05Z" fill="#3AB96D"/>
-                    </svg>
-                    <span className='text-[10px] font-medium text-text-faded-dark'>{email}</span>
+                      {email &&
+                          <>
+                              <svg width="7" height="8" viewBox="0 0 7 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M6.05 0.9L1.25 8H0.27L5.06 0.9H6.05Z" fill="#3AB96D" />
+                              </svg>
+                              <span className='text-[10px] font-medium text-text-faded-dark'>{email}</span>
+                          </>
+                      }
                 </div>
             </div>
         </div>
@@ -80,7 +87,12 @@ export default function EachCrmClient({
         <div className="h-full w-[8%] flex flow-row items-center justify-center gap-4">
             <div className="relative">
                 <img className='cursor-pointer' onClick={()=>setNotesActions(true)} src={noteSvg} alt="crmDocs" />
-                {notesActions && <NotesAction closeFunction={()=>setNotesActions(false)} note={note} />}
+                {notesActions && 
+                    <NotesAction 
+                        closeFunction={()=>setNotesActions(false)} 
+                        note={note} 
+                        id={id} 
+                        />}
             </div>
             <div className="relative">
                 <img className='cursor-pointer' onClick={()=>setMoreActions(true)} src={threeDots} alt="threeDots" />
@@ -131,10 +143,12 @@ const MoreAction = ({
     )
 }
 
-const NotesAction = ({closeFunction, note}) => {
+const NotesAction = ({closeFunction, note, id}) => {
     const menuRef = useRef();
     const [showInput, setShowInput] = useState(note === "" ? true : false);
     const [text, setText] = useState(note);
+    const textCopy = note;
+    const dispatch = useDispatch();
     const leftButtonText = text === "" ? 'Отменить' : showInput ? "Сохранить" : 'Изменить';
 
     useEffect(() => {
@@ -149,20 +163,42 @@ const NotesAction = ({closeFunction, note}) => {
         };
     }, [closeFunction]);
 
-    function toggleShowInput() {
+    async function toggleShowInput() {
         if (showInput) {
+            if (text.trim() !== textCopy.trim() && text !== "") {
+                await handleUpdateNote();
+            }
+            setShowInput(false);
             if (text === "") {
                 closeFunction();
             }
-            setShowInput(false);
-        }else{
+        } else {
             setShowInput(true);
         }
-        
     }
 
     function handleOnChange(e) {
         setText(e.target.value);
+    }
+
+    async function handleDelete() {
+        const body = {
+            id: id,
+            note: "",
+        }
+        await dispatch(updateClient(body)); 
+        closeFunction();
+        console.log(`Отправлено: ${JSON.stringify(body)}`);
+    }
+
+    async function handleUpdateNote() {
+        const body = {
+            id: id,
+            note: text,
+        }
+        dispatch(updateClient(body));
+        closeFunction();
+        console.log(`Отправлено: ${JSON.stringify(body)}`);
     }
 
     return (
@@ -185,11 +221,14 @@ const NotesAction = ({closeFunction, note}) => {
                     onСlick={toggleShowInput}
                      />
 
-                <CrmButton 
-                    height={"40px"} 
-                    width={"100%"} 
-                    title='Удалить'  
-                    onClick={()=>{}} />
+                <GreenButton 
+                    width='100%' 
+                    padLeft='0' 
+                    padRight='0' 
+                    text='Удалить' 
+                    isDisabled={textCopy === ""}
+                    onClick={handleDelete} />
+                
             </div>
         </div>
     )
@@ -257,40 +296,24 @@ const Expandable = ({ list, isGym = false }) => {
 };
 
 const TextToInput = ({ showInput, text, placeholder, onChange, lineHeight = "16px" }) => {
-    const inputRef = useRef(null);
     const border = showInput ? "1px solid rgba(58, 185, 109, 1)" : "1px solid white";
+    const padding = showInput ? "10px 16px 10px 8px" : "10px 0";
     
-    useEffect(() => {
-        const input = inputRef.current;
-        if (input) {
-          input.focus();
-          // Set the cursor to the end of the text
-          const length = input.value.length;
-          input.setSelectionRange(length, length);
-          // set the height relatively textfields content
-          input.style.height = "inherit"; // Reset height to recalculate
-          input.style.height = `${input.scrollHeight}px`; // Set new height based on scroll height
-        }
-      }, [text]);
-
     return  (
-        <textarea
-            className='textAreaCrm'
+        <TextareaAutosize
+            className='textAreaCrmNote'
             type="text"
             disabled={!showInput}
-            ref={inputRef}
             value={text}
             readOnly={!showInput}
             placeholder={placeholder}
             onChange={onChange}
             style={{
                 border : border,
-                // scrollbar 
                 scrollbarWidth: "none",
                 lineHeight: lineHeight,
-                height: "auto",
-                maxHeight: `${10 * lineHeight}px`, // Set max height to 10 lines 
-                overflow: showInput ? 'auto' : "hidden"
+                padding: padding,
+                overflow: "hidden",
             }}
         />
     )
