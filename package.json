@@ -19,6 +19,7 @@
     "react-big-calendar": "^1.8.7",
     "react-chartjs-2": "^5.2.0",
     "react-datepicker": "^6.1.0",
+    "react-doc-viewer": "^0.1.13",
     "react-dom": "^18.2.0",
     "react-input-mask": "^2.0.4",
     "react-otp-input": "^3.1.1",
