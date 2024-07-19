@@ -11,6 +11,8 @@ export default function SelectAndRemoveDropDown({
     list,
     placeholderText = "Выберите занятие",
     onDelete,
+    zIndex1 = 3,
+    zIndex2 = 2,
 }){
     const shadow = isOpened ? '0px 18px 14px -13px rgba(0, 0, 0, 0.25)' : 'none';
     const iconClasses = isOpened ? 'rotate-icon' : 'arrow-icon';
@@ -40,7 +42,7 @@ export default function SelectAndRemoveDropDown({
                         border: border,
                         borderRadius: '8px',
                         transition: 'border 0.3s',
-                        zIndex: "3",
+                        zIndex: zIndex1,
                     }}
                     onClick={toggleDropDown}
                     className="genderDropDownHeader">
@@ -53,7 +55,7 @@ export default function SelectAndRemoveDropDown({
                     <img className={iconClasses} src={arrowDownSvg} alt="" />
                 </div>
                 {isOpened &&
-                    <div className='genderDropDownBody'>
+                    <div style={{zIndex : zIndex2}} className='genderDropDownBody'>
                         {
                            <>
                             {value && <DeleteButton onClick={onDelete}/>}

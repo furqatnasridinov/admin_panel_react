@@ -40,7 +40,7 @@ export default function SubscribtionBodyCrm() {
     const [dropDownsActivities, setDropDownsActivities] = useState([]);
     const [dropDownsSubcategories, setDropDownsSubcategories] = useState([]);
     const list = [{name: 'Ленинград', id: 1}, {name: "Abdullo Ako", id: 2}, {name : "Crystall", id: 3}];
-    const list2 = ["Баня", "Бассейн", "Бассейн для детей", "Бассейн для взрослых"];
+    const list2 = ["С турником", "С брусьями", "С штангой", "С гантелями"];
     const list3 = ["С турником", "С брусьями", "С штангой", "С гантелями"];
 
     function toggle1() {
@@ -255,6 +255,8 @@ export default function SubscribtionBodyCrm() {
                                 onSelect={(item) => onSelectDropDownItem(dropDownsGyms.findIndex(d => d.id === dropDown.id), item)}
                                 value={dropDown.name || ''}
                                 onDelete={() => {setDropDownsGyms(dropDownsGyms.filter(d => d.id !== dropDown.id))}}
+                                zIndex1={25}
+                                zIndex2={24}
                             />
                         ))}
                         <PlusButton onClick={addDropDown} />
@@ -275,6 +277,8 @@ export default function SubscribtionBodyCrm() {
                                 toggleDropDown={() => toggleDropDownActivities(dropDown.id)}
                                 onSelect={(item) => onSelectDropDownItemActivities(index, item)}
                                 value={dropDown.name || ''}
+                                zIndex1={20}
+                                zIndex2={19}
                             />
                         ))}
                         <PlusButton onClick={addDropDownActivities} />
