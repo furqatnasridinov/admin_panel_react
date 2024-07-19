@@ -118,7 +118,7 @@ export default function PassportDatas({
     }
 
     function handleViewDocument() {
-        window.open("https://docs.google.com/viewerng/viewer?url=https://myfit-russia.ru/doc/test.docx", "_blank");
+        window.open("https://docs.google.com/viewerng/viewer?url=https://myfit-russia.ru/doc/test.docx");
     }
 
 

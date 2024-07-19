@@ -127,6 +127,7 @@ export default function CrmClientsBody() {
                     <span 
                         style={{
                             color: !sortBySurname ? "black" : "rgba(58, 185, 109, 1)",
+                            userSelect: "none"
                         }}
                         className='text-[13px] font-medium'>Фамилия
                     </span>
@@ -136,6 +137,7 @@ export default function CrmClientsBody() {
                     <span 
                         style={{
                             color: !sortByName ? "black" : "rgba(58, 185, 109, 1)",
+                            userSelect: "none"
                         }}
                         className='text-[13px] font-medium'>Имя
                     </span>
@@ -145,6 +147,7 @@ export default function CrmClientsBody() {
                     <span 
                         style={{
                             color: !sortByIndicators ? "black" : "rgba(58, 185, 109, 1)",
+                            userSelect: "none"
                         }}
                         className='text-[13px] font-medium' onClick={handleSortByIndicators}>Постоянство</span>
                     <FilterIndicators topActive={sortByIndicators === "asc"} bottomActive={sortByIndicators === "desc"}  />
@@ -159,6 +162,7 @@ export default function CrmClientsBody() {
                     <span 
                         style={{
                             color: !sortByActivities ? "black" : "rgba(58, 185, 109, 1)",
+                            userSelect: "none"
                         }}
                         className='text-[13px] font-medium'>Активность</span>
                     <FilterIndicators topActive={sortByActivities === "asc"} bottomActive={sortByActivities === "desc"} />
@@ -170,6 +174,7 @@ export default function CrmClientsBody() {
                     <span 
                         style={{
                             color: !sortByAge ? "black" : "rgba(58, 185, 109, 1)",
+                            userSelect: "none"
                         }}
                         className='text-[13px] font-medium'>Возраст
                     </span>
@@ -181,6 +186,7 @@ export default function CrmClientsBody() {
                     <span 
                         style={{
                             color: !sortByGyms ? "black" : "rgba(58, 185, 109, 1)",
+                            userSelect: "none"
                         }}
                         className='text-[13px] font-medium'>Заведение</span>
                     <FilterIndicators topActive={sortByGyms === "asc"} bottomActive={sortByGyms === "desc"}/>
@@ -191,6 +197,7 @@ export default function CrmClientsBody() {
                     <span 
                         style={{
                             color: !sortByNotes ? "black" : "rgba(58, 185, 109, 1)",
+                            userSelect: "none"
                         }}
                         className='text-[13px] font-medium'>Заметки</span>
                     <FilterIndicators topActive={sortByNotes === "asc"} bottomActive={sortByNotes === "desc"} />
@@ -203,8 +210,8 @@ export default function CrmClientsBody() {
             .sort((a, b) => (
                 sortByName === "desc" ? a.firstName?.localeCompare(b.firstName) :
                 sortByName === "asc" ? b.firstName?.localeCompare(a.firstName) :
-                sortBySurname === "desc" ? a.surname?.localeCompare(b.surname) :
-                sortBySurname === "asc" ? b.surname?.localeCompare(a.surname) :
+                sortBySurname === "desc" ? a.lastName?.localeCompare(b.lastName) :
+                sortBySurname === "asc" ? b.lastName?.localeCompare(a.lastName) :
                 sortByAge === "desc" ? a.age - b.age :
                 sortByAge === "asc" ? b.age - a.age : 
                 sortByActivities === "desc" ? (a.lessonTypes && b.lessonTypes && a.lessonTypes[0]?.localeCompare(b?.lessonTypes[0])) :

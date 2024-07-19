@@ -10,9 +10,12 @@
   font-family: "Raleway", sans-serif, "Inter", sans-serif;
   color: rgba(37, 37, 37, 1);
   font-variant-numeric: lining-nums proportional-nums;
+
+
   /* Изменение полосы прокрутки для всего документа */
   ::-webkit-scrollbar {
-    width: 7px; /* ширина полосы прокрутки */
+    width: 10px; /* ширина полосы прокрутки */
+    z-index: 1000;
   }
 
 
@@ -174,4 +177,142 @@
       url('./fonts/Inter-Bold.ttf') format('truetype');
   font-weight: 700; 
   font-style: normal; 
+}
+
+
+/*  fonts components */
+
+
+.headerH2{
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.label2{
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.label3{
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 15px;
+}
+
+.body4{
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 11px;
+
+}
+
+.label2bPlus{
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 16px;
+}
+.label2b{
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+
+}
+
+.interBody3{
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  font-family: "Inter", sans-serif;
+}
+
+
+.errorText{
+  color: rgba(255, 61, 0, 1);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+
+
+
+
+
+
+
+
+/* layots */
+
+.columnWithNoGap{
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rowSpaceBetween{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.rowGap4{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+
+.rowGap5{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+.rowGap10{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.rowGap12{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.rowGap14{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+}
+
+.rowGap16{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+.rowGap32{
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+}
+
+.colGap10{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.colGap5{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
