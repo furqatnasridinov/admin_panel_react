@@ -13,6 +13,9 @@ export default function CrmTextField({
     isError = false,
     showInputMask = false,
     mask = "+7 (999) 999-99-99",
+    showLabel = true,
+    height = '40px',
+    placeHolder,
 }) {
     const [hasFocus, setHasFocus] = useState(propHasFocus);
 
@@ -29,35 +32,61 @@ export default function CrmTextField({
     const border = isError ? '1px solid rgba(255, 61, 0, 1)' : hasFocus ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
 
     return (
-        <label  className="input-container" style={{ width: width }}>
-        <span className={`input-label ${hasFocus || value ? 'focused' : ''}`}>
-            {label}
-        </span>
-        {!showInputMask && 
-            <input
-            style={{
-                border: border,
-            }}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            value={value}
-            onChange={onChange}
-            className='input'
-            type="text" />
-        }
-        {showInputMask && 
+        showLabel ? (
+            <label className="input-container" style={{ width: width }}>
+                <span className={`input-label ${hasFocus || value ? 'focused' : ''}`}>
+                    {label}
+                </span>
+                {!showInputMask ? (
+                    <input
+                        style={{ border: border, height :  height}}
+                        onFocus={onFocus}
+                        onBlur={onBlur}
+                        value={value}
+                        onChange={onChange}
+                        className='input'
+                        type="text" />
+                ) : (
+                    <ReactInputMask
+                        style={{ border: border }}
+                        onFocus={onFocus}
+                        onBlur={onBlur}
+                        value={value}
+                        onChange={onChange}
+                        className='input'
+                        maskChar={null}
+                        mask={mask} />
+                )}
+            </label>
+        ) : (!showInputMask ? (
+            <textarea
+                style={{ 
+                    border: border ,
+                    height : height, 
+                    width: width,
+                    display: "flex",
+                    alignItems: "start",
+                    scrollbarWidth: "none",
+                    overflow: "hidden",
+                    resize: "none",
+                }}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                value={value}
+                onChange={onChange}
+                className='input'
+                placeholder={placeHolder}
+                type="text" />
+        ) : (
             <ReactInputMask
-            style={{
-                border: border,
-            }}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            value={value}
-            onChange={onChange}
-            className='input'
-            maskChar={null}
-            mask={mask} />
-        }
-    </label>
+                style={{ border: border,height :  height }}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                value={value}
+                onChange={onChange}
+                className='input'
+                maskChar={null}
+                mask={mask} />
+        ))
     );
 }

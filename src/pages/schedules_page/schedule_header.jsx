@@ -284,11 +284,11 @@ export default function ScheduleHeader() {
                     text={`${scheduleState.startTimeHoursTmp}:${scheduleState.startTimeMinutesTmp}`}
                     isDropDownOpened={isStartTimeDropDownOpened}
                     openCloseDropDown={() => { openStartTimeDropDown(!isStartTimeDropDownOpened) }}
-                    setHours={(hours) => { dispatch(setStartTimeHours(hours)) }}
+                    setHours={(hours) => {dispatch(setStartTimeHours(hours))}}
                     setMinutes={(minute) => dispatch(setStartTimeMinutes(minute))}
                     selectedHour={scheduleState.startTimeHoursTmp}
                     selectedMinute={scheduleState.startTimeMinutesTmp}
-                    closeOntapOutside={() => { openStartTimeDropDown(false) }}
+                    closeOntapOutside={() => {openStartTimeDropDown(false)}}
                   />
 
                   <div className="">-</div>

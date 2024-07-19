@@ -502,7 +502,7 @@ function CrmDatePicker({
     )
 }
 
-function CustomCrmTextArea({
+export function CustomCrmTextArea({
     value,
     onChange,
     onFocus,
@@ -511,6 +511,7 @@ function CustomCrmTextArea({
     placeHolder,
     height,
     width,
+    maxLength,
 }){
     const noteBorder = currenFocus ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)'
 
@@ -523,6 +524,7 @@ function CustomCrmTextArea({
         onFocus={onFocus}
         onBlur={onBlur}
         value={value}
+        maxLength={maxLength}
         onChange={onChange}
         placeholder={placeHolder}
         className='textAreaCrm' />

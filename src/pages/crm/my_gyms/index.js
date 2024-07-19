@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import DocViewer from "react-doc-viewer";
+
+
+const DocumentViewer = ({ fileUrl }) => {
+  const googleDocsViewerUrl = `https://docs.google.com/gview?url=${fileUrl}&embedded=true`;
+
+  return (
+    <iframe
+      src={googleDocsViewerUrl}
+      style={{ width: '100%', height: '500px' }}
+      frameBorder="0"
+    ></iframe>
+  );
+};
 
 export default function MyGymsPageCrm() {
-  const [doc, setDoc] = useState([]);
-  const [error, setError] = useState('');
+ 
+  const fileUrl = 'https://myfit-russia.ru/doc/test.docx';
 
-  useEffect(() => {
-    fetch("https://myfit-russia.ru/doc/test.docx")
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch document');
-        }
-        return [{ uri: "https://myfit-russia.ru/doc/test.docx" }];
-      })
-      .then(doc => setDoc(doc))
-      .catch(error => setError(error.message));
-  }, []);
-
-  if (error) {
-    return <div>Error loading document: {error}</div>;
-  }
-
-  return <DocViewer documents={doc} />;
+  return (
+    <div>
+      <DocumentViewer fileUrl={fileUrl} />
+    </div>
+  );
 }

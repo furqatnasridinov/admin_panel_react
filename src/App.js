@@ -34,7 +34,7 @@ function Content() {
   const location = useLocation();
 
   return (
-    <div className= {location.pathname !== '/registerPage' ?"flex flex-1 flex-row bg-bg-color p-[10px] h-full" : "" } >
+    <div className= {location.pathname !== '/registerPage' ?"flex flex-1 flex-row bg-bg-color py-[10px] pl-[10px] h-full" : "" } >
       {(location.pathname !== '/registerPage' && location.pathname !== '/welcomePage') && <Sidebar />}
 
       <div className="flex-1 h-full">
