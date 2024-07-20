@@ -5,10 +5,10 @@ import CrmTextField from '../../../components/crm/CrmTextField'
 import { useState, useRef, useCallback, useEffect } from 'react'
 import crmAddDocs from "../../../assets/svg/crmAddDocs.svg"
 import GreenButton from '../../../components/crm/GreenButton'
-import ReactInputMask from 'react-input-mask'
+import CrmWhiteButton from '../../../components/crm/white_button/CrmWhiteButton'
 import CrmDeleteSnackbar from '../../../components/crm/delete_snackbar/CrmDeleteSnackBar'
 import { useDispatch, useSelector } from 'react-redux'
-import {     setAddress,
+import {setAddress,
     setSerie,
     setNumber,
     setDate,
@@ -281,7 +281,7 @@ export default function PassportDatas({
               <>
                   <VerticalSpace height={32} />
                   <div className="rowGap12">
-                      <WhiteButton onClick={() => {dispatch(resertPassportInfos())}} />
+                      <CrmWhiteButton onClick={() => {dispatch(resertPassportInfos())}} />
                       <GreenButton
                           text='Сохранить'
                           onClick={() => {
@@ -307,23 +307,7 @@ export default function PassportDatas({
 
 // components
 
-function WhiteButton({
-    text = "Отменить",
-    onClick,
-    width = "200px",
-    height = "40px",
-}) {
-    return (
-        <div 
-            style={{
-                width: width,
-                height: height,
-            }}
-            className="whiteButton" onClick={onClick}>
-            {text}
-        </div>
-    )
-}
+
 
 function DocsToolTip({
     onDelete,

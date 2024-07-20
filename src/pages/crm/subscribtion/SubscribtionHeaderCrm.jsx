@@ -1,5 +1,5 @@
 import React from 'react'
-import { WhiteButton } from '../add_client/PersonalDatas'
+import CrmWhiteButton from '../../../components/crm/white_button/CrmWhiteButton'
 
 export default function SubscribtionHeaderCrm({
   onClick
@@ -10,7 +10,7 @@ export default function SubscribtionHeaderCrm({
         <span className='headerH2'>Создание абонемента</span>
         <span className='label2'>Это специальный конструктор, где вы с лёгкостью сможете создать шаблон для абонемента</span>
       </div>
-      <WhiteButton text='Отменить' width='100px' onClick={onClick}/>
+      <CrmWhiteButton text='Отменить' width='100px' onClick={onClick}/>
     </div>
   )
 }

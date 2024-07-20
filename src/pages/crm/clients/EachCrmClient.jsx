@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux'
 import { setCurrentClientId, updateClient } from '../../../features/crm/CrmClients'
 import GreenButton from '../../../components/crm/GreenButton'
 import TextareaAutosize from 'react-textarea-autosize';
+import CrmWhiteButton from '../../../components/crm/white_button/CrmWhiteButton'
 
 
 export default function EachCrmClient({
@@ -87,12 +88,12 @@ export default function EachCrmClient({
         <div className="h-full w-[8%] flex flow-row items-center justify-center gap-4">
             <div className="relative">
                 <img className='cursor-pointer' onClick={()=>setNotesActions(true)} src={noteSvg} alt="crmDocs" />
-                {notesActions && 
-                    <NotesAction 
-                        closeFunction={()=>setNotesActions(false)} 
-                        note={note} 
-                        id={id} 
-                        />}
+                  {notesActions &&
+                      <NotesAction
+                          closeFunction={() => setNotesActions(false)}
+                          note={note}
+                          id={id}
+                      />}
             </div>
             <div className="relative">
                 <img className='cursor-pointer' onClick={()=>setMoreActions(true)} src={threeDots} alt="threeDots" />
@@ -212,15 +213,12 @@ const NotesAction = ({closeFunction, note, id}) => {
                 onChange={handleOnChange} />
             <VerticalSpace height='10px' />
             <div className="flex flex-row justify-between gap-[5px] ">
-                <CrmButton 
-                    height={"40px"} 
-                    width={"100%"} 
-                    title= {leftButtonText}
-                    backgroundColor='white' 
-                    textColor='black'
-                    onСlick={toggleShowInput}
-                     />
-
+                <CrmWhiteButton 
+                    onClick={toggleShowInput}
+                    text={leftButtonText}
+                    width='100%'
+                    height='40px'
+                />
                 <GreenButton 
                     width='100%' 
                     padLeft='0' 
@@ -323,45 +321,42 @@ const TextToInput = ({ showInput, text, placeholder, onChange, lineHeight = "16p
 // svg icons 
 const CartSvg = () => {
     return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 6C0 2.68629 2.68629 0 6 0H18C21.3137 0 24 2.68629 24 6V18C24 21.3137 21.3137 24 18 24H6C2.68629 24 0 21.3137 0 18V6Z" fill="#EFFFF5" />
-            <path d="M10.125 13.125C10.8154 13.125 11.375 12.5654 11.375 11.875C11.375 11.1846 10.8154 10.625 10.125 10.625C9.43464 10.625 8.875 11.1846 8.875 11.875C8.875 12.5654 9.43464 13.125 10.125 13.125Z" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M8.25 16.25C8.25 15.5596 9.08947 15 10.125 15C11.1605 15 12 15.5596 12 16.25" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M15.75 11.875L13.875 11.875" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M15.75 13.75L13.875 13.75" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6.375 9.375C6.375 8.68464 6.93464 8.125 7.625 8.125H16.375C17.0654 8.125 17.625 8.68464 17.625 9.375V15.625C17.625 16.3154 17.0654 16.875 16.375 16.875H7.625C6.93464 16.875 6.375 16.3154 6.375 15.625V9.375Z" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 6C0 2.68629 2.68629 0 6 0H22C25.3137 0 28 2.68629 28 6V22C28 25.3137 25.3137 28 22 28H6C2.68629 28 0 25.3137 0 22V6Z" fill="#EFFFF5" />
+            <path d="M11.75 14.75C12.5784 14.75 13.25 14.0784 13.25 13.25C13.25 12.4216 12.5784 11.75 11.75 11.75C10.9216 11.75 10.25 12.4216 10.25 13.25C10.25 14.0784 10.9216 14.75 11.75 14.75Z" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M9.5 18.5C9.5 17.6716 10.5074 17 11.75 17C12.9926 17 14 17.6716 14 18.5" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M18.5 13.25L16.25 13.25" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M18.5 15.5L16.25 15.5" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M7.25 10.25C7.25 9.42157 7.92157 8.75 8.75 8.75H19.25C20.0784 8.75 20.75 9.42157 20.75 10.25V17.75C20.75 18.5784 20.0784 19.25 19.25 19.25H8.75C7.92157 19.25 7.25 18.5784 7.25 17.75V10.25Z" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-
     )
 }
 
 const NextSvg = () => {
-    return(
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 6C0 2.68629 2.68629 0 6 0H18C21.3137 0 24 2.68629 24 6V18C24 21.3137 21.3137 24 18 24H6C2.68629 24 0 21.3137 0 18V6Z" fill="#EFFFF5" />
-            <path d="M8.94531 15.625L12.0703 12.5L8.94531 9.375" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M13.1797 15.625L16.3047 12.5L13.1797 9.375" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+    return (
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 6C0 2.68629 2.68629 0 6 0H22C25.3137 0 28 2.68629 28 6V22C28 25.3137 25.3137 28 22 28H6C2.68629 28 0 25.3137 0 22V6Z" fill="#EFFFF5" />
+            <path d="M10.334 17.75L14.084 14L10.334 10.25" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M15.416 17.75L19.166 14L15.416 10.25" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        
     )
 }
 
 const  CalendarSvg= () => {
-    return(
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 6C0 2.68629 2.68629 0 6 0H18C21.3137 0 24 2.68629 24 6V18C24 21.3137 21.3137 24 18 24H6C2.68629 24 0 21.3137 0 18V6Z" fill="#EFFFF5" />
-            <path d="M6.375 8.75C6.375 8.05964 6.93464 7.5 7.625 7.5H16.375C17.0654 7.5 17.625 8.05964 17.625 8.75V16.875C17.625 17.5654 17.0654 18.125 16.375 18.125H7.625C6.93464 18.125 6.375 17.5654 6.375 16.875V8.75Z" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6.375 10L17.625 10" stroke="#3AB96D" stroke-linecap="square" stroke-linejoin="round" />
-            <path d="M14.5 6.875V8.125" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M9.5 6.875V8.125" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M14.5 15.3125H14.5013V15.3138H14.5V15.3125Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M12 15.3125H12.0012V15.3138H12V15.3125Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M9.5 15.3125H9.50125V15.3138H9.5V15.3125Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M14.5 12.8125H14.5013V12.8137H14.5V12.8125Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M12 12.8125H12.0012V12.8137H12V12.8125Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M9.5 12.8125H9.50125V12.8137H9.5V12.8125Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    return (
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 6C0 2.68629 2.68629 0 6 0H22C25.3137 0 28 2.68629 28 6V22C28 25.3137 25.3137 28 22 28H6C2.68629 28 0 25.3137 0 22V6Z" fill="#EFFFF5" />
+            <path d="M7.25 9.5C7.25 8.67157 7.92157 8 8.75 8H19.25C20.0784 8 20.75 8.67157 20.75 9.5V19.25C20.75 20.0784 20.0784 20.75 19.25 20.75H8.75C7.92157 20.75 7.25 20.0784 7.25 19.25V9.5Z" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M7.25 11L20.75 11" stroke="#3AB96D" stroke-linecap="square" stroke-linejoin="round" />
+            <path d="M17 7.25V8.75" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M11 7.25V8.75" stroke="#3AB96D" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M17 17.375H17.0015V17.3765H17V17.375Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M14 17.375H14.0015V17.3765H14V17.375Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M11 17.375H11.0015V17.3765H11V17.375Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M17 14.375H17.0015V14.3765H17V14.375Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M14 14.375H14.0015V14.3765H14V14.375Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M11 14.375H11.0015V14.3765H11V14.375Z" stroke="#3AB96D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-
     )
 }
 

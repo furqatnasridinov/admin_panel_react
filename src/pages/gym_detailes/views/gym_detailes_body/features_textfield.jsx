@@ -66,9 +66,9 @@ export function FeaturesTextField({
     }
   };
 
-    const border = isActive ? "1px solid #77aaf9" : "1px solid white";
-    const buttonborder = isActive ? "1px solid #77aaf9" : "1px solid white";
-    const buttonBg = isActive ? "#77aaf9" : "white";
+    const border = isActive ? "1px solid #77aaf9" : "1px solid transparent";
+    const buttonborder = isActive ? "1px solid #77aaf9" : "1px solid transparent";
+    const buttonBg = isActive ? "#77aaf9" : "transparent";
     const padding = isActive ? "10px 16px 10px 16px" : "";
     const lineHeight = 14;
 
@@ -94,7 +94,7 @@ export function FeaturesTextField({
           lineHeight: `${lineHeight}px`,
           width: "300px",
           fontFamily: "Inter, sans-serif",
-          backgroundColor: "white",
+          backgroundColor: "transparent",
           overflow: isActive ?  'auto' : 'hidden',
           scrollbarWidth: "none",
           transition: "all 0.3s",

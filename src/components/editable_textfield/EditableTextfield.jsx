@@ -17,6 +17,7 @@ export function EditableTextfield({
     textFieldsMinWidth,
     isActive,
     minHeight,
+    isBackgroundBlue,
   }) {
     const inputRef = useRef(null);
     // for autofocus calls when component first renders
@@ -36,9 +37,9 @@ export function EditableTextfield({
       }
     }, [value, isActive]);
   
-      const border = isNotValidated ? "1px solid rgba(255, 136, 136, 1)" : isActive ?  "1px solid #77aaf9" : "1px solid white";
-      const buttonborder = isActive ? "1px solid #77aaf9" : "1px solid white";
-      const buttonBg = isActive ? "#77aaf9" : "white";
+      const border = isNotValidated ? "1px solid rgba(255, 136, 136, 1)" : isActive ?  "1px solid #77aaf9" : "1px solid transparent";
+      const buttonborder = isActive ? "1px solid #77aaf9" : "1px solid transparent";
+      const buttonBg = isActive ? "#77aaf9" : "transparent";
       const textColor = isActive ? "rgba(176, 176, 176, 1)" : "white";
       const padding = isActive ? "12px 16px 12px 16px" : "";
       
@@ -64,7 +65,7 @@ export function EditableTextfield({
                 borderRadius: "8px",
                 outline: "none",
                 resize: "none",
-                backgroundColor: "white",
+                backgroundColor: "none",
                 height: "auto",
                 minHeight: minHeight,
                 maxHeight: `${10 * lineheight}px`, // Set max height to 10 lines 

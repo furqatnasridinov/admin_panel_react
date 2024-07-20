@@ -74,16 +74,19 @@
     background-color: rgba(255, 255, 255, 1);
     z-index: 20;
     transition: all 0.3s;
-    border: 1px solid rgba(58, 185, 109, 1)
+    border: 1px solid rgba(58, 185, 109, 1);
+    scrollbar-width: 7px important;
 }
 
 .eachGender{
     font-size: 14px;
     line-height: 16px;
+    font-weight: 500;
     cursor: pointer;
     padding: 10px 8px;
     border-radius: 4px;
     transition: all 0.3s;
+    width: 100%;
 }
 
 .eachGender:hover{
@@ -98,19 +101,6 @@
   .arrow-icon {
     transition: transform 0.3s ease;
   }
-
-  .whiteButton{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: white;
-    border-radius: 8px;
-    border: 1px solid rgba(58, 185, 109, 1);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-  }
-
 
 
   .fileCard{

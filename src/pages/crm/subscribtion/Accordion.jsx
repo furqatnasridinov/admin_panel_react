@@ -8,10 +8,12 @@ export default function Accordion({
     height = '400px',
     showDone = false,
     isErorr = false,
+    onMouseLeave,
 }) {
     //const background = isErorr && !isOpened ? 'rgba(255, 136, 136, 0.5)' : 'white';
     return (
         <div 
+            onMouseLeave={onMouseLeave}
             className="w-full flex flex-col rounded-2xl"
             style={{
                 height: isOpened ? height : '95px',

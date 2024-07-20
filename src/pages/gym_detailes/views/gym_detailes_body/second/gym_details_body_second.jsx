@@ -47,10 +47,10 @@ export default function GymDetailesBodySecondContainer({
   const activitiesSlice = useSelector((state) => state.activities);
   const gymState = useSelector((state) => state.currentGym);
   const canEdit = localStorage.getItem(AppConstants.keyRoleId) === "1" || localStorage.getItem(AppConstants.keyRoleId) === "3";
+  const dummyPods = ["Общая тренировка", "Спарринг", "Зал", "Николай Борисович"];
 
   // use states
-  const [isDescribtionEdittingEnabled, setDescribtionEditting] =
-    useState(false);
+  const [isDescribtionEdittingEnabled, setDescribtionEditting] = useState(false);
   const [isFeaturesEdittingEnabled, setFeaturesEditting] = useState(false);
   const [isEdittingPhotosEnabled, setPhotosEditting] = useState(false);
   const [isActivitiesModalOpened, openActivitiesModal] = useState(false);
@@ -128,12 +128,11 @@ export default function GymDetailesBodySecondContainer({
   }
 
   return (
-    console.log("activityDescribtion ", activityDescribtion),
     <div className="flex flex-col bg-white h-fit rounded-[16px] p-[32px] gap-[32px]">
       <div className="activities">
         <TextAndTextButton
           text1={"Активности"}
-          text2={activitiesSlice.selectedActivity === null ? "Добавить активности" : "Редактировать список активностей"}
+          text2={activitiesSlice.selectedActivity === null ? "Добавить активности" : "Редактировать список активностей и подгрупп"}
           onclick={() => {openActivitiesModal(true)}}
           showText2 = {canEdit}
         />
@@ -268,11 +267,31 @@ export default function GymDetailesBodySecondContainer({
         )}
       </div>
 
-      {activitiesSlice.selectedActivity !== null &&
-        <>
+      <div className="colGap10">
+        <span className="label2bPlus">Подгруппы внутри выбранной активности:</span>
+        <div className="chips_row ">
+          {dummyPods
+            //?.filter((el) => !activitiesSlice.deletedActivities.includes(el))
+            .map((activity, index) => {
+              return (
+                <Chip
+                  key={index}
+                  name={activity}
+                  isActive={index === 2}
+                  //onclick={() => dispatch(selectAnActivity(activity))}
+                />
+              );
+            })}
+        </div>
+      </div>
 
-          <div className="flex flex-row gap-[50px]">
+      
+
+      {activitiesSlice.selectedActivity !== null &&
+        <div className="blueBigCard">
             <div className="describtion_and_features_column">
+              <span className="headerH1">{activitiesSlice.selectedActivity}</span>
+
               {/* describtion */}
               <div className="describtion_to_activity">
                 <TextAndTextButton
@@ -563,8 +582,7 @@ export default function GymDetailesBodySecondContainer({
                   setPhotosEditting(false)}
               </div>
             </div>
-          </div>
-        </>
+        </div>
       }
 
     </div>

@@ -7,15 +7,18 @@ import './index.css';
 import { CustomCrmTextArea } from '../add_client/PersonalDatas';
 import GreenButton from '../../../components/crm/GreenButton';
 import CrmTextField from '../../../components/crm/CrmTextField';
-import { WEEK_DAYS } from '../../../dummy_data/dymmy_data';
+import { activities, WEEK_DAYS } from '../../../dummy_data/dymmy_data';
 import CrmDropdownHours from '../../../components/crm/dropdown_hours/CrmDropDownHours';
 import SubscribtionHeaderCrm from './SubscribtionHeaderCrm';
+import { useSelector } from 'react-redux';
+import axiosClient from '../../../config/axios_client';
+import { toast } from 'react-toastify';
 
 export default function SubscribtionBodyCrm() {
     const [isOpened1, setIsOpened1] = useState(true);
-    const [isOpened2, setIsOpened2] = useState(false);
-    const [isOpened3, setIsOpened3] = useState(false);
-    const [isOpened4, setIsOpened4] = useState(false);
+    const [isOpened2, setIsOpened2] = useState(true);
+    const [isOpened3, setIsOpened3] = useState(true);
+    const [isOpened4, setIsOpened4] = useState(true);
     const [price, setPrice] = useState('');
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -36,12 +39,29 @@ export default function SubscribtionBodyCrm() {
     const [currentOpenedDropDownActivities, setCurrentOpenedDropDownActivities] = useState(null);
     const [currentOpenedDropDownSubcategories, setCurrentOpenedDropDownSubcategories] = useState(null);
     const [missingInfos, setMissingInfos] = useState([]);
-    const [dropDownsGyms, setDropDownsGyms] = useState([]);
-    const [dropDownsActivities, setDropDownsActivities] = useState([]);
+    const [dropDownsGyms, setDropDownsGyms] = useState([
+        // [{id: 1, isOpened: bool, gym: {}}, ...]
+    ]);
+    const [dropDownsActivities, setDropDownsActivities] = useState([
+        // [{id: 1, isOpened: bool, gymAndLessonType : {gym : GYMDATA, lessonType : "Бокс"}}, ...]
+    ]);
     const [dropDownsSubcategories, setDropDownsSubcategories] = useState([]);
-    const list = [{name: 'Ленинград', id: 1}, {name: "Abdullo Ako", id: 2}, {name : "Crystall", id: 3}];
-    const list2 = ["С турником", "С брусьями", "С штангой", "С гантелями"];
-    const list3 = ["С турником", "С брусьями", "С штангой", "С гантелями"];
+    const [gymAndLessonTypes, setGymAndLessonTypes] = useState([
+        //{gym : GYMDATA, lessonTypes : ["Бассейн","Бокс"]},
+    ]);
+    const list3 = [{name: 'Сам по себе', id: 1}, {name: "С тренером", id: 2}, {name : "Техника удара", id: 3}];
+    const firstSectionError = missingInfos.includes("gym") || missingInfos.includes("activities") || missingInfos.includes("price");
+    const firstSectionShowDone = dropDownsGyms.length > 0 && dropDownsGyms.every(dropDown => dropDown.gym) && dropDownsActivities.length > 0 && dropDownsActivities.every(dropDown => dropDown.gymAndLessonType) && price !== '';
+    const secondSectionError = missingInfos.includes("type") || missingInfos.includes("weekdays");
+    const secondSectionShowDone = type !== '' && selectedWeekDays.length > 0;
+    const thirdSectionError = missingInfos.includes("name") || missingInfos.includes("description");
+    const thirdSectionShowDone = name !== '' && description !== '';
+    const fourthSectionShowDone = benefits !== '' || limitations !== '' || conditionForFreezing !== '';
+    const allGyms = useSelector(state => state.currentGym.listOfGyms);
+    const allActivities = useSelector(state => state.activities.listOfActivities);
+    const showAddButtonGyms = dropDownsGyms.length < allGyms.length;
+    const showAddButtonActivities = dropDownsActivities.length < allActivities.length;
+    
 
     function toggle1() {
         setIsOpened1(!isOpened1);
@@ -61,10 +81,22 @@ export default function SubscribtionBodyCrm() {
         setCurrentOpenedDropDownGyms(currentOpenedDropDownGyms === id ? null : id);
     }
 
-    function onSelectDropDownItem(index, item) {
-        const newDropDowns = [...dropDownsGyms];
-        newDropDowns[index] = { ...newDropDowns[index], name: item?.name, isOpened: false };
-        setDropDownsGyms(newDropDowns);
+    function onSelectDropDownItem(id, item) {
+        const copyDropDowns = [...dropDownsGyms];
+        const changedDropDown = copyDropDowns.find(dropDown => dropDown.id === id);
+        changedDropDown.gym = item;
+        setDropDownsGyms(copyDropDowns);
+        // send request with this gym's id to get activities
+        axiosClient.get(`api/admin/gyms/${item?.id}/lessonTypes`).then(res => {
+            if (res.status === 200 && res.data["object"]) {
+                const array = res.data["object"]; // ["Бассейн","Бокс"...]
+                const json = {gym : item, lessonTypes : array};
+                setGymAndLessonTypes([...gymAndLessonTypes, json]);
+            }
+            
+        }).catch(err => {
+            toast.error('Get LessonTypes Ошибка при загрузке данных ==> ' + err.message);
+        });
         if (missingInfos.includes("gym")) {
             const newMissingInfos = missingInfos.filter(info => info !== "gym");
             setMissingInfos(newMissingInfos);
@@ -74,7 +106,17 @@ export default function SubscribtionBodyCrm() {
 
     function addDropDown() {
         const newId = dropDownsGyms.length > 0 ? dropDownsGyms[dropDownsGyms.length - 1].id + 1 : 1;
-        setDropDownsGyms([...dropDownsGyms, { id: newId, isOpened: false, name: '' }]);
+        setDropDownsGyms([...dropDownsGyms, { id: newId, isOpened: false, gym: {}}]);
+    }
+
+    function deleteGymDropDown(dropDownId, gymID) {
+        setDropDownsGyms(dropDownsGyms.filter(dropDown => dropDown.id !== dropDownId));
+        const gymAndLessonTypesCopy = [...gymAndLessonTypes];
+        const index = gymAndLessonTypesCopy.findIndex(item => item.gym.id === gymID);
+        if (index !== -1) {
+            gymAndLessonTypesCopy.splice(index, 1);
+            setGymAndLessonTypes(gymAndLessonTypesCopy);
+        }  
     }
 
     // for activities
@@ -82,10 +124,12 @@ export default function SubscribtionBodyCrm() {
         setCurrentOpenedDropDownActivities(currentOpenedDropDownActivities === id ? null : id);
     }
 
-    function onSelectDropDownItemActivities(index, item) {
-        const newDropDowns = [...dropDownsActivities];
-        newDropDowns[index] = { ...newDropDowns[index], name: item, isOpened: false };
-        setDropDownsActivities(newDropDowns);
+    function onSelectDropDownItemActivities(gym, lessonType, dropDownId) {
+       const copyDropDowns = [...dropDownsActivities];
+       const changedDropDown = copyDropDowns.find(dropDown => dropDown.id === dropDownId);
+       const json = {gym : gym, lessonType : lessonType};
+       changedDropDown.gymAndLessonType = json;
+        setDropDownsActivities(copyDropDowns);
         if (missingInfos.includes("activities")) {
             const newMissingInfos = missingInfos.filter(info => info !== "activities");
             setMissingInfos(newMissingInfos);
@@ -94,8 +138,23 @@ export default function SubscribtionBodyCrm() {
     }
 
     function addDropDownActivities() {
-        const newId = dropDownsActivities.length > 0 ? dropDownsActivities[dropDownsActivities.length - 1].id + 1 : 1;
-        setDropDownsActivities([...dropDownsActivities, { id: newId, isOpened: false, name: '' }]);
+        if (gymAndLessonTypes.length === 0) {
+            toast.error('Выберите сперва заведение');                           
+        } else {
+            const newId = dropDownsActivities.length > 0 ? dropDownsActivities[dropDownsActivities.length - 1].id + 1 : 1;
+            setDropDownsActivities([...dropDownsActivities, { id: newId, isOpened: false, gymAndLessonType : {}}]);
+        }
+    }
+
+    function deleteActivityDropDown(dropDownId, gymID, lessonType) {
+        setDropDownsActivities(dropDownsActivities.filter(dropDown => dropDown.id !== dropDownId));
+        const gymAndLessonTypesCopy = [...gymAndLessonTypes];
+        /* const index = gymAndLessonTypesCopy.findIndex(item => item.gym.id === gymID);
+        if (index !== -1) {
+            const lessonTypes = gymAndLessonTypesCopy[index].lessonTypes.filter(item => item !== lessonType);
+            gymAndLessonTypesCopy[index].lessonTypes = lessonTypes;
+            setGymAndLessonTypes(gymAndLessonTypesCopy);
+        } */
     }
 
     // for subcategories
@@ -105,7 +164,7 @@ export default function SubscribtionBodyCrm() {
 
     function onSelectDropDownItemSubcategories(index, item) {
         const newDropDowns = [...dropDownsSubcategories];
-        newDropDowns[index] = { ...newDropDowns[index], name: item, isOpened: false };
+        newDropDowns[index] = { ...newDropDowns[index], name: item?.name, isOpened: false };
         setDropDownsSubcategories(newDropDowns);
         setCurrentOpenedDropDownSubcategories(null); // Close the dropdown after selection
     }
@@ -118,10 +177,10 @@ export default function SubscribtionBodyCrm() {
     function checkAllRequiredFields() {
       // Check if all required fields are filled
         const missing = [];
-        if (dropDownsGyms.length === 0 || dropDownsGyms.some(dropDown => !dropDown.name)) {
+        if (dropDownsGyms.length === 0 || dropDownsGyms.some(dropDown => !dropDown.gym?.id)) {
             missing.push("gym");
         }
-        if (dropDownsActivities.length === 0 || dropDownsActivities.some(dropDown => !dropDown.name)) {
+        if (dropDownsActivities.length === 0 || dropDownsActivities.some(dropDown => !dropDown.gymAndLessonType?.gym?.id || !dropDown.gymAndLessonType?.lessonType)) {
             missing.push("activities");
         }
         if (price === '') {
@@ -220,14 +279,30 @@ export default function SubscribtionBodyCrm() {
         setEndTimeMinute(endMinute < 10 ? '0' + endMinute.toString() : endMinute.toString());
     }, [startTimeHour, startTimeMinute])
     
+   
+    function firstAccordionMouseLeave(){
+        if (firstSectionShowDone && isOpened1) {
+            setIsOpened1(false);
+        }
+    }
 
-    const firstSectionError = missingInfos.includes("gym") || missingInfos.includes("activities") || missingInfos.includes("price");
-    const firstSectionShowDone = dropDownsGyms.length > 0 && dropDownsGyms.every(dropDown => dropDown.name) && dropDownsActivities.length > 0 && dropDownsActivities.every(dropDown => dropDown.name) && price !== '';
-    const secondSectionError = missingInfos.includes("type") || missingInfos.includes("weekdays");
-    const secondSectionShowDone = type !== '' && selectedWeekDays.length > 0;
-    const thirdSectionError = missingInfos.includes("name") || missingInfos.includes("description");
-    const thirdSectionShowDone = name !== '' && description !== '';
-    const fourthSectionShowDone = benefits !== '' || limitations !== '' || conditionForFreezing !== '';
+    function secondAccordionMouseLeave(){
+        if (secondSectionShowDone && isOpened2) {
+            setIsOpened2(false);
+        }
+    }
+
+    function thirdAccordionMouseLeave(){
+        if (thirdSectionShowDone && isOpened3) {
+            setIsOpened3(false);
+        }
+    }
+
+    function fourthAccordionMouseLeave(){
+        if (fourthSectionShowDone && isOpened4) {
+            setIsOpened4(false);
+        }
+    }
 
     return (
         <div className="colGap10 mr-[10px]">
@@ -239,27 +314,28 @@ export default function SubscribtionBodyCrm() {
                 isErorr ={firstSectionError} 
                 toggle={toggle1} 
                 showDone={firstSectionShowDone}
+                onMouseLeave={firstAccordionMouseLeave}
                 title="1. Основные параметры абонемента">
                 {firstSectionError && <VerticalSpace height="16px" />}
                 <EachSection addPaddTop = {false} isRed={missingInfos.includes("gym")}>
                     <span className="label2">В каких заведениях будет действовать абонемент:</span>
                     <VerticalSpace height="10px" />
                     <div className="wrap">
-                        {dropDownsGyms && dropDownsGyms.map((dropDown) => (
+                        {dropDownsGyms && allGyms && dropDownsGyms.map((dropDown) => (
                             <SelectAndRemoveDropDown
                                 key={dropDown.id}
-                                list={list.filter(item => !dropDownsGyms.map(dropDown => dropDown.name).includes(item.name))}
+                                list={allGyms.filter(item => !dropDownsGyms.some(dropDown => dropDown?.gym?.id === item.id))}
                                 closeDropDown={() => setCurrentOpenedDropDownGyms(null)}
                                 isOpened={currentOpenedDropDownGyms === dropDown.id}
                                 toggleDropDown={() => toggleDropDown(dropDown.id)}
-                                onSelect={(item) => onSelectDropDownItem(dropDownsGyms.findIndex(d => d.id === dropDown.id), item)}
-                                value={dropDown.name || ''}
-                                onDelete={() => {setDropDownsGyms(dropDownsGyms.filter(d => d.id !== dropDown.id))}}
+                                onSelect={(item) => onSelectDropDownItem(dropDown.id,item)}
+                                value={dropDown.gym?.name || ''}
+                                onDelete={() => {deleteGymDropDown(dropDown.id, dropDown.gym?.id)}}
                                 zIndex1={25}
                                 zIndex2={24}
                             />
                         ))}
-                        <PlusButton onClick={addDropDown} />
+                        {showAddButtonGyms && <PlusButton onClick={addDropDown} />}
                     </div>
                 </EachSection>
                 {missingInfos.includes("gym") && missingInfos.includes("activities") && <VerticalSpace height="16px" />}
@@ -267,18 +343,23 @@ export default function SubscribtionBodyCrm() {
                     <span className='label2'>На какие активности распространяется абонемент:</span>
                     <VerticalSpace height="10px" />
                     <div className="wrap">
-                        {dropDownsActivities.map((dropDown, index) => (
+                        {dropDownsActivities && dropDownsActivities.map((dropDown) => (
                             <SelectAndRemoveDropDown
-                                key={index}
-                                list={list2}
+                                key={dropDown?.id}
+                                list={gymAndLessonTypes}
                                 placeholderText='Выберите активность'
                                 closeDropDown={() => setCurrentOpenedDropDownActivities(null)}
-                                isOpened={currentOpenedDropDownActivities === dropDown.id}
-                                toggleDropDown={() => toggleDropDownActivities(dropDown.id)}
-                                onSelect={(item) => onSelectDropDownItemActivities(index, item)}
-                                value={dropDown.name || ''}
+                                isOpened={currentOpenedDropDownActivities === dropDown?.id}
+                                toggleDropDown={() => toggleDropDownActivities(dropDown?.id)}
+                                onSelect={(gym, lessonType) => onSelectDropDownItemActivities(gym, lessonType,dropDown.id)}
+                                value={dropDown.gymAndLessonType?.lessonType || ''}
                                 zIndex1={20}
                                 zIndex2={19}
+                                showMultiple={true}
+                                onDelete={() => {deleteActivityDropDown(dropDown.id, dropDown.gymAndLessonType?.gym?.id, dropDown.gymAndLessonType?.lessonType)}}
+                                maxHeight={230}
+                                isScrollable={true}
+                                dropDowns={dropDownsActivities}
                             />
                         ))}
                         <PlusButton onClick={addDropDownActivities} />
@@ -289,15 +370,15 @@ export default function SubscribtionBodyCrm() {
                 <span className='label2'>(Не обязательно) На какие подкатегории распространяется абонемент:</span>
                 <VerticalSpace height="10px" />
                 <div className="wrap">
-                    {dropDownsSubcategories.map((dropDown, index) => (
+                    {dropDownsSubcategories && dropDownsSubcategories.map((dropDown) => (
                         <SelectAndRemoveDropDown
-                            key={index}
-                            list={list3}
+                            key={dropDown.id}
+                            list={list3.filter(item => !dropDownsSubcategories.map(dropDown => dropDown.name).includes(item.name))}
                             placeholderText='Выберите подкатегорию'
                             closeDropDown={() => setCurrentOpenedDropDownSubcategories(null)}
                             isOpened={currentOpenedDropDownSubcategories === dropDown.id}
                             toggleDropDown={() => toggleDropDownSubcategories(dropDown.id)}
-                            onSelect={(item) => onSelectDropDownItemSubcategories(index, item)}
+                            onSelect={(item) => onSelectDropDownItemSubcategories(dropDownsSubcategories.findIndex(d => d.id === dropDown.id), item)}
                             value={dropDown.name || ''}
                         />
                     ))}
@@ -338,6 +419,7 @@ export default function SubscribtionBodyCrm() {
                 isOpened={isOpened2}
                 isErorr={secondSectionError}
                 showDone={secondSectionShowDone}
+                onMouseLeave={secondAccordionMouseLeave}
             >
                 <EachSection addPaddTop = {false} isRed={missingInfos.includes("type")}>
                     <span className='label2'>Тип абонемента:</span>
@@ -410,6 +492,7 @@ export default function SubscribtionBodyCrm() {
                 isErorr={thirdSectionError}
                 showDone={thirdSectionShowDone}
                 height='440px'
+                onMouseLeave={thirdAccordionMouseLeave}
             >
                 {thirdSectionError && <VerticalSpace height="16px" />}
                 <EachSection isRed={missingInfos.includes("name")} addPaddTop = {false}>
@@ -463,6 +546,7 @@ export default function SubscribtionBodyCrm() {
                 title="4. Дополнительно (Не обязательный блок)" 
                 toggle={toggle4} isOpened={isOpened4}
                 showDone={fourthSectionShowDone}
+                onMouseLeave={fourthAccordionMouseLeave}
                 >
                 <span className='label2'>Информация о доступных льготах и скидках:</span>
                 <VerticalSpace height="10px" />
