@@ -263,19 +263,20 @@ const activitiesSlice = createSlice({
     },
 
     setActivityDescribtion: (state) => {
-      state.activityDescribtion = Array.isArray(
-        state.infoForType[state.selectedActivity]
-      )
-        ? state.infoForType[state.selectedActivity]?.[0]?.["typeDescription"]
-        : undefined;
+      try {
+        const isArrayOfObjects = Array.isArray(state.infoForType[state.selectedActivity]);
+        const desc = isArrayOfObjects ? state.infoForType[state.selectedActivity]?.[0]?.["typeDescription"] ?? "" : "";
+        state.activityDescribtion = desc;
+      } catch (error) {
+        throw new Error(`setActivityDescribtion ${error}`);
+      }
+      
     },
 
     setActivityPeculiarities: (state) => {
-      state.activityPeculiarities = Array.isArray(
-        state.infoForType[state.selectedActivity]
-      )
-        ? state.infoForType[state.selectedActivity]?.[0]?.["peculiarities"]
-        : undefined;
+      state.activityPeculiarities = Array.isArray(state.infoForType[state.selectedActivity])
+        ? state.infoForType[state.selectedActivity]?.[0]?.["peculiarities"] ?? ""
+        : "";
     },
 
     changeActivityDescribtion: (state, action) => {

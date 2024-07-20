@@ -2,15 +2,13 @@ import React from 'react'
 import "./index.css"
 import VerticalSpace from "../../../components/VerticalSpace"
 import GreenButton from '../../../components/crm/GreenButton'
-import placeHolderImg from "../../../assets/images/american_psycho.jpg"
+import CrmWhiteButton from '../../../components/crm/white_button/CrmWhiteButton'
 import CrmTextField from '../../../components/crm/CrmTextField'
 import { useState, useEffect, useRef} from 'react'
 import TextareaAutosize from 'react-textarea-autosize';
 import ReactInputMask from 'react-input-mask'
 import arrowDownSvg from "../../../assets/svg/arrow_down.svg"
 import DatePicker from "react-datepicker";
-import previousMoth from "../../../assets/svg/navigate_prev_month.svg"
-import nextMoth from "../../../assets/svg/navigate_next_month.svg";
 import { useDispatch, useSelector } from 'react-redux';
 import CustomDialog from '../../../components/dialog/dialog';
 import { getBirthdayFormatted, removeHours, translateGender } from '../../../config/apphelpers'
@@ -386,7 +384,7 @@ export default function PersonalDatas({
               <>
                   <VerticalSpace height={32} />
                   <div className="rowGap12">
-                      <WhiteButton onClick={() => {dispatch(resetPersonalInfos())}} />
+                      <CrmWhiteButton onClick={() => { dispatch(resetPersonalInfos()) }} />
                       <GreenButton
                           text='Сохранить'
                           onClick={() => {
@@ -640,7 +638,7 @@ function ModalBody({
                     <span className='label2'>Для внесения в базу номера телефона - нужно согласие клиента.</span>
                     <span className='label2'>В качестве запроса на согласие мы отправим ему СМС, в котором будет код из четырёх цифр, вам нужно будет ввести эти цифры на следующем экране.</span>
                     <div className="rowGap10">
-                        <WhiteButton text='Отменить' onClick={closeFunction} />
+                        <CrmWhiteButton text='Отменить' onClick={closeFunction} />
                         <GreenButton text='Хорошо, отправить СМС с кодом' onClick={()=>{setStage(2)}} />
                     </div>
                 </>
@@ -676,7 +674,7 @@ function ModalBody({
                             </div>}
                     </div>
                     
-                    <WhiteButton text='Отменить' onClick={closeFunction} width='120px'  />
+                    <CrmWhiteButton text='Отменить' onClick={closeFunction} width='120px'  />
                 </>
             }
 
@@ -688,7 +686,7 @@ function ModalBody({
                         <span className='label2bPlus'>Не отправляйте ссылку без согласия клиента, это расценится как спам.</span>
                     </div>
                     <div className="rowGap10">
-                        <WhiteButton text='Отправить ссылку для скачивания MyFit' width='320px' onClick={onSendRef} />
+                        <CrmWhiteButton text='Отправить ссылку для скачивания MyFit' width='320px' onClick={onSendRef} />
                         <GreenButton width='260px' text='Закрыть это окно' onClick={()=>{
                             setStage(1);
                             //setOtp('');
@@ -701,23 +699,6 @@ function ModalBody({
     )
 }
 
-export function WhiteButton({
-    text = "Отменить",
-    onClick,
-    width = "200px",
-    height = "40px",
-}) {
-    return (
-        <div 
-            style={{
-                width: width,
-                height: height,
-            }}
-            className="whiteButton" onClick={onClick}>
-            {text}
-        </div>
-    )
-}
 
 function SendSvg() {
     return (
