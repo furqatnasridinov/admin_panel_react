@@ -285,6 +285,7 @@ export default function GymDetailesBodySecondContainer({
         </div>
       </div>
 
+
       
 
       {activitiesSlice.selectedActivity !== null &&

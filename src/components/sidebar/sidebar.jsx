@@ -134,7 +134,6 @@ const Sidebar = () => {
   useEffect(() => {
     const currentPath = location.pathname;
     const isMyfit = appState.appType === "MYFIT";
-    const appStateFromSession = sessionStorage.getItem(AppConstants.keyAppState);
     if (isMyfit) {
       switch (currentPath) {
         case "/clientsPageCrm":

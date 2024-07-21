@@ -13,6 +13,7 @@ import SubscribtionHeaderCrm from './SubscribtionHeaderCrm';
 import { useSelector } from 'react-redux';
 import axiosClient from '../../../config/axios_client';
 import { toast } from 'react-toastify';
+import { getApiLikeWeekDays } from '../../../config/apphelpers';
 
 export default function SubscribtionBodyCrm() {
     const [isOpened1, setIsOpened1] = useState(true);
@@ -199,6 +200,50 @@ export default function SubscribtionBodyCrm() {
             missing.push("weekdays");  
         }
         setMissingInfos(missing);
+        if (missing.length === 0) {
+            // Send data to the server
+            createMembershipRequest();
+        }
+    }
+
+    function createMembershipRequest() {
+        const data = 
+        {
+            daysOfWeek: getApiLikeWeekDays(selectedWeekDays),
+            description: description,
+            startTime: {
+                hour: startTimeHour,
+                minute: startTimeMinute,
+                nano: 0,
+                second: "0"
+            },
+            endTime: {
+                hour: endTimeHour,
+                minute: endTimeMinute,
+                nano: 0,
+                second: "0"
+            },
+            freezingCancellation: conditionForFreezing,
+            id: 0,
+            lessonTypes: [
+                "string" // 
+            ],
+            name: name,
+            price: price.replace('₽', ''),
+            privileges: benefits,
+            restrictions: limitations,
+            type: type,
+        }
+        console.log(data);
+        /* axiosClient.post('api/admin/memberships', data)
+        .then(res => {
+            if (res.status === 200) {
+                toast.success('Абонемент успешно создан');
+            }
+        })
+        .catch(err => {
+            toast.error('Ошибка при создании абонемента ==> ' + err.message);
+        }); */
     }
 
     function toolTipOnMouseEnter() {
@@ -599,7 +644,9 @@ export default function SubscribtionBodyCrm() {
                 text='Создать абонемент' 
                 width='100%' 
                 showShadow = {true}
-                onClick={checkAllRequiredFields}
+                onClick={()=>{
+                    checkAllRequiredFields();
+                }}
             />
             <VerticalSpace height="6px" />
         </div>

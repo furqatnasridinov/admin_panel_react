@@ -471,7 +471,7 @@ function CrmDatePicker({
                 );
             }}
             
-            renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
+            renderCustomHeader={({ date, decreaseMonth, increaseMonth,decreaseYear, increaseYear}) => (
                 <div className="h-[40px] w-full flex flex-row pl-[5px] pr-[10px] items-center justify-between">
                     <div className="flex flex-row items-center gap-[4px]">
                         <PrevMonSvg onClick={() => decreaseMonth()} />
@@ -481,10 +481,12 @@ function CrmDatePicker({
                         </div>
 
                         <NextMonSvg onClick={() => increaseMonth()} />
-
+                        
+                        <PrevMonSvg onClick={() => decreaseYear()} />
                         <div className="text-[14px] font-medium uppercase text-crm-link">
                             {date?.getFullYear()}
                         </div>
+                        <NextMonSvg onClick={() => increaseYear()} />
                     </div>
 
                     <span

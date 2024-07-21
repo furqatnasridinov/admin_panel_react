@@ -307,3 +307,35 @@ export function removeHours(date){
     newDate.setHours(0, 0, 0, 0);
     return newDate;
 }
+
+
+export function getApiLikeWeekDays(weekdays){
+    // from [1, 2, 3, 4] to [MONDAY, TUESDAY, WEDNESDAY, THURSDAY]
+    const days = [];
+    weekdays.forEach(day => {
+        switch (day) {
+            case 1:
+                days.push("MONDAY");
+                break;
+            case 2:
+                days.push("TUESDAY");
+                break;
+            case 3:
+                days.push("WEDNESDAY");
+                break;
+            case 4:
+                days.push("THURSDAY");
+                break;
+            case 5:
+                days.push("FRIDAY");
+                break;
+            case 6:
+                days.push("SATURDAY");
+                break;
+            case 7:
+                days.push("SUNDAY");
+                break;
+        }
+    });
+    return days;
+}

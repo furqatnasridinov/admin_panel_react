@@ -1,11 +1,12 @@
 import {createSlice } from "@reduxjs/toolkit";
+import AppConstants from "../config/app_constants";
 
 
 
 const appSlice = createSlice({
   name: "app",
   initialState: {
-    appType : "MYFIT",   // MYFIT OR CRM
+    appType : sessionStorage.getItem(AppConstants.keyAppState) || "MYFIT",   // MYFIT OR CRM
   },
 
 
