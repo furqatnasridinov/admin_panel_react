@@ -440,7 +440,7 @@ function CrmDatePicker({
         <div ref={ref}
         style={{
             position: 'absolute',
-            top: '50%',
+            top: '65%',
             left: '180%',
             transform: 'translate(-50%, -50%)',
             zIndex: 1000,
@@ -457,7 +457,11 @@ function CrmDatePicker({
             shouldCloseOnSelect={true}
             onSelect={onSelect}
             locale={"ru"}
-            renderDayContents={(day, date) => {
+            renderMonthContent={(monthIndex, shortMonthText, fullMonthText)=>{
+                console.log('monthIndex:', monthIndex);
+            }}
+            onDayMouseEnter={null}
+            renderDayContents={(day, dayOfMonth) => {
                 /* const getTime = removeHours(date)?.getTime() || 0 ;
                 const getTime2 = removeHours(initialDay)?.getTime() || 1;
                 const isSelected = getTime === getTime2;

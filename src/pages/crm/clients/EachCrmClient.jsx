@@ -261,7 +261,7 @@ const SeeMoreAction = ({closeFunction, list, isGym}) => {
     )
 }
 
-const IconAndText = ({
+export const IconAndText = ({
     icon, 
     text,
     onClick,

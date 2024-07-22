@@ -4,7 +4,7 @@ import VerticalSpace from '../../../components/VerticalSpace';
 import SelectAndRemoveDropDown from './SelectAndRemoveDropDown';
 import PlusButton from './PlusButton';
 import './index.css';
-import { CustomCrmTextArea } from '../add_client/PersonalDatas';
+import { CustomCrmTextArea } from '../client_card/PersonalDatas';
 import GreenButton from '../../../components/crm/GreenButton';
 import CrmTextField from '../../../components/crm/CrmTextField';
 import { activities, WEEK_DAYS } from '../../../dummy_data/dymmy_data';

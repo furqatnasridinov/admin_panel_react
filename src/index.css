@@ -232,6 +232,13 @@
   font-family: "Inter", sans-serif;
 }
 
+.interBody3Plus{
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  font-family: "Inter", sans-serif;
+}
+
 
 .errorText{
   color: rgba(255, 61, 0, 1);
