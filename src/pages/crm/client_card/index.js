@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react'
-import AddClientHeader from './AddClientHeader'
+import ClientCardHeader from './ClientCardHeader'
 import PersonalDatas from './PersonalDatas'
 import PassportDatas from './PassportDatas'
 import { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getClientById } from '../../../features/crm/CrmClients'
 import { useParams } from "react-router-dom";
+import Memberships from './Memberships'
 
-export default function AddClientCrm() {
+export default function ClientCard() {
   let { clientIdParam } = useParams(); // This hooks allows you to extract params from the URL
   const blockRef = useRef(null);
   const dispatch = useDispatch();
@@ -30,8 +31,9 @@ export default function AddClientCrm() {
 
   return (
     <div ref={blockRef} className="flex flex-col flex-1 pl-[10px] gap-[10px] h-[97vh] overflow-y-auto">
-      <AddClientHeader />
+      <ClientCardHeader />
       <PersonalDatas id={clientId} />
+      <Memberships />
       <PassportDatas id={clientId} />
     </div>
   )

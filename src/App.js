@@ -26,7 +26,7 @@ import StatisticksPageCrm from "./pages/crm/statisticks";
 import MyGymsPageCrm from "./pages/crm/my_gyms";
 import SchedulesPageCrm from "./pages/crm/schedule_page";
 import SettingsPageCrm from "./pages/crm/settings";
-import AddClientCrm from "./pages/crm/add_client";
+import ClientCard from "./pages/crm/client_card";
 import ClientPageLayoutCrm from "./pages/crm/clients_layout";
 import SubscribtionPageCrm from "./pages/crm/subscribtion";
 
@@ -60,7 +60,7 @@ function Content() {
             {/* CRM */}
             <Route path="/clientsPageCrm" element={<ClientPageLayoutCrm />} >
               <Route index element={<CrmClients />} />
-              <Route path="clientCard/:clientIdParam" element={<AddClientCrm />} />
+              <Route path="clientCard/:clientIdParam" element={<ClientCard />} />
             </Route>
             <Route path="/todayEventsPageCrm" element={<TodayEventsCrm />} />
             <Route path="/statisticksPageCrm" element={<StatisticksPageCrm />} />

@@ -159,19 +159,18 @@ export default function GymDetailesBodySecondContainer({
             {/* Activities modal body */}
             <div className="mainContainerActivitiesModal">
               <div className="flex flex-col gap-[5px]">
-                <div className="text-[16px] font-semibold leading-[16px]">
-                  Редактирование активностей
-                </div>
-                <div className="text-[14px] font-normal leading-[16px]">
-                  Выберите активность, чтобы добавить в неё занятия.
-                  Дополнительные занятия - это не обязательная опция, вы можете
-                  использовать только основные активности.
-                </div>
+                <span className="headerH2">
+                  Редактирование активностей и подгрупп внутри них
+                </span>
+                <span className="label2">
+                  Выберите активность, чтобы добавить в неё занятия. Подгруппы - это не обязательная опция, вы можете использовать только основные активности.
+                  Для изменения порядка используйте перетаскивание мышью. Для переименования кликните два раза по названию.
+                </span>
               </div>
               {/* activities and podactivities */}
               <div className="flex flex-row gap-[24px]">
-                <div className="activities_col">
-                  <div className="text-[14px] font-bold">Ваши активности:</div>
+                <div className="colGap10 w-full">
+                  <span className="label2bPlus">Ваши активности:</span>
                   <div
                     className="blue_bordered_container"
                     ref={blueBorderedContainerRef}>
@@ -247,12 +246,12 @@ export default function GymDetailesBodySecondContainer({
                   </div>
                 </div>
 
-                {/*  <div className="podactivities_col">
-                  <div className="text-[14px] font-bold">
-                    Доп. занятия внутри активности:
-                  </div>
+                 <div className="colGap10 w-full">
+                  <span className="label2bPlus">
+                    Подгруппы внутри активности:
+                  </span>
                   <div className="blue_bordered_container"></div>
-                </div> */}
+                </div>
               </div>
               <CustomButton
                 height={"40px"}
@@ -284,6 +283,7 @@ export default function GymDetailesBodySecondContainer({
             })}
         </div>
       </div>
+
 
       
 
@@ -358,13 +358,7 @@ export default function GymDetailesBodySecondContainer({
                         setFeaturesEditting(true)
                       }
                   }}/>  
-                {/* {!isFeaturesEdittingEnabled && activityPeculiarities?.trim() !== "" && (
-                  <div
-                    className="text-[13px] font-normal font-inter"
-                    style={{ whiteSpace: "pre-wrap" }}>
-                    {activityPeculiarities}
-                  </div>)} */}
-                
+
                   <FeaturesTextField
                     onButtonClicked={async () => {
                       const { id, lessonType, peculiarities } = {
@@ -608,6 +602,7 @@ function EachActivity({
   onDragEnd,
   onDragOver,
 }) {
+  const redColor = "rgba(255, 61, 0, 1)";
   return (
     <div
       className={isActive ? "isActive" : "each_activity"}
@@ -617,12 +612,9 @@ function EachActivity({
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
     >
-      <img
-        style={{ cursor: "pointer" }}
-        src={removeActivitySvg}
-        alt=""
-        onClick={onRemoveClicked}
-      />
+      <div className="removeBlockResponsive cursor-pointer" onClick={onRemoveClicked}>
+        <span style={{color : redColor}} className="text-[20px]">-</span>
+      </div>
       <p onClick={onclick}>{title}</p>
       {/* <img
         style={{ cursor: "pointer" }}

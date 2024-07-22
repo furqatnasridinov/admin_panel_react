@@ -440,7 +440,7 @@ function CrmDatePicker({
         <div ref={ref}
         style={{
             position: 'absolute',
-            top: '50%',
+            top: '65%',
             left: '180%',
             transform: 'translate(-50%, -50%)',
             zIndex: 1000,
@@ -457,7 +457,11 @@ function CrmDatePicker({
             shouldCloseOnSelect={true}
             onSelect={onSelect}
             locale={"ru"}
-            renderDayContents={(day, date) => {
+            renderMonthContent={(monthIndex, shortMonthText, fullMonthText)=>{
+                console.log('monthIndex:', monthIndex);
+            }}
+            onDayMouseEnter={null}
+            renderDayContents={(day, dayOfMonth) => {
                 /* const getTime = removeHours(date)?.getTime() || 0 ;
                 const getTime2 = removeHours(initialDay)?.getTime() || 1;
                 const isSelected = getTime === getTime2;
@@ -471,7 +475,7 @@ function CrmDatePicker({
                 );
             }}
             
-            renderCustomHeader={({ date, decreaseMonth, increaseMonth }) => (
+            renderCustomHeader={({ date, decreaseMonth, increaseMonth,decreaseYear, increaseYear}) => (
                 <div className="h-[40px] w-full flex flex-row pl-[5px] pr-[10px] items-center justify-between">
                     <div className="flex flex-row items-center gap-[4px]">
                         <PrevMonSvg onClick={() => decreaseMonth()} />
@@ -481,10 +485,12 @@ function CrmDatePicker({
                         </div>
 
                         <NextMonSvg onClick={() => increaseMonth()} />
-
+                        
+                        <PrevMonSvg onClick={() => decreaseYear()} />
                         <div className="text-[14px] font-medium uppercase text-crm-link">
                             {date?.getFullYear()}
                         </div>
+                        <NextMonSvg onClick={() => increaseYear()} />
                     </div>
 
                     <span

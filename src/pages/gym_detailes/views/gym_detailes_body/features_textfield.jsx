@@ -20,12 +20,14 @@ export function FeaturesTextField({
   }, [onChanged]);
 
   useEffect(() => {
-    if (peculiarities === "" || peculiarities === null) {
-      // Создаём синтетическое событие с value "1. "
-      const event = {
-        target: { value: "1. " },
-      };
-      onChanged(event);
+    if (isActive) {
+      if (peculiarities === "" || peculiarities === null) {
+        // Создаём синтетическое событие с value "1. "
+        const event = {
+          target: { value: "1. " },
+        };
+        onChanged(event);
+      }
     }
   }, [peculiarities, onChanged]);
 
