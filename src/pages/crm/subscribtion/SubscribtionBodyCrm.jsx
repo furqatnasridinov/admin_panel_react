@@ -80,6 +80,7 @@ export default function SubscribtionBodyCrm() {
     // for gyms
     function toggleDropDown(id) {
         setCurrentOpenedDropDownGyms(currentOpenedDropDownGyms === id ? null : id);
+        closeDoneSections(1);
     }
 
     function onSelectDropDownItem(id, item) {
@@ -106,6 +107,7 @@ export default function SubscribtionBodyCrm() {
     }
 
     function addDropDown() {
+        closeDoneSections(1);
         const newId = dropDownsGyms.length > 0 ? dropDownsGyms[dropDownsGyms.length - 1].id + 1 : 1;
         setDropDownsGyms([...dropDownsGyms, { id: newId, isOpened: false, gym: {}}]);
     }
@@ -122,6 +124,7 @@ export default function SubscribtionBodyCrm() {
 
     // for activities
     function toggleDropDownActivities(id) {
+        closeDoneSections(1);
         setCurrentOpenedDropDownActivities(currentOpenedDropDownActivities === id ? null : id);
     }
 
@@ -139,6 +142,7 @@ export default function SubscribtionBodyCrm() {
     }
 
     function addDropDownActivities() {
+        closeDoneSections(1);
         if (gymAndLessonTypes.length === 0) {
             toast.error('Выберите сперва заведение');                           
         } else {
@@ -160,6 +164,7 @@ export default function SubscribtionBodyCrm() {
 
     // for subcategories
     function toggleDropDownSubcategories(id) {
+        closeDoneSections(1);
         setCurrentOpenedDropDownSubcategories(currentOpenedDropDownSubcategories === id ? null : id);
     }
 
@@ -171,8 +176,22 @@ export default function SubscribtionBodyCrm() {
     }
 
     function addDropDownSubcategories() {
+        closeDoneSections(1);
         const newId = dropDownsSubcategories.length > 0 ? dropDownsSubcategories[dropDownsSubcategories.length - 1].id + 1 : 1;
         setDropDownsSubcategories([...dropDownsSubcategories, { id: newId, isOpened: false, name: '' }]);
+    }
+
+    function handleChangePrice(e) {
+        // Only numbers are allowed
+        const value = e.target.value;
+        if (/^\d+$/.test(value) || value === '') {
+            closeDoneSections(1);
+            setPrice(value);
+            if (value && missingInfos.includes("price")) {
+                const newMissingInfos = missingInfos.filter(info => info !== "price");
+                setMissingInfos(newMissingInfos);
+            }
+        }
     }
 
     function checkAllRequiredFields() {
@@ -259,6 +278,7 @@ export default function SubscribtionBodyCrm() {
     }
 
     function handleTapWeekday(dayId) {
+        closeDoneSections(2);
         if (selectedWeekDays.includes(dayId)) {
             setSelectedWeekDays(selectedWeekDays.filter(id => id !== dayId));
         } else {
@@ -271,6 +291,7 @@ export default function SubscribtionBodyCrm() {
     }
 
     function handleSetType(type) {
+        closeDoneSections(2);
         setType(type);
         if (missingInfos.includes("type")) {
             const newMissingInfos = missingInfos.filter(info => info !== "type");
@@ -323,8 +344,22 @@ export default function SubscribtionBodyCrm() {
         setEndTimeHour(endHour.toString());
         setEndTimeMinute(endMinute < 10 ? '0' + endMinute.toString() : endMinute.toString());
     }, [startTimeHour, startTimeMinute])
+
+    function closeDoneSections(currentSection) {
+        const sections = [
+          { showDone: firstSectionShowDone, openCloseFunc: setIsOpened1, isOpened: isOpened1 },
+          { showDone: secondSectionShowDone, openCloseFunc: setIsOpened2, isOpened: isOpened2 },
+          { showDone: thirdSectionShowDone, openCloseFunc: setIsOpened3, isOpened: isOpened3 },
+          { showDone: fourthSectionShowDone, openCloseFunc: setIsOpened4, isOpened: isOpened4 },
+        ];
+      
+        sections.forEach((section, index) => {
+          if (section.showDone && section.isOpened && index !== (currentSection - 1)) {
+            section.openCloseFunc(false);
+          }
+        });
+      }
     
-   
     function firstAccordionMouseLeave(){
         if (firstSectionShowDone && isOpened1) {
             setIsOpened1(false);
@@ -359,7 +394,7 @@ export default function SubscribtionBodyCrm() {
                 isErorr ={firstSectionError} 
                 toggle={toggle1} 
                 showDone={firstSectionShowDone}
-                onMouseLeave={firstAccordionMouseLeave}
+                //onMouseLeave={firstAccordionMouseLeave}
                 title="1. Основные параметры абонемента">
                 {firstSectionError && <VerticalSpace height="16px" />}
                 <EachSection addPaddTop = {false} isRed={missingInfos.includes("gym")}>
@@ -436,19 +471,12 @@ export default function SubscribtionBodyCrm() {
                     <VerticalSpace height="10px" />
                     <CustomCrmTextArea
                         value={price}
-                        onChange={(e) => {
-                            // Only numbers are allowed
-                            const value = e.target.value;
-                            if (/^\d+$/.test(value) || value === '') {
-                                setPrice(value);
-                                if (value && missingInfos.includes("price")) {
-                                    const newMissingInfos = missingInfos.filter(info => info !== "price");
-                                    setMissingInfos(newMissingInfos);  
-                                }
-                            }
-                        }}
+                        onChange={handleChangePrice}
                         maxLength={6}
-                        onFocus={() => setCurrenFocus('price')}
+                        onFocus={() => {
+                            setCurrenFocus('price');
+                            closeDoneSections(1);
+                        }}
                         onBlur={() => setCurrenFocus('')}
                         currenFocus={currenFocus === 'price'}
                         placeHolder='Цена'
@@ -464,7 +492,7 @@ export default function SubscribtionBodyCrm() {
                 isOpened={isOpened2}
                 isErorr={secondSectionError}
                 showDone={secondSectionShowDone}
-                onMouseLeave={secondAccordionMouseLeave}
+                //onMouseLeave={secondAccordionMouseLeave}
             >
                 <EachSection addPaddTop = {false} isRed={missingInfos.includes("type")}>
                     <span className='label2'>Тип абонемента:</span>
@@ -508,7 +536,10 @@ export default function SubscribtionBodyCrm() {
                         <CrmDropdownHours
                             text={`${startTimeHour}:${startTimeMinute}`}
                             isDropDownOpened={isStartTimeDropDownOpened}
-                            openCloseDropDown={() => { openStartTimeDropDown(!isStartTimeDropDownOpened) }}
+                            openCloseDropDown={() => {
+                                openStartTimeDropDown(!isStartTimeDropDownOpened);
+                                closeDoneSections(2);
+                            }}
                             setHours={(hours) =>  setStartTimeHour(hours)}
                             setMinutes={(minute) => setStartTimeMinute(minute)}
                             selectedHour={startTimeHour}
@@ -519,7 +550,10 @@ export default function SubscribtionBodyCrm() {
                         <CrmDropdownHours 
                             text={`${endTimeHour}:${endTimeMinute}`}
                             isDropDownOpened={isEndTimeDropDownOpened}
-                            openCloseDropDown={() => { openEndTimeDropDown(!isEndTimeDropDownOpened) }}
+                            openCloseDropDown={() => { 
+                                openEndTimeDropDown(!isEndTimeDropDownOpened);
+                                closeDoneSections(2);
+                            }}
                             setHours={(hours) =>  setEndTimeHour(hours)}
                             setMinutes={(minute) => setEndTimeMinute(minute)}
                             selectedHour={endTimeHour}
@@ -537,7 +571,7 @@ export default function SubscribtionBodyCrm() {
                 isErorr={thirdSectionError}
                 showDone={thirdSectionShowDone}
                 height='440px'
-                onMouseLeave={thirdAccordionMouseLeave}
+                //onMouseLeave={thirdAccordionMouseLeave}
             >
                 {thirdSectionError && <VerticalSpace height="16px" />}
                 <EachSection isRed={missingInfos.includes("name")} addPaddTop = {false}>
@@ -553,7 +587,10 @@ export default function SubscribtionBodyCrm() {
                             }
                         }}
                         maxLength={100}
-                        onFocus={() => setCurrenFocus('name')}
+                        onFocus={() => {
+                            setCurrenFocus('name');
+                            closeDoneSections(3);
+                        }}
                         onBlur={() => setCurrenFocus('')}
                         currenFocus={currenFocus === 'name'}
                         placeHolder='Вечерний ринг'
@@ -574,7 +611,10 @@ export default function SubscribtionBodyCrm() {
                                 setMissingInfos(newMissingInfos);
                             }
                         }}
-                        onFocus={() => setCurrenFocus('description')}
+                        onFocus={() => {
+                            setCurrenFocus('description');
+                            closeDoneSections(3);
+                        }}
                         onBlur={() => setCurrenFocus('')}
                         maxLength={1000}
                         currenFocus={currenFocus === 'description'}
@@ -591,14 +631,17 @@ export default function SubscribtionBodyCrm() {
                 title="4. Дополнительно (Не обязательный блок)" 
                 toggle={toggle4} isOpened={isOpened4}
                 showDone={fourthSectionShowDone}
-                onMouseLeave={fourthAccordionMouseLeave}
+                //onMouseLeave={fourthAccordionMouseLeave}
                 >
                 <span className='label2'>Информация о доступных льготах и скидках:</span>
                 <VerticalSpace height="10px" />
                 <CrmTextField
                     value={benefits}
                     onChange={(e) => {setBenefits(e.target.value)}}
-                    onFocus={() => setCurrenFocus('benefits')}
+                    onFocus={() => {
+                        setCurrenFocus('benefits');
+                        closeDoneSections(4);
+                    }}
                     onBlur={() => setCurrenFocus('')}
                     maxLength={1000}
                     currenFocus={currenFocus === 'benefits'}
@@ -613,7 +656,10 @@ export default function SubscribtionBodyCrm() {
                 <CrmTextField
                     value={limitations}
                     onChange={(e) => {setLimitations(e.target.value)}}
-                    onFocus={() => setCurrenFocus('limitations')}
+                    onFocus={() => {
+                        setCurrenFocus('limitations');
+                        closeDoneSections(4);
+                    }}
                     onBlur={() => setCurrenFocus('')}
                     maxLength={800}
                     currenFocus={currenFocus === 'limitations'}
@@ -628,7 +674,10 @@ export default function SubscribtionBodyCrm() {
                 <CrmTextField
                     value={conditionForFreezing}
                     onChange={(e) => { setConditionForFreezing(e.target.value) }}
-                    onFocus={() => setCurrenFocus('conditionForFreezing')}
+                    onFocus={() => {
+                        setCurrenFocus('conditionForFreezing');
+                        closeDoneSections(4);
+                    }}
                     onBlur={() => setCurrenFocus('')}
                     maxLength={800}
                     currenFocus={currenFocus === 'conditionForFreezing'}

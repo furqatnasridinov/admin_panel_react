@@ -254,6 +254,8 @@ const loginSlice = createSlice({
         avatarCopy: "",
         newAddedPhoto: "",
         isNewPhotoAdded: false,
+        canEdit : false,
+        canSeeOnlyCalendar: true,
     },
     reducers: {
         setEmptyStringToAvatar: (state) => {
@@ -323,7 +325,14 @@ const loginSlice = createSlice({
         });
         builder.addCase(getUser.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.user = action.payload;
+            const data = action.payload;
+            state.user = data;
+            const userRoles = data["roles"];
+            const roleInAdminPanel = getMatchingRole({ allRoles, userRoles });
+            if (roleInAdminPanel) {
+               state.canEdit = roleInAdminPanel?.id === 1 || roleInAdminPanel?.id === 3;
+               state.canSeeOnlyCalendar = roleInAdminPanel?.id === 5;
+            }
             state.avatar = action.payload?.pictureUrl;
         });
         builder.addCase(getUser.rejected, (state) => {

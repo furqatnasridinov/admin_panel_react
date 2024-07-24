@@ -26,7 +26,8 @@ export default function PassportDatas({
     id
 }) {
     const dispatch = useDispatch();
-    const state = useSelector((state) => state.crmClients); 
+    const state = useSelector((state) => state.crmClients);
+    const canEdit = useSelector((state) => state.login.canEdit); 
     const [currentFocus, setCurrentFocus] = useState("");
     const [isSeriesError, setIsSeriesError] = useState(false);
     const [isNumberError, setIsNumberError] = useState(false);
@@ -170,76 +171,91 @@ export default function PassportDatas({
 
         <VerticalSpace height='32px' />
 
-        <div className="colGap10">
-            <span className='label2bPlus'>Данные паспорта</span>
-            <div className="rowGap10">
-                <CrmTextField 
-                    label='Серия'
-                    onChange={handleSeriesChange}
-                    value={state.serie}
-                    onFocus={() => setCurrentFocus("serie")}
-                    onBlur={() => setCurrentFocus("")}
-                    hasFocus={currentFocus === "serie"}
-                    isError={isSeriesError}
-                    width='75px'
-                    mask='99 99'
-                    showInputMask = {true}
-                />
-                <CrmTextField 
-                    label='Номер'
-                    onChange={handleNumberChange}
-                    value={state.number}
-                    onFocus={() => setCurrentFocus("number")}
-                    onBlur={() => setCurrentFocus("")}
-                    hasFocus={currentFocus === "number"}
-                    isError={isNumberError}
-                    width='90px'
-                    showInputMask = {true}
-                    mask='999999'
-                />
-                <CrmTextField 
-                    label='Дата выдачи'
-                    onChange={handleDateChange}
-                    value={state.date}
-                    onFocus={() => setCurrentFocus("date")}
-                    onBlur={() => setCurrentFocus("")}
-                    hasFocus={currentFocus === "date"}
-                    isError={isDateError}
-                    width='130px'
-                    showInputMask = {true}
-                    mask = '99.99.9999'
-                />
-                <CrmTextField 
-                    label='Код подразделения'
-                    onChange={handleCodeChange}
-                    value={state.code}
-                    onFocus={() => setCurrentFocus("code")}
-                    onBlur={() => setCurrentFocus("")}
-                    hasFocus={currentFocus === "code"}
-                    isError={isCodeError}
-                    width='170px'
-                    mask='999-999'
-                    showInputMask = {true}
-                    />
-                <CrmTextField 
-                    label='Кем выдан'
-                    onChange={handleAddressChange}
-                    value={state.address}
-                    onFocus={() => setCurrentFocus("address")}
-                    onBlur={() => setCurrentFocus("")}
-                    hasFocus={currentFocus === "address"}
-                    isError={isAddressError}
-                    width='350px'
-                    />
-            </div>
-        </div>
+            {canEdit &&
+              <div className="colGap10">
+                  <span className='label2bPlus'>Данные паспорта</span>
+                  <div className="rowGap10">
+                      <CrmTextField
+                          label='Серия'
+                          onChange={handleSeriesChange}
+                          value={state.serie}
+                          onFocus={() => setCurrentFocus("serie")}
+                          onBlur={() => setCurrentFocus("")}
+                          hasFocus={currentFocus === "serie"}
+                          isError={isSeriesError}
+                          width='75px'
+                          mask='99 99'
+                          showInputMask={true}
+                      />
+                      <CrmTextField
+                          label='Номер'
+                          onChange={handleNumberChange}
+                          value={state.number}
+                          onFocus={() => setCurrentFocus("number")}
+                          onBlur={() => setCurrentFocus("")}
+                          hasFocus={currentFocus === "number"}
+                          isError={isNumberError}
+                          width='90px'
+                          showInputMask={true}
+                          mask='999999'
+                      />
+                      <CrmTextField
+                          label='Дата выдачи'
+                          onChange={handleDateChange}
+                          value={state.date}
+                          onFocus={() => setCurrentFocus("date")}
+                          onBlur={() => setCurrentFocus("")}
+                          hasFocus={currentFocus === "date"}
+                          isError={isDateError}
+                          width='130px'
+                          showInputMask={true}
+                          mask='99.99.9999'
+                      />
+                      <CrmTextField
+                          label='Код подразделения'
+                          onChange={handleCodeChange}
+                          value={state.code}
+                          onFocus={() => setCurrentFocus("code")}
+                          onBlur={() => setCurrentFocus("")}
+                          hasFocus={currentFocus === "code"}
+                          isError={isCodeError}
+                          width='170px'
+                          mask='999-999'
+                          showInputMask={true}
+                      />
+                      <CrmTextField
+                          label='Кем выдан'
+                          onChange={handleAddressChange}
+                          value={state.address}
+                          onFocus={() => setCurrentFocus("address")}
+                          onBlur={() => setCurrentFocus("")}
+                          hasFocus={currentFocus === "address"}
+                          isError={isAddressError}
+                          width='350px'
+                      />
+                  </div>
+              </div>
+            }
+
+            {!canEdit && 
+                <div className="columnWithNoGap">
+                    <span className='label2bPlus'>Паспортные данные</span>
+                    <div className="rowGap10">
+                        <OnlySeeDatas firstText='Серия' seconText={state.serie} />
+                        <OnlySeeDatas firstText='Номер' seconText={state.number} />
+                        <OnlySeeDatas firstText='Дата выдачи' seconText={state.date} />
+                        <OnlySeeDatas firstText='Код подразделения' seconText={state.code} />
+                        <OnlySeeDatas firstText='Кем выдан' seconText={state.address} />
+                    </div>
+                </div>
+            }
 
         <VerticalSpace height='32px' />
 
         <div className="colGap10">
             <span className='label2bPlus'>Копия договора и другие документы</span>
               <div className="rowGap14">
-                  {file &&
+                    {file &&
                       <div className="relative" onMouseLeave={handleMouseLeave}>
                           <div
                               className="fileCard"
@@ -256,10 +272,11 @@ export default function PassportDatas({
                                 onDelete={tmpDeleteFile}
                                 onDownload={handleDownloadFile} 
                                 onView={handleViewDocument}
+                                canDelete={canEdit}
                               />
                           }
                       </div>
-                  }
+                    }
                   <>
                       <img
                           className='cursor-pointer'
@@ -277,7 +294,7 @@ export default function PassportDatas({
               </div>
         </div>
 
-        {showButtons &&
+            {showButtons &&
               <>
                   <VerticalSpace height={32} />
                   <div className="rowGap12">
@@ -297,7 +314,7 @@ export default function PassportDatas({
                   }
 
               </>
-          }
+            }
 
         <CrmDeleteSnackbar ref={deleteFileRef} undoAction={undoDeleteFile}  />
     </div>
@@ -307,18 +324,19 @@ export default function PassportDatas({
 
 // components
 
-
-
 function DocsToolTip({
     onDelete,
     onView,
     onDownload,
+    canDelete,
 }){
     return (
         <div className="fileToolTip">
-            <div className="garbageContainer" onClick={onDelete}>
-                <GarbageSvg />
-            </div>
+            {canDelete &&
+                <div className="garbageContainer" onClick={onDelete}>
+                    <GarbageSvg />
+                </div>
+            }
             <div className="rowGap4" onClick={onView}>
                 <div className="greenMiniCard">
                     <EyeSvg />
@@ -329,6 +347,16 @@ function DocsToolTip({
             </div>
         </div>
     )
+}
+
+function OnlySeeDatas({
+    firstText,
+    seconText,
+}) {
+    return <div className="columnWithNoGap">
+        <span className='text-[10px] font-medium leading-[11px] text-text-faded-dark'>{firstText}</span>
+        <span className='label2'>{seconText}</span>
+    </div>
 }
 
 // svgs

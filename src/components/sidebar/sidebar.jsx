@@ -42,7 +42,18 @@ const Sidebar = () => {
   const scheduleState = useSelector((state) => state.schedule);
   const registerState = useSelector((state) => state.login);
   const appState = useSelector((state) => state.app);
-
+  // This function will be passed to MenuCompany to close it
+  const closeMenuCompany = () => showMenuCompany(false);
+  const sidebarWidth = isSidebarOpened ? "sidebar_opened" : "sidebar_closed";
+  const isMyfit = appState.appType === "MYFIT";
+  const baseColor = isMyfit ? "rgba(119, 170, 249, 1)" : "rgba(94, 220, 145, 1)";
+  const activeSideBar = isMyfit ? "active_sidebar_section_myfit" : "active_sidebar_section_crm";
+  const avatar = registerState.avatar ? `${AppConstants.baseUrl}image/${registerState.avatar}` : placeHolderImg;
+  const activeAdditionalBlock = isMyfit ? "active_additional_block_myfit" : "active_additional_block_crm";
+  const sidebarSectionClasses = isMyfit ? "sidebar_section_myfit" : "sidebar_section_crm";
+  const sidebarSectionClosedClasses = isMyfit ? "sidebar_section_closed_myfit" : "sidebar_section_closed_crm";
+  const fadedColor = isMyfit ? "#F5F9FF" : "rgba(210, 252, 227, 0.5)";
+  const canSeeOnlyCalendar = useSelector((state) => state.login.canSeeOnlyCalendar);
 
   const handleClick = () => {
     if (isSidebarOpened) {
@@ -116,7 +127,7 @@ const Sidebar = () => {
         // сохраняем текущий зал в sessionStorage
         sessionStorage.setItem("currentGym", JSON.stringify(gymsState.currentGym));
       }
-      if (localStorage.getItem(AppConstants.keyRoleId) !== "5"){
+      if (!canSeeOnlyCalendar){
         dispatch(getNewClients(gymsState.currentGym?.id));
       }
     }
@@ -183,18 +194,6 @@ const Sidebar = () => {
     }
   }, [appState.appType])
   
-
-  // This function will be passed to MenuCompany to close it
-  const closeMenuCompany = () => showMenuCompany(false);
-  const sidebarWidth = isSidebarOpened ? "sidebar_opened" : "sidebar_closed";
-  const isMyfit = appState.appType === "MYFIT";
-  const baseColor = isMyfit ? "rgba(119, 170, 249, 1)" : "rgba(94, 220, 145, 1)";
-  const activeSideBar = isMyfit ? "active_sidebar_section_myfit" : "active_sidebar_section_crm";
-  const avatar = registerState.avatar ? `${AppConstants.baseUrl}image/${registerState.avatar}` : placeHolderImg;
-  const activeAdditionalBlock = isMyfit ? "active_additional_block_myfit" : "active_additional_block_crm";
-  const sidebarSectionClasses = isMyfit ? "sidebar_section_myfit" : "sidebar_section_crm";
-  const sidebarSectionClosedClasses = isMyfit ? "sidebar_section_closed_myfit" : "sidebar_section_closed_crm";
-  const fadedColor = isMyfit ? "#F5F9FF" : "rgba(210, 252, 227, 0.5)";
 
   return isSidebarOpened ? (
     (
@@ -281,7 +280,7 @@ const Sidebar = () => {
           <div className="flex flex-col justify-between flex-grow">
             {/* Первые четыре элемена */}
             <div className="flex flex-col">
-              {localStorage.getItem(AppConstants.keyRoleId) !== "5" &&
+              {!canSeeOnlyCalendar &&
                 <>
                   <NavLink
                     id="sidebarOnclick"
@@ -466,7 +465,7 @@ const Sidebar = () => {
       <div className="flex flex-col justify-between flex-grow">
         {/* Первые четыре элемена */}
         <div className="flex flex-col">
-        {localStorage.getItem(AppConstants.keyRoleId) !== "5" &&
+        {!canSeeOnlyCalendar &&
           <>
             <NavLink
               id="sidebarOnclick"
