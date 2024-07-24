@@ -14,19 +14,19 @@
 
   /* Изменение полосы прокрутки для всего документа */
   ::-webkit-scrollbar {
-    width: 7px; /* ширина полосы прокрутки */
+    width: 10px; /* ширина полосы прокрутки */
     z-index: 1000;
   }
 
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(220, 220, 220, 1); /* цвет ползунка полосы прокрутки */
+    background: rgba(37, 37, 37, 0.6); /* цвет ползунка полосы прокрутки */
     border-radius: 32px;
-    max-height: 100px;
+    max-height: 70px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #555; /* цвет ползунка полосы прокрутки при наведении */
+    background: #DCDCDC; /* цвет ползунка полосы прокрутки при наведении */
   }
 }
 

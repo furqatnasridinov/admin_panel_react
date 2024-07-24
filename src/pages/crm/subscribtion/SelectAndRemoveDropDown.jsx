@@ -61,6 +61,7 @@ export default function SelectAndRemoveDropDown({
                         zIndex : zIndex2, 
                         maxHeight : maxHeight,
                         overflowY : isScrollable ? "scroll" : "hidden",
+                        scrollbarColor: 'rgba(220, 220, 220, 1)',
                         }} className='genderDropDownBody'>
                     {!showMultiple &&
                         <>

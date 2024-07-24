@@ -41,7 +41,7 @@ import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 export default function Employees({ listOfEmployees, gymId }) {
   const dispatch = useDispatch();
   const employeesSlice = useSelector((state) => state.employees);
-  const canEdit = localStorage.getItem(AppConstants.keyRoleId) === "1" || localStorage.getItem(AppConstants.keyRoleId) === "3";
+  const canEdit = useSelector((state) => state.login.canEdit);
 
   // use state for add employees dialog
   const [nameTextfieldHasFocus, setNameFocus] = useState(false);

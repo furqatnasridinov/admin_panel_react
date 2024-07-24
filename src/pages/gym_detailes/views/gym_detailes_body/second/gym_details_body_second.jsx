@@ -46,7 +46,7 @@ export default function GymDetailesBodySecondContainer({
   const dispatch = useDispatch();
   const activitiesSlice = useSelector((state) => state.activities);
   const gymState = useSelector((state) => state.currentGym);
-  const canEdit = localStorage.getItem(AppConstants.keyRoleId) === "1" || localStorage.getItem(AppConstants.keyRoleId) === "3";
+  const canEdit = useSelector((state) => state.login.canEdit);
   const dummyPods = ["Общая тренировка", "Спарринг", "Зал", "Николай Борисович"];
 
   // use states

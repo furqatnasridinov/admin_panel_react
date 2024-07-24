@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import "./index.css"
 import VerticalSpace from "../../../components/VerticalSpace"
 import GreenButton from '../../../components/crm/GreenButton'
@@ -44,6 +44,8 @@ export default function PersonalDatas({
     const [isOtpError, setIsOtpError] = useState(false);
     const phoneRef = useRef(null);
     const state = useSelector((state) => state.crmClients);
+    const fullName = `${state.surname} ${state.name} ${state.patronymic}`;
+    const canEdit = useSelector((state) => state.login.canEdit);
     const showButtons = state.changesOccuredPersonalData;
     const showError = state.missingFieldsPersonalData?.length > 0;
     const showAvatar = state.avatar;
@@ -210,52 +212,61 @@ export default function PersonalDatas({
                 </div>
             }
             <div className="colGap16">
-                  <div className="colGap10">
-                      <span className='label2bPlus'>Фамилия, Имя, Отчество</span>
-                      <div className="rowGap10">
-                          <CrmTextField
-                              value={state.surname}
-                              hasFocus={currenFocus === 'surname'}
-                              onFocus={() => setCurrenFocus('surname')}
-                              onBlur={() => setCurrenFocus('')}
-                              label='Фамилия'
-                              isError={isSurnameError}
-                              onChange={handleSurnameChange} />
+                    {canEdit &&
+                      <div className="colGap10">
+                          <span className='label2bPlus'>Фамилия, Имя, Отчество</span>
+                          <div className="rowGap10">
+                              <CrmTextField
+                                  value={state.surname}
+                                  hasFocus={currenFocus === 'surname'}
+                                  onFocus={() => setCurrenFocus('surname')}
+                                  onBlur={() => setCurrenFocus('')}
+                                  label='Фамилия'
+                                  isError={isSurnameError}
+                                  onChange={handleSurnameChange} />
 
-                          <CrmTextField
-                              value={state.name}
-                              hasFocus={currenFocus === 'name'}
-                              onFocus={() => setCurrenFocus('name')}
-                              onBlur={() => setCurrenFocus('')}
-                              label='Имя'
-                              width='205px'
-                              isError={isNameError}
-                              onChange={handleNameChange} />
+                              <CrmTextField
+                                  value={state.name}
+                                  hasFocus={currenFocus === 'name'}
+                                  onFocus={() => setCurrenFocus('name')}
+                                  onBlur={() => setCurrenFocus('')}
+                                  label='Имя'
+                                  width='205px'
+                                  isError={isNameError}
+                                  onChange={handleNameChange} />
 
-                          <CrmTextField
-                              hasFocus={currenFocus === 'patronymic'}
-                              onFocus={() => setCurrenFocus('patronymic')}
-                              onBlur={() => setCurrenFocus('')}
-                              label='Отчество'
-                              value={state.patronymic}
-                              isError={isPatronymicError}
-                              onChange={handlePatronymicChange}
-                          />
+                              <CrmTextField
+                                  hasFocus={currenFocus === 'patronymic'}
+                                  onFocus={() => setCurrenFocus('patronymic')}
+                                  onBlur={() => setCurrenFocus('')}
+                                  label='Отчество'
+                                  value={state.patronymic}
+                                  isError={isPatronymicError}
+                                  onChange={handlePatronymicChange}
+                              />
+                          </div>
                       </div>
-                  </div>
+                    }
+                    {!canEdit &&
+                        <div className="columnWithNoGap">
+                            <span className='label2bPlus'>Фамилия, Имя, Отчество</span>
+                            <span className='label2'>{fullName}</span>
+                        </div>
+                    }
                 <VerticalSpace height={16} />
-                <div className="rowGap10">
-                    <GenderDropDown  
-                        isOpened={genderDropDownOpened}
-                        toggleDropDown={toggleGenderDropDown}
-                        closeDropDown={() => setGenderDropDownOpened(false)}
-                        value={state.gender}
-                        isError={isGenderError}
-                        onSelect={handleGenderChange} 
-                    />
-                    <div className="colGap10 w-[210px]">
-                        <span className='label2bPlus'>Телефон</span>
-                          <div className="flex flex-row">
+                    {canEdit && 
+                      <div className="rowGap10">
+                          <GenderDropDown
+                              isOpened={genderDropDownOpened}
+                              toggleDropDown={toggleGenderDropDown}
+                              closeDropDown={() => setGenderDropDownOpened(false)}
+                              value={state.gender}
+                              isError={isGenderError}
+                              onSelect={handleGenderChange}
+                          />
+                          <div className="colGap10 w-[210px]">
+                              <span className='label2bPlus'>Телефон</span>
+                              <div className="flex flex-row">
                                   <div className="relative">
                                       <ReactInputMask
                                           mask={'+7 (999) 999-99-99'}
@@ -281,7 +292,7 @@ export default function PersonalDatas({
                                               padding: '12px 16px',
                                           }}
                                       />
-                                      
+
                                       {showDoneButton &&
                                           <div className="absolute top-2 right-4">
                                               <DoneSvg />
@@ -291,97 +302,133 @@ export default function PersonalDatas({
                                   </div>
 
                                   {isPhoneEntered && !showDoneButton &&
-                                      <div className="greenMiniCard40x40" onClick={()=>setModalShown(true)}>
+                                      <div className="greenMiniCard40x40" onClick={() => setModalShown(true)}>
                                           <SendSvg />
                                       </div>
                                   }
+                              </div>
                           </div>
-                    </div>
 
-                    {modalShown && 
-                        <CustomDialog
-                            isOpened={modalShown}
-                            closeOnTapOutside={() => setModalShown(false)}
-                        >
-                            <ModalBody 
-                                otp={otp} 
-                                setOtp={handleOtpChange} 
-                                isOtpError ={isOtpError} 
-                                closeFunction={() => setModalShown(false)}  
-                                isOtpPassed= {isOtpPassed}
-                            />
-                        </CustomDialog>
-                    }
-                    <div className="relative">
-                        <div className="colGap10">
-                            <span className='label2bPlus'>Дата рождения </span>
-                            <ReactInputMask
-                                mask={'99.99.9999'}
-                                maskChar={null}
-                                value={state.birth}
-                                onChange={handleBirthChange}
-                                placeholder='18.11.2003 '
-                                onFocus={() => setCurrenFocus('birth')}
-                                onBlur={() => {
-                                    // если кликаем пикер - не убирать фокус
-                                    if (currenFocus !== 'birth') {
-                                        setCurrenFocus('');
-                                    }
-                                    
-                                }}
-                                style={{
-                                    width: "200px",
-                                    height: "40px",
-                                    border : birthInputBorder,
-                                    outline: 'none',
-                                    borderRadius: '8px',
-                                    fontSize: '14px',
-                                    fontWeight: '400',
-                                    padding: '12px 16px',
-                                }}
-                            />
-                        </div>
-                          {currenFocus === 'birth' &&
-                              <CrmDatePicker
-                                  isShown={true}
-                                  selectedDate={state.birth}
-                                  onSelect={(date) => {
-                                    if (isNaN(date) || date === null) {
-                                      console.error('Invalid date object received');
-                                      return;
-                                    }
-                                    // date is a Date object to ===> 01.01.2022
-                                    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-                                    const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
-                                    const formattedDate = `${day}.${month}.${date.getFullYear()}`;
-                                    dispatch(setBirth(formattedDate));
-                                  }}
-                                  onClose={() => setCurrenFocus('')}
-                              />
+                          {modalShown &&
+                              <CustomDialog
+                                  isOpened={modalShown}
+                                  closeOnTapOutside={() => setModalShown(false)}
+                              >
+                                  <ModalBody
+                                      otp={otp}
+                                      setOtp={handleOtpChange}
+                                      isOtpError={isOtpError}
+                                      closeFunction={() => setModalShown(false)}
+                                      isOtpPassed={isOtpPassed}
+                                  />
+                              </CustomDialog>
                           }
-                          
-                    </div>
+                          <div className="relative">
+                              <div className="colGap10">
+                                  <span className='label2bPlus'>Дата рождения </span>
+                                  <ReactInputMask
+                                      mask={'99.99.9999'}
+                                      maskChar={null}
+                                      value={state.birth}
+                                      onChange={handleBirthChange}
+                                      placeholder='18.11.2003 '
+                                      onFocus={() => setCurrenFocus('birth')}
+                                      onBlur={() => {
+                                          // если кликаем пикер - не убирать фокус
+                                          if (currenFocus !== 'birth') {
+                                              setCurrenFocus('');
+                                          }
+
+                                      }}
+                                      style={{
+                                          width: "200px",
+                                          height: "40px",
+                                          border: birthInputBorder,
+                                          outline: 'none',
+                                          borderRadius: '8px',
+                                          fontSize: '14px',
+                                          fontWeight: '400',
+                                          padding: '12px 16px',
+                                      }}
+                                  />
+                              </div>
+                              {currenFocus === 'birth' &&
+                                  <CrmDatePicker
+                                      isShown={true}
+                                      selectedDate={state.birth}
+                                      onSelect={(date) => {
+                                          if (isNaN(date) || date === null) {
+                                              console.error('Invalid date object received');
+                                              return;
+                                          }
+                                          // date is a Date object to ===> 01.01.2022
+                                          const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+                                          const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+                                          const formattedDate = `${day}.${month}.${date.getFullYear()}`;
+                                          dispatch(setBirth(formattedDate));
+                                      }}
+                                      onClose={() => setCurrenFocus('')}
+                                  />
+                              }
+
+                          </div>
+
+                      </div>
+                    }
+                    {!canEdit && 
+                      <Fragment>
+                          <div className="flex flex-row gap-[80px] items-center">
+                              <div className="columnWithNoGap">
+                                  <span className='label2bPlus'>Пол</span>
+                                  <span className='label2'>{state.gender}</span>
+                              </div>
+                              <div className="columnWithNoGap">
+                                  <span className='label2bPlus'>Дата рождения</span>
+                                  <span className='label2'>{state.birth}</span>
+                              </div>
+                          </div>
+                          <VerticalSpace height={16} />
+                          <div className="columnWithNoGap">
+                              <span className='label2bPlus'>Телефон</span>
+                              <ReactInputMask
+                                  mask={'+7 (999) 999-99-99'}
+                                  value={state.phone}
+                                  maskChar={null}
+                                  readOnly={true}
+                                  className='label2 outline-none'
+                              />
+                          </div>
+                      </Fragment>
+                    }
                     
-                </div>
             </div>
             
         </div>
         <VerticalSpace height={32} />
-        <div className="colGap10">
-            <span className='label2bPlus'>Заметка о клиенте</span>
-            <CustomCrmTextArea 
-                value={state.note}
-                onChange={(e) => dispatch(setNote(e.target.value))}
-                onFocus={() => setCurrenFocus('note')}
-                onBlur={() => setCurrenFocus('')}
-                currenFocus={currenFocus === 'note'}
-                placeHolder='Добавьте заметку о клиенте, например о медицинских противопоказаниях, либо его личные пожелания'
-                height='40px'
-            />
-        </div>
+            {canEdit &&
+              <div className="colGap10">
+                  <span className='label2bPlus'>Заметка о клиенте</span>
+                  <CustomCrmTextArea
+                      value={state.note}
+                      onChange={(e) => dispatch(setNote(e.target.value))}
+                      onFocus={() => setCurrenFocus('note')}
+                      onBlur={() => setCurrenFocus('')}
+                      currenFocus={currenFocus === 'note'}
+                      placeHolder='Добавьте заметку о клиенте, например о медицинских противопоказаниях, либо его личные пожелания'
+                      height='40px'
+                  />
+              </div>
+            }
 
-          {showButtons &&
-              <>
+            {!canEdit &&
+              <div className="columnWithNoGap">
+                  <span className='label2bPlus'>Заметка о клиенте</span>
+                  <span className='label2'>{state.note}</span>
+              </div>
+            }
+
+            {showButtons &&
+                <>
                   <VerticalSpace height={32} />
                   <div className="rowGap12">
                       <CrmWhiteButton onClick={() => { dispatch(resetPersonalInfos()) }} />
@@ -391,15 +438,14 @@ export default function PersonalDatas({
                               updateClientFunc();
                           }} />
                   </div>
-                  {showError &&
+                    {showError &&
                       <>
                           <VerticalSpace height={32} />
                           <span className='errorText'>Чтобы продолжить - необходимо заполнить все обязательные поля, выделенные красным</span>
                       </>
-                  }
-
-              </>
-          }
+                    }
+                </>
+            }
 
     </div>
   )

@@ -50,7 +50,7 @@ import AppConstants from "../../../../../config/app_constants";
 export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const dispatch = useDispatch();
   const currentGymState = useSelector((state) => state.currentGym);
-  const canEdit = localStorage.getItem(AppConstants.keyRoleId) === "1" || localStorage.getItem(AppConstants.keyRoleId) === "3";
+  const canEdit = useSelector((state) => state.login.canEdit);
 
   // use states
   const [isNameEditingEnabled, setNameEditing] = useState(false);

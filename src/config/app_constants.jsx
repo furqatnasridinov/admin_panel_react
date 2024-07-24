@@ -58,6 +58,10 @@ class AppConstants {
     return "roleId";
   }
 
+  static keyCanSeeCalendar() {
+    return "canSeeCalendar";
+  }
+
   static get vapidKey() {
     return "BKtMN6wjJ9LaMI3lhESMVyzTEMxTwC45q1hjAxgKijOf-e2uEYAmXSZrHirgj4lzx6XIkfxfybYDUgxdQWdTi9g";
   }

@@ -65,7 +65,7 @@ export function EditableTextfield({
                 borderRadius: "8px",
                 outline: "none",
                 resize: "none",
-                backgroundColor: "none",
+                backgroundColor: "transparent",
                 height: "auto",
                 minHeight: minHeight,
                 maxHeight: `${10 * lineheight}px`, // Set max height to 10 lines 
