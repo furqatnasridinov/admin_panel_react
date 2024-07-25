@@ -59,7 +59,7 @@ export default function CustomDialog({
   }, [isOpened, closeOnTapOutside]);
 
   return createPortal(
-    <dialog ref={dialogRef} onClick={(e) => e.stopPropagation()}>
+    <dialog style={{outline : "none"}} ref={dialogRef} onClick={(e) => e.stopPropagation()}>
       {children}{" "}
     </dialog>,
     document.getElementById("modal")

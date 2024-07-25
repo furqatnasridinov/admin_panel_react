@@ -33,21 +33,30 @@ import {
   removeActivityFromListOfActivities,
   returnDeletedActivity,
   addPhotoToSelectedActivity,
+  selectSubcategory,
 } from "../../../../../features/activities_slice";
 import DropDownSmaller from "../../../../../components/dropdown/dropdown_smaller";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 import { toast } from "react-toastify";
+import axiosClient from "../../../../../config/axios_client";
+import EachLessonTypeDraggable from "../../../components/EachLessonTypeDraggable";
+import EachSubcategoryEditable from "../../../components/EachSubcategoryEditable";
+import BackButton from "../../../../../components/button/back_button";
+import AddSubcategoryButton from "../../../components/AddSubcategoryButton";
 
 export default function GymDetailesBodySecondContainer({
   listOfActivities,
   activityDescribtion,
   activityPeculiarities,
+  gymId,
 }) {
   const dispatch = useDispatch();
   const activitiesSlice = useSelector((state) => state.activities);
   const gymState = useSelector((state) => state.currentGym);
   const canEdit = useSelector((state) => state.login.canEdit);
-  const dummyPods = ["Общая тренировка", "Спарринг", "Зал", "Николай Борисович"];
+  const subcategories = activitiesSlice.subcategoriesOfSelectedActivity || [];
+  const selectedSubcategory = activitiesSlice.selectedSubcategory; // {}
+  const selectedActivity = activitiesSlice.selectedActivity;
 
   // use states
   const [isDescribtionEdittingEnabled, setDescribtionEditting] = useState(false);
@@ -58,15 +67,14 @@ export default function GymDetailesBodySecondContainer({
   const [photoToShowInDialog, setPhotoToBeShownInDialog] = useState("");
   const [isDropDrownShown, showDropDown] = useState(false);
   const [isDropDownOpened, openDropDown] = useState(false);
-  const [cancelDeleteTimeoutPhotos, setCancelDeleteTimeoutPhotos] = useState(
-    []
-  );
-  const [cancelDeleteTimeoutActivities, setCancelDeleteTimeoutActivities] =
-    useState([]);
+  const [cancelDeleteTimeoutPhotos, setCancelDeleteTimeoutPhotos] = useState([]);
+  const [cancelDeleteTimeoutActivities, setCancelDeleteTimeoutActivities] = useState([]);
   const [activityDescribtionNotValidated, setActivityDescribtionNotValidated] = useState(false);
   const [positionOfPhoto, setPositionOfPhoto] = useState(0);
   const [positionOfActivity, setPositionOfActivity] = useState(0);
-
+  const [addLessonTypeClicked, setAddLessonTypeClicked] = useState(false);
+  const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
+  const [inheritance, setInheritance] = useState(null);
   // use refs
   const hiddenFileInput = useRef(null);
   const deletePhotosSnackRef = useRef();
@@ -89,12 +97,12 @@ export default function GymDetailesBodySecondContainer({
       1
     )[0];
     const request = {
-      gymId: gymState.currentGym.id,
+      gymId: gymId,
       url: draggedItemContent,
       orderNumber: positionOfPhoto,
     };
     await dispatch(dragAndDropGymPictures(request));
-    dispatch(getPhotos(gymState.currentGym.id));
+    dispatch(getPhotos(gymId));
     // reset the position ref
     draggedItemRef.current = null;
   }
@@ -109,13 +117,12 @@ export default function GymDetailesBodySecondContainer({
     )[0];
     // dispatch
     const request = {
-      gymId: gymState.currentGym.id,
+      gymId: gymId,
       lessonType: draggedItemContent,
       orderNumber: positionOfActivity,
     };
     await dispatch(dragAndDropActivities(request));
-    dispatch(getListOfActivities(gymState.currentGym.id));
-
+    dispatch(getListOfActivities(gymId));
     // reset the position ref
     draggedActivityRef.current = null;
   }
@@ -127,12 +134,13 @@ export default function GymDetailesBodySecondContainer({
     }, 0);
   }
 
+
   return (
     <div className="flex flex-col bg-white h-fit rounded-[16px] p-[32px] gap-[32px]">
       <div className="activities">
         <TextAndTextButton
           text1={"Активности"}
-          text2={activitiesSlice.selectedActivity === null ? "Добавить активности" : "Редактировать список активностей и подгрупп"}
+          text2={selectedActivity === null ? "Добавить активности" : "Редактировать список активностей и подгрупп"}
           onclick={() => {openActivitiesModal(true)}}
           showText2 = {canEdit}
         />
@@ -144,7 +152,7 @@ export default function GymDetailesBodySecondContainer({
                 <Chip
                   key={index}
                   name={activity}
-                  isActive={activity === activitiesSlice.selectedActivity}
+                  isActive={activity === selectedActivity}
                   onclick={() => dispatch(selectAnActivity(activity))}
                 />
               );
@@ -154,7 +162,12 @@ export default function GymDetailesBodySecondContainer({
         {isActivitiesModalOpened && (
           <CustomDialog
             isOpened={isActivitiesModalOpened}
-            closeOnTapOutside={() => {openActivitiesModal(false)}}
+            closeOnTapOutside={() => {
+              openActivitiesModal(false);
+              setAddLessonTypeClicked(false);
+              setAddSubcategoryClicked(false);
+              setInheritance(null);
+            }}
           >
             {/* Activities modal body */}
             <div className="mainContainerActivitiesModal">
@@ -177,23 +190,24 @@ export default function GymDetailesBodySecondContainer({
                     {listOfActivities.filter((el) => !activitiesSlice.deletedActivities.includes(el))
                       .map((activity, index) => {
                         return (
-                          <EachActivity
+                          <EachLessonTypeDraggable
                             key={index}
                             title={activity}
                             onclick={() => {dispatch(selectAnActivity(activity))}}
                             onEditClicked={() => { }}
-                            onRemoveClicked={async () => {dispatch(removeActivityFromListOfActivities(activity));
+                            onRemoveClicked={async () => {
+                              dispatch(removeActivityFromListOfActivities(activity));
                               const cancelTimeOut =
                                 deleteActivitiesSnackRef.current.show(
                                   "Вы удалили занятие",
                                   // function when time ended
                                   async () => {
                                     const { id, lessonType } = {
-                                      id: gymState.currentGym.id,
+                                      id: gymId,
                                       lessonType: activity,
                                     };
                                     await dispatch(deleteActivity({ id, lessonType }));
-                                    dispatch(getListOfActivities(gymState.currentGym.id));
+                                    dispatch(getListOfActivities(gymId));
                                   }
                                 );
                               setCancelDeleteTimeoutActivities((prevState) => [
@@ -201,7 +215,7 @@ export default function GymDetailesBodySecondContainer({
                                 cancelTimeOut,
                               ]);
                             }}
-                            isActive={activity === activitiesSlice.selectedActivity}
+                            isActive={activity === selectedActivity}
                             onDragStart={() =>(draggedActivityRef.current = index)}
                             onDragEnter={() => setPositionOfActivity(index + 1)}
                             onDragEnd={handleSortingActivities}
@@ -210,39 +224,50 @@ export default function GymDetailesBodySecondContainer({
                         );
                       })}
                     {/* Кнопка добавить */}
-                    <DropDownSmaller
-                      text={"Добавить"}
-                      isDropDownOpened={isDropDownOpened}
-                      openCloseDropDown={() => {
-                        if (isDropDownOpened) {
-                          openDropDown(false);
-                        } else {
-                          openDropDown(true);
-                          scrollToBottom();
-                        }}}
-                      map={activitiesSlice.allAvailableLessonTypes
-                        .filter((el) =>!activitiesSlice.listOfActivities.includes(el))
-                        .map((item, index) => (
-                          <button
-                            key={index}
-                            className="gym_names"
-                            onClick={async () => {
-                              const { id, lessonType } = {
-                                id: gymState.currentGym.id,
-                                lessonType: item,
-                              };
-                              await dispatch(
-                                addNewActivity({ id, lessonType }),
-                                openDropDown(false),
-                              );
-                              dispatch(getListOfActivities(gymState.currentGym.id));
-                              showDropDown(false);
-                            }}
-                          >
-                            {item}
-                          </button>
-                        ))}
-                    />
+                    {!addLessonTypeClicked &&
+                      <div className="rowGap10 ml-[10px] cursor-pointer" onClick={() => {setAddLessonTypeClicked(true); scrollToBottom()}}>
+                        <PlusSvg />
+                        <span className="label2 text-blue-text">Добавить</span>
+                      </div>
+                    }
+                    {addLessonTypeClicked && 
+                      <DropDownSmaller
+                        text={"Добавить"}
+                        isDropDownOpened={isDropDownOpened || addLessonTypeClicked}
+                        openCloseDropDown={() => {
+                          if (isDropDownOpened || addLessonTypeClicked) {
+                            setAddLessonTypeClicked(false);
+                            openDropDown(false);
+                          } else {
+                            openDropDown(true);
+                            scrollToBottom();
+                          }
+                        }}
+                        map={activitiesSlice.allAvailableLessonTypes
+                          .filter((el) => !activitiesSlice.listOfActivities.includes(el))
+                          .map((item, index) => (
+                            <button
+                              key={index}
+                              className="gym_names"
+                              onClick={async () => {
+                                const { id, lessonType } = {
+                                  id: gymId,
+                                  lessonType: item,
+                                };
+                                await dispatch(
+                                  addNewActivity({ id, lessonType }),
+                                  openDropDown(false),
+                                );
+                                dispatch(getListOfActivities(gymId));
+                                showDropDown(false);
+                                setAddLessonTypeClicked(false);
+                              }}
+                            >
+                              {item}
+                            </button>
+                          ))}
+                      />
+                    }
                   </div>
                 </div>
 
@@ -250,7 +275,36 @@ export default function GymDetailesBodySecondContainer({
                   <span className="label2bPlus">
                     Подгруппы внутри активности:
                   </span>
-                  <div className="blue_bordered_container"></div>
+                  <div className="blue_bordered_container">
+                      {subcategories && subcategories.length > 0 &&
+                        [...subcategories]
+                        // compare by orderNumber to sort
+                        .sort((a, b) => a?.orderNumber - b?.orderNumber)
+                        .map((activity) => {
+                          return <EachSubcategoryEditable 
+                            key={activity?.id}
+                            subcategory={activity}
+                            currentLessonType={selectedActivity}
+                            gymId={gymId}
+                            />
+                        })
+                      }
+                    {/* Кнопка добавить */}
+                    <AddSubcategoryButton 
+                      onClick={() => {
+                        setAddSubcategoryClicked(true);
+                        openActivitiesModal(false);
+                      }}
+                      currentLessonType={selectedActivity}
+                      gymId={gymId}
+                      showField={inheritance !== null}
+                      onDelete={() => {
+                        setInheritance(null);
+                      }}
+                      inheritance={inheritance}
+                      nextOrderNumber={subcategories.length + 1}
+                    />
+                  </div>
                 </div>
               </div>
               <CustomButton
@@ -263,34 +317,67 @@ export default function GymDetailesBodySecondContainer({
               />
             </div>
           </CustomDialog>
+          
         )}
       </div>
 
-      <div className="colGap10">
-        <span className="label2bPlus">Подгруппы внутри выбранной активности:</span>
-        <div className="chips_row ">
-          {dummyPods
-            //?.filter((el) => !activitiesSlice.deletedActivities.includes(el))
-            .map((activity, index) => {
-              return (
-                <Chip
-                  key={index}
-                  name={activity}
-                  isActive={index === 2}
-                  //onclick={() => dispatch(selectAnActivity(activity))}
-                />
-              );
-            })}
+      {addSubcategoryClicked &&
+        <CustomDialog isOpened={addSubcategoryClicked} closeOnTapOutside={() => setAddSubcategoryClicked(false)}>
+          <div className="mainContainerActivitiesModal w-[530px]">
+            <div className="colGap10">
+              <span className="headerH2">Перенести информацию из основной активности?</span>
+              <span className="label2">{`Вы добавляете новую подгруппу в активность: “${selectedActivity}”. Хотите перенести из неё Описание, Особенности посещения и Фотографии?`}</span>
+            </div>
+            <div className="rowGap10">
+              <BackButton 
+                title={"Нет, заполню позже"} 
+                onСlick={()=>{
+                  setInheritance(false);
+                  setAddSubcategoryClicked(false);
+                  openActivitiesModal(true);
+                }} 
+              />
+              
+              <CustomButton 
+                title={"Да, перенести"} 
+                onСlick={()=>{
+                  setInheritance(true);
+                  setAddSubcategoryClicked(false);
+                  openActivitiesModal(true);
+                }} 
+              />
+            </div>
+          </div>
+        </CustomDialog>
+      }
+
+      {subcategories && subcategories.length > 0 &&
+        <div className="colGap10">
+          <span className="label2bPlus">Подгруппы внутри выбранной активности:</span>
+          <div className="chips_row ">
+            {[...subcategories]
+              .sort((a, b) => a?.orderNumber - b?.orderNumber)
+              .map((activity) => {
+                return (
+                  <Chip
+                    key={activity?.id}
+                    name={activity?.name}
+                    isActive={selectedSubcategory?.id === activity?.id}
+                    onclick={() => dispatch(selectSubcategory(activity))}
+                  />
+                );
+              })}
+          </div>
         </div>
-      </div>
+      }
 
 
       
 
-      {activitiesSlice.selectedActivity !== null &&
+      {selectedActivity !== null &&
         <div className="blueBigCard">
             <div className="describtion_and_features_column">
-              <span className="headerH1">{activitiesSlice.selectedActivity}</span>
+              <span className="headerH1">{selectedSubcategory ? selectedSubcategory?.name : selectedActivity}</span>
 
               {/* describtion */}
               <div className="describtion_to_activity">
@@ -304,7 +391,7 @@ export default function GymDetailesBodySecondContainer({
                       setDescribtionEditting(true);
                     }else{
                       if (activitiesSlice.isChangesOcurred) {
-                      dispatch(getInfoForType(gymState.currentGym.id))}
+                      dispatch(getInfoForType(gymId))}
                       setDescribtionEditting(false)}
                   }}/>
                
@@ -324,13 +411,13 @@ export default function GymDetailesBodySecondContainer({
                           setActivityDescribtionNotValidated(true);
                         } else {
                           const { id, lessonType, typeDescription } = {
-                            id: gymState.currentGym.id,
-                            lessonType: activitiesSlice.selectedActivity,
+                            id: gymId,
+                            lessonType: selectedActivity,
                             typeDescription: activityDescribtion,
                           };
                           await dispatch(
                           patchDescriptionOfSelectedActivity({id,lessonType,typeDescription}));
-                          dispatch(getInfoForType(gymState.currentGym.id));
+                          dispatch(getInfoForType(gymId));
                           setDescribtionEditting(false);
                           dispatch(resetChanges());
                           setActivityDescribtionNotValidated(false);
@@ -352,7 +439,7 @@ export default function GymDetailesBodySecondContainer({
                   onclick={() =>{
                     if (isFeaturesEdittingEnabled) {
                       if (activitiesSlice.isChangesOcurred) {
-                        dispatch(getInfoForType(gymState.currentGym.id))}
+                        dispatch(getInfoForType(gymId))}
                         setFeaturesEditting(false);
                       }else{
                         setFeaturesEditting(true)
@@ -362,12 +449,12 @@ export default function GymDetailesBodySecondContainer({
                   <FeaturesTextField
                     onButtonClicked={async () => {
                       const { id, lessonType, peculiarities } = {
-                      id: gymState.currentGym.id,
-                      lessonType: activitiesSlice.selectedActivity,
+                      id: gymId,
+                      lessonType: selectedActivity,
                       peculiarities: activityPeculiarities
                     };
                     await dispatch(patchPeculiaritiesOfSelectedActivity({id,lessonType,peculiarities}));
-                    dispatch(getInfoForType(gymState.currentGym.id));
+                    dispatch(getInfoForType(gymId));
                     setFeaturesEditting(false);
                     dispatch(resetChanges())}}
                     onChanged={(e) => {dispatch(changeActivityPeculiarities(e.target.value))}}
@@ -483,9 +570,9 @@ export default function GymDetailesBodySecondContainer({
                                     "Вы удалили фото",
                                     // function when time ended
                                     async () => {
-                                      const { id, url } = { id: gymState.currentGym.id, url: item };
+                                      const { id, url } = { id: gymId, url: item };
                                       await dispatch(deleteActivityPhoto({ id, url }));
-                                      dispatch(getPhotos(gymState.currentGym.id));
+                                      dispatch(getPhotos(gymId));
                                     });
                                 setCancelDeleteTimeoutPhotos((prevState) => [
                                   ...prevState,
@@ -535,14 +622,14 @@ export default function GymDetailesBodySecondContainer({
                                 if (file.type === "image/jpeg") {convertedFiles.push(file)}
                                 if (file.type !== "image/jpeg") {toast("Неподдерживаемый формат файла")}}
                                 const { id, type } = {
-                                id: gymState.currentGym.id,
-                                type: activitiesSlice.selectedActivity};
+                                id: gymId,
+                                type: selectedActivity};
                                 // if convertedFiles includes only jpeg files
                                 if (convertedFiles.length > 0) {
                                   deletePhotosSnackRef.current.hideSnackbars();
                                   progressSnackbarRef.current.show("Идет загрузка фото");
                                   await dispatch(addPhotoToSelectedActivity({id,files: convertedFiles,type}));
-                                  dispatch(getPhotos(gymState.currentGym.id))
+                                  dispatch(getPhotos(gymId));
                                 }
                               }
                               event.target.value = null}} // Очистить значение элемента ввода файла
@@ -591,38 +678,10 @@ function Chip({ name, onclick, isActive }) {
   );
 }
 
-function EachActivity({
-  title,
-  onclick,
-  isActive,
-  onRemoveClicked,
-  onEditClicked,
-  onDragStart,
-  onDragEnter,
-  onDragEnd,
-  onDragOver,
-}) {
-  const redColor = "rgba(255, 61, 0, 1)";
-  return (
-    <div
-      className={isActive ? "isActive" : "each_activity"}
-      draggable={true}
-      onDragStart={onDragStart}
-      onDragEnter={onDragEnter}
-      onDragEnd={onDragEnd}
-      onDragOver={onDragOver}
-    >
-      <div className="removeBlockResponsive cursor-pointer" onClick={onRemoveClicked}>
-        <span style={{color : redColor}} className="text-[20px]">-</span>
-      </div>
-      <p onClick={onclick}>{title}</p>
-      {/* <img
-        style={{ cursor: "pointer" }}
-        className="edit_icon"
-        onClick={onEditClicked}
-        src={editActivitySvg}
-        alt=""
-      /> */}
-    </div>
-  );
+function PlusSvg(){
+  return <svg width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0.38916 6C0.38916 2.68629 3.07545 0 6.38916 0H22.3892C25.7029 0 28.3892 2.68629 28.3892 6V22C28.3892 25.3137 25.7029 28 22.3892 28H6.38916C3.07545 28 0.38916 25.3137 0.38916 22V6Z" fill="#F5F9FF"/>
+  <path d="M10.6392 14.5H14.3892M18.1392 14.5H14.3892M14.3892 14.5V10.75M14.3892 14.5V18.25" stroke="#599AFE" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  
 }

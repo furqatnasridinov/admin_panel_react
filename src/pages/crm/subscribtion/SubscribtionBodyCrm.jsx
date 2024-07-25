@@ -226,6 +226,11 @@ export default function SubscribtionBodyCrm() {
     }
 
     function createMembershipRequest() {
+        // gyms = [{id: 1}, {id: 2}],
+        const selectedGymsId = dropDownsGyms.map(dropDown => dropDown.gym.id);
+        const gyms = selectedGymsId.map(item => ({ id: item }));
+        const activities = dropDownsActivities.map(dropDown => dropDown.gymAndLessonType?.lessonType);
+        const subcategories = dropDownsSubcategories.map(dropDown => dropDown.name);
         const data = 
         {
             daysOfWeek: getApiLikeWeekDays(selectedWeekDays),
@@ -243,18 +248,17 @@ export default function SubscribtionBodyCrm() {
                 second: "0"
             },
             freezingCancellation: conditionForFreezing,
-            id: 0,
-            lessonTypes: [
-                "string" // 
-            ],
+            gyms : gyms,
+            lessonTypes: activities,
+            lessonSubTypes : subcategories,
             name: name,
             price: price.replace('₽', ''),
             privileges: benefits,
             restrictions: limitations,
             type: type,
         }
-        console.log(data);
-        /* axiosClient.post('api/admin/memberships', data)
+        console.log(`отправлен запрос на создание абонемента==> ${JSON.stringify(data)}`);
+        axiosClient.post('api/crm/membership/add', data)
         .then(res => {
             if (res.status === 200) {
                 toast.success('Абонемент успешно создан');
@@ -262,7 +266,7 @@ export default function SubscribtionBodyCrm() {
         })
         .catch(err => {
             toast.error('Ошибка при создании абонемента ==> ' + err.message);
-        }); */
+        });
     }
 
     function toolTipOnMouseEnter() {

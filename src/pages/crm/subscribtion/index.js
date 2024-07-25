@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react'
 import SubscribtionBodyCrm from './SubscribtionBodyCrm'
 import { useDispatch } from 'react-redux'
-import { getListOfActivities } from '../../../features/activities_slice'
 import { getListOfGyms } from '../../../features/current_gym_slice'
 
 export default function SubscribtionPageCrm() {
