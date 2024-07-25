@@ -103,6 +103,7 @@ export default function GymDetails() {
     activitiesSlice.selectedActivity,
     activitiesSlice.infoForType,
     activitiesSlice.photosOfAllActivities,
+    activitiesSlice.selectedSubcategory,
   ]); // calling this after everytime when selectedActivity changes
 
   // ref for snackbar
@@ -140,6 +141,7 @@ export default function GymDetails() {
               activityDescribtion={activitiesSlice.activityDescribtion}
               setPhotosOfSelectedActivity={setPhotosOfSelectedActivity}
               snackbarRef={snackBarRef}
+              gymId={gymId}
             />
           </>
         )}

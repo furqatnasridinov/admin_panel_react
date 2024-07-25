@@ -66,7 +66,7 @@ export default function SelectAndRemoveDropDown({
                     {!showMultiple &&
                         <>
                             {value && <DeleteButton onClick={onDelete} />}
-                            {list.map((item) => {
+                            {list && list.length > 0 && list?.map((item) => {
                                 return <span key={item?.id} className='eachGender' onClick={() => onSelect(item)}>{item?.name}</span>
                             })
                             }
@@ -79,7 +79,7 @@ export default function SelectAndRemoveDropDown({
                         <>
                             {value && <DeleteButton onClick={onDelete} />}
                             {
-                                list.map((item) => {
+                                list?.map((item) => {
                                     const filteredLessonTypes = item?.lessonTypes
                                         .filter(lessonType => !dropDowns.some(dropDown =>
                                             dropDown.gymAndLessonType?.gym?.id === item.gym.id &&

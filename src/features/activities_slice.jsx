@@ -68,9 +68,9 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
   }
 );
 
-export const patchDescriptionOfSelectedActivity = createAsyncThunk(
+/* export const patchDescriptionOfSelectedActivity = createAsyncThunk(
   "activitiesSlice/changeDescriptionOfSelectedActivity",
-  async ({ id, lessonType, typeDescription }) => {
+  async ({ id, lessonType, typeDescription, subCategory }) => {
     try {
       const dataToSend = {
         lessonType: lessonType,
@@ -84,9 +84,9 @@ export const patchDescriptionOfSelectedActivity = createAsyncThunk(
       toast(`changeDescriptionOfSelectedActivity ${error["response"]["data"]["operationInfo"]}`);
     }
   }
-);
+); */
 
-export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
+/* export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
   "activitiesSlice/changePeculiaritiesOfSelectedActivity",
   async ({ id, lessonType, peculiarities }) => {
     try {
@@ -109,7 +109,7 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
       toast(`changePeculiaritiesOfSelectedActivity ${error}`);
     }
   }
-);
+); */
 
 export const deleteActivityPhoto = createAsyncThunk(
   "activitiesSlice/deleteActivityPhoto",
@@ -164,9 +164,10 @@ export const addNewActivity = createAsyncThunk(
   }
 );
 
+// все занятия которые есть в базе
 export const getAllAvailableLessonTypes = createAsyncThunk(
   "activities/getAllAvailableLessonTypes",
-  async () => {
+  async () => {     
     try {
       const response = await axiosClient.get("api/main/lessonTypes");
       if (response.data["operationResult"] === "OK") {
@@ -201,10 +202,14 @@ const activitiesSlice = createSlice({
   initialState: {
     isLoading: false,
     listOfActivities: [],
+    jsonLessonTypeAndSubtypes: {}, // { "cardio" : [{jsonSubCategory}, {jsonSubCategory}]}
+    subcategoriesOfSelectedActivity: [], // [{jsonSubCategory}, {jsonSubCategory}]
+    selectedSubcategory: {}, // {jsonSubCategory}
     isActivitiesLoding: false,
     isActivityPhotosLoading: false,
     deletedActivities: [],
     allAvailableLessonTypes: [],
+    makeFirstLessonTypeActive: true,
     isError: false,
     selectedActivity: "",
     infoForType: {},
@@ -216,16 +221,54 @@ const activitiesSlice = createSlice({
     isChangesOcurred: false,
   },
   reducers: {
+
     makeFirstItemAsActive: (state) => {
       if (state.listOfActivities?.length > 0) {
-        state.selectedActivity = state.listOfActivities[0];
-      }else{
+        const firstItem = state.listOfActivities[0];
+        if (state.makeFirstLessonTypeActive) {
+          state.selectedActivity = firstItem;
+        }
+        const activity = state.selectedActivity || firstItem;
+        const currentSubcategories = state.jsonLessonTypeAndSubtypes[activity];
+          if (currentSubcategories) {
+            const sorted = [...currentSubcategories].sort((a, b) => a.orderNumber - b.orderNumber);
+            state.subcategoriesOfSelectedActivity = sorted;
+            if (state.makeFirstLessonTypeActive) {
+              state.selectedSubcategory = sorted[0];
+            }
+          }
+      } else{
         state.selectedActivity = null;
       }
     },
 
+    unsetFirstItemAsActive: (state) => {
+      state.makeFirstLessonTypeActive = false;
+    },
+
     selectAnActivity: (state, action) => {
       state.selectedActivity = action.payload;
+      const currentSubcategories = state.jsonLessonTypeAndSubtypes[action.payload];
+      if (currentSubcategories) {
+        const sorted = [...currentSubcategories].sort((a, b) => a.orderNumber - b.orderNumber);
+        state.subcategoriesOfSelectedActivity = sorted;
+        state.selectedSubcategory = sorted[0];
+      }
+    },
+
+    changeNameOfSelectedSubcategory: (state, action) => {
+      const jsonSubCategory = action.payload;
+      const subcategoriesOfSelectedActivity = state.subcategoriesOfSelectedActivity;
+      const index = subcategoriesOfSelectedActivity.findIndex(
+        (subcategory) => subcategory.id === jsonSubCategory.id
+      );
+      if (index !== -1) {
+        subcategoriesOfSelectedActivity[index].name = jsonSubCategory.name;
+      }
+    },
+
+    selectSubcategory: (state, action) => {
+      state.selectedSubcategory = action.payload;
     },
 
     removeSelectedActivity: (state) => {
@@ -264,19 +307,48 @@ const activitiesSlice = createSlice({
 
     setActivityDescribtion: (state) => {
       try {
-        const isArrayOfObjects = Array.isArray(state.infoForType[state.selectedActivity]);
-        const desc = isArrayOfObjects ? state.infoForType[state.selectedActivity]?.[0]?.["typeDescription"] ?? "" : "";
-        state.activityDescribtion = desc;
+        const selectedSubcategory = state.selectedSubcategory;
+        if (selectedSubcategory) {
+          if (selectedSubcategory?.inheritance) {
+            // if inheritance is true, then we need to get the description from the parent (lessonType)
+            const isArrayOfObjects = Array.isArray(state.infoForType[state.selectedActivity]);
+            const desc = isArrayOfObjects ? state.infoForType[state.selectedActivity]?.[0]?.["typeDescription"] ?? "" : "";
+            state.activityDescribtion = desc;
+          }else{
+            // if inheritance is false, then we need to get the description from the subcategory itself
+            state.activityDescribtion = selectedSubcategory?.typeDescription ?? "";
+          }          
+        }else{
+          const isArrayOfObjects = Array.isArray(state.infoForType[state.selectedActivity]);
+          const desc = isArrayOfObjects ? state.infoForType[state.selectedActivity]?.[0]?.["typeDescription"] ?? "" : "";
+          state.activityDescribtion = desc;
+        }
       } catch (error) {
         throw new Error(`setActivityDescribtion ${error}`);
       }
-      
     },
 
     setActivityPeculiarities: (state) => {
-      state.activityPeculiarities = Array.isArray(state.infoForType[state.selectedActivity])
-        ? state.infoForType[state.selectedActivity]?.[0]?.["peculiarities"] ?? ""
-        : "";
+      try {
+        const selectedSubcategory = state.selectedSubcategory;
+        if (selectedSubcategory) {
+          if (selectedSubcategory?.inheritance) {
+            // if inheritance is true, then we need to get the peculiarities from the parent (lessonType)
+            const isArrayOfObjects = Array.isArray(state.infoForType[state.selectedActivity]);
+            const pec = isArrayOfObjects ? state.infoForType[state.selectedActivity]?.[0]?.["peculiarities"] ?? "" : "";
+            state.activityPeculiarities = pec;
+          }else{
+            // if inheritance is false, then we need to get the peculiarities from the subcategory itself
+            state.activityPeculiarities = selectedSubcategory?.peculiarities ?? "";
+          }          
+        }else{
+          const isArrayOfObjects = Array.isArray(state.infoForType[state.selectedActivity]);
+          const pec = isArrayOfObjects ? state.infoForType[state.selectedActivity]?.[0]?.["peculiarities"] ?? "" : "";
+          state.activityPeculiarities = pec;
+        }
+      } catch (error) {
+        throw new Error(`setActivityDescribtion ${error}`);
+      }
     },
 
     changeActivityDescribtion: (state, action) => {
@@ -300,13 +372,36 @@ const activitiesSlice = createSlice({
     },
 
     setPhotosOfSelectedActivity: (state) => {
-      if (state.photosOfAllActivities[state.selectedActivity]) {
-        const notModifiedList = [
-          ...state.photosOfAllActivities[state.selectedActivity],
-        ];
-        state.photosOfSelectedActivity = notModifiedList;
-      } else {
-        state.photosOfSelectedActivity = [];
+      try {
+        const selectedSubcategory = state.selectedSubcategory;
+        if (selectedSubcategory) {
+          if (selectedSubcategory?.inheritance) {
+            if (state.photosOfAllActivities[state.selectedActivity]) {
+              const notModifiedList = [...state.photosOfAllActivities[state.selectedActivity]];
+              state.photosOfSelectedActivity = notModifiedList;
+            } else {
+              state.photosOfSelectedActivity = [];
+            }
+          }else{
+            const photosJson = selectSubcategory?.gymSubActivePictures ?? []; // [{id: 1, orderNumber : 0, pictureUrl: ""}]
+            if (photosJson.length > 0) {
+              const photos = photosJson.map((photo) => photo["pictureUrl"]);
+              state.photosOfSelectedActivity = photos;
+            } else {
+              state.photosOfSelectedActivity = [];
+            }
+          }
+        }else{
+          if (state.photosOfAllActivities[state.selectedActivity]) {
+            const notModifiedList = [...state.photosOfAllActivities[state.selectedActivity]];
+            state.photosOfSelectedActivity = notModifiedList;
+          } else {
+            state.photosOfSelectedActivity = [];
+          }
+        }
+      } catch (error) {
+        throw new Error(`setPhotosOfSelectedActivity ${error}`);
+        
       }
     },
   },
@@ -318,7 +413,11 @@ const activitiesSlice = createSlice({
     });
     builder.addCase(getListOfActivities.fulfilled, (state, action) => {
       state.isActivitiesLoding = false;
-      state.listOfActivities = action.payload;
+      const data = action.payload;
+      state.jsonLessonTypeAndSubtypes = data;
+      // {"cardio" : [1,2,3], "yoga" : [4,5,6]}
+      const keys = Object.keys(data);
+      state.listOfActivities = keys;
     });
     builder.addCase(getListOfActivities.rejected, (state) => {
       state.isActivitiesLoding = false;
@@ -392,5 +491,8 @@ export const {
   returnDeletedPhoto,
   removeActivityFromListOfActivities,
   returnDeletedActivity,
+  selectSubcategory,
+  changeNameOfSelectedSubcategory,
+  unsetFirstItemAsActive,
 } = activitiesSlice.actions;
 export default activitiesSlice.reducer;

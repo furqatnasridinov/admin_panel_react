@@ -1,9 +1,8 @@
-import React, { Fragment } from 'react'
 import CrmWhiteButton from '../../../components/crm/white_button/CrmWhiteButton'
 import VerticalSpace from '../../../components/VerticalSpace'
 import GreenButton from '../../../components/crm/GreenButton';
 import { IconAndText } from '../clients/EachCrmClient';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, forwardRef, Fragment } from 'react';
 import CustomDialog from '../../../components/dialog/dialog';
 import AddMembershipDialog from './AddMembershipDialog';
 
@@ -40,9 +39,9 @@ export function MembershipCard({
     greenBorder = "1px solid rgba(58, 185, 109, 1)",
     showTooltip = false,
     setShowTooltip = ()=>{},
-    gyms = ["Ленинград", "Crystal"],
+    gyms = ["Ленинград"],
     lessonTypes = ['Бокс', 'Айкидо'],
-    subcategories = ['Павел Скайуокер'/* , 'Александр Вейдер' */],
+    subcategories = ['Павел Скайуокер', 'Александр Вейдер'],
     price = '32 000',
     oldPrice = '36 000',
     name = 'Бойцовский клуб. Вечерний',
@@ -50,6 +49,7 @@ export function MembershipCard({
     endDate = 'до 12.12.2021',
     percentage = 70,
     showButtons = true,
+    showProgress = true,
     listWidth = '71%'
 }) {
     return <div style={{border : greenBorder}} className="greenContaner">
@@ -89,10 +89,15 @@ export function MembershipCard({
         <span className='headerH2'>{name}</span>
         <span className='label2'>{description}</span>
     </div>
-    <VerticalSpace height='16px' />
-    <Indicator endTime={endDate} percentage={percentage} />
+    {showProgress &&
+        <Fragment>
+            <VerticalSpace height='16px' />
+            <Indicator endTime={endDate} percentage={percentage} />
+        </Fragment>
+    }
 </div>
 }
+
 
 function ListGymsActivitiesSubcategories({
     gyms,
@@ -100,22 +105,61 @@ function ListGymsActivitiesSubcategories({
     subcategories,
     width,
 }) {
-    const [isOverflow, setIsOverflow] = useState(false);
+    const [overflowIndex, setOverflowIndex] = useState(null);
     const listRef = useRef(null);
+    const gymRefs = useRef([]);
+    const lessonTypeRefs = useRef([]);
+    const subcategoryRefs = useRef([]);
+    const [showTooltip, setShowTooltip] = useState(false);
 
     useEffect(() => {
-        const isOverflowing = listRef.current.scrollHeight > listRef.current.clientHeight;
-        setIsOverflow(isOverflowing);
-    }, [gyms, lessonTypes, subcategories]);
+        const listWidth = listRef.current.getBoundingClientRect().width * 2;
+        let totalWidth = 0;
+        let index = 0;
 
+        const allRefs = [...gymRefs.current, ...lessonTypeRefs.current, ...subcategoryRefs.current];
 
-    return <div ref={listRef} style={{maxWidth : width}} className="max-h-[66px] h-fit flex flex-wrap gap-[10px] items-center">
-        {gyms.map((gym, index) => <LessonTypeCard key={index} lessonType={gym} isGym={true} />)}
-        <span className='label2b text-crm-link'>/</span>
-        {lessonTypes.map((lessonType, index) => <LessonTypeCard key={index} lessonType={lessonType} />)}
-        <span className='label2b text-crm-link'>/</span>
-        {subcategories.map((subCategory, index) => <SubCategoryCard key={index} text={subCategory} />)}
-    </div>
+        for (let item of allRefs) {
+            if (!item) continue; // Пропускаем несуществующие ссылки
+            const itemWidth = item.getBoundingClientRect().width;
+            totalWidth += itemWidth;
+            if (totalWidth > listWidth) {
+                setOverflowIndex(index - 2); // Учитываем кнопку "Ещё"
+                return;
+            }
+            index++;
+        }
+        setOverflowIndex(null); // Если переполнения нет
+    }, [gyms, lessonTypes, subcategories]); // Пересчитать при изменении данных
+
+    return (
+        <div ref={listRef} style={{ maxWidth: width }} className="max-h-[66px] h-fit flex flex-wrap gap-[10px] items-center">
+            {gyms.map((gym, index) => (
+                index < overflowIndex || overflowIndex === null ? 
+                <LessonTypeCard ref={el => gymRefs.current[index] = el} key={index} lessonType={gym} isGym={true} /> : 
+                null
+            ))}
+            <span className='label2b text-crm-link'>/</span>
+            {lessonTypes.map((lessonType, index) => (
+                index + gyms.length < overflowIndex || overflowIndex === null ? 
+                <LessonTypeCard ref={el => lessonTypeRefs.current[index] = el} key={index + gyms.length} lessonType={lessonType} /> : 
+                null
+            ))}
+            <span className='label2b text-crm-link'>/</span>
+            {subcategories.map((subCategory, index) => (
+                index + gyms.length + lessonTypes.length < overflowIndex || overflowIndex === null ? 
+                <SubCategoryCard ref={el => subcategoryRefs.current[index] = el} key={index + gyms.length + lessonTypes.length} text={subCategory} /> : 
+                null
+            ))}
+
+            {overflowIndex !== null &&
+                <div className='relative'>
+                    <ShowMoreButton onClick={()=>setShowTooltip(true)} />
+                    {showTooltip && <ToolTip gyms={gyms} activities={lessonTypes} subcategories={subcategories} closeFunction={()=>setShowTooltip(false)} />}
+                </div>
+            }
+        </div>
+    );
 }
 
 function ThreeDotsTooltip({
@@ -142,23 +186,71 @@ function ThreeDotsTooltip({
     </div>
 }
 
-function LessonTypeCard({
+const LessonTypeCard = forwardRef(({
     lessonType = 'Бокс',
     icon = <BoxSvg />,
-    isGym = false
-}) {
-    const _icon = isGym ? <LocationSvg /> : <BoxSvg />
-    return <div className="lessonTypeCard">
-        <div className="lessonTypeIconBg">
-            {_icon}
+    isGym = false,
+}, ref) => {
+    const _icon = isGym ? <LocationSvg /> : <BoxSvg />;
+    return (
+        <div ref={ref} className="lessonTypeCard">
+            <div className="lessonTypeIconBg">
+                {_icon}
+            </div>
+            <span>{lessonType}</span>
         </div>
-        <span>{lessonType}</span>
-    </div>
-}
+    );
+});
 
-function SubCategoryCard({text}) {
-    return <div className="subCategoryCard">
+const SubCategoryCard = forwardRef(({text}, ref) => {
+    return <div ref={ref} className="subCategoryCard">
         {text}
+    </div>
+});
+
+function ToolTip({
+    gyms,
+    activities,
+    subcategories,
+    closeFunction,
+}) {
+    const menuRef = useRef();
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                closeFunction();
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [closeFunction]);
+
+
+    return <div ref={menuRef} className="tooltipCrm w-[370px] mr-2">
+        <div className="columnWithNoGap">
+            <span className='headerH2'>Заведения:</span>
+            {gyms.map((gym, index) => {
+               return <span key={index} className='label2'>{gym}</span>
+            })}
+        </div>
+        <VerticalSpace height='16px' />
+        <div className="columnWithNoGap">
+            <span className='headerH2'>Виды занятий:</span>
+            {activities.map((activity, index) => {
+              return  <span key={index} className='label2'>{activity}</span>
+            })}
+        </div>
+        <VerticalSpace height='16px' />
+        <div className="columnWithNoGap">
+            <span className='headerH2'>Подкатегории:</span>
+            {subcategories.map((subCategory, index) => {
+              return  <span key={index} className='label2'>{subCategory}</span>
+            })}
+        </div>
+        <VerticalSpace height='16px' />
+        <CrmWhiteButton text='Закрыть' onClick={closeFunction} width='100%' />
     </div>
 }
 
@@ -224,8 +316,10 @@ function LocationSvg() {
     </svg>
 }
 
-function ShowMoreButton() {
-    return <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+function ShowMoreButton({
+    onClick
+}) {
+    return <svg onClick={onClick} className='cursor-pointer' width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0.5 6C0.5 2.96243 2.96243 0.5 6 0.5H22C25.0376 0.5 27.5 2.96243 27.5 6V22C27.5 25.0376 25.0376 27.5 22 27.5H6C2.96243 27.5 0.5 25.0376 0.5 22V6Z" fill="#EFFFF5" />
         <path d="M0.5 6C0.5 2.96243 2.96243 0.5 6 0.5H22C25.0376 0.5 27.5 2.96243 27.5 6V22C27.5 25.0376 25.0376 27.5 22 27.5H6C2.96243 27.5 0.5 25.0376 0.5 22V6Z" stroke="#3AB96D" />
         <ellipse cx="18.875" cy="19" rx="1.3125" ry="1.3125" transform="rotate(90 18.875 19)" fill="#252525" />

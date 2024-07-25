@@ -4,8 +4,8 @@ import "./back_button.css";
 export default function BackButton({
   title,
   onСlick,
-  width,
-  height,
+  width = "180px",
+  height = "40px",
   isDidsabled,
   hideHover,
   ref,

@@ -60,7 +60,7 @@ export default function AddMembershipDialog({
     ];
 
     return (
-        <div className="dialogBody outline-none">
+        <div className="dialogBody">
             <div className="columnWithNoGap">
                 <span className='headerH2'>Абонементы</span>
                 <span className='label2'>Выберите из существующих абонементов тот, который был оплачен клиентом</span>
@@ -148,9 +148,9 @@ function AccordionGyms({
         {isOpened && 
            <div className="columnWithNoGap">
                 {memberShips.map((item, index) => {
-                    return <div className="rowGap16 p-2 cursor-pointer" onClick={()=>selectMembership(gymId, item.id)}>
+                    return <div key={index} className="rowGap16 p-2 cursor-pointer" onClick={()=>selectMembership(gymId, item.id)}>
                         <RadioButton radioOn={selectMembershipId === item.id && selectedMembershipGymId === gymId} />
-                        <MembershipCard listWidth='85%' showButtons ={false}  />
+                        <MembershipCard listWidth='85%' showButtons ={false} showProgress={false}  />
                     </div>
                 })}
            </div>
@@ -162,7 +162,7 @@ function RadioButton({
     radioOn = false,
 
 }) {
-    return <div style={{ borderColor: radioOn ? "rgba(94, 220, 145, 1)" : "transparent" }} className="indicatorShape">
+    return <div style={{ borderColor: radioOn ? "rgba(94, 220, 145, 1)" : "transparent"}} className="indicatorShape">
         <div style={{ backgroundColor: radioOn ? "rgba(94, 220, 145, 1)" : "transparent" }} className="indicatorMain"></div>
     </div>
 }

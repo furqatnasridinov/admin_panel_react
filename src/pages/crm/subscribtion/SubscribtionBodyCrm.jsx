@@ -46,10 +46,13 @@ export default function SubscribtionBodyCrm() {
     const [dropDownsActivities, setDropDownsActivities] = useState([
         // [{id: 1, isOpened: bool, gymAndLessonType : {gym : GYMDATA, lessonType : "Бокс"}}, ...]
     ]);
-    const [dropDownsSubcategories, setDropDownsSubcategories] = useState([]);
+    const [dropDownsSubcategories, setDropDownsSubcategories] = useState([
+        // [{id: 1, isOpened: bool, subcategories: ["",""]}, ...]
+    ]);
     const [gymAndLessonTypes, setGymAndLessonTypes] = useState([
         //{gym : GYMDATA, lessonTypes : ["Бассейн","Бокс"]},
     ]);
+    const [subcategories, setSubcategories] = useState([]);
     const list3 = [{name: 'Сам по себе', id: 1}, {name: "С тренером", id: 2}, {name : "Техника удара", id: 3}];
     const firstSectionError = missingInfos.includes("gym") || missingInfos.includes("activities") || missingInfos.includes("price");
     const firstSectionShowDone = dropDownsGyms.length > 0 && dropDownsGyms.every(dropDown => dropDown.gym) && dropDownsActivities.length > 0 && dropDownsActivities.every(dropDown => dropDown.gymAndLessonType) && price !== '';
@@ -91,9 +94,20 @@ export default function SubscribtionBodyCrm() {
         // send request with this gym's id to get activities
         axiosClient.get(`api/admin/gyms/${item?.id}/lessonTypes`).then(res => {
             if (res.status === 200 && res.data["object"]) {
-                const array = res.data["object"]; // ["Бассейн","Бокс"...]
-                const json = {gym : item, lessonTypes : array};
+                const result = res.data["object"]; 
+                const arrayOfKeys = Object.keys(result);
+                const json = {gym : item, lessonTypes : arrayOfKeys};
                 setGymAndLessonTypes([...gymAndLessonTypes, json]);
+                // get subcategories from result json and set it to subcategories
+                const _subcategories = subcategories;
+                arrayOfKeys.forEach(key => {
+                    result[key].forEach(subcategory => {
+                        if (!_subcategories.includes(subcategory)) {
+                            _subcategories.push(subcategory);
+                        }
+                    });
+                });
+                setSubcategories(_subcategories);
             }
             
         }).catch(err => {
@@ -181,6 +195,8 @@ export default function SubscribtionBodyCrm() {
         setDropDownsSubcategories([...dropDownsSubcategories, { id: newId, isOpened: false, name: '' }]);
     }
 
+
+    //
     function handleChangePrice(e) {
         // Only numbers are allowed
         const value = e.target.value;
@@ -226,43 +242,39 @@ export default function SubscribtionBodyCrm() {
     }
 
     function createMembershipRequest() {
+        // gyms = [{id: 1}, {id: 2}],
+        const selectedGymsId = dropDownsGyms.map(dropDown => dropDown.gym.id);
+        const gyms = selectedGymsId.map(item => ({ id: item }));
+        const activities = dropDownsActivities.map(dropDown => dropDown.gymAndLessonType?.lessonType);
+        const subcategories = dropDownsSubcategories.map(dropDown => dropDown.name);
+        const _type = type === 'Месячный' ? 'MONTH' : 'YEAR';
         const data = 
         {
             daysOfWeek: getApiLikeWeekDays(selectedWeekDays),
             description: description,
-            startTime: {
-                hour: startTimeHour,
-                minute: startTimeMinute,
-                nano: 0,
-                second: "0"
-            },
-            endTime: {
-                hour: endTimeHour,
-                minute: endTimeMinute,
-                nano: 0,
-                second: "0"
-            },
+            startTime: `${startTimeHour}:${startTimeMinute}`,
+            endTime: `${endTimeHour}:${endTimeMinute}`,
             freezingCancellation: conditionForFreezing,
-            id: 0,
-            lessonTypes: [
-                "string" // 
-            ],
+            gyms : gyms,
+            lessonTypes: activities,
+            lessonSubTypes : subcategories,
             name: name,
             price: price.replace('₽', ''),
             privileges: benefits,
             restrictions: limitations,
-            type: type,
+            type: _type,
         }
-        console.log(data);
-        /* axiosClient.post('api/admin/memberships', data)
+        console.log(`отправлен запрос на создание абонемента==> ${JSON.stringify(data)}`);
+        axiosClient.post('api/crm/membership/add', data)
         .then(res => {
             if (res.status === 200) {
                 toast.success('Абонемент успешно создан');
+                resetAllFields();
             }
         })
         .catch(err => {
             toast.error('Ошибка при создании абонемента ==> ' + err.message);
-        }); */
+        });
     }
 
     function toolTipOnMouseEnter() {
@@ -316,6 +328,10 @@ export default function SubscribtionBodyCrm() {
         setDropDownsActivities([]);
         setDropDownsSubcategories([]);
         setMissingInfos([]);
+        setIsOpened1(true);
+        setIsOpened2(true);
+        setIsOpened3(true);
+        setIsOpened4(true);
     }
     
     useEffect(() => {
@@ -453,13 +469,16 @@ export default function SubscribtionBodyCrm() {
                     {dropDownsSubcategories && dropDownsSubcategories.map((dropDown) => (
                         <SelectAndRemoveDropDown
                             key={dropDown.id}
-                            list={list3.filter(item => !dropDownsSubcategories.map(dropDown => dropDown.name).includes(item.name))}
+                            isScrollable={true}
+                            maxHeight={230}
+                            list={subcategories || []}
                             placeholderText='Выберите подкатегорию'
                             closeDropDown={() => setCurrentOpenedDropDownSubcategories(null)}
                             isOpened={currentOpenedDropDownSubcategories === dropDown.id}
                             toggleDropDown={() => toggleDropDownSubcategories(dropDown.id)}
                             onSelect={(item) => onSelectDropDownItemSubcategories(dropDownsSubcategories.findIndex(d => d.id === dropDown.id), item)}
                             value={dropDown.name || ''}
+                            onDelete={() => {setDropDownsSubcategories(dropDownsSubcategories.filter(d => d.id !== dropDown.id))}}
                         />
                     ))}
                     <PlusButton onClick={addDropDownSubcategories} />

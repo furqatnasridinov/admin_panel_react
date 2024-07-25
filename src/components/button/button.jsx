@@ -4,10 +4,10 @@ import "./button.css";
 export default function CustomButton({
   title,
   onСlick,
-  width,
-  height,
+  width = "150px",
+  height = "40px",
   showShadow,
-  fontSize,
+  fontSize = "14px",
   isDidsabled,
   zIndex,
   isLoading,
