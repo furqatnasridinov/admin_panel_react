@@ -80,7 +80,7 @@ import React, {
         {snackbars.map((snackbar, index) => (
           <div
             key={snackbar.id}
-            className="snackbar"
+            className="snackbarCrm"
             style={{ bottom: `${69 * (index + 1)}px` }}
           >
             <DeleteSvg />

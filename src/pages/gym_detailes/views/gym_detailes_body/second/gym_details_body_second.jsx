@@ -4,7 +4,6 @@ import TextAndTextButton from "../../../components/text_and_textbutton";
 import { useState, useRef } from "react";
 import { EditableTextfield } from "../../../../../components/editable_textfield/EditableTextfield";
 import deleteSvg from "../../../../../assets/svg/delete.svg";
-import removeActivitySvg from "../../../../../assets/svg/remove_activities.svg";
 import addPhotoSvg from "../../../../../assets/svg/add_photo.svg";
 import CustomButton from "../../../../../components/button/button";
 import CustomDialog from "../../../../../components/dialog/dialog";
@@ -18,8 +17,6 @@ import {
   dragAndDropActivities,
   selectAnActivity,
   getPhotos,
-  patchDescriptionOfSelectedActivity,
-  patchPeculiaritiesOfSelectedActivity,
   deleteActivityPhoto,
   changeActivityPeculiarities,
   changeActivityDescribtion,
@@ -34,6 +31,7 @@ import {
   returnDeletedActivity,
   addPhotoToSelectedActivity,
   selectSubcategory,
+  unsetFirstItemAsActive
 } from "../../../../../features/activities_slice";
 import DropDownSmaller from "../../../../../components/dropdown/dropdown_smaller";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
@@ -52,7 +50,6 @@ export default function GymDetailesBodySecondContainer({
 }) {
   const dispatch = useDispatch();
   const activitiesSlice = useSelector((state) => state.activities);
-  const gymState = useSelector((state) => state.currentGym);
   const canEdit = useSelector((state) => state.login.canEdit);
   const subcategories = activitiesSlice.subcategoriesOfSelectedActivity || [];
   const selectedSubcategory = activitiesSlice.selectedSubcategory; // {}
@@ -132,6 +129,116 @@ export default function GymDetailesBodySecondContainer({
     setTimeout(() => {
       container.scrollTop = container.scrollHeight;
     }, 0);
+  }
+
+  function patchDescribtion(){
+    const jsonInheritanceFalse = {
+      gymSubActiveInfo: [
+        {
+          id: selectedSubcategory?.id,
+          inheritance: selectedSubcategory?.inheritance,
+          name: selectedSubcategory?.name,
+          orderNumber: selectedSubcategory?.orderNumber,
+          peculiarities: selectedSubcategory?.peculiarities,
+          typeDescription: activityDescribtion,
+        }
+      ],
+      lessonType: selectedActivity,
+    };
+    const jsonInheritanceTrue = {
+      gymSubActiveInfo: [
+        {
+          id: selectedSubcategory?.id,
+          inheritance: selectedSubcategory?.inheritance,
+          name: selectedSubcategory?.name,
+          orderNumber: selectedSubcategory?.orderNumber,
+          peculiarities: selectedSubcategory?.peculiarities,
+          typeDescription: activityDescribtion,
+        }
+      ],
+      lessonType: selectedActivity,
+      //"orderNumber": 0,
+      //"peculiarities": "string",
+      typeDescription: activityDescribtion,
+    };
+    const data = (selectedSubcategory && !selectedSubcategory?.inheritance) ? jsonInheritanceFalse : jsonInheritanceTrue;
+    axiosClient.patch(`api/admin/gyms/${gymId}`, data)
+    .then((response) => {
+      if (response.status === 200) {
+        toast.success("Описание успешно изменено");
+        if (selectedSubcategory?.inheritance) {
+          dispatch(getInfoForType(gymId));
+        }else{
+          dispatch(unsetFirstItemAsActive());
+          dispatch(getListOfActivities(gymId));
+        }
+        setDescribtionEditting(false);
+        dispatch(resetChanges());
+        setActivityDescribtionNotValidated(false);
+      }
+    })
+    .catch((error) => {
+      toast.error("Ошибка при изменении описания" + error);
+    });
+    
+  }
+
+  function pathcPeculiarities(){
+    if (
+      activityPeculiarities === "1" ||
+      activityPeculiarities === "1." ||
+      activityPeculiarities === "1. "
+    ) {
+      activityPeculiarities = "";
+    }
+    const jsonInheritanceFalse = {
+      gymSubActiveInfo: [
+        {
+          id: selectedSubcategory?.id,
+          inheritance: selectedSubcategory?.inheritance,
+          name: selectedSubcategory?.name,
+          orderNumber: selectedSubcategory?.orderNumber,
+          peculiarities: activityPeculiarities,
+          typeDescription: selectedSubcategory?.typeDescription,
+        }
+      ],
+      lessonType: selectedActivity,
+    };
+    const jsonInheritanceTrue = {
+      gymSubActiveInfo: [
+        {
+          id: selectedSubcategory?.id,
+          inheritance: selectedSubcategory?.inheritance,
+          name: selectedSubcategory?.name,
+          orderNumber: selectedSubcategory?.orderNumber,
+          peculiarities: activityPeculiarities,
+          typeDescription: selectedSubcategory?.typeDescription,
+        }
+      ],
+      lessonType: selectedActivity,
+      //"orderNumber": 0,
+      peculiarities: activityPeculiarities,
+      //typeDescription: activityDescribtion,
+    };
+    const data = (selectedSubcategory && !selectedSubcategory?.inheritance) ? jsonInheritanceFalse : jsonInheritanceTrue;
+    console.log(data);
+    axiosClient.patch(`api/admin/gyms/${gymId}`, data)
+    .then((response) => {
+      if (response.status === 200) {
+        toast.success("Описание успешно изменено");
+        if (selectedSubcategory?.inheritance) {
+          dispatch(getInfoForType(gymId));
+        }else{
+          dispatch(unsetFirstItemAsActive());
+          dispatch(getListOfActivities(gymId));
+        }
+        setFeaturesEditting(false);
+        dispatch(resetChanges());
+      }
+    })
+    .catch((error) => {
+      toast.error("Ошибка при изменении описания" + error);
+    });
   }
 
 
@@ -410,17 +517,7 @@ export default function GymDetailesBodySecondContainer({
                         if (activityDescribtion === "") {
                           setActivityDescribtionNotValidated(true);
                         } else {
-                          const { id, lessonType, typeDescription } = {
-                            id: gymId,
-                            lessonType: selectedActivity,
-                            typeDescription: activityDescribtion,
-                          };
-                          await dispatch(
-                          patchDescriptionOfSelectedActivity({id,lessonType,typeDescription}));
-                          dispatch(getInfoForType(gymId));
-                          setDescribtionEditting(false);
-                          dispatch(resetChanges());
-                          setActivityDescribtionNotValidated(false);
+                          patchDescribtion();
                         }}}
                       fontsize={"13px"}
                       lineheight={"16px"}
@@ -447,16 +544,7 @@ export default function GymDetailesBodySecondContainer({
                   }}/>  
 
                   <FeaturesTextField
-                    onButtonClicked={async () => {
-                      const { id, lessonType, peculiarities } = {
-                      id: gymId,
-                      lessonType: selectedActivity,
-                      peculiarities: activityPeculiarities
-                    };
-                    await dispatch(patchPeculiaritiesOfSelectedActivity({id,lessonType,peculiarities}));
-                    dispatch(getInfoForType(gymId));
-                    setFeaturesEditting(false);
-                    dispatch(resetChanges())}}
+                    onButtonClicked={()=>pathcPeculiarities()}
                     onChanged={(e) => {dispatch(changeActivityPeculiarities(e.target.value))}}
                     peculiarities={activityPeculiarities}
                     isActive={isFeaturesEdittingEnabled}

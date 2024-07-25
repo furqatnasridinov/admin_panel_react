@@ -68,9 +68,9 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
   }
 );
 
-export const patchDescriptionOfSelectedActivity = createAsyncThunk(
+/* export const patchDescriptionOfSelectedActivity = createAsyncThunk(
   "activitiesSlice/changeDescriptionOfSelectedActivity",
-  async ({ id, lessonType, typeDescription }) => {
+  async ({ id, lessonType, typeDescription, subCategory }) => {
     try {
       const dataToSend = {
         lessonType: lessonType,
@@ -84,9 +84,9 @@ export const patchDescriptionOfSelectedActivity = createAsyncThunk(
       toast(`changeDescriptionOfSelectedActivity ${error["response"]["data"]["operationInfo"]}`);
     }
   }
-);
+); */
 
-export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
+/* export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
   "activitiesSlice/changePeculiaritiesOfSelectedActivity",
   async ({ id, lessonType, peculiarities }) => {
     try {
@@ -109,7 +109,7 @@ export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
       toast(`changePeculiaritiesOfSelectedActivity ${error}`);
     }
   }
-);
+); */
 
 export const deleteActivityPhoto = createAsyncThunk(
   "activitiesSlice/deleteActivityPhoto",

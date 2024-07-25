@@ -22,6 +22,7 @@ export default function AddSubcategoryButton({
             gymId={gymId} 
             currentLessonType={currentLessonType}
             onDeleteCreate={onDelete}
+            onDelete={onDelete}
             isInitiallyActive={true}
             inheritance={inheritance}
             nextOrderNumber={nextOrderNumber}
