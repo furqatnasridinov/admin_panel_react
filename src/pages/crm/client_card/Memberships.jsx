@@ -39,9 +39,9 @@ export function MembershipCard({
     greenBorder = "1px solid rgba(58, 185, 109, 1)",
     showTooltip = false,
     setShowTooltip = ()=>{},
-    gyms = ["Ленинград", "Crystal"],
-    lessonTypes = ['Бокс', 'Айкидо','Бокс', 'Айкидо','Бокс','Бокс', 'Айкидо','Бокс', 'Айкидо','Бокс','Бокс'],
-    subcategories = ['Павел Скайуокер', 'Александр Вейдер','Александр Вейдер','Александр Вейдер'],
+    gyms = ["Ленинград"],
+    lessonTypes = ['Бокс', 'Айкидо'],
+    subcategories = ['Павел Скайуокер', 'Александр Вейдер'],
     price = '32 000',
     oldPrice = '36 000',
     name = 'Бойцовский клуб. Вечерний',
@@ -133,7 +133,7 @@ function ListGymsActivitiesSubcategories({
     }, [gyms, lessonTypes, subcategories]); // Пересчитать при изменении данных
 
     return (
-        <div ref={listRef} style={{ maxWidth: width }} className="max-h-[66px] h-fit flex flex-wrap gap-[10px] items-center bg-red-200">
+        <div ref={listRef} style={{ maxWidth: width }} className="max-h-[66px] h-fit flex flex-wrap gap-[10px] items-center">
             {gyms.map((gym, index) => (
                 index < overflowIndex || overflowIndex === null ? 
                 <LessonTypeCard ref={el => gymRefs.current[index] = el} key={index} lessonType={gym} isGym={true} /> : 
