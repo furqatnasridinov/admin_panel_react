@@ -4,7 +4,7 @@ import PersonalDatas from './PersonalDatas'
 import PassportDatas from './PassportDatas'
 import { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getClientById } from '../../../features/crm/CrmClients'
+import { getClientById, getMemberShips } from '../../../features/crm/CrmClients'
 import { useParams } from "react-router-dom";
 import Memberships from './Memberships'
 
@@ -24,6 +24,8 @@ export default function ClientCard() {
     if (clientId) {
       // fetch client data by id
       dispatch(getClientById(clientId));
+      // get all memberships to show in the dialog
+      dispatch(getMemberShips());
     }
   }, []);
 

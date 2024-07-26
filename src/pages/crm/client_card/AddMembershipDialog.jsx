@@ -5,68 +5,45 @@ import { useState } from 'react'
 import CrmWhiteButton from '../../../components/crm/white_button/CrmWhiteButton';
 import GreenButton from '../../../components/crm/GreenButton';
 import { MembershipCard } from './Memberships';
+import { useSelector } from 'react-redux';
 
 export default function AddMembershipDialog({
     closeDialog,
 }) {
-    const [isOpened1, setIsOpened1] = useState(false);
-    const [isOpened2, setIsOpened2] = useState(false);
-    const [isOpened3, setIsOpened3] = useState(false);
-    const [isOpened4, setIsOpened4] = useState(false);
+    const list = useSelector((state) => state.crmClients.gymAndMembershipsInside);
     const [selectedMembership, setSelectedMembership] = useState({
-        // {id : 1, gymId :1}
+        // {id : membershipId, gymId : gymId}
     });
-    const memberShips = [
-        {
-            "id": 1,
-            "name": "Абонемент на 1 месяц",
-            "price": 5000,
-            "oldPrice": 6000,
-            "gyms" : ["Abdullo Ako", "Leningrad", "La Crysral"],
-            "activities": ["Йога", "Фитнес", "Бассейн"],
-            "subCategories": ["Вечерний", "Утренний", "Дневной"],
-            "description": "Абонемент на 1 месяц включает в себя посещение всех тренажерных залов, бассейнов и групповых занятий"
-        },
-        {
-            "id": 2,
-            "name": "Абонемент на 3 месяца",
-            "price": 12000,
-            "oldPrice": 15000,
-            "gyms" : ["Abdullo Ako", "Leningrad", "La Crysral"],
-            "activities": ["Йога", "Фитнес", "Бассейн"],
-            "subCategories": ["Вечерний", "Утренний", "Дневной"],
-            "description": "Абонемент на 3 месяца включает в себя посещение всех тренажерных залов, бассейнов и групповых занятий"
-        },
-        {
-            "id": 3,
-            "name": "Абонемент на 6 месяцев",
-            "price": 20000,
-            "oldPrice": 25000,
-            "gyms" : ["Abdullo Ako", "Leningrad", "La Crysral"],
-            "activities": ["Йога", "Фитнес", "Бассейн"],
-            "subCategories": ["Вечерний", "Утренний", "Дневной"],
-            "description": "Абонемент на 6 месяцев включает в себя посещение всех тренажерных залов, бассейнов и групповых занятий"
-        },
-        {
-            "id": 4,
-            "name": "Абонемент на 12 месяцев",
-            "price": 40000,
-            "oldPrice": 50000,
-            "gyms" : ["Abdullo Ako", "Leningrad", "La Crysral"],
-            "activities": ["Йога", "Фитнес", "Бассейн"],
-            "subCategories": ["Вечерний", "Утренний", "Дневной"],
-            "description": "Абонемент на 12 месяцев включает в себя посещение всех тренажерных залов"
-        }
-    ];
+    const [openedGymId, setOpenedGymId] = useState(0);
+
+    
+    function toggle(gymId){
+       gymId === openedGymId ? setOpenedGymId(0) : setOpenedGymId(gymId);
+    }
 
     return (
+        console.log(`selectedMembership`, JSON.stringify(selectedMembership)),
         <div className="dialogBody">
             <div className="columnWithNoGap">
                 <span className='headerH2'>Абонементы</span>
                 <span className='label2'>Выберите из существующих абонементов тот, который был оплачен клиентом</span>
             </div>
 
-            <AccordionGyms 
+            {list.map((item) => {
+                return <AccordionGyms 
+                    key={item?.gym?.id}
+                    isOpened={openedGymId === item.gym?.id} 
+                    radioOn={selectedMembership.gymId === item.gym?.id && openedGymId !== item.gym?.id} 
+                    toggle={()=>toggle(item.gym?.id)}
+                    gymName={item.gym?.name}
+                    gymId={item.gym?.id}
+                    selectedMembershipId={selectedMembership.id}  
+                    selectedMembershipGymId={selectedMembership.gymId}
+                    selectMembership={(gymId, membershipId)=>setSelectedMembership({id : membershipId, gymId : gymId})}
+                    memberShips={item?.memberships}/>
+            })}
+
+            {/* <AccordionGyms 
                 isOpened={isOpened1} 
                 radioOn={selectedMembership.gymId === 1 && !isOpened1} 
                 toggle={()=>setIsOpened1(!isOpened1)}
@@ -104,7 +81,7 @@ export default function AddMembershipDialog({
                 selectedMembershipGymId={selectedMembership.gymId}
                 selectMembershipId={selectedMembership.id}
                 selectMembership={(gymId, membershipId)=>setSelectedMembership({id : membershipId, gymId : gymId})}
-                memberShips={memberShips}/>
+                memberShips={memberShips}/> */}
 
             <div className="rowGap10">
                 <CrmWhiteButton text='Отменить' onClick={closeDialog} width='120px' />
@@ -118,13 +95,13 @@ export default function AddMembershipDialog({
 
 function AccordionGyms({
     isOpened,
-    radioOn,
+    radioOn = false,
     toggle,
     gymName = "Crystall",
     gymId = 1,
     memberShips = [],
     selectMembership,
-    selectMembershipId,
+    selectedMembershipId,
     selectedMembershipGymId,
 }) {
     return <div style={{
@@ -149,8 +126,19 @@ function AccordionGyms({
            <div className="columnWithNoGap">
                 {memberShips.map((item, index) => {
                     return <div key={index} className="rowGap16 p-2 cursor-pointer" onClick={()=>selectMembership(gymId, item.id)}>
-                        <RadioButton radioOn={selectMembershipId === item.id && selectedMembershipGymId === gymId} />
-                        <MembershipCard listWidth='85%' showButtons ={false} showProgress={false}  />
+                        <RadioButton radioOn={selectedMembershipId === item.id && selectedMembershipGymId === gymId} />
+                        <MembershipCard 
+                            listWidth='85%' 
+                            showButtons ={false} 
+                            showProgress={false}
+                            description={item.description || "Описание отсутствует"}
+                            gyms={item.gyms.map(gym => gym.name)}
+                            name={item.name}
+                            price={item.price}
+                            subcategories={item.lessonSubTypes || []}
+                            lessonTypes={item.lessonTypes || []}
+                            oldPrice={item.oldPrice || null}
+                            />
                     </div>
                 })}
            </div>

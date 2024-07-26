@@ -4,7 +4,7 @@ import { getBirthdayFormatted2, getGenderTranslated } from "../../config/apphelp
 import { toast } from "react-toastify";
 
 export const getClients = createAsyncThunk(
-    "srmClients/getClients",
+    "crmClients/getClients",
     async () => {
         try {
             const response = await axiosClient.get(`api/crm/client`);
@@ -12,13 +12,13 @@ export const getClients = createAsyncThunk(
                 return response.data["object"];
             }
         } catch (error) {
-            console.log(`srmClients/getClients ${error}`);
+            console.log(`crmClients/getClients ${error}`);
         }
     },
 );
 
 export const getClientById = createAsyncThunk(
-    "srmClients/getClientById",
+    "crmClients/getClientById",
     async (id) => {
         try {
             const response = await axiosClient.get(`api/crm/client/${id}`);
@@ -26,27 +26,13 @@ export const getClientById = createAsyncThunk(
                 return response.data["object"];
             }
         } catch (error) {
-            console.log(`srmClients/getClientById ${error}`);
-        }
-    },
-);
-
-export const addNewClient = createAsyncThunk(
-    "srmClients/createClient",
-    async (requestBody) => {
-        try {
-            const response = await axiosClient.post(`api/crm/client/add`, requestBody);
-            if (response.status === 200) {
-                return response.data["object"];
-            }
-        } catch (error) {
-            console.log(`srmClients/createClient ${error}`);
+            console.log(`crmClients/getClientById ${error}`);
         }
     },
 );
 
 export const updateClient = createAsyncThunk(
-    "srmClients/createClient",
+    "crmClients/createClient",
     async (requestBody) => {
         try {
             const response = await axiosClient.patch(`api/crm/client/update`, requestBody);
@@ -54,15 +40,31 @@ export const updateClient = createAsyncThunk(
                 return response.data["object"];
             }
         } catch (error) {
-            console.log(`srmClients/createClient ${error}`);
+            console.log(`crmClients/createClient ${error}`);
         }
     },
 );
 
-const srmClientsSlice = createSlice({
-  name: "srmClients",
+// запрос возращающий список абонентов
+export const getMemberShips = createAsyncThunk(
+    "crmClients/getMemberShips",
+    async () => {
+        try {
+            const response = await axiosClient.get(`api/crm/membership`);
+            if (response.status === 200) {
+                return response.data["object"];
+            }
+        } catch (error) {
+            console.log(`crmClients/getMemberShips ${error}`);
+        }
+    },
+);
+
+const crmClientsSlice = createSlice({
+  name: "crmClients",
   initialState: {
     listOfUsers : [],
+    gymAndMembershipsInside : [],
     listOfUsersLoading: false,
     clientGotById: null,
     currentClientId: null,
@@ -302,6 +304,46 @@ const srmClientsSlice = createSlice({
         state.clientGotById = updatedClient;
         toast.success("Данные успешно обновлены");
     });
+
+    // Get memberships
+    builder.addCase(getMemberShips.pending, (state) => {
+        //
+    });
+
+    builder.addCase(getMemberShips.fulfilled, (state, action) => {
+        const listOfJsons = action.payload;
+        /* 
+        переобразуем на такой json 
+        {
+        gym : {id : 1, name : "Abdullo Ako"},
+        memberships : {[id : 1, name : "Абонемент на 1 месяц",....]},
+        }
+         */
+        if (listOfJsons && listOfJsons.length > 0) {
+            var gymsAndMembershipsInside = [];
+            listOfJsons.forEach((json) => {
+                const gymsListInsideMembership = json?.gyms;
+                if (gymsListInsideMembership) {
+                    gymsListInsideMembership.forEach((gym) => {
+                        if (gymsAndMembershipsInside.some((item) => item.gym.id === gym.id && item.gym.name === gym.name)) {
+                            gymsAndMembershipsInside.find((item) => item.gym.id === gym.id && item.gym.name === gym.name)?.memberships.push(json);
+                        }else{
+                            gymsAndMembershipsInside.push({gym : {id : gym.id, name : gym.name}, memberships : [json]});
+                        }
+                       
+                    });
+                }
+            });
+            console.log(gymsAndMembershipsInside);
+            state.gymAndMembershipsInside = gymsAndMembershipsInside;
+        }
+        
+        
+    });
+
+    builder.addCase(getMemberShips.rejected, (state) => {
+        //
+    });
   },
 
 });
@@ -326,6 +368,6 @@ export const {
     setCurrentClientId,
     resetPersonalInfos,
     resertPassportInfos
-} = srmClientsSlice.actions;
+} = crmClientsSlice.actions;
 
-export default srmClientsSlice.reducer;
+export default crmClientsSlice.reducer;

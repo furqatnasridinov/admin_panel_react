@@ -145,7 +145,7 @@ function ListGymsActivitiesSubcategories({
                 <LessonTypeCard ref={el => lessonTypeRefs.current[index] = el} key={index + gyms.length} lessonType={lessonType} /> : 
                 null
             ))}
-            <span className='label2b text-crm-link'>/</span>
+            {subcategories && subcategories.length > 0 && <span className='label2b text-crm-link'>/</span>}
             {subcategories.map((subCategory, index) => (
                 index + gyms.length + lessonTypes.length < overflowIndex || overflowIndex === null ? 
                 <SubCategoryCard ref={el => subcategoryRefs.current[index] = el} key={index + gyms.length + lessonTypes.length} text={subCategory} /> : 
