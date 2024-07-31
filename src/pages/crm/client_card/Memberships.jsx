@@ -6,7 +6,7 @@ import { useState, useRef, useEffect, forwardRef, Fragment } from 'react';
 import CustomDialog from '../../../components/dialog/dialog';
 import AddMembershipDialog from './AddMembershipDialog';
 
-export default function Memberships() {
+export default function Memberships({id}) {
     const [showTooltip, setShowTooltip] = useState(false);
     const [modal, setModal] = useState(false);
   return (
@@ -25,7 +25,7 @@ export default function Memberships() {
             <CustomDialog 
                 isOpened={modal} 
                 closeOnTapOutside={()=>{setModal(false)}}>
-                <AddMembershipDialog closeDialog={()=>{setModal(false)}} />
+                <AddMembershipDialog clientId={id} closeDialog={()=>{setModal(false)}} />
             </CustomDialog>
         }
     </div>

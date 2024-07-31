@@ -139,16 +139,21 @@ export default function SchedulesPage() {
       dispatch(getListOfActivities(gymState.currentGym?.id));
     }
 
-    if (sessionStorage.getItem("selectedActivity") !== null) {
+    /* if (sessionStorage.getItem("selectedActivity") !== null) {
       dispatch(selectAnActivity(sessionStorage.getItem("selectedActivity")));
-    }
+    } */
    
   }, [gymState.currentGym]);
 
   useEffect(() => {
-    if (activitiesState.listOfActivities?.length == 1) {
-      dispatch(selectAnActivity(activitiesState.listOfActivities[0]));
+    if (activitiesState.listOfActivities?.length > 0 ) {
+      if (activitiesState.listOfActivities?.length == 1) {
+        dispatch(selectAnActivity(activitiesState.listOfActivities[0]));
+      }else{
+        dispatch(selectAnActivity(""));
+      }
     }
+    
     if (activitiesState.listOfActivities?.length == 0 && activitiesState.selectedActivity !== "") {
       dispatch(selectAnActivity(""));
     }
@@ -260,9 +265,6 @@ export default function SchedulesPage() {
   }, [activitiesState.selectedActivity, scheduleState.allSchedules]);
 
   return (
-    console.log("len", activitiesState.listOfActivities?.length),
-    console.log("dataalo >> ", scheduleState.lessonStartTimeSendToServer),
-    console.log(`jwt token ${localStorage.getItem(AppConstants.keyToken)}`),
     (
       <div ref={pageRef} className="schedule_page">
         {clientsSlice.waitingForAccept?.length > 0 && (
