@@ -31,7 +31,8 @@ import {
   returnDeletedActivity,
   addPhotoToSelectedActivity,
   selectSubcategory,
-  unsetFirstItemAsActive
+  unsetFirstItemAsActive,
+  setPhotosOfSelectedActivity
 } from "../../../../../features/activities_slice";
 import DropDownSmaller from "../../../../../components/dropdown/dropdown_smaller";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
@@ -239,6 +240,24 @@ export default function GymDetailesBodySecondContainer({
     .catch((error) => {
       toast.error("Ошибка при изменении описания" + error);
     });
+  }
+
+  async function addPhoto({files}){
+    const isInherited = selectedSubcategory && selectedSubcategory?.inheritance;
+    const body = {
+      id: gymId,
+      files: files,
+      type: selectedActivity,
+      isInherited : isInherited,
+      subCategoryId: selectedSubcategory?.id
+    };
+    await dispatch(addPhotoToSelectedActivity(body));
+    if (isInherited) {
+      dispatch(getPhotos(gymId));
+    }
+    dispatch(unsetFirstItemAsActive());
+    await dispatch(getListOfActivities(gymId));
+    dispatch(setPhotosOfSelectedActivity());
   }
 
 
@@ -709,15 +728,11 @@ export default function GymDetailesBodySecondContainer({
                                 file = new File([file], originalFileName, {type: "image/jpeg"});}
                                 if (file.type === "image/jpeg") {convertedFiles.push(file)}
                                 if (file.type !== "image/jpeg") {toast("Неподдерживаемый формат файла")}}
-                                const { id, type } = {
-                                id: gymId,
-                                type: selectedActivity};
                                 // if convertedFiles includes only jpeg files
                                 if (convertedFiles.length > 0) {
                                   deletePhotosSnackRef.current.hideSnackbars();
                                   progressSnackbarRef.current.show("Идет загрузка фото");
-                                  await dispatch(addPhotoToSelectedActivity({id,files: convertedFiles,type}));
-                                  dispatch(getPhotos(gymId));
+                                  addPhoto({files: convertedFiles});
                                 }
                               }
                               event.target.value = null}} // Очистить значение элемента ввода файла

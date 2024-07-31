@@ -6,9 +6,12 @@ import CrmWhiteButton from '../../../components/crm/white_button/CrmWhiteButton'
 import GreenButton from '../../../components/crm/GreenButton';
 import { MembershipCard } from './Memberships';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import axiosClient from '../../../config/axios_client';
 
 export default function AddMembershipDialog({
     closeDialog,
+    clientId,
 }) {
     const list = useSelector((state) => state.crmClients.gymAndMembershipsInside);
     const [selectedMembership, setSelectedMembership] = useState({
@@ -19,6 +22,23 @@ export default function AddMembershipDialog({
     
     function toggle(gymId){
        gymId === openedGymId ? setOpenedGymId(0) : setOpenedGymId(gymId);
+    }
+
+    function addMemberShipRequest() {
+        if (selectedMembership.id) {
+            axiosClient.post(`api/crm/client/${clientId}/${selectedMembership.id}`)
+            .catch((error) => {
+                toast.error('Ошибка при добавлении абонемента' + error)
+            })
+            .then((response) => {
+                if (response.status === 200) {
+                    closeDialog();
+                    toast.success('Абонемент успешно добавлен')
+                }
+            });
+        }else{
+            toast.error('Выберите абонемент')
+        }
     }
 
     return (
@@ -43,49 +63,15 @@ export default function AddMembershipDialog({
                     memberShips={item?.memberships}/>
             })}
 
-            {/* <AccordionGyms 
-                isOpened={isOpened1} 
-                radioOn={selectedMembership.gymId === 1 && !isOpened1} 
-                toggle={()=>setIsOpened1(!isOpened1)}
-                memberShips={memberShips}
-                selectMembershipId={selectedMembership.id}  
-                selectedMembershipGymId={selectedMembership.gymId}
-                selectMembership={(gymId, membershipId)=>setSelectedMembership({id : membershipId, gymId : gymId})}
-                />
-            <AccordionGyms 
-                isOpened={isOpened2} 
-                radioOn={selectedMembership.gymId === 2 && !isOpened2} 
-                toggle={()=>setIsOpened2(!isOpened2)} 
-                gymName='Abdullo Ako'
-                gymId={2}
-                selectMembershipId={selectedMembership.id}
-                selectedMembershipGymId={selectedMembership.gymId}
-                selectMembership={(gymId, membershipId)=>setSelectedMembership({id : membershipId, gymId : gymId})}
-                memberShips={memberShips}/>
-            <AccordionGyms 
-                isOpened={isOpened3} 
-                radioOn={selectedMembership.gymId === 3 && !isOpened3} 
-                toggle={()=>setIsOpened3(!isOpened3)} 
-                gymName='Leningrad'
-                gymId={3}
-                selectedMembershipGymId={selectedMembership.gymId}
-                selectMembershipId={selectedMembership.id}
-                selectMembership={(gymId, membershipId)=>setSelectedMembership({id : membershipId, gymId : gymId})}
-                memberShips={memberShips}/>
-            <AccordionGyms 
-                isOpened={isOpened4} 
-                radioOn={selectedMembership.gymId === 4 && !isOpened4} 
-                toggle={()=>setIsOpened4(!isOpened4)} 
-                gymName='La Crysral'
-                gymId={4}
-                selectedMembershipGymId={selectedMembership.gymId}
-                selectMembershipId={selectedMembership.id}
-                selectMembership={(gymId, membershipId)=>setSelectedMembership({id : membershipId, gymId : gymId})}
-                memberShips={memberShips}/> */}
-
             <div className="rowGap10">
                 <CrmWhiteButton text='Отменить' onClick={closeDialog} width='120px' />
-                <GreenButton text='Добавить выбранный абонемент клиенту' width='340px' padLeft='24px' padRight='24px' />
+                <GreenButton 
+                    text='Добавить выбранный абонемент клиенту' 
+                    width='340px' 
+                    padLeft='24px' 
+                    padRight='24px' 
+                    onClick={()=>addMemberShipRequest()}
+                    />
             </div>
         </div>
     )

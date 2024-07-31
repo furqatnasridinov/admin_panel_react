@@ -46,22 +46,26 @@ export const getPhotos = createAsyncThunk(
 
 export const addPhotoToSelectedActivity = createAsyncThunk(
   "activitiesSlice/addPhotoToSelectedActivity",
-  async ({ id, files, type }) => {
+  async ({ id, files, type, isInherited, subCategoryId }) => {
     var formData = new FormData();
     for (let i = 0; i < files?.length; i++) {
       formData.append("files", files[i]);
     }
     formData.append("type", type);
+    const endPoint = isInherited ? `api/admin/gyms/${id}/pictures` : 
+    `api/admin/gyms/${id}/${subCategoryId}/pictures`;
     try {
       const response = await axiosClient.post(
-        `api/admin/gyms/${id}/pictures`,
+        endPoint,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         }
-      );
+      ).then((response) => {
+        //
+      });
     } catch (error) {
       toast(`ощибка при добавлении фото: ${error}`);
     }
@@ -205,6 +209,7 @@ const activitiesSlice = createSlice({
     jsonLessonTypeAndSubtypes: {}, // { "cardio" : [{jsonSubCategory}, {jsonSubCategory}]}
     subcategoriesOfSelectedActivity: [], // [{jsonSubCategory}, {jsonSubCategory}]
     selectedSubcategory: {}, // {jsonSubCategory}
+    selectedSubcategories: [], // [{jsonSubCategory}, {jsonSubCategory}]
     isActivitiesLoding: false,
     isActivityPhotosLoading: false,
     deletedActivities: [],
@@ -238,7 +243,7 @@ const activitiesSlice = createSlice({
             }
           }
       } else{
-        state.selectedActivity = null;
+        //state.selectedActivity = null;
       }
     },
 
@@ -265,6 +270,19 @@ const activitiesSlice = createSlice({
       if (index !== -1) {
         subcategoriesOfSelectedActivity[index].name = jsonSubCategory.name;
       }
+    },
+
+    addSubcategoryToList(state, action) {
+      const alreadyExist = state.selectedSubcategories.find((sub)=> sub.id === action.payload.id);
+      if (!alreadyExist) {
+        state.selectedSubcategories.push(action.payload);
+      }
+    },
+
+    removeSubcategoryFromList: (state, action) => {
+      state.selectedSubcategories = state.selectedSubcategories.filter(
+        (sub) => sub.id !== action.payload?.id
+      );
     },
 
     selectSubcategory: (state, action) => {
@@ -383,7 +401,7 @@ const activitiesSlice = createSlice({
               state.photosOfSelectedActivity = [];
             }
           }else{
-            const photosJson = selectSubcategory?.gymSubActivePictures ?? []; // [{id: 1, orderNumber : 0, pictureUrl: ""}]
+            const photosJson = selectedSubcategory?.gymSubActivePictures ?? []; // [{id: 1, orderNumber : 0, pictureUrl: ""}]
             if (photosJson.length > 0) {
               const photos = photosJson.map((photo) => photo["pictureUrl"]);
               state.photosOfSelectedActivity = photos;
@@ -401,7 +419,6 @@ const activitiesSlice = createSlice({
         }
       } catch (error) {
         throw new Error(`setPhotosOfSelectedActivity ${error}`);
-        
       }
     },
   },
@@ -418,6 +435,15 @@ const activitiesSlice = createSlice({
       // {"cardio" : [1,2,3], "yoga" : [4,5,6]}
       const keys = Object.keys(data);
       state.listOfActivities = keys;
+      if (state.selectedActivity && state.selectedSubcategory) {
+        // if selectedActivity and selectedSubcategory are not null, then we need to update them
+        const activity = state.selectedActivity;
+        const subcategories = data[activity];
+        const currentSubcategory = subcategories.find((sub) => sub.id === state.selectedSubcategory.id);
+        if (currentSubcategory) {
+          state.selectedSubcategory = currentSubcategory;
+        }
+      }
     });
     builder.addCase(getListOfActivities.rejected, (state) => {
       state.isActivitiesLoding = false;
@@ -494,5 +520,7 @@ export const {
   selectSubcategory,
   changeNameOfSelectedSubcategory,
   unsetFirstItemAsActive,
+  addSubcategoryToList,
+  removeSubcategoryFromList,
 } = activitiesSlice.actions;
 export default activitiesSlice.reducer;

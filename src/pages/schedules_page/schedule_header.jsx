@@ -36,12 +36,14 @@ import checkboxEnabled from "../../assets/svg/Check.svg";
 import checkboxDisabled from "../../assets/svg/checkbox_disabled.svg";
 import questionLogo from "../../assets/svg/questionModal.svg";
 import AppConstants from "../../config/app_constants";
+import Subcategories from "./Subcategories";
 
 export default function ScheduleHeader() {
   // redux
   const dispatch = useDispatch();
   const gymState = useSelector((state) => state.currentGym);
   const activitiesState = useSelector((state) => state.activities);
+  const currentSubcategories = useSelector((state) => state.activities.subcategoriesOfSelectedActivity);
   const scheduleState = useSelector((state) => state.schedule);
   const [loading, setLoading] = useState(false);
 
@@ -95,6 +97,7 @@ export default function ScheduleHeader() {
   let numbers = Array.from({ length: 100 }, (_, i) => i + 1);
 
   return (
+    console.log("currentSubcategories", JSON.stringify(currentSubcategories)),
     <div className="schedule_header">
       <div className="flex flow-row gap-[10px] items-center">
         <div className="text-[14px] font-medium">Расписание</div>
@@ -157,8 +160,7 @@ export default function ScheduleHeader() {
           isDropDownOpened={isActivitiesDropDownOpened}
           zIndex={"5"}
           openCloseDropDown={() => {openActivitiesDropDown(!isActivitiesDropDownOpened)}}
-          map={
-            activitiesState.listOfActivities &&
+          map={activitiesState.listOfActivities &&
             activitiesState.listOfActivities?.map((item, index) => (
               <div
                 key={index}
@@ -183,8 +185,7 @@ export default function ScheduleHeader() {
           }
           text={
             activitiesState.selectedActivity == ""
-              ? "Выберите активность"
-              : activitiesState.selectedActivity
+              ? "Выберите активность" : activitiesState.selectedActivity
           }
           isLoading={activitiesState.isActivitiesLoading}
           loadingText={"Загружаем список активностей..."}
@@ -229,30 +230,35 @@ export default function ScheduleHeader() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-[5px]">
-              <div className="text-[16px] font-semibold leading-[16px]">
-                Активность:
-              </div>
-              <CustomDropdown
-                text={activitiesState.selectedActivity}
-                isDropDownOpened={isDropDownOpened}
-                zIndex={"1"}
-                openCloseDropDown={() => {
-                  openDropDown(!isDropDownOpened);
-                }}
-                map={activitiesState.listOfActivities.map((item, index) => (
-                  <button
-                    key={index}
-                    className="gym_names"
-                    onClick={() => {
-                      dispatch(selectAnActivity(item));
-                      openDropDown(false);
+            <div className="rowGap32">
+                <div className="flex flex-col gap-[5px] min-w-[40%]">
+                  <span className="text-[16px] font-semibold leading-[16px]">
+                    Активность:
+                  </span>
+                  <CustomDropdown
+                    text={activitiesState.selectedActivity}
+                    isDropDownOpened={isDropDownOpened}
+                    zIndex={"1"}
+                    openCloseDropDown={() => {
+                      openDropDown(!isDropDownOpened);
                     }}
-                  >
-                    {item}
-                  </button>
-                ))}
-              />
+                    map={activitiesState.listOfActivities.map((item, index) => (
+                      <button
+                        key={index}
+                        className="gym_names"
+                        onClick={() => {
+                          dispatch(selectAnActivity(item));
+                          openDropDown(false);
+                        }}
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  />
+                </div>
+                {currentSubcategories && currentSubcategories.length > 0 && 
+                  <Subcategories subcategories={currentSubcategories} />
+                }
             </div>
 
             <div className="flex flex-row gap-[32px]">

@@ -35,7 +35,7 @@ export default function ClientCard() {
     <div ref={blockRef} className="flex flex-col flex-1 pl-[10px] gap-[10px] h-[97vh] overflow-y-auto">
       <ClientCardHeader />
       <PersonalDatas id={clientId} />
-      <Memberships />
+      <Memberships id={clientId} />
       <PassportDatas id={clientId} />
     </div>
   )
