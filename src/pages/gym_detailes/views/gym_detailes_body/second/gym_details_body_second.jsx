@@ -163,6 +163,7 @@ export default function GymDetailesBodySecondContainer({
       typeDescription: activityDescribtion,
     };
     const data = (selectedSubcategory && !selectedSubcategory?.inheritance) ? jsonInheritanceFalse : jsonInheritanceTrue;
+    console.log(JSON.stringify(data));
     axiosClient.patch(`api/admin/gyms/${gymId}`, data)
     .then((response) => {
       if (response.status === 200) {
@@ -222,7 +223,7 @@ export default function GymDetailesBodySecondContainer({
       //typeDescription: activityDescribtion,
     };
     const data = (selectedSubcategory && !selectedSubcategory?.inheritance) ? jsonInheritanceFalse : jsonInheritanceTrue;
-    console.log(data);
+    console.log(JSON.stringify(data));
     axiosClient.patch(`api/admin/gyms/${gymId}`, data)
     .then((response) => {
       if (response.status === 200) {

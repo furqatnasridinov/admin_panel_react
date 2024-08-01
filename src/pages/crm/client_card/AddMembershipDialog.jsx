@@ -5,8 +5,9 @@ import { useState } from 'react'
 import CrmWhiteButton from '../../../components/crm/white_button/CrmWhiteButton';
 import GreenButton from '../../../components/crm/GreenButton';
 import { MembershipCard } from './Memberships';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+import { getClientById } from '../../../features/crm/CrmClients';
 import axiosClient from '../../../config/axios_client';
 
 export default function AddMembershipDialog({
@@ -14,6 +15,7 @@ export default function AddMembershipDialog({
     clientId,
 }) {
     const list = useSelector((state) => state.crmClients.gymAndMembershipsInside);
+    const dispatch = useDispatch();
     const [selectedMembership, setSelectedMembership] = useState({
         // {id : membershipId, gymId : gymId}
     });
@@ -33,7 +35,8 @@ export default function AddMembershipDialog({
             .then((response) => {
                 if (response.status === 200) {
                     closeDialog();
-                    toast.success('Абонемент успешно добавлен')
+                    dispatch(getClientById(clientId));
+                    toast.success('Абонемент успешно добавлен');
                 }
             });
         }else{
@@ -121,7 +124,7 @@ function AccordionGyms({
                             gyms={item.gyms.map(gym => gym.name)}
                             name={item.name}
                             price={item.price}
-                            subcategories={item.lessonSubTypes || []}
+                            subcategories={item.lessonSubTypes.map(subType => subType.name) ?? null}
                             lessonTypes={item.lessonTypes || []}
                             oldPrice={item.oldPrice || null}
                             />
