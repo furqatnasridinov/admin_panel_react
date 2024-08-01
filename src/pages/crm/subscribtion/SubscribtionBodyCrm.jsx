@@ -52,8 +52,9 @@ export default function SubscribtionBodyCrm() {
     const [gymAndLessonTypes, setGymAndLessonTypes] = useState([
         //{gym : GYMDATA, lessonTypes : ["Бассейн","Бокс"]},
     ]);
-    const [subcategories, setSubcategories] = useState([]);
-    const list3 = [{name: 'Сам по себе', id: 1}, {name: "С тренером", id: 2}, {name : "Техника удара", id: 3}];
+    const [subcategories, setSubcategories] = useState([
+        // {id: 1, name: "Техника"}
+    ]);
     const firstSectionError = missingInfos.includes("gym") || missingInfos.includes("activities") || missingInfos.includes("price");
     const firstSectionShowDone = dropDownsGyms.length > 0 && dropDownsGyms.every(dropDown => dropDown.gym) && dropDownsActivities.length > 0 && dropDownsActivities.every(dropDown => dropDown.gymAndLessonType) && price !== '';
     const secondSectionError = missingInfos.includes("type") || missingInfos.includes("weekdays");
@@ -246,7 +247,7 @@ export default function SubscribtionBodyCrm() {
         const selectedGymsId = dropDownsGyms.map(dropDown => dropDown.gym.id);
         const gyms = selectedGymsId.map(item => ({ id: item }));
         const activities = dropDownsActivities.map(dropDown => dropDown.gymAndLessonType?.lessonType);
-        const subcategories = dropDownsSubcategories.map(dropDown => dropDown.name);
+        const subcategories = dropDownsSubcategories.map(dropDown => ({id : dropDown.id}));
         const _type = type === 'Месячный' ? 'MONTH' : 'YEAR';
         const data = 
         {

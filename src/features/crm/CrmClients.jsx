@@ -83,6 +83,7 @@ const crmClientsSlice = createSlice({
     address : "",
     date : "",
     code : "",
+    membership : null, // {}
     changesOccuredPersonalData: false,
     changesOccuredPassportData: false,
     missingFieldsPersonalData: [],
@@ -290,6 +291,7 @@ const crmClientsSlice = createSlice({
         state.address = client?.issuedBy || "";
         state.date =  getBirthdayFormatted2(client?.dateOfIssue) || "";
         state.code = client?.departmentCode || "";
+        state.membership = client?.pass || null;
         // file also
         state.clientGotById = client;
       }

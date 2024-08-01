@@ -5,10 +5,13 @@ import { IconAndText } from '../clients/EachCrmClient';
 import { useState, useRef, useEffect, forwardRef, Fragment } from 'react';
 import CustomDialog from '../../../components/dialog/dialog';
 import AddMembershipDialog from './AddMembershipDialog';
+import { useSelector } from 'react-redux';
 
 export default function Memberships({id}) {
     const [showTooltip, setShowTooltip] = useState(false);
     const [modal, setModal] = useState(false);
+    const membership = useSelector((state) => state.crmClients.membership);
+
   return (
     <div className='customCard'>
         <div className="rowSpaceBetween">
@@ -19,8 +22,24 @@ export default function Memberships({id}) {
             <CrmWhiteButton text='Добавить абонемент' onClick={()=>setModal(true)}/>
         </div>
 
-        <VerticalSpace height='32px' />
-        <MembershipCard showTooltip={showTooltip} setShowTooltip={setShowTooltip} />
+          {membership &&
+              <Fragment>
+                  <VerticalSpace height='32px' />
+                  <MembershipCard
+                      showTooltip={showTooltip}
+                      setShowTooltip={setShowTooltip}
+                      gyms={membership.gyms?.map((item) => item?.name)}
+                      lessonTypes={membership.lessonTypes}
+                      //subcategories={membership.subcategories}
+                      description={membership.description}
+                      name={membership.name}
+                      price={membership.price}
+                      oldPrice={null}
+                      subcategories={membership.subcategories?.map((item) => item?.name) ?? null}
+                  />
+              </Fragment>
+          }
+
         {modal &&
             <CustomDialog 
                 isOpened={modal} 
@@ -146,7 +165,7 @@ function ListGymsActivitiesSubcategories({
                 null
             ))}
             {subcategories && subcategories.length > 0 && <span className='label2b text-crm-link'>/</span>}
-            {subcategories.map((subCategory, index) => (
+            {subcategories && subcategories.length > 0 && subcategories.map((subCategory, index) => (
                 index + gyms.length + lessonTypes.length < overflowIndex || overflowIndex === null ? 
                 <SubCategoryCard ref={el => subcategoryRefs.current[index] = el} key={index + gyms.length + lessonTypes.length} text={subCategory} /> : 
                 null
