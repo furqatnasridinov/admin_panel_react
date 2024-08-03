@@ -55,6 +55,7 @@ export default function SubscribtionBodyCrm() {
     const [subcategories, setSubcategories] = useState([
         // {id: 1, name: "Техника"}
     ]);
+
     const firstSectionError = missingInfos.includes("gym") || missingInfos.includes("activities") || missingInfos.includes("price");
     const firstSectionShowDone = dropDownsGyms.length > 0 && dropDownsGyms.every(dropDown => dropDown.gym) && dropDownsActivities.length > 0 && dropDownsActivities.every(dropDown => dropDown.gymAndLessonType) && price !== '';
     const secondSectionError = missingInfos.includes("type") || missingInfos.includes("weekdays");
@@ -64,7 +65,7 @@ export default function SubscribtionBodyCrm() {
     const fourthSectionShowDone = benefits !== '' || limitations !== '' || conditionForFreezing !== '';
     const allGyms = useSelector(state => state.currentGym.listOfGyms);
     const allActivities = useSelector(state => state.activities.listOfActivities);
-    const showAddButtonGyms = dropDownsGyms.length < allGyms.length;
+    const showAddButtonGyms = dropDownsGyms.length < allGyms.length || true;
     const showAddButtonActivities = dropDownsActivities.length < allActivities.length;
     
 
@@ -88,19 +89,35 @@ export default function SubscribtionBodyCrm() {
     }
 
     function onSelectDropDownItem(id, item) {
+        let updatedDropdown = false;
+        let oldGymId = null;
         const copyDropDowns = [...dropDownsGyms];
         const changedDropDown = copyDropDowns.find(dropDown => dropDown.id === id);
+        if (changedDropDown?.gym?.id) {
+            updatedDropdown = true;
+            oldGymId = changedDropDown.gym.id;
+        }
         changedDropDown.gym = item;
         setDropDownsGyms(copyDropDowns);
+    
         // send request with this gym's id to get activities
         axiosClient.get(`api/admin/gyms/${item?.id}/lessonTypes`).then(res => {
             if (res.status === 200 && res.data["object"]) {
-                const result = res.data["object"]; 
+                const result = res.data["object"];
                 const arrayOfKeys = Object.keys(result);
-                const json = {gym : item, lessonTypes : arrayOfKeys};
-                setGymAndLessonTypes([...gymAndLessonTypes, json]);
+                const json = { gym: item, lessonTypes: arrayOfKeys };
+                if (updatedDropdown) {
+                    const index = gymAndLessonTypes.findIndex(item => item.gym.id === oldGymId);
+                    if (index !== -1) {
+                        const updatedGymAndLessonTypes = [...gymAndLessonTypes];
+                        updatedGymAndLessonTypes.splice(index, 1, json);
+                        setGymAndLessonTypes(updatedGymAndLessonTypes);
+                    }
+                } else {
+                    setGymAndLessonTypes([...gymAndLessonTypes, json]);
+                }
                 // get subcategories from result json and set it to subcategories
-                const _subcategories = subcategories;
+                const _subcategories = [...subcategories];
                 arrayOfKeys.forEach(key => {
                     result[key].forEach(subcategory => {
                         if (!_subcategories.includes(subcategory)) {
@@ -110,10 +127,10 @@ export default function SubscribtionBodyCrm() {
                 });
                 setSubcategories(_subcategories);
             }
-            
         }).catch(err => {
             toast.error('Get LessonTypes Ошибка при загрузке данных ==> ' + err.message);
         });
+    
         if (missingInfos.includes("gym")) {
             const newMissingInfos = missingInfos.filter(info => info !== "gym");
             setMissingInfos(newMissingInfos);
@@ -400,13 +417,13 @@ export default function SubscribtionBodyCrm() {
             setIsOpened4(false);
         }
     }
+    
 
     return (
         <div className="colGap10 mr-[10px]">
             <SubscribtionHeaderCrm onClick={resetAllFields} />
 
             <Accordion 
-                height={firstSectionError ? '580px' : '520px'}
                 isOpened={isOpened1} 
                 isErorr ={firstSectionError} 
                 toggle={toggle1} 
@@ -418,7 +435,7 @@ export default function SubscribtionBodyCrm() {
                     <span className="label2">В каких заведениях будет действовать абонемент:</span>
                     <VerticalSpace height="10px" />
                     <div className="wrap">
-                        {dropDownsGyms && allGyms && dropDownsGyms.map((dropDown) => (
+                        {dropDownsGyms  && dropDownsGyms.map((dropDown) => (
                             <SelectAndRemoveDropDown
                                 key={dropDown.id}
                                 list={allGyms.filter(item => !dropDownsGyms.some(dropDown => dropDown?.gym?.id === item.id))}
@@ -503,10 +520,10 @@ export default function SubscribtionBodyCrm() {
                         height='40px'
                     />
                 </EachSection>
+                <VerticalSpace height="10px" />
             </Accordion>
 
             <Accordion
-                height={secondSectionError ? '460px' : '420px'}
                 title="2. Уточнение условий абонемента"
                 toggle={toggle2}
                 isOpened={isOpened2}
@@ -590,7 +607,6 @@ export default function SubscribtionBodyCrm() {
                 isOpened={isOpened3} 
                 isErorr={thirdSectionError}
                 showDone={thirdSectionShowDone}
-                height='440px'
                 //onMouseLeave={thirdAccordionMouseLeave}
             >
                 {thirdSectionError && <VerticalSpace height="16px" />}
@@ -644,10 +660,10 @@ export default function SubscribtionBodyCrm() {
                         showLabel={false}
                     />
                 </EachSection>
+                <VerticalSpace height="10px" />
             </Accordion>
 
             <Accordion 
-                height='550px'
                 title="4. Дополнительно (Не обязательный блок)" 
                 toggle={toggle4} isOpened={isOpened4}
                 showDone={fourthSectionShowDone}
@@ -706,6 +722,7 @@ export default function SubscribtionBodyCrm() {
                     width={"100%"}
                     showLabel={false}
                 />
+                <VerticalSpace height="10px" />
             </Accordion>
 
             <VerticalSpace height="16px" />

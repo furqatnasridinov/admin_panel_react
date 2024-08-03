@@ -127,7 +127,8 @@ function AccordionGyms({
                             subcategories={item.lessonSubTypes.map(subType => subType.name) ?? null}
                             lessonTypes={item.lessonTypes || []}
                             oldPrice={item.oldPrice || null}
-                            />
+                            sliceIndex={7}
+                        />
                     </div>
                 })}
            </div>

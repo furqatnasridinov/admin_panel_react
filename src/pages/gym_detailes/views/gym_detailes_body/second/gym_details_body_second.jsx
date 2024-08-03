@@ -32,7 +32,8 @@ import {
   addPhotoToSelectedActivity,
   selectSubcategory,
   unsetFirstItemAsActive,
-  setPhotosOfSelectedActivity
+  setPhotosOfSelectedActivity,
+  removeSubcategoryFromList, returnDeletedSubcategory
 } from "../../../../../features/activities_slice";
 import DropDownSmaller from "../../../../../components/dropdown/dropdown_smaller";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
@@ -65,6 +66,7 @@ export default function GymDetailesBodySecondContainer({
   const [photoToShowInDialog, setPhotoToBeShownInDialog] = useState("");
   const [isDropDrownShown, showDropDown] = useState(false);
   const [isDropDownOpened, openDropDown] = useState(false);
+  const [cancelDeleteTimeouSub, setCancelDeleteTimeoutSub] = useState([]);
   const [cancelDeleteTimeoutPhotos, setCancelDeleteTimeoutPhotos] = useState([]);
   const [cancelDeleteTimeoutActivities, setCancelDeleteTimeoutActivities] = useState([]);
   const [activityDescribtionNotValidated, setActivityDescribtionNotValidated] = useState(false);
@@ -79,6 +81,7 @@ export default function GymDetailesBodySecondContainer({
   const deleteActivitiesSnackRef = useRef();
   const blueBorderedContainerRef = useRef(null);
   const progressSnackbarRef = useRef(null);
+  const deleteSubRef = useRef(null);
   const draggedItemRef = useRef(null);
   const draggedActivityRef = useRef(null);
 
@@ -133,36 +136,25 @@ export default function GymDetailesBodySecondContainer({
   }
 
   function patchDescribtion(){
-    const jsonInheritanceFalse = {
-      gymSubActiveInfo: [
-        {
-          id: selectedSubcategory?.id,
-          inheritance: selectedSubcategory?.inheritance,
-          name: selectedSubcategory?.name,
-          orderNumber: selectedSubcategory?.orderNumber,
-          peculiarities: selectedSubcategory?.peculiarities,
-          typeDescription: activityDescribtion,
-        }
-      ],
+    const newJson = {
+      id: selectedSubcategory?.id,
+      inheritance: selectedSubcategory?.inheritance,
+      name: selectedSubcategory?.name,
+      orderNumber: selectedSubcategory?.orderNumber,
+      peculiarities: selectedSubcategory?.peculiarities,
+      typeDescription: selectedSubcategory?.inheritance ? selectedSubcategory?.typeDescription : activityDescribtion,
+    };
+    // remove old subcategory from the list and add new one
+    const newList = subcategories.map((item) =>
+      item.id === newJson?.id ? newJson : item
+    );
+    const data = {
+      gymSubActiveInfo: newList,
       lessonType: selectedActivity,
     };
-    const jsonInheritanceTrue = {
-      gymSubActiveInfo: [
-        {
-          id: selectedSubcategory?.id,
-          inheritance: selectedSubcategory?.inheritance,
-          name: selectedSubcategory?.name,
-          orderNumber: selectedSubcategory?.orderNumber,
-          peculiarities: selectedSubcategory?.peculiarities,
-          typeDescription: activityDescribtion,
-        }
-      ],
-      lessonType: selectedActivity,
-      //"orderNumber": 0,
-      //"peculiarities": "string",
-      typeDescription: activityDescribtion,
-    };
-    const data = (selectedSubcategory && !selectedSubcategory?.inheritance) ? jsonInheritanceFalse : jsonInheritanceTrue;
+    if (selectedSubcategory?.inheritance) {
+      data.typeDescription = activityDescribtion;
+    }
     console.log(JSON.stringify(data));
     axiosClient.patch(`api/admin/gyms/${gymId}`, data)
     .then((response) => {
@@ -193,36 +185,25 @@ export default function GymDetailesBodySecondContainer({
     ) {
       activityPeculiarities = "";
     }
-    const jsonInheritanceFalse = {
-      gymSubActiveInfo: [
-        {
-          id: selectedSubcategory?.id,
-          inheritance: selectedSubcategory?.inheritance,
-          name: selectedSubcategory?.name,
-          orderNumber: selectedSubcategory?.orderNumber,
-          peculiarities: activityPeculiarities,
-          typeDescription: selectedSubcategory?.typeDescription,
-        }
-      ],
+    const newJson = {
+      id: selectedSubcategory?.id,
+      inheritance: selectedSubcategory?.inheritance,
+      name: selectedSubcategory?.name,
+      orderNumber: selectedSubcategory?.orderNumber,
+      peculiarities: selectedSubcategory?.inheritance ? selectedSubcategory?.peculiarities : activityPeculiarities,
+      typeDescription: selectedSubcategory?.typeDescription,
+    };
+    // remove old subcategory from the list and add new one
+    const newList = subcategories.map((item) =>
+      item.id === newJson?.id ? newJson : item
+    );
+    const data = {
+      gymSubActiveInfo: newList,
       lessonType: selectedActivity,
     };
-    const jsonInheritanceTrue = {
-      gymSubActiveInfo: [
-        {
-          id: selectedSubcategory?.id,
-          inheritance: selectedSubcategory?.inheritance,
-          name: selectedSubcategory?.name,
-          orderNumber: selectedSubcategory?.orderNumber,
-          peculiarities: activityPeculiarities,
-          typeDescription: selectedSubcategory?.typeDescription,
-        }
-      ],
-      lessonType: selectedActivity,
-      //"orderNumber": 0,
-      peculiarities: activityPeculiarities,
-      //typeDescription: activityDescribtion,
+    if (selectedSubcategory?.inheritance) {
+      data.peculiarities = activityPeculiarities;
     };
-    const data = (selectedSubcategory && !selectedSubcategory?.inheritance) ? jsonInheritanceFalse : jsonInheritanceTrue;
     console.log(JSON.stringify(data));
     axiosClient.patch(`api/admin/gyms/${gymId}`, data)
     .then((response) => {
@@ -260,6 +241,26 @@ export default function GymDetailesBodySecondContainer({
     await dispatch(getListOfActivities(gymId));
     dispatch(setPhotosOfSelectedActivity());
   }
+
+  function deleteSubcategoryRequest(id){
+    const newList = subcategories.filter((item) => item.id !== id);
+    const data = {
+        gymSubActiveInfo: newList,
+        lessonType: selectedActivity,
+    };
+    console.log(JSON.stringify(data));
+    axiosClient.patch(`api/admin/gyms/${gymId}`, data)
+    .then((response) => {
+        if (response.status === 200) {
+            toast.success("Подгруппа успешно удалена");
+            dispatch(unsetFirstItemAsActive());
+            dispatch(getListOfActivities(gymId));
+        }
+    })
+    .catch((error) => {
+        toast.error("Error while deleting subcategory" + error);
+    });
+}
 
 
   return (
@@ -326,7 +327,7 @@ export default function GymDetailesBodySecondContainer({
                               dispatch(removeActivityFromListOfActivities(activity));
                               const cancelTimeOut =
                                 deleteActivitiesSnackRef.current.show(
-                                  "Вы удалили занятие",
+                                  "Вы удалили активность",
                                   // function when time ended
                                   async () => {
                                     const { id, lessonType } = {
@@ -406,13 +407,29 @@ export default function GymDetailesBodySecondContainer({
                       {subcategories && subcategories.length > 0 &&
                         [...subcategories]
                         // compare by orderNumber to sort
+                        .filter((el) => !activitiesSlice.deletedSubcategories.includes(el))
                         .sort((a, b) => a?.orderNumber - b?.orderNumber)
-                        .map((activity) => {
+                        .map((subcategory) => {
                           return <EachSubcategoryEditable 
-                            key={activity?.id}
-                            subcategory={activity}
+                            key={subcategory?.id}
+                            subcategory={subcategory}
                             currentLessonType={selectedActivity}
                             gymId={gymId}
+                            nextOrderNumber={subcategories.length + 1}
+                            onDeletedSubcategory={() => {
+                              dispatch(removeSubcategoryFromList(subcategory));
+                              const cancelTimeOut = deleteSubRef.current.show(
+                                  "Вы удалили подгруппу",
+                                  // function when time ended
+                                  () =>{
+                                    deleteSubcategoryRequest(subcategory?.id)
+                                  }
+                              );
+                              setCancelDeleteTimeoutSub((prevState) => [
+                                  ...prevState,
+                                  cancelTimeOut,
+                              ]);
+                          }}
                             />
                         })
                       }
@@ -483,6 +500,7 @@ export default function GymDetailesBodySecondContainer({
           <span className="label2bPlus">Подгруппы внутри выбранной активности:</span>
           <div className="chips_row ">
             {[...subcategories]
+              .filter((el) => !activitiesSlice.deletedSubcategories.includes(el))
               .sort((a, b) => a?.orderNumber - b?.orderNumber)
               .map((activity) => {
                 return (
@@ -605,7 +623,7 @@ export default function GymDetailesBodySecondContainer({
                       prevState.slice(0, -1)
                     );
                   }
-                }}
+                }} 
               />
 
               {/* Snackbar for deleting activities */}
@@ -625,6 +643,18 @@ export default function GymDetailesBodySecondContainer({
                   }
                 }}
               />
+
+            <CustomSnackbar
+              ref={deleteSubRef}
+              undoAction={() => {
+                dispatch(returnDeletedSubcategory());
+                if (cancelDeleteTimeouSub.length > 0) {
+                  const lastCancelFunction = cancelDeleteTimeouSub[cancelDeleteTimeouSub.length - 1];
+                  lastCancelFunction();
+                  setCancelDeleteTimeoutSub((prevState) => prevState.slice(0, -1));
+                }
+              }}
+            />
 
               {/* Progress snackbar */}
               <ProgressSnackbar
@@ -669,7 +699,7 @@ export default function GymDetailesBodySecondContainer({
                             <img
                               className="delete-icon"
                               src={deleteSvg}
-                              alt=""
+                              alt="deleteSvg"
                               onClick={async () => {
                                 dispatch(removePhotoFromSelectedActivityPhotos(item));
                                 deletePhotosSnackRef.current.showSnackbars();
