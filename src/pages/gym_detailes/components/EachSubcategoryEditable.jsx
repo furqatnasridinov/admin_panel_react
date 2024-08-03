@@ -1,24 +1,27 @@
 import {React, useState, useEffect, useRef} from 'react'
 import TextareaAutosize from 'react-textarea-autosize'; 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getListOfActivities, unsetFirstItemAsActive } from '../../../features/activities_slice';
 import axiosClient from '../../../config/axios_client';
 import { toast } from 'react-toastify';
+import CustomSnackbar from '../../../components/snackbar/custom_snackbar';
 
 export default function EachSubcategoryEditable({
     subcategory,
-    onDelete,
     nextOrderNumber, // order number of the new subcategory
     onDeleteCreate,
     currentLessonType,
     gymId,
     isInitiallyActive = false,
     inheritance,
+    onDeletedSubcategory,
 }) {
     const [currentActive, setCurrentActive] = useState(0);
     const dispatch = useDispatch();
     const ref = useRef(null);
     const [copyOfSubcategoryName, setCopyOfSubcategoryName] = useState(subcategory?.name);
+    const activitiesSlice = useSelector((state) => state.activities);
+    const subcategories = activitiesSlice.subcategoriesOfSelectedActivity || [];
     const copyOfSubcategoryNameRef = useRef(copyOfSubcategoryName);
     const border = (currentActive === subcategory?.id || isInitiallyActive) ? "1px solid rgba(119, 170, 249, 1)" : "1px solid transparent";
 
@@ -60,21 +63,29 @@ export default function EachSubcategoryEditable({
         };
     }, [currentActive, isInitiallyActive]);
 
+
     function sendRequestToChangeNameOfSubcategory({
         name,
         subcategoryId,
     }){
+        const newJson = {
+            id: subcategoryId,
+            name: name,
+            orderNumber: subcategory?.orderNumber,
+            inheritance: subcategory?.inheritance,
+            peculiarities : subcategory?.peculiarities ? subcategory?.peculiarities : null,
+            typeDescription : subcategory?.typeDescription ? subcategory?.typeDescription : null,
+            gymSubActivePictures : subcategory?.gymSubActivePictures ? subcategory?.gymSubActivePictures : [],
+        };
+        // remove old subcategory from the list and add new one
+        const newList = subcategories.map((item) => 
+            item.id === subcategoryId ? newJson : item
+        );
         const data = {
-            gymSubActiveInfo: [
-                {
-                    id: subcategoryId,
-                    name: name,
-                    orderNumber : subcategory?.orderNumber,
-                    inheritance : subcategory?.inheritance,
-                }
-            ],
+            gymSubActiveInfo: newList,
             lessonType: currentLessonType,
         };
+        console.log(JSON.stringify(data));
         axiosClient.patch(`api/admin/gyms/${gymId}`, data)
         .then((response) => {
             if (response.status === 200) {
@@ -91,16 +102,21 @@ export default function EachSubcategoryEditable({
     function createSubCategoryRequest({
         name,
       }) {
+        const newJson = {
+            //id: 0,
+            name: name,
+            orderNumber: nextOrderNumber,
+            inheritance: inheritance,
+            peculiarities : null,
+            typeDescription : null,
+            gymSubActivePictures : [],
+        }
+        const newList = [...subcategories, newJson];
         const data = {
-          gymSubActiveInfo: [
-            {
-              inheritance: inheritance,
-              name: name,
-              orderNumber: nextOrderNumber,
-            }
-          ],
+          gymSubActiveInfo: newList,
           lessonType: currentLessonType,
         };
+        console.log(JSON.stringify(data));
         axiosClient.patch(`api/admin/gyms/${gymId}`, data)
         .then((response) => {
           if (response.status === 200) {
@@ -113,30 +129,33 @@ export default function EachSubcategoryEditable({
         .catch((error) => {
           toast.error("Ошибка при создании подактивности" + error);
         });
-      };
+    };
+
 
     return (
         <div ref={ref} className="rowGap10 min-h-[28px]">
-            <DeleteIndicator onClick={onDelete} />
-            <TextareaAutosize  
+            <DeleteIndicator 
+                onClick={onDeletedSubcategory} />
+            <TextareaAutosize
                 style={{
-                    border : border,
-                    userSelect :  "none",
+                    border: border,
+                    userSelect: "none",
                     paddingLeft: isInitiallyActive || (currentActive === subcategory?.id) ? "16px" : "0",
-                    transition : "border 0.3s ease, padding-left 0.3s ease",
+                    transition: "border 0.3s ease, padding-left 0.3s ease",
                 }}
                 onDoubleClick={() => {
-                        if (currentActive !== subcategory?.id) {
-                            setCurrentActive(subcategory?.id);
-                        }
+                    if (currentActive !== subcategory?.id) {
+                        setCurrentActive(subcategory?.id);
+                    }
                 }}
                 unselectable='on'
-                //onSelect={null}
                 autoFocus={isInitiallyActive}
-                readOnly={!isInitiallyActive && (currentActive !== subcategory?.id)} 
+                readOnly={!isInitiallyActive && (currentActive !== subcategory?.id)}
                 value={copyOfSubcategoryName}
                 onChange={(e) => setCopyOfSubcategoryName(e.target.value)}
                 className='areaAutoSize' />
+
+            
         </div>
     )
 }

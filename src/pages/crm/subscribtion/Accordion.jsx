@@ -1,22 +1,35 @@
-import React from 'react'
+import React, {useRef, useState, useEffect} from 'react'
 
 export default function Accordion({ 
     title, 
     children, 
     toggle, 
     isOpened ,
-    height = '400px',
+    //height = '400px',
     showDone = false,
     isErorr = false,
     onMouseLeave,
 }) {
-    //const background = isErorr && !isOpened ? 'rgba(255, 136, 136, 0.5)' : 'white';
+    const contentRef = useRef(null);
+    const [height, setHeight] = useState('95px');
+
+    useEffect(() => {
+        if (contentRef.current) {
+            if (isOpened) {
+                setHeight(`${contentRef.current.scrollHeight}px`);
+            } else {
+                setHeight('95px');
+            }
+        }
+    }, [isOpened,isErorr]);
+
     return (
         <div 
+            ref={contentRef}
             onMouseLeave={onMouseLeave}
             className="w-full flex flex-col rounded-2xl"
             style={{
-                height: isOpened ? height : '95px',
+                height: height,
                 transition: 'all 0.3s',
                 backgroundColor: "white" //background,
             }}

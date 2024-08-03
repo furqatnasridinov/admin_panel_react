@@ -241,7 +241,7 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
-    width: 640px;
+    width: 740px;
     /* max-height: 790px; */
     background-color: white;
     border-radius: 16px;
@@ -251,11 +251,6 @@
     overflow-y: auto;
     outline: none;
   }
-
-
-
-
-
 
 
 

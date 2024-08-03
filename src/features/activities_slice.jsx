@@ -213,6 +213,7 @@ const activitiesSlice = createSlice({
     isActivitiesLoding: false,
     isActivityPhotosLoading: false,
     deletedActivities: [],
+    deletedSubcategories: [],
     allAvailableLessonTypes: [],
     makeFirstLessonTypeActive: true,
     isError: false,
@@ -320,6 +321,21 @@ const activitiesSlice = createSlice({
         // remove last element from deletedActivities and add it to listOfActivities
         const lastElement = state.deletedActivities.pop();
         state.listOfActivities.push(lastElement);
+      }
+    },
+
+    removeSubcategoryFromList: (state, action) => {
+      state.subcategoriesOfSelectedActivity = state.subcategoriesOfSelectedActivity.filter(
+        (sub) => sub.id !== action.payload.id
+      );
+      state.deletedSubcategories.push(action.payload);
+    },
+
+    returnDeletedSubcategory: (state) => {
+      if (state.deletedSubcategories?.length > 0) {
+        // remove last element from deletedSubcategories and add it to subcategoriesOfSelectedActivity
+        const lastElement = state.deletedSubcategories.pop();
+        state.subcategoriesOfSelectedActivity.push(lastElement);
       }
     },
 
@@ -522,5 +538,6 @@ export const {
   unsetFirstItemAsActive,
   addSubcategoryToList,
   removeSubcategoryFromList,
+  returnDeletedSubcategory,
 } = activitiesSlice.actions;
 export default activitiesSlice.reducer;

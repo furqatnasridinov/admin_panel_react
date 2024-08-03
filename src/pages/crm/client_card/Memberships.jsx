@@ -30,12 +30,11 @@ export default function Memberships({id}) {
                       setShowTooltip={setShowTooltip}
                       gyms={membership.gyms?.map((item) => item?.name)}
                       lessonTypes={membership.lessonTypes}
-                      //subcategories={membership.subcategories}
                       description={membership.description}
                       name={membership.name}
                       price={membership.price}
                       oldPrice={null}
-                      subcategories={membership.subcategories?.map((item) => item?.name) ?? null}
+                      subcategories={membership.lessonSubTypes?.map((item) => item?.name) ?? null}
                   />
               </Fragment>
           }
@@ -69,11 +68,12 @@ export function MembershipCard({
     percentage = 70,
     showButtons = true,
     showProgress = true,
-    listWidth = '71%'
+    listWidth = '71%',
+    sliceIndex,
 }) {
     return <div style={{border : greenBorder}} className="greenContaner">
     <div className="rowSpaceBetween">
-        <ListGymsActivitiesSubcategories width={listWidth} gyms={gyms} lessonTypes={lessonTypes} subcategories={subcategories} />
+        <ListGymsActivitiesSubcategories sliceIndex={sliceIndex} width={listWidth} gyms={gyms} lessonTypes={lessonTypes} subcategories={subcategories} />
         <div className="rowGap10">
             <div className="columnWithNoGap">
                 <span className='interBody3Plus'>{`${price}₽`}</span>
@@ -123,63 +123,62 @@ function ListGymsActivitiesSubcategories({
     lessonTypes,
     subcategories,
     width,
+    sliceIndex = 10,
 }) {
-    const [overflowIndex, setOverflowIndex] = useState(null);
-    const listRef = useRef(null);
-    const gymRefs = useRef([]);
-    const lessonTypeRefs = useRef([]);
-    const subcategoryRefs = useRef([]);
     const [showTooltip, setShowTooltip] = useState(false);
 
-    useEffect(() => {
-        const listWidth = listRef.current.getBoundingClientRect().width * 2;
-        let totalWidth = 0;
-        let index = 0;
+    const totalItems = gyms.length + lessonTypes.length + (subcategories ? subcategories.length : 0);
+    const showMore = totalItems > sliceIndex;
 
-        const allRefs = [...gymRefs.current, ...lessonTypeRefs.current, ...subcategoryRefs.current];
+    let displayedGyms = gyms;
+    let displayedLessonTypes = lessonTypes;
+    let displayedSubcategories = subcategories || [];
 
-        for (let item of allRefs) {
-            if (!item) continue; // Пропускаем несуществующие ссылки
-            const itemWidth = item.getBoundingClientRect().width;
-            totalWidth += itemWidth;
-            if (totalWidth > listWidth) {
-                setOverflowIndex(index - 2); // Учитываем кнопку "Ещё"
-                return;
-            }
-            index++;
-        }
-        setOverflowIndex(null); // Если переполнения нет
-    }, [gyms, lessonTypes, subcategories]); // Пересчитать при изменении данных
+    if (showMore) {
+        const gymsToShow = Math.min(sliceIndex, gyms.length);
+        const remaining = sliceIndex - gymsToShow;
+
+        const lessonTypesToShow = Math.min(remaining, lessonTypes.length);
+        const remainingAfterLessonTypes = remaining - lessonTypesToShow;
+
+        const subcategoriesToShow = Math.min(remainingAfterLessonTypes, displayedSubcategories.length);
+
+        displayedGyms = gyms.slice(0, gymsToShow);
+        displayedLessonTypes = lessonTypes.slice(0, lessonTypesToShow);
+        displayedSubcategories = displayedSubcategories.slice(0, subcategoriesToShow);
+    }
 
     return (
-        <div ref={listRef} style={{ maxWidth: width }} className="max-h-[66px] h-fit flex flex-wrap gap-[10px] items-center">
-            {gyms.map((gym, index) => (
-                index < overflowIndex || overflowIndex === null ? 
-                <LessonTypeCard ref={el => gymRefs.current[index] = el} key={index} lessonType={gym} isGym={true} /> : 
-                null
+        <div style={{ maxWidth: width }} className="max-h-[66px] h-fit flex flex-wrap gap-[10px] items-center">
+            {displayedGyms.map((gym, index) => (
+                <LessonTypeCard key={index} lessonType={gym} isGym={true} />
             ))}
-            <span className='label2b text-crm-link'>/</span>
-            {lessonTypes.map((lessonType, index) => (
-                index + gyms.length < overflowIndex || overflowIndex === null ? 
-                <LessonTypeCard ref={el => lessonTypeRefs.current[index] = el} key={index + gyms.length} lessonType={lessonType} /> : 
-                null
+            {displayedGyms.length > 0 && displayedLessonTypes.length > 0 && <span className='label2b text-crm-link'>/</span>}
+            {displayedLessonTypes.map((lessonType, index) => (
+                <LessonTypeCard key={index + displayedGyms.length} lessonType={lessonType} />
             ))}
-            {subcategories && subcategories.length > 0 && <span className='label2b text-crm-link'>/</span>}
-            {subcategories && subcategories.length > 0 && subcategories.map((subCategory, index) => (
-                index + gyms.length + lessonTypes.length < overflowIndex || overflowIndex === null ? 
-                <SubCategoryCard ref={el => subcategoryRefs.current[index] = el} key={index + gyms.length + lessonTypes.length} text={subCategory} /> : 
-                null
+            {displayedSubcategories.length > 0 && <span className='label2b text-crm-link'>/</span>}
+            {displayedSubcategories.map((subCategory, index) => (
+                <SubCategoryCard key={index + displayedGyms.length + displayedLessonTypes.length} text={subCategory} />
             ))}
-
-            {overflowIndex !== null &&
+            {showMore && (
                 <div className='relative'>
-                    <ShowMoreButton onClick={()=>setShowTooltip(true)} />
-                    {showTooltip && <ToolTip gyms={gyms} activities={lessonTypes} subcategories={subcategories} closeFunction={()=>setShowTooltip(false)} />}
+                    <ShowMoreButton onClick={() => setShowTooltip(true)} />
+                    {showTooltip && (
+                        <ToolTip
+                            gyms={gyms}
+                            activities={lessonTypes}
+                            subcategories={subcategories}
+                            closeFunction={() => setShowTooltip(false)}
+                        />
+                    )}
                 </div>
-            }
+            )}
         </div>
     );
 }
+
+
 
 function ThreeDotsTooltip({
     onClick,
@@ -247,7 +246,7 @@ function ToolTip({
     }, [closeFunction]);
 
 
-    return <div ref={menuRef} className="tooltipCrm w-[370px] mr-2">
+    return <div ref={menuRef} className="tooltipCrm w-[370px] mr-2 z-20">
         <div className="columnWithNoGap">
             <span className='headerH2'>Заведения:</span>
             {gyms.map((gym, index) => {
