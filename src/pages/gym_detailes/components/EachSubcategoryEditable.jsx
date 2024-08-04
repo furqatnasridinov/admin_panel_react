@@ -133,12 +133,17 @@ export default function EachSubcategoryEditable({
 
 
     return (
-        <div ref={ref} className="rowGap10 min-h-[28px]">
+        <div 
+            ref={ref} 
+            className="rowGap10 min-h-[28px] cursor-pointer"
+            draggable={true}
+            >
             <DeleteIndicator 
                 onClick={onDeletedSubcategory} />
             <TextareaAutosize
                 style={{
                     border: border,
+                    cursor: currentActive === subcategory?.id ? "text" : "pointer",
                     userSelect: "none",
                     paddingLeft: isInitiallyActive || (currentActive === subcategory?.id) ? "16px" : "0",
                     transition: "border 0.3s ease, padding-left 0.3s ease",

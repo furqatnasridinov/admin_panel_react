@@ -339,3 +339,34 @@ export function getApiLikeWeekDays(weekdays){
     });
     return days;
 }
+
+export function getWeekdaysIds(weekdays){
+    // from [MONDAY, TUESDAY, WEDNESDAY, THURSDAY] to [1, 2, 3, 4]
+    const days = [];
+    weekdays.forEach(day => {
+        switch (day) {
+            case "MONDAY":
+                days.push(1);
+                break;
+            case "TUESDAY":
+                days.push(2);
+                break;
+            case "WEDNESDAY":
+                days.push(3);
+                break;
+            case "THURSDAY":
+                days.push(4);
+                break;
+            case "FRIDAY":
+                days.push(5);
+                break;
+            case "SATURDAY":
+                days.push(6);
+                break;
+            case "SUNDAY":
+                days.push(7);
+                break;
+        }
+    });
+    return days;
+}

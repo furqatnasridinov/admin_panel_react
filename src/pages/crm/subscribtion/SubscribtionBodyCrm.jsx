@@ -793,10 +793,11 @@ function ToolTipBody(){
     </div>
 }
 
-function EachWeekday({
+export function EachWeekday({
     isSelected,
     onClick,
     text,
+    cursor = 'pointer'
 }){
     const backgroundColor = isSelected ? 'rgba(94, 220, 145, 1)' : 'white';
     const textColor = isSelected ? 'white' : 'rgba(58, 185, 109, 1)';
@@ -806,9 +807,10 @@ function EachWeekday({
                 border : '1px solid rgba(58, 185, 109, 1)',
                 backgroundColor : backgroundColor,
                 transition : 'background-color 0.3s ease',
+                cursor : cursor
             }}
             onClick={onClick}
-            className="w-[33px] h-[33px] rounded-[50%] cursor-pointer flex items-center justify-center">
+            className="w-[33px] h-[33px] rounded-[50%]  flex items-center justify-center">
             <span style={{color : textColor, transition : "color 0.3s ease"}} className='label3 select-none'>{text}</span>
         </div>
     )

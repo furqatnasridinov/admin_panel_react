@@ -6,10 +6,14 @@ import { useState, useRef, useEffect, forwardRef, Fragment } from 'react';
 import CustomDialog from '../../../components/dialog/dialog';
 import AddMembershipDialog from './AddMembershipDialog';
 import { useSelector } from 'react-redux';
+import { WEEK_DAYS } from '../../../dummy_data/dymmy_data';
+import { EachWeekday } from '../subscribtion/SubscribtionBodyCrm';
+import { getWeekdaysIds } from '../../../config/apphelpers';
 
 export default function Memberships({id}) {
     const [showTooltip, setShowTooltip] = useState(false);
     const [modal, setModal] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
     const membership = useSelector((state) => state.crmClients.membership);
 
   return (
@@ -35,17 +39,26 @@ export default function Memberships({id}) {
                       price={membership.price}
                       oldPrice={null}
                       subcategories={membership.lessonSubTypes?.map((item) => item?.name) ?? null}
+                      selectedWeekdays={getWeekdaysIds(membership.daysOfWeek)}
+                      privileges={membership.privileges || "Пусто"}
+                      restrictions={membership.restrictions || "Пусто"}
+                      freezingCancellation={membership.freezingCancellation || "Пусто"}
+                      isExpanded={isExpanded}
+                      onExpand={() => {
+                        setIsExpanded(!isExpanded);
+                        setShowTooltip(false);
+                      }}
                   />
               </Fragment>
-          }
+            }
 
-        {modal &&
-            <CustomDialog 
-                isOpened={modal} 
-                closeOnTapOutside={()=>{setModal(false)}}>
-                <AddMembershipDialog clientId={id} closeDialog={()=>{setModal(false)}} />
-            </CustomDialog>
-        }
+          {modal &&
+              <CustomDialog
+                  isOpened={modal}
+                  closeOnTapOutside={() => { setModal(false) }}>
+                  <AddMembershipDialog clientId={id} closeDialog={() => { setModal(false) }} />
+              </CustomDialog>
+          }
     </div>
   )
 }
@@ -70,7 +83,24 @@ export function MembershipCard({
     showProgress = true,
     listWidth = '71%',
     sliceIndex,
+    isExpanded = true,
+    startTime = '18:00',
+    endTime = '21:00',
+    selectedWeekdays = [1, 3, 4, 5],
+    privileges,
+    restrictions,
+    freezingCancellation,
+    onExpand = () => { },
 }) {
+   /*  const contentRef = useRef(null);
+    const [height, setHeight] = useState('95px');
+
+    useEffect(() => {
+        if (contentRef.current) {
+            setHeight(`${contentRef.current.scrollHeight}px`);
+        }
+    }, [isExpanded]); */
+
     return <div style={{border : greenBorder}} className="greenContaner">
     <div className="rowSpaceBetween">
         <ListGymsActivitiesSubcategories sliceIndex={sliceIndex} width={listWidth} gyms={gyms} lessonTypes={lessonTypes} subcategories={subcategories} />
@@ -97,7 +127,12 @@ export function MembershipCard({
                                 }}>
                                 <ThreeDotsSvg />
                             </div>
-                            {showTooltip && <ThreeDotsTooltip closeFunction={() => setShowTooltip(false)} />}
+                            {showTooltip && 
+                                <ThreeDotsTooltip 
+                                    closeFunction={() => setShowTooltip(false)} 
+                                    onClick={onExpand}
+                                />
+                            }
                         </div>
                     </Fragment>
                 }
@@ -108,12 +143,62 @@ export function MembershipCard({
         <span className='headerH2'>{name}</span>
         <span className='label2'>{description}</span>
     </div>
-    {showProgress &&
-        <Fragment>
-            <VerticalSpace height='16px' />
-            <Indicator endTime={endDate} percentage={percentage} />
-        </Fragment>
-    }
+        {isExpanded &&
+            <Fragment>
+                <VerticalSpace height='16px' />
+                <div className="colGap5">
+                    <span className='headerH2'>Расписание</span>
+                    <span className='label2'>с {`${startTime} - ${endTime}`}</span>
+                    <div className="rowGap5">
+                    {WEEK_DAYS.map((day, index) => {
+                        return <EachWeekday 
+                            key={index}
+                            isSelected={selectedWeekdays.includes(day.id)}
+                            text={day.name}
+                            onClick={()=>{}}
+                            cursor='default' 
+                        />
+                    })}
+                    </div>
+                </div>
+                <VerticalSpace height='16px' />
+                <div className="colGap5">
+                    <span className='headerH2'>Информация о доступных льготах и скидках</span>
+                    <span className='label2'>{privileges}</span>
+                </div>
+                <VerticalSpace height='16px' />
+                <div className="colGap5">
+                    <span className='headerH2'>Ограничения</span>
+                    <span className='label2'>{restrictions}</span>
+                </div>
+                <VerticalSpace height='16px' />
+                <div className="colGap5">
+                    <span className='headerH2'>Условия отмены и заморозки абонемента</span>
+                    <span className='label2'>{freezingCancellation}</span>
+                </div>
+            </Fragment>
+        }
+        {showProgress &&
+            <Fragment>
+                <VerticalSpace height='16px' />
+                <Indicator endTime={endDate} percentage={percentage} />
+            </Fragment>
+        }
+        {isExpanded &&
+            <Fragment>
+                <VerticalSpace height='16px' />
+                <div className="ml-[45%]">
+                    <CrmWhiteButton
+                        text='Свернуть'
+                        onClick={onExpand}
+                        width='fit-content'
+                        padLeft='24px'
+                        padRight='24px'
+                        addPlus={true}
+                    />
+                </div>
+            </Fragment>
+        }
 </div>
 }
 
@@ -200,7 +285,7 @@ function ThreeDotsTooltip({
 
 
     return <div ref={menuRef} className="tooltipCrm w-[285px] h-fit absolute left-[-285px]">
-        <IconAndText icon={<AbonSvg />} text='Подробности об абонементе' />
+        <IconAndText onClick={onClick} icon={<AbonSvg />} text='Подробности об абонементе' />
     </div>
 }
 
