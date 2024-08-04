@@ -117,21 +117,44 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
 
 export const deleteActivityPhoto = createAsyncThunk(
   "activitiesSlice/deleteActivityPhoto",
-  async ({ id, url }) => {
-    try {
-      var formData = new FormData();
-      formData.append("url", url);
-      const response = await axiosClient.delete(
-        `api/admin/gyms/${id}/pictures`,
-        {
+  async ({ id, url, isInherited, subId }) => {
+    if (isInherited) {
+      try {
+        var formData = new FormData();
+        formData.append("url", url);
+        const response = await axiosClient.delete(
+          `api/admin/gyms/${id}/pictures`,
+          {
+            data: formData,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      } catch (error) {
+        toast(`deleteActivityPhoto ${error}`);
+      }
+    }else{
+      try {
+        var formData = new FormData();
+        formData.append("url", url?.pictureUrl);
+        axiosClient.delete(`api/admin/gyms/${id}/subactive/${subId}/pictures`, {
           data: formData,
           headers: {
             "Content-Type": "multipart/form-data",
           },
+        })
+      .then((response) => {
+        if (response.status === 200) {
+          toast.success("Фото успешно удалено");
         }
-      );
-    } catch (error) {
-      toast(`deleteActivityPhoto ${error}`);
+      })
+      .catch((error) => {
+        toast(`deleteActivityPhoto ${error}`);
+      });
+      } catch (error) {
+        toast(`deleteActivityPhoto ${error}`);
+      }
     }
   }
 );
@@ -419,8 +442,8 @@ const activitiesSlice = createSlice({
           }else{
             const photosJson = selectedSubcategory?.gymSubActivePictures ?? []; // [{id: 1, orderNumber : 0, pictureUrl: ""}]
             if (photosJson.length > 0) {
-              const photos = photosJson.map((photo) => photo["pictureUrl"]);
-              state.photosOfSelectedActivity = photos;
+              //const photos = photosJson.map((photo) => photo["pictureUrl"]);
+              state.photosOfSelectedActivity = photosJson;
             } else {
               state.photosOfSelectedActivity = [];
             }

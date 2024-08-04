@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./gym_details_body_second.css";
 import TextAndTextButton from "../../../components/text_and_textbutton";
 import { useState, useRef } from "react";
@@ -56,6 +56,7 @@ export default function GymDetailesBodySecondContainer({
   const subcategories = activitiesSlice.subcategoriesOfSelectedActivity || [];
   const selectedSubcategory = activitiesSlice.selectedSubcategory; // {}
   const selectedActivity = activitiesSlice.selectedActivity;
+  const photosToShow = activitiesSlice.photosOfSelectedActivity;
 
   // use states
   const [isDescribtionEdittingEnabled, setDescribtionEditting] = useState(false);
@@ -75,6 +76,10 @@ export default function GymDetailesBodySecondContainer({
   const [addLessonTypeClicked, setAddLessonTypeClicked] = useState(false);
   const [addSubcategoryClicked, setAddSubcategoryClicked] = useState(false);
   const [inheritance, setInheritance] = useState(null);
+  const [draggedItemIndex, setDraggedItemIndex] = useState(null);
+  const [updatedSubcategories, setUpdatedSubcategories] = useState(subcategories);
+  const [updatedPhotos, setUpdatePhotos] = useState(photosToShow);
+  const [draggedPhotoIndex, setDraggedPhotoIndex] = useState(null);
   // use refs
   const hiddenFileInput = useRef(null);
   const deletePhotosSnackRef = useRef();
@@ -91,7 +96,7 @@ export default function GymDetailesBodySecondContainer({
   };
 
   async function handleSortingPhotos() {
-    const dublicatedList = [...activitiesSlice.photosOfSelectedActivity];
+    const dublicatedList = [...photosToShow];
     //remove and save dragged item
     const draggedItemContent = dublicatedList.splice(
       draggedItemRef.current,
@@ -133,6 +138,69 @@ export default function GymDetailesBodySecondContainer({
     setTimeout(() => {
       container.scrollTop = container.scrollHeight;
     }, 0);
+  }
+
+  const handleDragStart = (index) => {
+    setDraggedItemIndex(index);
+  };
+
+  const handleDragOver = (index) => {
+   // const draggedOverItem = updatedSubcategories[index];
+
+    if (draggedItemIndex === index) {
+      return;
+    }
+
+    let newSubcategories = updatedSubcategories.filter((_, idx) => idx !== draggedItemIndex);
+    newSubcategories.splice(index, 0, updatedSubcategories[draggedItemIndex]);
+
+    setDraggedItemIndex(index);
+    setUpdatedSubcategories(newSubcategories);
+  };
+
+  const handleDragEnd = () => {
+    // Update orderNumber based on new position
+    const reorderedSubcategories = updatedSubcategories.map((subcategory, index) => ({
+      ...subcategory,
+      orderNumber: index + 1,
+    }));
+
+    setUpdatedSubcategories(reorderedSubcategories);
+    // Dispatch an action or update state with the new order
+    dndSubcategoriesRequest(reorderedSubcategories);
+  };
+
+  function handleDragStartPhoto(index) {
+    setDraggedPhotoIndex(index);
+  }
+
+  function handleDragOverPhoto(index) {
+    if (draggedPhotoIndex === index) {
+      return;
+    }
+    let newPhotos = updatedPhotos.filter((_, idx) => idx !== draggedPhotoIndex);
+    newPhotos.splice(index, 0, updatedPhotos[draggedPhotoIndex]);
+    setDraggedPhotoIndex(index);
+    setUpdatePhotos(newPhotos);
+  }
+
+  function handleDragEndPhoto() {
+    const reorderedPhotos = updatedPhotos.map((photo, index) => ({
+      ...photo,
+      orderNumber: index + 1,
+    }));
+    setUpdatePhotos(reorderedPhotos);
+    const updatedSubcategory = {
+      ...selectedSubcategory,
+      gymSubActivePictures: reorderedPhotos,
+    };
+    const oldSubcategories = subcategories;
+    // Create a new array for the updated subcategories list
+    const updatedSubcategories = subcategories.map(subcategory =>
+      subcategory.id === selectedSubcategory.id ? updatedSubcategory : subcategory
+    );
+    setUpdatedSubcategories(updatedSubcategories);
+    dndSubcategoriesRequest(reorderedPhotos);
   }
 
   function patchDescribtion(){
@@ -242,26 +310,63 @@ export default function GymDetailesBodySecondContainer({
     dispatch(setPhotosOfSelectedActivity());
   }
 
-  function deleteSubcategoryRequest(id){
+  function deleteSubcategoryRequest(id) {
     const newList = subcategories.filter((item) => item.id !== id);
     const data = {
-        gymSubActiveInfo: newList,
-        lessonType: selectedActivity,
+      gymSubActiveInfo: newList,
+      lessonType: selectedActivity,
     };
     console.log(JSON.stringify(data));
     axiosClient.patch(`api/admin/gyms/${gymId}`, data)
-    .then((response) => {
+      .then((response) => {
         if (response.status === 200) {
-            toast.success("Подгруппа успешно удалена");
-            dispatch(unsetFirstItemAsActive());
-            dispatch(getListOfActivities(gymId));
+          toast.success("Подгруппа успешно удалена");
+          dispatch(unsetFirstItemAsActive());
+          dispatch(getListOfActivities(gymId));
         }
-    })
-    .catch((error) => {
+      })
+      .catch((error) => {
         toast.error("Error while deleting subcategory" + error);
-    });
-}
+      });
+  }
 
+  function dndSubcategoriesRequest(newList) {
+    const data = {
+      gymSubActiveInfo: newList,
+      lessonType: selectedActivity,
+    };
+    console.log(JSON.stringify(data));
+    axiosClient.patch(`api/admin/gyms/${gymId}`, data)
+      .then((response) => {
+        if (response.status === 200) {
+          toast.success("Сортировка успешно завершена");
+          //dispatch(unsetFirstItemAsActive());
+          //dispatch(getListOfActivities(gymId));
+        }
+      })
+      .catch((error) => {
+        toast.error("Error while sorting subcategories" + error);
+      });
+  }
+
+  useEffect(() => {
+    if (subcategories !== updatedSubcategories && subcategories.length > 0) {
+      setUpdatedSubcategories(subcategories);
+    }
+    if (subcategories.length === 0 && updatedSubcategories.length > 0) {
+      setUpdatedSubcategories([]);
+    }
+  }, [subcategories]);
+
+  useEffect(() => {
+    if (photosToShow !== updatedPhotos && photosToShow.length > 0) {
+      setUpdatePhotos(photosToShow);
+    }
+    if (photosToShow.length === 0 && updatedPhotos.length > 0) {
+      setUpdatePhotos([]);
+    }
+  }, [photosToShow])
+  
 
   return (
     <div className="flex flex-col bg-white h-fit rounded-[16px] p-[32px] gap-[32px]">
@@ -273,8 +378,7 @@ export default function GymDetailesBodySecondContainer({
           showText2 = {canEdit}
         />
         <div className="chips_row ">
-          {listOfActivities
-            ?.filter((el) => !activitiesSlice.deletedActivities.includes(el))
+          {listOfActivities?.filter((el) => !activitiesSlice.deletedActivities.includes(el))
             .map((activity, index) => {
               return (
                 <Chip
@@ -404,35 +508,43 @@ export default function GymDetailesBodySecondContainer({
                     Подгруппы внутри активности:
                   </span>
                   <div className="blue_bordered_container">
-                      {subcategories && subcategories.length > 0 &&
-                        [...subcategories]
-                        // compare by orderNumber to sort
+                    {updatedSubcategories && updatedSubcategories.length > 0 &&
+                      updatedSubcategories
                         .filter((el) => !activitiesSlice.deletedSubcategories.includes(el))
                         .sort((a, b) => a?.orderNumber - b?.orderNumber)
-                        .map((subcategory) => {
-                          return <EachSubcategoryEditable 
-                            key={subcategory?.id}
-                            subcategory={subcategory}
-                            currentLessonType={selectedActivity}
-                            gymId={gymId}
-                            nextOrderNumber={subcategories.length + 1}
-                            onDeletedSubcategory={() => {
-                              dispatch(removeSubcategoryFromList(subcategory));
-                              const cancelTimeOut = deleteSubRef.current.show(
+                        .map((subcategory, index) => (
+                          <div
+                            key={subcategory.id}
+                            draggable
+                            onDragStart={() => handleDragStart(index)}
+                            onDragOver={(event) => {
+                              handleDragOver(index);
+                              event.preventDefault();
+                            }}
+                            onDragEnd={handleDragEnd}
+                            style={{ cursor: 'move' }}
+                          >
+                            <EachSubcategoryEditable
+                              subcategory={subcategory}
+                              currentLessonType={selectedActivity}
+                              gymId={gymId}
+                              nextOrderNumber={subcategories.length + 1}
+                              onDeletedSubcategory={() => {
+                                dispatch(removeSubcategoryFromList(subcategory));
+                                const cancelTimeOut = deleteSubRef.current.show(
                                   "Вы удалили подгруппу",
-                                  // function when time ended
-                                  () =>{
-                                    deleteSubcategoryRequest(subcategory?.id)
+                                  () => {
+                                    deleteSubcategoryRequest(subcategory.id);
                                   }
-                              );
-                              setCancelDeleteTimeoutSub((prevState) => [
+                                );
+                                setCancelDeleteTimeoutSub((prevState) => [
                                   ...prevState,
                                   cancelTimeOut,
-                              ]);
-                          }}
+                                ]);
+                              }}
                             />
-                        })
-                      }
+                          </div>
+                        ))}
                     {/* Кнопка добавить */}
                     <AddSubcategoryButton 
                       onClick={() => {
@@ -495,11 +607,11 @@ export default function GymDetailesBodySecondContainer({
         </CustomDialog>
       }
 
-      {subcategories && subcategories.length > 0 &&
+      {updatedSubcategories && updatedSubcategories.length > 0 &&
         <div className="colGap10">
           <span className="label2bPlus">Подгруппы внутри выбранной активности:</span>
           <div className="chips_row ">
-            {[...subcategories]
+            {[...updatedSubcategories]
               .filter((el) => !activitiesSlice.deletedSubcategories.includes(el))
               .sort((a, b) => a?.orderNumber - b?.orderNumber)
               .map((activity) => {
@@ -593,13 +705,13 @@ export default function GymDetailesBodySecondContainer({
             <div className="flex flex-col gap-[10px] w-[609px] ">
               <TextAndTextButton
                 text1={"Фотографии"}
-                text2={isEdittingPhotosEnabled ? "Готово" : activitiesSlice.photosOfSelectedActivity.length > 0 ? "Удалить фото и редактировать порядок" : ""}
+                text2={isEdittingPhotosEnabled ? "Готово" : photosToShow.length > 0 ? "Удалить фото и редактировать порядок" : ""}
                 showText2 = {canEdit}
                 onclick={() =>{
                   if (isEdittingPhotosEnabled) {
                     setPhotosEditting(false)
                   }else{
-                    if (activitiesSlice.photosOfSelectedActivity.length) {
+                    if (photosToShow.length) {
                       setPhotosEditting(true)
                     }}}}
               />
@@ -664,27 +776,16 @@ export default function GymDetailesBodySecondContainer({
 
               {/* Container with photos */}
               <div className="activity_photos_container">
-                {activitiesSlice.photosOfSelectedActivity
+                {updatedPhotos && updatedPhotos?.length > 0 && updatedPhotos
                     .filter((el) => !activitiesSlice.deletedPhotos.includes(el))
+                    .sort((a, b) => selectedSubcategory?.inheritance ? a?.orderNumber - b?.orderNumber : 0)
                     .map((item, index) => {
                       // Объявляем переменные в области видимости функции map
-                      const lastDotIndex = item.lastIndexOf(".");
-                      const nameWithoutExtension = item.substring(0, lastDotIndex);
-                      const extension = item.substring(lastDotIndex + 1);
+                      const itemTypeOfIsString = typeof item === "string";
+                      const lastDotIndex = (selectedSubcategory?.inheritance === false || !itemTypeOfIsString) ? item?.pictureUrl?.lastIndexOf(".") : item?.lastIndexOf(".");
+                      const nameWithoutExtension = (selectedSubcategory?.inheritance === false || !itemTypeOfIsString)  ? item?.pictureUrl?.substring(0, lastDotIndex) : item?.substring(0, lastDotIndex);
+                      const extension = (selectedSubcategory?.inheritance === false || !itemTypeOfIsString)  ? item?.pictureUrl?.substring(lastDotIndex + 1) : item?.substring(lastDotIndex + 1);
                       const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
-                      if (!isEdittingPhotosEnabled) {
-                        return <>
-                            <img
-                              className="activity_each_photo"
-                              key={index}
-                              src={`${AppConstants.baseUrl}image/${imageToCompressedFormat}`}
-                              alt=""
-                              onClick={() => {
-                                showPhotoInDialog(true);
-                                setPhotoToBeShownInDialog(item)}}
-                              draggable={false}/> 
-                         </>
-                      }else{
                         return (
                           <div key={index} className="activity_each_photo_editting">
                             <img
@@ -692,37 +793,67 @@ export default function GymDetailesBodySecondContainer({
                               alt=""
                               className="rounded-[8px] h-full w-full object-cover"
                               draggable={true}
-                              onDragStart={() => (draggedItemRef.current = index)}
-                              onDragEnter={() => {setPositionOfPhoto(index + 1)}}
-                              onDragEnd={handleSortingPhotos}
-                              onDragOver={(e) => e.preventDefault()}/>
-                            <img
-                              className="delete-icon"
-                              src={deleteSvg}
-                              alt="deleteSvg"
-                              onClick={async () => {
-                                dispatch(removePhotoFromSelectedActivityPhotos(item));
-                                deletePhotosSnackRef.current.showSnackbars();
-                                const cancelTimeOut =
-                                  deletePhotosSnackRef.current.show(
-                                    "Вы удалили фото",
-                                    // function when time ended
-                                    async () => {
-                                      const { id, url } = { id: gymId, url: item };
-                                      await dispatch(deleteActivityPhoto({ id, url }));
-                                      dispatch(getPhotos(gymId));
-                                    });
-                                setCancelDeleteTimeoutPhotos((prevState) => [
-                                  ...prevState,
-                                  cancelTimeOut,
-                                ]);
+                              onDragStart={() => {
+                                if (selectedSubcategory.inheritance) {
+                                  (draggedItemRef.current = index);
+                                }else{
+                                  handleDragStartPhoto(index)
+                                }
                               }}
-                              draggable={false}
-                            />
+                              onDragEnter={() => {
+                                if (selectedSubcategory.inheritance) {
+                                  setPositionOfPhoto(index + 1);
+                                }
+                              }}
+                              onDragEnd={()=>{
+                                if (selectedSubcategory.inheritance) {
+                                  handleSortingPhotos();
+                                }else{
+                                  handleDragEndPhoto();
+                                }
+                              }}
+                              onDragOver={(e) => {
+                                if (!selectedSubcategory?.inheritance) {
+                                  handleDragOverPhoto(index);
+                                }
+                                e.preventDefault();
+                              }}/>
+                            {isEdittingPhotosEnabled &&
+                              <img
+                                className="delete-icon"
+                                src={deleteSvg}
+                                alt="deleteSvg"
+                                onClick={async () => {
+                                  dispatch(removePhotoFromSelectedActivityPhotos(item));
+                                  deletePhotosSnackRef.current.showSnackbars();
+                                  const isInherited = !selectedSubcategory ? false : selectedSubcategory?.inheritance;
+                                  const cancelTimeOut =
+                                    deletePhotosSnackRef.current.show(
+                                      "Вы удалили фото",
+                                      // function when time ended
+                                      async () => {
+                                        const data = {
+                                          id: gymId,
+                                          url: item,
+                                          isInherited: isInherited,
+                                          subId : selectedSubcategory?.id
+                                        };
+                                        console.log(JSON.stringify(data));
+                                        await dispatch(deleteActivityPhoto(data));
+                                        dispatch(getPhotos(gymId));
+                                      });
+                                  setCancelDeleteTimeoutPhotos((prevState) => [
+                                    ...prevState,
+                                    cancelTimeOut,
+                                  ]);
+                                }}
+                                draggable={false}
+                              />
+                            }
                           </div>
                         );
                       }
-                    })}
+                    )}
                     {/* plus image (to upload photo) */}
                       {canEdit &&  !isEdittingPhotosEnabled && 
                         <>
@@ -792,7 +923,7 @@ export default function GymDetailesBodySecondContainer({
                 )}
 
                 {isEdittingPhotosEnabled &&
-                  activitiesSlice.photosOfSelectedActivity.length === 0 &&
+                  photosToShow.length === 0 &&
                   // Если режим редактирования включен и нет фотографий, то показываем кнопку добавления
                   setPhotosEditting(false)}
               </div>
