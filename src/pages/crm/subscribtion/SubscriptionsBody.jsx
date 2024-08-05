@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import { useSelector } from 'react-redux'
-import { AccordionGyms } from '../client_card/AddMembershipDialog';
+import AccordionGyms from '../client_card/AccordionGyms';
 
 export default function SubscriptionsBody() {
     const list = useSelector((state) => state.crmClients.gymAndMembershipsInside);

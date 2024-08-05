@@ -95,7 +95,8 @@ export function MembershipCard({
     hideAddButton = false,
 }) {
     const typeFormatted = getMembershipTypeTranslated(type);
-    return <div style={{ border: greenBorder}} className="greenContaner">
+    return <div style={{border: greenBorder}}
+        className="greenContaner">
         <div className="rowSpaceBetween">
             <ListGymsActivitiesSubcategories
                 sliceIndex={sliceIndex}
