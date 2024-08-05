@@ -1,14 +1,13 @@
 import React from 'react'
 import "./index.css"
-import { ArrowDownOutlined } from '../subscribtion/Accordion'
 import { useState } from 'react'
 import CrmWhiteButton from '../../../components/crm/white_button/CrmWhiteButton';
 import GreenButton from '../../../components/crm/GreenButton';
-import { MembershipCard } from './Memberships';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getClientById } from '../../../features/crm/CrmClients';
 import axiosClient from '../../../config/axios_client';
+import AccordionGyms from './AccordionGyms';
 
 export default function AddMembershipDialog({
     closeDialog,
@@ -82,68 +81,7 @@ export default function AddMembershipDialog({
 
 // component
 
-function AccordionGyms({
-    isOpened,
-    radioOn = false,
-    toggle,
-    gymName = "Crystall",
-    gymId = 1,
-    memberShips = [],
-    selectMembership,
-    selectedMembershipId,
-    selectedMembershipGymId,
-}) {
-    return <div style={{
-        height: isOpened ? 'fit-content' : '43px',
-        transition: 'all 0.3s',
-    }} className="flex flex-col">
-        <div className="rowSpaceBetween p-2 cursor-pointer" onClick={toggle}>
-            <div className="rowGap16">
-                <RadioButton radioOn={radioOn} />
-                <div className="rowGap10">
-                    <LocationSvgWithBack />
-                    <span className='headerH2'>{gymName}</span>
-                </div>
-            </div>
-            <div className="w-[38px] h-[28px] flex justify-center items-center rounded bg-crm-bgrGreen">
-                <div className={isOpened ? "rotate-icon" : "arrow-icon"}>
-                    <ArrowDownOutlined />
-                </div>
-            </div>
-        </div>
-        {isOpened && 
-           <div className="columnWithNoGap">
-                {memberShips.map((item, index) => {
-                    return <div key={index} className="rowGap16 p-2 cursor-pointer" onClick={()=>selectMembership(gymId, item.id)}>
-                        <RadioButton radioOn={selectedMembershipId === item.id && selectedMembershipGymId === gymId} />
-                        <MembershipCard 
-                            listWidth='85%' 
-                            showButtons ={false} 
-                            showProgress={false}
-                            description={item.description || "Описание отсутствует"}
-                            gyms={item.gyms.map(gym => gym.name)}
-                            name={item.name}
-                            price={item.price}
-                            subcategories={item.lessonSubTypes.map(subType => subType.name) ?? null}
-                            lessonTypes={item.lessonTypes || []}
-                            oldPrice={item.oldPrice || null}
-                            sliceIndex={7}
-                        />
-                    </div>
-                })}
-           </div>
-        }
-    </div>
-}
 
-function RadioButton({
-    radioOn = false,
-
-}) {
-    return <div style={{ borderColor: radioOn ? "rgba(94, 220, 145, 1)" : "transparent"}} className="indicatorShape">
-        <div style={{ backgroundColor: radioOn ? "rgba(94, 220, 145, 1)" : "transparent" }} className="indicatorMain"></div>
-    </div>
-}
 
 // svg
 function LocationSvgWithBack(){

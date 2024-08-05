@@ -370,3 +370,14 @@ export function getWeekdaysIds(weekdays){
     });
     return days;
 }
+
+export function getMembershipTypeTranslated(type){
+    // MONTH, YEAR,
+    if (type) {
+        if (type === "MONTH") {
+            return "Месяц";
+        }else{
+            return "Год";
+        }
+    }
+}

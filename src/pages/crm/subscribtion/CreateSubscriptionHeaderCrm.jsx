@@ -1,7 +1,7 @@
 import React from 'react'
 import CrmWhiteButton from '../../../components/crm/white_button/CrmWhiteButton'
 
-export default function SubscribtionHeaderCrm({
+export default function CreateSubscriptionHeaderCrm({
   onClick
 }) {
   return (

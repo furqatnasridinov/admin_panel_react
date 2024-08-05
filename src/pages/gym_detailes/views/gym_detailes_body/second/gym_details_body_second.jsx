@@ -177,11 +177,12 @@ export default function GymDetailesBodySecondContainer({
   function handleDragOverPhoto(index) {
     if (draggedPhotoIndex === index) {
       return;
+    } else {
+      let newPhotos = updatedPhotos.filter((_, idx) => idx !== draggedPhotoIndex);
+      newPhotos.splice(index, 0, updatedPhotos[draggedPhotoIndex]);
+      setDraggedPhotoIndex(index);
+      setUpdatePhotos(newPhotos);
     }
-    let newPhotos = updatedPhotos.filter((_, idx) => idx !== draggedPhotoIndex);
-    newPhotos.splice(index, 0, updatedPhotos[draggedPhotoIndex]);
-    setDraggedPhotoIndex(index);
-    setUpdatePhotos(newPhotos);
   }
 
   function handleDragEndPhoto() {
@@ -339,7 +340,7 @@ export default function GymDetailesBodySecondContainer({
     axiosClient.patch(`api/admin/gyms/${gymId}`, data)
       .then((response) => {
         if (response.status === 200) {
-          toast.success("Сортировка успешно завершена");
+          //toast.success("Сортировка успешно завершена");
           //dispatch(unsetFirstItemAsActive());
           //dispatch(getListOfActivities(gymId));
         }
@@ -787,36 +788,44 @@ export default function GymDetailesBodySecondContainer({
                       const extension = (selectedSubcategory?.inheritance === false || !itemTypeOfIsString)  ? item?.pictureUrl?.substring(lastDotIndex + 1) : item?.substring(lastDotIndex + 1);
                       const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
                         return (
-                          <div key={index} className="activity_each_photo_editting">
+                          <div style={{cursor : isEdittingPhotosEnabled ? "grab" : "default"}} key={index} className="activity_each_photo_editting">
                             <img
                               src={`${AppConstants.baseUrl}image/${imageToCompressedFormat}`}
                               alt=""
                               className="rounded-[8px] h-full w-full object-cover"
-                              draggable={true}
+                              draggable={isEdittingPhotosEnabled}
                               onDragStart={() => {
-                                if (selectedSubcategory.inheritance) {
-                                  (draggedItemRef.current = index);
-                                }else{
-                                  handleDragStartPhoto(index)
+                                if (isEdittingPhotosEnabled) {
+                                  if (selectedSubcategory && selectedSubcategory?.inheritance) {
+                                    (draggedItemRef.current = index);
+                                  }else{
+                                    handleDragStartPhoto(index)
+                                  }
                                 }
                               }}
                               onDragEnter={() => {
-                                if (selectedSubcategory.inheritance) {
-                                  setPositionOfPhoto(index + 1);
+                                if (isEdittingPhotosEnabled) {
+                                  if (selectedSubcategory && selectedSubcategory?.inheritance) {
+                                    setPositionOfPhoto(index + 1);
+                                  }
                                 }
                               }}
                               onDragEnd={()=>{
-                                if (selectedSubcategory.inheritance) {
-                                  handleSortingPhotos();
-                                }else{
-                                  handleDragEndPhoto();
+                                if (isEdittingPhotosEnabled) {
+                                  if (selectedSubcategory && selectedSubcategory?.inheritance) {
+                                    handleSortingPhotos();
+                                  }else{
+                                    handleDragEndPhoto();
+                                  }
                                 }
                               }}
                               onDragOver={(e) => {
-                                if (!selectedSubcategory?.inheritance) {
-                                  handleDragOverPhoto(index);
+                                if (isEdittingPhotosEnabled) {
+                                  if (!selectedSubcategory?.inheritance) {
+                                    handleDragOverPhoto(index);
+                                  }
+                                  e.preventDefault();
                                 }
-                                e.preventDefault();
                               }}/>
                             {isEdittingPhotosEnabled &&
                               <img

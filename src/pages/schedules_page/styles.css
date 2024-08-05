@@ -245,10 +245,11 @@
   width: 33px;
   height: 33px;
   border-radius: 50%;
-  background-color: rgba(244, 244, 244, 1);
+  background-color: white;
+  border: 1px solid rgba(119, 170, 249, 1);
   font-size: 13px;
   font-weight: 500;
-  color: #b0b0b0;
+  color: black;
 }
 
 .roundedWeekdaysSelected {
@@ -258,10 +259,11 @@
   width: 33px;
   height: 33px;
   border-radius: 50%;
-  background-color: #f5f9ff;
-  border: 1px solid #77aaf9;
+  background-color: rgba(119, 170, 249, 1);
+  border: 1px solid rgba(119, 170, 249, 1);
   font-size: 13px;
   font-weight: 500;
+  color: white;
 }
 
 .react-datepicker {

@@ -39,7 +39,7 @@ export default function Accordion({
                     {showDone && <DoneSvg />}
                     <span className='headerH2'>{title}</span>
                 </div>
-                <div className="w-[38px] h-[28px] flex justify-center items-center rounded bg-crm-bgrGreen">
+                <div className="arrowIndicatorFrame">
                     <div className={isOpened ? "rotate-icon" : "arrow-icon"}>
                         <ArrowDownOutlined />
                     </div>

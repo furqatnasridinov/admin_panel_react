@@ -15,4 +15,8 @@
     background-color: rgba(58, 185, 109, 1);
     color: white;
   }
+
   
+  .whiteButton:hover path{
+    stroke: white;
+  }

@@ -1,20 +1,19 @@
 import React, {useEffect} from 'react'
-import SubscribtionBodyCrm from './SubscribtionBodyCrm'
+import SubscriptionPageHeader from './SubscriptionsPageHeader'
+import SubscriptionsBody from './SubscriptionsBody'
 import { useDispatch } from 'react-redux'
-import { getListOfGyms } from '../../../features/current_gym_slice'
+import { getMemberShips } from '../../../features/crm/CrmClients'
 
-export default function SubscribtionPageCrm() {
+export default function SubscriptionsPageCrm() {
   const dispatch = useDispatch()
-
   useEffect(() => {
-    // get list of activities and gyms to show in the dropdowns
-    dispatch(getListOfGyms());
+    dispatch(getMemberShips())
   }, [])
-
 
   return (
     <div className="flex flex-col flex-1 pl-[10px] gap-[10px] h-[97vh] overflow-y-auto">
-      <SubscribtionBodyCrm />
+      <SubscriptionPageHeader />
+      <SubscriptionsBody />
     </div>
   )
 }

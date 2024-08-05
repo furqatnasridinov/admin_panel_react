@@ -7,8 +7,8 @@ import CustomDialog from '../../../components/dialog/dialog';
 import AddMembershipDialog from './AddMembershipDialog';
 import { useSelector } from 'react-redux';
 import { WEEK_DAYS } from '../../../dummy_data/dymmy_data';
-import { EachWeekday } from '../subscribtion/SubscribtionBodyCrm';
-import { getWeekdaysIds } from '../../../config/apphelpers';
+import { EachWeekday } from '../subscribtion/CreateSubscriptionBodyCrm';
+import { getMembershipTypeTranslated, getWeekdaysIds } from '../../../config/apphelpers';
 
 export default function Memberships({id}) {
     const [showTooltip, setShowTooltip] = useState(false);
@@ -74,6 +74,7 @@ export function MembershipCard({
     lessonTypes = ['Бокс', 'Айкидо'],
     subcategories = ['Павел Скайуокер', 'Александр Вейдер'],
     price = '32 000',
+    type = "MONTH",
     oldPrice = '36 000',
     name = 'Бойцовский клуб. Вечерний',
     description = 'Этот вид абонемента включает посещение секций бокса и айкидо, в вечернее время с 18:00 до 21:00.',
@@ -83,7 +84,7 @@ export function MembershipCard({
     showProgress = true,
     listWidth = '71%',
     sliceIndex,
-    isExpanded = true,
+    isExpanded,
     startTime = '18:00',
     endTime = '21:00',
     selectedWeekdays = [1, 3, 4, 5],
@@ -91,31 +92,33 @@ export function MembershipCard({
     restrictions,
     freezingCancellation,
     onExpand = () => { },
+    hideAddButton = false,
 }) {
-   /*  const contentRef = useRef(null);
-    const [height, setHeight] = useState('95px');
-
-    useEffect(() => {
-        if (contentRef.current) {
-            setHeight(`${contentRef.current.scrollHeight}px`);
-        }
-    }, [isExpanded]); */
-
-    return <div style={{border : greenBorder}} className="greenContaner">
-    <div className="rowSpaceBetween">
-        <ListGymsActivitiesSubcategories sliceIndex={sliceIndex} width={listWidth} gyms={gyms} lessonTypes={lessonTypes} subcategories={subcategories} />
-        <div className="rowGap10">
-            <div className="columnWithNoGap">
-                <span className='interBody3Plus'>{`${price}₽`}</span>
-                {oldPrice && <span className='text-[10px] font-medium leading-3 line-through'>{`${oldPrice}₽`}</span>}
-            </div>
+    const typeFormatted = getMembershipTypeTranslated(type);
+    return <div style={{border: greenBorder}}
+        className="greenContaner">
+        <div className="rowSpaceBetween">
+            <ListGymsActivitiesSubcategories
+                sliceIndex={sliceIndex}
+                width={listWidth}
+                gyms={gyms}
+                lessonTypes={lessonTypes}
+                subcategories={subcategories}
+            />
+            <div className="rowGap10">
+                <div className="columnWithNoGap">
+                    <span className='interBody3b'>{typeFormatted}</span>
+                    <span className='interBody3Plus'>{`${price}₽`}</span>
+                    {oldPrice && <span className='text-[10px] font-medium leading-3 line-through'>{`${oldPrice}₽`}</span>}
+                </div>
                 {showButtons &&
                     <Fragment>
-                        <GreenButton
-                            text='Продлить'
-                            showShadow={true}
-                            onClick={() => { }}
-                        />
+                        {!hideAddButton &&
+                            <GreenButton
+                                text='Продлить'
+                                showShadow={true}
+                                onClick={() => { }}
+                            />}
                         <div className="relative">
                             <div
                                 style={{ backgroundColor: "white" }}
@@ -127,22 +130,22 @@ export function MembershipCard({
                                 }}>
                                 <ThreeDotsSvg />
                             </div>
-                            {showTooltip && 
-                                <ThreeDotsTooltip 
-                                    closeFunction={() => setShowTooltip(false)} 
+                            {showTooltip &&
+                                <ThreeDotsTooltip
+                                    closeFunction={() => setShowTooltip(false)}
                                     onClick={onExpand}
                                 />
                             }
                         </div>
                     </Fragment>
                 }
+            </div>
         </div>
-    </div>
-    <VerticalSpace height='16px' />
-    <div className="columnWithNoGap">
-        <span className='headerH2'>{name}</span>
-        <span className='label2'>{description}</span>
-    </div>
+        <VerticalSpace height='16px' />
+        <div className="columnWithNoGap">
+            <span className='headerH2'>{name}</span>
+            <span className='label2'>{description}</span>
+        </div>
         {isExpanded &&
             <Fragment>
                 <VerticalSpace height='16px' />
@@ -150,15 +153,15 @@ export function MembershipCard({
                     <span className='headerH2'>Расписание</span>
                     <span className='label2'>с {`${startTime} - ${endTime}`}</span>
                     <div className="rowGap5">
-                    {WEEK_DAYS.map((day, index) => {
-                        return <EachWeekday 
-                            key={index}
-                            isSelected={selectedWeekdays.includes(day.id)}
-                            text={day.name}
-                            onClick={()=>{}}
-                            cursor='default' 
-                        />
-                    })}
+                        {WEEK_DAYS.map((day, index) => {
+                            return <EachWeekday
+                                key={index}
+                                isSelected={selectedWeekdays.includes(day.id)}
+                                text={day.name}
+                                onClick={() => { }}
+                                cursor='default'
+                            />
+                        })}
                     </div>
                 </div>
                 <VerticalSpace height='16px' />
@@ -199,7 +202,7 @@ export function MembershipCard({
                 </div>
             </Fragment>
         }
-</div>
+    </div>
 }
 
 
