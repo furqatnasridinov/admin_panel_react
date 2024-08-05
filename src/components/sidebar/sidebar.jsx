@@ -359,7 +359,7 @@ const Sidebar = () => {
                 {!isMyfit &&
                   <NavLink
                     id="sidebarOnclick"
-                    to={"/subscribtionPageCrm"}
+                    to={"/subscribtionsPageCrm"}
                     className={({ isActive }) =>
                       isActive && !isClientsActive ? `${sidebarSectionClasses} ${activeSideBar}` : `${sidebarSectionClasses}`
                     }
@@ -512,7 +512,7 @@ const Sidebar = () => {
             {!isMyfit &&
               <NavLink
                 id="sidebarOnclick"
-                to="/subscribtionPageCrm"
+                to="/subscribtionsPageCrm"
                 className={({ isActive }) =>
                   isActive ? `${sidebarSectionClosedClasses} ${activeSideBar}` : `${sidebarSectionClosedClasses}`
                 }

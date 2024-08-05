@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getClientById } from '../../../features/crm/CrmClients';
 import axiosClient from '../../../config/axios_client';
+import { getWeekdaysIds } from '../../../config/apphelpers';
 
 export default function AddMembershipDialog({
     closeDialog,
@@ -82,7 +83,7 @@ export default function AddMembershipDialog({
 
 // component
 
-function AccordionGyms({
+export function AccordionGyms({
     isOpened,
     radioOn = false,
     toggle,
@@ -92,33 +93,52 @@ function AccordionGyms({
     selectMembership,
     selectedMembershipId,
     selectedMembershipGymId,
+    viewOnly = false,
+    showRadio = true,
+    showButtons = false,
+    hideAddButton = false,
 }) {
+    const [shownTooltipId, setShownTooltipId] = useState(false);
+    const [isExpandedId, setIsExpandedId] = useState(false);
+
     return <div style={{
         height: isOpened ? 'fit-content' : '43px',
         transition: 'all 0.3s',
     }} className="flex flex-col">
         <div className="rowSpaceBetween p-2 cursor-pointer" onClick={toggle}>
             <div className="rowGap16">
-                <RadioButton radioOn={radioOn} />
+                {showRadio && <RadioButton radioOn={radioOn} />}
                 <div className="rowGap10">
-                    <LocationSvgWithBack />
+                    <div className="arrowIndicatorFrame">
+                        <div className={isOpened ? "rotate-icon" : "arrow-icon"}>
+                            <ArrowDownOutlined />
+                        </div>
+                    </div>
                     <span className='headerH2'>{gymName}</span>
+                    {viewOnly && <span className='headerH2 text-grey-text'>({memberShips.length})</span>}
                 </div>
             </div>
-            <div className="w-[38px] h-[28px] flex justify-center items-center rounded bg-crm-bgrGreen">
-                <div className={isOpened ? "rotate-icon" : "arrow-icon"}>
-                    <ArrowDownOutlined />
-                </div>
-            </div>
+            
         </div>
         {isOpened && 
            <div className="columnWithNoGap">
                 {memberShips.map((item, index) => {
-                    return <div key={index} className="rowGap16 p-2 cursor-pointer" onClick={()=>selectMembership(gymId, item.id)}>
-                        <RadioButton radioOn={selectedMembershipId === item.id && selectedMembershipGymId === gymId} />
+                    return <div
+                        key={index}
+                        className="rowGap16 p-2 cursor-pointer"
+                        onClick={() => {
+                            if (!viewOnly) {
+                                selectMembership(gymId, item.id);
+                            }
+                        }}>
+                        {showRadio &&
+                            <RadioButton radioOn={selectedMembershipId === item.id && selectedMembershipGymId === gymId} />
+                        }
+                        
                         <MembershipCard 
                             listWidth='85%' 
-                            showButtons ={false} 
+                            showButtons = {showButtons}
+                            hideAddButton={hideAddButton}
                             showProgress={false}
                             description={item.description || "Описание отсутствует"}
                             gyms={item.gyms.map(gym => gym.name)}
@@ -128,6 +148,17 @@ function AccordionGyms({
                             lessonTypes={item.lessonTypes || []}
                             oldPrice={item.oldPrice || null}
                             sliceIndex={7}
+                            selectedWeekdays={getWeekdaysIds(item.daysOfWeek)}
+                            privileges={item.privileges || "Пусто"}
+                            restrictions={item.restrictions || "Пусто"}
+                            freezingCancellation={item.freezingCancellation || "Пусто"}
+                            isExpanded={isExpandedId === item.id}
+                            showTooltip={shownTooltipId === item.id}
+                            setShowTooltip={()=>setShownTooltipId(item.id)}
+                            onExpand={() => {
+                                setIsExpandedId(isExpandedId === item.id ? 0 : item.id);
+                                setShownTooltipId(0);
+                            }}
                         />
                     </div>
                 })}
@@ -140,8 +171,8 @@ function RadioButton({
     radioOn = false,
 
 }) {
-    return <div style={{ borderColor: radioOn ? "rgba(94, 220, 145, 1)" : "transparent"}} className="indicatorShape">
-        <div style={{ backgroundColor: radioOn ? "rgba(94, 220, 145, 1)" : "transparent" }} className="indicatorMain"></div>
+    return <div style={{ borderColor: radioOn ? "rgba(58, 185, 109, 1)" : "transparent"}} className="indicatorShape">
+        <div style={{ backgroundColor: radioOn ? "rgba(58, 185, 109, 1)" : "transparent" }} className="indicatorMain"></div>
     </div>
 }
 

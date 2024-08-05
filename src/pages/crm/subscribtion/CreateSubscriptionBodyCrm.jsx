@@ -9,13 +9,13 @@ import GreenButton from '../../../components/crm/GreenButton';
 import CrmTextField from '../../../components/crm/CrmTextField';
 import { activities, WEEK_DAYS } from '../../../dummy_data/dymmy_data';
 import CrmDropdownHours from '../../../components/crm/dropdown_hours/CrmDropDownHours';
-import SubscribtionHeaderCrm from './SubscribtionHeaderCrm';
+import CreateSubscriptionHeaderCrm from './CreateSubscriptionHeaderCrm';
 import { useSelector } from 'react-redux';
 import axiosClient from '../../../config/axios_client';
 import { toast } from 'react-toastify';
 import { getApiLikeWeekDays } from '../../../config/apphelpers';
 
-export default function SubscribtionBodyCrm() {
+export default function CreateSubscriptionBodyCrm() {
     const [isOpened1, setIsOpened1] = useState(true);
     const [isOpened2, setIsOpened2] = useState(true);
     const [isOpened3, setIsOpened3] = useState(true);
@@ -47,7 +47,7 @@ export default function SubscribtionBodyCrm() {
         // [{id: 1, isOpened: bool, gymAndLessonType : {gym : GYMDATA, lessonType : "Бокс"}}, ...]
     ]);
     const [dropDownsSubcategories, setDropDownsSubcategories] = useState([
-        // [{id: 1, isOpened: bool, subcategories: ["",""]}, ...]
+        // [{id: 1, isOpened: bool, subcategoryName, subcategoryId }, ...]
     ]);
     const [gymAndLessonTypes, setGymAndLessonTypes] = useState([
         //{gym : GYMDATA, lessonTypes : ["Бассейн","Бокс"]},
@@ -65,8 +65,9 @@ export default function SubscribtionBodyCrm() {
     const fourthSectionShowDone = benefits !== '' || limitations !== '' || conditionForFreezing !== '';
     const allGyms = useSelector(state => state.currentGym.listOfGyms);
     const allActivities = useSelector(state => state.activities.listOfActivities);
-    const showAddButtonGyms = dropDownsGyms.length < allGyms.length || true;
-    const showAddButtonActivities = dropDownsActivities.length < allActivities.length;
+    const showAddButtonGyms = !allGyms.length || dropDownsGyms.length < allGyms.length;
+    const showAddButtonActivities = !allActivities.length || dropDownsActivities.length < allActivities.length;
+    const showAddButtonSubcategories = !subcategories?.length || dropDownsSubcategories.length < subcategories.length;
     
 
     function toggle1() {
@@ -202,15 +203,19 @@ export default function SubscribtionBodyCrm() {
 
     function onSelectDropDownItemSubcategories(index, item) {
         const newDropDowns = [...dropDownsSubcategories];
-        newDropDowns[index] = { ...newDropDowns[index], name: item?.name, isOpened: false };
+        newDropDowns[index] = { ...newDropDowns[index],sOpened: false, subcategoryName: item?.name, subcategoryId: item?.id };
         setDropDownsSubcategories(newDropDowns);
         setCurrentOpenedDropDownSubcategories(null); // Close the dropdown after selection
     }
 
     function addDropDownSubcategories() {
         closeDoneSections(1);
-        const newId = dropDownsSubcategories.length > 0 ? dropDownsSubcategories[dropDownsSubcategories.length - 1].id + 1 : 1;
-        setDropDownsSubcategories([...dropDownsSubcategories, { id: newId, isOpened: false, name: '' }]);
+        if (gymAndLessonTypes.length === 0) {
+            toast.error('Выберите сперва заведение');                           
+        }else{
+            const newId = dropDownsSubcategories.length > 0 ? dropDownsSubcategories[dropDownsSubcategories.length - 1].id + 1 : 1;
+            setDropDownsSubcategories([...dropDownsSubcategories, { id: newId, isOpened: false, subcategoryName: '', subcategoryId: null}]);
+        }
     }
 
 
@@ -264,7 +269,9 @@ export default function SubscribtionBodyCrm() {
         const selectedGymsId = dropDownsGyms.map(dropDown => dropDown.gym.id);
         const gyms = selectedGymsId.map(item => ({ id: item }));
         const activities = dropDownsActivities.map(dropDown => dropDown.gymAndLessonType?.lessonType);
-        const subcategories = dropDownsSubcategories.map(dropDown => ({id : dropDown.id}));
+        const subcategories = dropDownsSubcategories
+            .filter(dropDown => dropDown.subcategoryId)
+            .map(dropDown => ({ id: dropDown.subcategoryId }));
         const _type = type === 'Месячный' ? 'MONTH' : 'YEAR';
         const data = 
         {
@@ -421,7 +428,7 @@ export default function SubscribtionBodyCrm() {
 
     return (
         <div className="colGap10 mr-[10px]">
-            <SubscribtionHeaderCrm onClick={resetAllFields} />
+            <CreateSubscriptionHeaderCrm onClick={resetAllFields} />
 
             <Accordion 
                 isOpened={isOpened1} 
@@ -476,7 +483,7 @@ export default function SubscribtionBodyCrm() {
                                 dropDowns={dropDownsActivities}
                             />
                         ))}
-                        <PlusButton onClick={addDropDownActivities} />
+                        {showAddButtonActivities && <PlusButton onClick={addDropDownActivities} />}
                     </div>
                 </EachSection>
 
@@ -489,17 +496,17 @@ export default function SubscribtionBodyCrm() {
                             key={dropDown.id}
                             isScrollable={true}
                             maxHeight={230}
-                            list={subcategories || []}
+                            list={subcategories.filter(sub=> !dropDownsSubcategories.some(dropDown=> dropDown.subcategoryId === sub.id)) || []}
                             placeholderText='Выберите подкатегорию'
                             closeDropDown={() => setCurrentOpenedDropDownSubcategories(null)}
                             isOpened={currentOpenedDropDownSubcategories === dropDown.id}
                             toggleDropDown={() => toggleDropDownSubcategories(dropDown.id)}
                             onSelect={(item) => onSelectDropDownItemSubcategories(dropDownsSubcategories.findIndex(d => d.id === dropDown.id), item)}
-                            value={dropDown.name || ''}
+                            value={dropDown.subcategoryName || ''}
                             onDelete={() => {setDropDownsSubcategories(dropDownsSubcategories.filter(d => d.id !== dropDown.id))}}
                         />
                     ))}
-                    <PlusButton onClick={addDropDownSubcategories} />
+                    {showAddButtonSubcategories && <PlusButton onClick={addDropDownSubcategories} />}
                 </div>
 
                 <VerticalSpace height="16px" />

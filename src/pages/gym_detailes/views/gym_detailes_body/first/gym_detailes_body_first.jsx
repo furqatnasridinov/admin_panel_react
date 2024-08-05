@@ -17,7 +17,7 @@ import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
 import ProgressSnackbar from "../../../../../components/snackbar/progress_snackbar";
 import { AddressSearching } from "./address_searching";
 import { EditableTextfield } from "../../../../../components/editable_textfield/EditableTextfield";
-
+import DropdownForHours from "../../../../schedules_page/dropdowm_for_hours";
 import {
   addGymPicture,
   changeCurrentGymsName,
@@ -68,6 +68,15 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const [nameIsNotValidated, setNameIsNotValidated] = useState(false);
   const [describtionIsNotValidated, setDescribtionIsNotValidated] = useState(false);
   const [adressChangesOccured, setAdressChangesOccured] = useState(false);
+  const [isStartTimeDropDownOpened, openStartTimeDropDown] = useState(false);
+  const [startTimeHour, setStartTimeHour] = useState('08');
+  const [startTimeMinute, setStartTimeMinute] = useState('00');
+  const [isEndTimeDropDownOpened, openEndTimeDropDown] = useState(false);
+  const [endTimeHour, setEndTimeHour] = useState('20');
+  const [endTimeMinute, setEndTimeMinute] = useState('00');
+  const [startTimeCopy, setStartTimeCopy] = useState(`${startTimeHour}:${startTimeMinute}`);
+  const [endTimeCopy, setEndTimeCopy] = useState(`${endTimeHour}:${endTimeMinute}`);
+  const [workTimeChangesOccured, setWorkTimeChangesOccured] = useState(false);
 
   // use refs
   const deleteMainPicSnackbarRef = useRef(null);
@@ -198,6 +207,14 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
       dispatch(searchingForAddress(currentGym.address));
     }
   }, [currentGym.address]);
+
+  useEffect(() => {
+    if (`${startTimeHour}:${startTimeMinute}` !== startTimeCopy || `${endTimeHour}:${endTimeMinute}` !== endTimeCopy) {
+      setWorkTimeChangesOccured(true);
+    } else {
+      setWorkTimeChangesOccured(false);
+    }
+  }, [startTimeHour, startTimeMinute, endTimeHour, endTimeMinute]);
 
   return (
     <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
@@ -538,180 +555,228 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
           </div>
         </div>
 
-        {/* Contacts */}
-        <div className="flex flex-col gap-[5px] ">
-          {!isContactsEdittingEnabled && (
-            <>
-              <TextAndTextButton
-                text1={"Контакты"}
-                text2={"Изменить"}
-                onclick={() => setContactsEditting(true)}
-                showText2 = {canEdit} />
-              <div className="flex flex-row gap-[24px]">
-                {/* Phone */}
-                <div className="icon_and_tag">
-                  <img src={phoneSvg} alt="" />
-                  <ReactInputMask
-                    readOnly={true}
-                    value={currentGym.phone}
-                    mask="+7 (999) 999 99-99"
-                    placeholder="+7 (900) 855 45-58"
-                    style={{
-                      height: "30px",
-                      width: "fit-content",
-                      outline: "none",
-                      fontSize: "13px",
-                      fontWeight: "400",
-                      fontFamily: "Inter, sans-serif",
-                    }}
-                  />
-                </div>
-                {/* Tg */}
-                {currentGym.telegram !== null && currentGym.telegram !== "" && (
-                  <div className="icon_and_tag mr-[20px] ">
-                    <img src={tgSvg} alt="" />
-                    <div className=" text-[13px] font-normal font-inter">
-                      {currentGym.telegram}
-                    </div>
-                  </div>
-                )}
-                {/* Vk */}
-                {currentGym.vk !== null && currentGym.vk !== "" && (
-                  <div className="icon_and_tag">
-                    <img src={vkSvg} alt="" />
-                    <div className=" text-[13px] font-normal font-inter">
-                      {currentGym.vk}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-          {isContactsEdittingEnabled && (
-            <>
-              <TextAndTextButtonContacts
-                text1={"Контакты"}
-                text2={"Сохранить"}
-                isDisabled={currentGym.phone?.length !== 12}
-                onclick={async () => {
-                  if (currentGym.phone?.length == 12) {
-                    if (addingTelegram){setAddingTelegram(false)}
-                    if (addingVk){setAddingVk(false)}
-                    if (hideAdding){setHideAdding(false)}
-                    if (isDropDownOpened){openDropDown(false)}
-                    const { id, phone, telegram, vk } = {
-                      id: currentGym.id,
-                      phone: currentGym.phone,
-                      telegram: currentGym.telegram,
-                      vk: currentGym.vk,
-                    };
-                    if (currentGymState.isChangesOccured) {
-                      await dispatch(patchGymContacts({ id, phone, telegram, vk }));
-                      dispatch(getCurrentGym(currentGym.id));
-                    }
-                    setContactsEditting(false);
-                    dispatch(resetChanges());
+        {/* worktime and  Contacts */}
+        <div className="flex flex-row items-center gap-[95px]">
+          <div className="colGap5">
+            <div className="rowGap10">
+              <span className="label2bPlus">Время работы заведения:</span>
+              <span 
+                style={{
+                  color : workTimeChangesOccured ? "rgba(62, 134, 245, 1)" : "transparent",
+                  transition : "color 0.3s",
+                  cursor : workTimeChangesOccured ? "pointer" : "default"
+                }} 
+                onClick={() => {
+                  if (workTimeChangesOccured) {
+                    // send request
                   }
                 }}
+                className="label3 select-none">Сохранить</span>
+            </div>
+            <div className="flex flex-row gap-[10px] items-center">
+              <DropdownForHours
+                text={`${startTimeHour}:${startTimeMinute}`}
+                isDropDownOpened={isStartTimeDropDownOpened}
+                openCloseDropDown={() => {
+                  openStartTimeDropDown(!isStartTimeDropDownOpened);
+                }}
+                setHours={(hours) => setStartTimeHour(hours)}
+                setMinutes={(minute) => setStartTimeMinute(minute)}
+                selectedHour={startTimeHour}
+                selectedMinute={startTimeMinute}
+                closeOntapOutside={() => openStartTimeDropDown(false)}
               />
-              <div className="flex flex-col gap-[10px]">
-                {/* phone */}
-                {currentGym.phone !== null && currentGym.phone !== "" && (
-                  <EditableContacts
-                    icon={phoneSvg}
-                    text={"Телефон"}
-                    value={currentGym.phone}
-                    isPhone={true}
-                    onChange={(e) => {dispatch(changeCurrentGymsPhone(e.target.value))}}
-                    onDeleteClicked={() =>{dispatch(changeCurrentGymsPhone(""))}}
-                    showDeleting={true}
-                    isPhoneEmpty={currentGym.phone.length !== 12}
-                  />
-                )}
+              <span>-</span>
+              <DropdownForHours
+                text={`${endTimeHour}:${endTimeMinute}`}
+                isDropDownOpened={isEndTimeDropDownOpened}
+                openCloseDropDown={() => {
+                  openEndTimeDropDown(!isEndTimeDropDownOpened);
+                }}
+                setHours={(hours) => setEndTimeHour(hours)}
+                setMinutes={(minute) => setEndTimeMinute(minute)}
+                selectedHour={endTimeHour}
+                selectedMinute={endTimeMinute}
+                closeOntapOutside={() => openEndTimeDropDown(false)}
+              />
+            </div>
+          </div>
 
-                {/* telegram */}
-                {currentGym.telegram !== null &&
-                  currentGym.telegram !== "" &&
-                  !addingTelegram && (
+          <div className="flex flex-col gap-[5px] ">
+            {!isContactsEdittingEnabled && (
+              <>
+                <TextAndTextButton
+                  text1={"Контакты"}
+                  text2={"Изменить"}
+                  onclick={() => setContactsEditting(true)}
+                  showText2={canEdit} />
+                <div className="flex flex-row gap-[24px]">
+                  {/* Phone */}
+                  <div className="icon_and_tag">
+                    <img src={phoneSvg} alt="" />
+                    <ReactInputMask
+                      readOnly={true}
+                      value={currentGym.phone}
+                      mask="+7 (999) 999 99-99"
+                      placeholder="+7 (900) 855 45-58"
+                      style={{
+                        height: "30px",
+                        width: "fit-content",
+                        outline: "none",
+                        fontSize: "13px",
+                        fontWeight: "400",
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                    />
+                  </div>
+                  {/* Tg */}
+                  {currentGym.telegram !== null && currentGym.telegram !== "" && (
+                    <div className="icon_and_tag mr-[20px] ">
+                      <img src={tgSvg} alt="" />
+                      <div className=" text-[13px] font-normal font-inter">
+                        {currentGym.telegram}
+                      </div>
+                    </div>
+                  )}
+                  {/* Vk */}
+                  {currentGym.vk !== null && currentGym.vk !== "" && (
+                    <div className="icon_and_tag">
+                      <img src={vkSvg} alt="" />
+                      <div className=" text-[13px] font-normal font-inter">
+                        {currentGym.vk}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+            {isContactsEdittingEnabled && (
+              <>
+                <TextAndTextButtonContacts
+                  text1={"Контакты"}
+                  text2={"Сохранить"}
+                  isDisabled={currentGym.phone?.length !== 12}
+                  onclick={async () => {
+                    if (currentGym.phone?.length == 12) {
+                      if (addingTelegram) { setAddingTelegram(false) }
+                      if (addingVk) { setAddingVk(false) }
+                      if (hideAdding) { setHideAdding(false) }
+                      if (isDropDownOpened) { openDropDown(false) }
+                      const { id, phone, telegram, vk } = {
+                        id: currentGym.id,
+                        phone: currentGym.phone,
+                        telegram: currentGym.telegram,
+                        vk: currentGym.vk,
+                      };
+                      if (currentGymState.isChangesOccured) {
+                        await dispatch(patchGymContacts({ id, phone, telegram, vk }));
+                        dispatch(getCurrentGym(currentGym.id));
+                      }
+                      setContactsEditting(false);
+                      dispatch(resetChanges());
+                    }
+                  }}
+                />
+                <div className="flex flex-col gap-[10px]">
+                  {/* phone */}
+                  {currentGym.phone !== null && currentGym.phone !== "" && (
+                    <EditableContacts
+                      icon={phoneSvg}
+                      text={"Телефон"}
+                      value={currentGym.phone}
+                      isPhone={true}
+                      onChange={(e) => { dispatch(changeCurrentGymsPhone(e.target.value)) }}
+                      onDeleteClicked={() => { dispatch(changeCurrentGymsPhone("")) }}
+                      showDeleting={true}
+                      isPhoneEmpty={currentGym.phone.length !== 12}
+                    />
+                  )}
+
+                  {/* telegram */}
+                  {currentGym.telegram !== null &&
+                    currentGym.telegram !== "" &&
+                    !addingTelegram && (
+                      <EditableContacts
+                        icon={tgSvg}
+                        text={"Telegram"}
+                        value={currentGym.telegram}
+                        isTg={true}
+                        onChange={(e) => { dispatch(changeCurrentGymsTelegram(e.target.value)) }}
+                        onDeleteClicked={() => { dispatch(changeCurrentGymsTelegram("")) }}
+                        showDeleting={true}
+                      />
+                    )}
+
+                  {/* vk */}
+                  {currentGym.vk !== null &&
+                    currentGym.vk !== "" &&
+                    !addingVk && (
+                      <EditableContacts
+                        icon={vkSvg}
+                        text={"VKontakte"}
+                        value={currentGym.vk === null || currentGym.vk === "" ? "" : `${currentGym.vk}`}
+                        isVk={true}
+                        onChange={(e) => { dispatch(changeCurrentGymsVk(e.target.value)) }}
+                        onDeleteClicked={() => { dispatch(changeCurrentGymsVk("")) }}
+                        showDeleting={true}
+                      />
+                    )}
+
+                  {/* when select adding */}
+                  {addingTelegram && (
                     <EditableContacts
                       icon={tgSvg}
                       text={"Telegram"}
                       value={currentGym.telegram}
                       isTg={true}
-                      onChange={(e) => {dispatch(changeCurrentGymsTelegram(e.target.value))}}
-                      onDeleteClicked={() => {dispatch(changeCurrentGymsTelegram(""))}}
-                      showDeleting={true}
+                      onChange={(e) => { dispatch(changeCurrentGymsTelegram(e.target.value)) }}
                     />
                   )}
 
-                {/* vk */}
-                {currentGym.vk !== null &&
-                  currentGym.vk !== "" &&
-                  !addingVk && (
+                  {addingVk && (
                     <EditableContacts
                       icon={vkSvg}
                       text={"VKontakte"}
                       value={currentGym.vk === null || currentGym.vk === "" ? "" : `${currentGym.vk}`}
                       isVk={true}
-                      onChange={(e) => {dispatch(changeCurrentGymsVk(e.target.value))}}
-                      onDeleteClicked={() => {dispatch(changeCurrentGymsVk(""))}}
-                      showDeleting={true}
+                      onChange={(e) => { dispatch(changeCurrentGymsVk(e.target.value)) }}
                     />
                   )}
 
-                {/* when select adding */}
-                {addingTelegram && (
-                  <EditableContacts
-                    icon={tgSvg}
-                    text={"Telegram"}
-                    value={currentGym.telegram}
-                    isTg={true}
-                    onChange={(e) => {dispatch(changeCurrentGymsTelegram(e.target.value))}}
-                  />
-                )}
-
-                {addingVk && (
-                  <EditableContacts
-                    icon={vkSvg}
-                    text={"VKontakte"}
-                    value={currentGym.vk === null || currentGym.vk === "" ? "" : `${currentGym.vk}`}
-                    isVk={true}
-                    onChange={(e) => {dispatch(changeCurrentGymsVk(e.target.value))}}
-                  />
-                )}
-
-                {(currentGym.phone == null ||
-                  currentGym.phone === "" ||
-                  currentGym.telegram == null ||
-                  currentGym.telegram === "" ||
-                  currentGym.vk == null ||
-                  currentGym.vk === "") &&
-                  !hideAdding && (
-                    <div className="flex flex-row gap-[10px]">
-                      <img src={plusSvg} alt="" />
-                      <DropDownForAddingContacts
-                        isDropDownOpened={isDropDownOpened}
-                        openCloseDropDown={() => {openDropDown(!isDropDownOpened)}}
-                        text={"Добавить контакт"}
-                        phone={(currentGym.phone === null || currentGym.phone === "") && "Телефон"}
-                        tg={(currentGym.telegram === null || currentGym.telegram === "") && !addingTelegram &&"Telegram"}
-                        vk={(currentGym.vk === null || currentGym.vk === "") && !addingVk && "VKontakte"}
-                        ontapTg={() => {
-                          setAddingTelegram(true);
-                          openDropDown(false);
-                        }}
-                        ontapVk={() => {
-                          setAddingVk(true);
-                          openDropDown(false);
-                        }}
-                        ontapPhone={() => {}}
-                      />
-                    </div>
-                  )}
-              </div>
-            </>
-          )}
+                  {(currentGym.phone == null ||
+                    currentGym.phone === "" ||
+                    currentGym.telegram == null ||
+                    currentGym.telegram === "" ||
+                    currentGym.vk == null ||
+                    currentGym.vk === "") &&
+                    !hideAdding && (
+                      <div className="flex flex-row gap-[10px]">
+                        <img src={plusSvg} alt="" />
+                        <DropDownForAddingContacts
+                          isDropDownOpened={isDropDownOpened}
+                          openCloseDropDown={() => { openDropDown(!isDropDownOpened) }}
+                          text={"Добавить контакт"}
+                          phone={(currentGym.phone === null || currentGym.phone === "") && "Телефон"}
+                          tg={(currentGym.telegram === null || currentGym.telegram === "") && !addingTelegram && "Telegram"}
+                          vk={(currentGym.vk === null || currentGym.vk === "") && !addingVk && "VKontakte"}
+                          ontapTg={() => {
+                            setAddingTelegram(true);
+                            openDropDown(false);
+                          }}
+                          ontapVk={() => {
+                            setAddingVk(true);
+                            openDropDown(false);
+                          }}
+                          ontapPhone={() => { }}
+                        />
+                      </div>
+                    )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
+        
       </div>
     </div>
   );

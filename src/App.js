@@ -29,6 +29,7 @@ import SettingsPageCrm from "./pages/crm/settings";
 import ClientCard from "./pages/crm/client_card";
 import ClientPageLayoutCrm from "./pages/crm/clients_layout";
 import SubscribtionPageCrm from "./pages/crm/subscribtion";
+import CreateSubscriptionPage from "./pages/crm/subscribtion/CreateSubscriptionPage";
 
 function Content() {
   const location = useLocation();
@@ -67,7 +68,10 @@ function Content() {
             <Route path="/myGymsPageCrm" element={<MyGymsPageCrm />} />
             <Route path="/schedulePageCrm" element={<SchedulesPageCrm />} />
             <Route path="/settingsPageCrm" element={<SettingsPageCrm />} />
-            <Route path="/subscribtionPageCrm" element={<SubscribtionPageCrm />} />
+            <Route path="/subscribtionsPageCrm" element={<ClientPageLayoutCrm />} >
+              <Route index element={<SubscribtionPageCrm />} />
+              <Route path="createSub" element={<CreateSubscriptionPage />} />
+            </Route>
             
          </Routes>
         <ToastContainer autoClose={2500} hideProgressBar />
