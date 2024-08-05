@@ -18,6 +18,7 @@ import ProgressSnackbar from "../../../../../components/snackbar/progress_snackb
 import { AddressSearching } from "./address_searching";
 import { EditableTextfield } from "../../../../../components/editable_textfield/EditableTextfield";
 import DropdownForHours from "../../../../schedules_page/dropdowm_for_hours";
+import { WEEK_DAYS } from "../../../../../dummy_data/dymmy_data";
 import {
   addGymPicture,
   changeCurrentGymsName,
@@ -77,6 +78,8 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const [startTimeCopy, setStartTimeCopy] = useState(`${startTimeHour}:${startTimeMinute}`);
   const [endTimeCopy, setEndTimeCopy] = useState(`${endTimeHour}:${endTimeMinute}`);
   const [workTimeChangesOccured, setWorkTimeChangesOccured] = useState(false);
+  const [selectedWeekdays, setSelectedWeekdays] = useState([1,3,5]);
+  const [selectedWeekdaysCopy, setSelectedWeekdaysCopy] = useState(selectedWeekdays);
 
   // use refs
   const deleteMainPicSnackbarRef = useRef(null);
@@ -176,6 +179,14 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
     }
   };
 
+  const handleWeekdayClick = (id) => {
+    if (selectedWeekdays.includes(id)) {
+      setSelectedWeekdays(selectedWeekdays.filter((day) => day !== id));
+    } else {
+      setSelectedWeekdays([...selectedWeekdays, id]);
+    }
+  };
+
   //  при отмене удалении фото
   const undoDeletePhoto = useCallback(() => {
     dispatch(cancelRemoveMainPic());
@@ -214,7 +225,14 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
     } else {
       setWorkTimeChangesOccured(false);
     }
-  }, [startTimeHour, startTimeMinute, endTimeHour, endTimeMinute]);
+    // [1,2,4] to 124
+    setSelectedWeekdays(selectedWeekdays.sort((a, b) => a - b));
+    setSelectedWeekdaysCopy(selectedWeekdaysCopy.sort((a, b) => a - b));
+    if (selectedWeekdays.join("") !== selectedWeekdaysCopy.join("")) {
+      setWorkTimeChangesOccured(true);
+    }
+  }, [startTimeHour, startTimeMinute, endTimeHour, endTimeMinute, selectedWeekdays]);
+
 
   return (
     <div className=" bg-white h-fit p-[32px] flex flex-col rounded-[16px] gap-[32px] mb-[10px]">
@@ -555,52 +573,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
           </div>
         </div>
 
-        {/* worktime and  Contacts */}
-        <div className="flex flex-row items-center gap-[95px]">
-          <div className="colGap5">
-            <div className="rowGap10">
-              <span className="label2bPlus">Время работы заведения:</span>
-              <span 
-                style={{
-                  color : workTimeChangesOccured ? "rgba(62, 134, 245, 1)" : "transparent",
-                  transition : "color 0.3s",
-                  cursor : workTimeChangesOccured ? "pointer" : "default"
-                }} 
-                onClick={() => {
-                  if (workTimeChangesOccured) {
-                    // send request
-                  }
-                }}
-                className="label3 select-none">Сохранить</span>
-            </div>
-            <div className="flex flex-row gap-[10px] items-center">
-              <DropdownForHours
-                text={`${startTimeHour}:${startTimeMinute}`}
-                isDropDownOpened={isStartTimeDropDownOpened}
-                openCloseDropDown={() => {
-                  openStartTimeDropDown(!isStartTimeDropDownOpened);
-                }}
-                setHours={(hours) => setStartTimeHour(hours)}
-                setMinutes={(minute) => setStartTimeMinute(minute)}
-                selectedHour={startTimeHour}
-                selectedMinute={startTimeMinute}
-                closeOntapOutside={() => openStartTimeDropDown(false)}
-              />
-              <span>-</span>
-              <DropdownForHours
-                text={`${endTimeHour}:${endTimeMinute}`}
-                isDropDownOpened={isEndTimeDropDownOpened}
-                openCloseDropDown={() => {
-                  openEndTimeDropDown(!isEndTimeDropDownOpened);
-                }}
-                setHours={(hours) => setEndTimeHour(hours)}
-                setMinutes={(minute) => setEndTimeMinute(minute)}
-                selectedHour={endTimeHour}
-                selectedMinute={endTimeMinute}
-                closeOntapOutside={() => openEndTimeDropDown(false)}
-              />
-            </div>
-          </div>
+          {/* Contacts */}
 
           <div className="flex flex-col gap-[5px] ">
             {!isContactsEdittingEnabled && (
@@ -775,7 +748,68 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
               </>
             )}
           </div>
-        </div>
+
+          <div className="colGap10">
+            <div className="colGap5">
+              <div className="rowGap10">
+                <span className="label2bPlus">График работы заведения</span>
+                <span
+                  style={{
+                    color: workTimeChangesOccured ? "rgba(62, 134, 245, 1)" : "transparent",
+                    transition: "color 0.3s",
+                    cursor: workTimeChangesOccured ? "pointer" : "default"
+                  }}
+                  onClick={() => {
+                    if (workTimeChangesOccured) {
+                      // send request
+                    }
+                  }}
+                  className="label3 select-none">Сохранить
+                </span>
+              </div>
+              <div className="flex flex-row gap-[10px] items-center">
+                <DropdownForHours
+                  text={`${startTimeHour}:${startTimeMinute}`}
+                  isDropDownOpened={isStartTimeDropDownOpened}
+                  openCloseDropDown={() => {
+                    openStartTimeDropDown(!isStartTimeDropDownOpened);
+                  }}
+                  setHours={(hours) => setStartTimeHour(hours)}
+                  setMinutes={(minute) => setStartTimeMinute(minute)}
+                  selectedHour={startTimeHour}
+                  selectedMinute={startTimeMinute}
+                  closeOntapOutside={() => openStartTimeDropDown(false)}
+                />
+                <span>-</span>
+                <DropdownForHours
+                  text={`${endTimeHour}:${endTimeMinute}`}
+                  isDropDownOpened={isEndTimeDropDownOpened}
+                  openCloseDropDown={() => {
+                    openEndTimeDropDown(!isEndTimeDropDownOpened);
+                  }}
+                  setHours={(hours) => setEndTimeHour(hours)}
+                  setMinutes={(minute) => setEndTimeMinute(minute)}
+                  selectedHour={endTimeHour}
+                  selectedMinute={endTimeMinute}
+                  closeOntapOutside={() => openEndTimeDropDown(false)}
+                />
+              </div>
+            </div>
+
+            {/* Weekdays */}
+            <div className="flex flex-row gap-[5px]">
+              {WEEK_DAYS.map((weekday) => (
+                <div
+                  key={weekday.id}
+                  className={selectedWeekdays.includes(weekday.id)
+                    ? "roundedWeekdaysSelected cursor-pointer" : "roundedWeekdays cursor-pointer"}
+                  onClick={() => handleWeekdayClick(weekday.id)}
+                >
+                  {weekday.name}
+                </div>
+              ))}
+            </div>
+         </div>
         
       </div>
     </div>
