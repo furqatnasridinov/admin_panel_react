@@ -117,18 +117,27 @@ export default function GymDetailesBodySecondContainer({
     // creating duplicate of list
     const dublicatedList = [...listOfActivities];
     // get dragged activty
-    const draggedItemContent = dublicatedList.splice(
-      draggedActivityRef.current,
-      1
-    )[0];
-    // dispatch
-    const request = {
-      gymId: gymId,
+    const draggedItemContent = dublicatedList.splice(draggedActivityRef.current,1)[0];
+    const jsonLessonTypeAndSubtypes = activitiesSlice.jsonLessonTypeAndSubtypes;
+    const subs = jsonLessonTypeAndSubtypes[draggedItemContent];
+    const data = {
+      gymSubActiveInfo: subs,
       lessonType: draggedItemContent,
       orderNumber: positionOfActivity,
+      //"peculiarities": "string",
+      //"typeDescription": "string"
     };
-    await dispatch(dragAndDropActivities(request));
-    dispatch(getListOfActivities(gymId));
+    console.log(`запрос dnd активностей: ${JSON.stringify(data)}`);
+    axiosClient.patch(`api/admin/gyms/${gymId}`, data)
+    .then((response) => {
+      if (response.status === 200) {
+        //toast.success("Activities sorted successfully");
+        dispatch(getListOfActivities(gymId));
+      }
+    })
+    .catch((error) => {
+      toast.error("Error while sorting activities" + error);
+    });
     // reset the position ref
     draggedActivityRef.current = null;
   }
