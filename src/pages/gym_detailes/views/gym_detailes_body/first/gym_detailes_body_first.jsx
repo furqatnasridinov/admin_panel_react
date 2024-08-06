@@ -800,6 +800,9 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
             <div className="flex flex-row gap-[5px]">
               {WEEK_DAYS.map((weekday) => (
                 <div
+                style={{
+                  transition : "all 0.3s",
+                }}
                   key={weekday.id}
                   className={selectedWeekdays.includes(weekday.id)
                     ? "roundedWeekdaysSelected cursor-pointer" : "roundedWeekdays cursor-pointer"}
