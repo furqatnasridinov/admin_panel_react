@@ -18,6 +18,8 @@ export default function SelectAndRemoveDropDown({
     maxHeight,
     isScrollable = false,
     dropDowns,
+    isLessonType = false,
+    isSubcategory = false,
 }){
     const shadow = isOpened ? '0px 18px 14px -13px rgba(0, 0, 0, 0.25)' : 'none';
     const iconClasses = isOpened ? 'rotate-icon' : 'arrow-icon';
@@ -48,6 +50,7 @@ export default function SelectAndRemoveDropDown({
                         borderRadius: '8px',
                         transition: 'border 0.3s',
                         zIndex: zIndex1,
+                        width: 'fit-content',
                     }}
                     onClick={toggleDropDown}
                     className="genderDropDownHeader">
@@ -62,6 +65,7 @@ export default function SelectAndRemoveDropDown({
                         maxHeight : maxHeight,
                         overflowY : isScrollable ? "scroll" : "hidden",
                         scrollbarColor: 'rgba(220, 220, 220, 1)',
+                        minWidth: '100%',
                         }} className='genderDropDownBody'>
                     {!showMultiple &&
                         <>
@@ -74,29 +78,41 @@ export default function SelectAndRemoveDropDown({
                     }
 
                     {showMultiple &&
+                        // isLessonType
                         // list ==> [{gym : GYMDATA, lessonTypes : ["Бассейн","Бокс"]},..]
                         // dropDowns ==> [{id: 1, isOpened: bool, gymAndLessonType : {gym : GYMDATA, lessonType : "Бокс"}}, ...]
+
+                        // isSubcategory
+                        // list ==>  [{lessonType : "Бассейн", subs : [{id: 1, name: "Техника"}, ...]}]
+                        // dropDowns ==>  [{id: 1, isOpened: bool, subcategoryName, subcategoryId }, ...]
                         <>
                             {value && <DeleteButton onClick={onDelete} />}
                             {
                                 list?.map((item) => {
-                                    const filteredLessonTypes = item?.lessonTypes
+                                    const filteredLessonTypes = isLessonType ? item?.lessonTypes
                                         .filter(lessonType => !dropDowns.some(dropDown =>
                                             dropDown.gymAndLessonType?.gym?.id === item.gym.id &&
-                                            dropDown.gymAndLessonType.lessonType === lessonType));
+                                            dropDown.gymAndLessonType.lessonType === lessonType)) : item.subs
+                                            .filter(subcategory => !dropDowns.some(dropDown =>dropDown.subcategoryId === subcategory.id));
 
                                     // Проверяем, остались ли активности после фильтрации
-                                    if (filteredLessonTypes.length > 0) {
+                                    if (filteredLessonTypes && filteredLessonTypes.length > 0) {
+                                        const title = isLessonType ? item?.gym?.name ?? "" : item?.lessonType ?? "";
                                         return (
                                             <div key={item?.gym?.id} className='flex flex-col items-start'>
                                                 <VerticalSpace height={12} />
                                                 <div className="flex flex-row items-center gap-1">
                                                     <TireChaSvg />
-                                                    <span className='label2bPlus'>{item?.gym?.name ?? ""}</span>
+                                                    <span className='label2bPlus'>{title}</span>
                                                 </div>
                                                 <VerticalSpace height={10} />
-                                                {filteredLessonTypes.map((lessonType) => {
-                                                    return <span key={lessonType} className='eachGender' onClick={() => onSelect(item.gym, lessonType)}>{lessonType}</span>
+                                                {isLessonType && filteredLessonTypes.map((lessonType) => {
+                                                    const text = lessonType;
+                                                    return <span key={text} className='eachGender' onClick={() => onSelect(item.gym, lessonType)}>{lessonType}</span>
+                                                })}
+                                                {isSubcategory && filteredLessonTypes.map((subcategory) => {
+                                                    const text = subcategory.name;
+                                                    return <span key={text} className='eachGender' onClick={() => onSelect(subcategory)}>{text}</span>
                                                 })}
                                             </div>
                                         );
@@ -129,9 +145,8 @@ function GarbageSvg() {
 }
 
 
-function TireChaSvg(){
+function TireChaSvg() {
     return <svg width="10" height="1" viewBox="0 0 10 1" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="10" height="1" fill="#DCDCDC"/>
+        <rect width="10" height="1" fill="#DCDCDC" />
     </svg>
-    
 }

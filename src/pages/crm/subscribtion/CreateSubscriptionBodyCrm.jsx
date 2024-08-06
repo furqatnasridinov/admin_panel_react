@@ -53,7 +53,7 @@ export default function CreateSubscriptionBodyCrm() {
         //{gym : GYMDATA, lessonTypes : ["Бассейн","Бокс"]},
     ]);
     const [subcategories, setSubcategories] = useState([
-        // {id: 1, name: "Техника"}
+        // {lessonType : "Бассейн", isShown : false, subs : [{id: 1, name: "Техника"}, ...]}
     ]);
 
     const firstSectionError = missingInfos.includes("gym") || missingInfos.includes("activities") || missingInfos.includes("price");
@@ -66,8 +66,8 @@ export default function CreateSubscriptionBodyCrm() {
     const allGyms = useSelector(state => state.currentGym.listOfGyms);
     const allActivities = useSelector(state => state.activities.listOfActivities);
     const showAddButtonGyms = !allGyms.length || dropDownsGyms.length < allGyms.length;
-    const showAddButtonActivities = !allActivities.length || dropDownsActivities.length < allActivities.length;
-    const showAddButtonSubcategories = !subcategories?.length || dropDownsSubcategories.length < subcategories.length;
+    const showAddButtonActivities = !allActivities.length || dropDownsActivities.length < allActivities.length || true;
+    const showAddButtonSubcategories = !subcategories?.length || dropDownsSubcategories.length < subcategories.length || true;
     
 
     function toggle1() {
@@ -118,11 +118,16 @@ export default function CreateSubscriptionBodyCrm() {
                     setGymAndLessonTypes([...gymAndLessonTypes, json]);
                 }
                 // get subcategories from result json and set it to subcategories
+                //{lessonType : "Бассейн", subs : [{id: 1, name: "Техника"}, ...]}
                 const _subcategories = [...subcategories];
                 arrayOfKeys.forEach(key => {
-                    result[key].forEach(subcategory => {
-                        if (!_subcategories.includes(subcategory)) {
-                            _subcategories.push(subcategory);
+                    let eachArray = result[key];
+                    eachArray.forEach(subcategory => {
+                        const existingLessonType = _subcategories.find(item => item.lessonType === key);
+                        if (existingLessonType) {
+                            existingLessonType.subs.push(subcategory);
+                        }else{
+                            _subcategories.push({ lessonType: key, isShown : false, subs: [subcategory] });
                         }
                     });
                 });
@@ -162,14 +167,33 @@ export default function CreateSubscriptionBodyCrm() {
     }
 
     function onSelectDropDownItemActivities(gym, lessonType, dropDownId) {
+        let updatedDropdown = false;
+        let oldLessontype = null;
        const copyDropDowns = [...dropDownsActivities];
        const changedDropDown = copyDropDowns.find(dropDown => dropDown.id === dropDownId);
+       if (changedDropDown.gymAndLessonType?.lessonType) {
+           updatedDropdown = true;
+           oldLessontype = changedDropDown.gymAndLessonType.lessonType;
+       }
        const json = {gym : gym, lessonType : lessonType};
        changedDropDown.gymAndLessonType = json;
         setDropDownsActivities(copyDropDowns);
         if (missingInfos.includes("activities")) {
             const newMissingInfos = missingInfos.filter(info => info !== "activities");
             setMissingInfos(newMissingInfos);
+        }
+        let _subcategories = [...subcategories];
+        if (updatedDropdown && oldLessontype) {
+            const existingLessonType = _subcategories.find(item => item.lessonType === oldLessontype);
+            if (existingLessonType && existingLessonType.isShown) {
+                existingLessonType.isShown = false;
+                setSubcategories(_subcategories);
+            }
+        }
+        const existingLessonType = _subcategories.find(item => item.lessonType === lessonType);
+        if (existingLessonType && !existingLessonType.isShown) {
+            existingLessonType.isShown = true;
+            setSubcategories(_subcategories);
         }
         setCurrentOpenedDropDownActivities(null); // Close the dropdown after selection
     }
@@ -187,12 +211,12 @@ export default function CreateSubscriptionBodyCrm() {
     function deleteActivityDropDown(dropDownId, gymID, lessonType) {
         setDropDownsActivities(dropDownsActivities.filter(dropDown => dropDown.id !== dropDownId));
         const gymAndLessonTypesCopy = [...gymAndLessonTypes];
-        /* const index = gymAndLessonTypesCopy.findIndex(item => item.gym.id === gymID);
-        if (index !== -1) {
-            const lessonTypes = gymAndLessonTypesCopy[index].lessonTypes.filter(item => item !== lessonType);
-            gymAndLessonTypesCopy[index].lessonTypes = lessonTypes;
-            setGymAndLessonTypes(gymAndLessonTypesCopy);
-        } */
+        const _subcategories = [...subcategories];
+        let existingLessonType = _subcategories.find(item => item.lessonType === lessonType);
+        if (existingLessonType && existingLessonType.isShown) {
+            existingLessonType.isShown = false;
+            setSubcategories(_subcategories);
+        }
     }
 
     // for subcategories
@@ -203,7 +227,7 @@ export default function CreateSubscriptionBodyCrm() {
 
     function onSelectDropDownItemSubcategories(index, item) {
         const newDropDowns = [...dropDownsSubcategories];
-        newDropDowns[index] = { ...newDropDowns[index],sOpened: false, subcategoryName: item?.name, subcategoryId: item?.id };
+        newDropDowns[index] = { ...newDropDowns[index], isOpened: false, subcategoryName: item?.name, subcategoryId: item?.id };
         setDropDownsSubcategories(newDropDowns);
         setCurrentOpenedDropDownSubcategories(null); // Close the dropdown after selection
     }
@@ -481,6 +505,7 @@ export default function CreateSubscriptionBodyCrm() {
                                 maxHeight={230}
                                 isScrollable={true}
                                 dropDowns={dropDownsActivities}
+                                isLessonType={true}
                             />
                         ))}
                         {showAddButtonActivities && <PlusButton onClick={addDropDownActivities} />}
@@ -496,7 +521,7 @@ export default function CreateSubscriptionBodyCrm() {
                             key={dropDown.id}
                             isScrollable={true}
                             maxHeight={230}
-                            list={subcategories.filter(sub=> !dropDownsSubcategories.some(dropDown=> dropDown.subcategoryId === sub.id)) || []}
+                            list={subcategories.filter(item => item.isShown)}
                             placeholderText='Выберите подкатегорию'
                             closeDropDown={() => setCurrentOpenedDropDownSubcategories(null)}
                             isOpened={currentOpenedDropDownSubcategories === dropDown.id}
@@ -504,6 +529,9 @@ export default function CreateSubscriptionBodyCrm() {
                             onSelect={(item) => onSelectDropDownItemSubcategories(dropDownsSubcategories.findIndex(d => d.id === dropDown.id), item)}
                             value={dropDown.subcategoryName || ''}
                             onDelete={() => {setDropDownsSubcategories(dropDownsSubcategories.filter(d => d.id !== dropDown.id))}}
+                            dropDowns={dropDownsSubcategories}
+                            isSubcategory={true}
+                            showMultiple={true}
                         />
                     ))}
                     {showAddButtonSubcategories && <PlusButton onClick={addDropDownSubcategories} />}
