@@ -91,6 +91,8 @@ export default function AccordionGyms({
                             isExpanded={isExpandedId === item.id}
                             showTooltip={shownTooltipId === item.id}
                             setShowTooltip={()=>setShownTooltipId(item.id)}
+                            startTime={item.startTime}
+                            endTime={item.endTime}
                             onExpand={() => {
                                 setIsExpandedId(isExpandedId === item.id ? 0 : item.id);
                                 setShownTooltipId(0);
