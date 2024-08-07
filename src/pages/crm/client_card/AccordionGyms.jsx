@@ -22,9 +22,9 @@ export default function AccordionGyms({
     const [shownTooltipId, setShownTooltipId] = useState(false);
     const [isExpandedId, setIsExpandedId] = useState(false);
     const contentRef = useRef(null);
-    const [height, setHeight] = useState('40px');
+    //const [height, setHeight] = useState('40px');
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (contentRef.current) {
             if (isOpened) {
                 setHeight(`${contentRef.current.scrollHeight}px`);
@@ -32,12 +32,12 @@ export default function AccordionGyms({
                 setHeight('40px');
             }
         }
-    }, [isOpened]);
+    }, [isOpened]); */
 
     return <div 
         ref={contentRef}
         style={{
-            height: height,
+            height: "fit-content", //height,
             transition: 'height 0.3s ease',
             //backgroundColor: "red"
         }} className="flex flex-col">

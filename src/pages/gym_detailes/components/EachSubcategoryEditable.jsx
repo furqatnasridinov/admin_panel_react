@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getListOfActivities, unsetFirstItemAsActive } from '../../../features/activities_slice';
 import axiosClient from '../../../config/axios_client';
 import { toast } from 'react-toastify';
-import CustomSnackbar from '../../../components/snackbar/custom_snackbar';
+import "./index.css";
 
 export default function EachSubcategoryEditable({
     subcategory,
@@ -32,6 +32,25 @@ export default function EachSubcategoryEditable({
     }, [copyOfSubcategoryName]);
 
     useEffect(() => {
+        // enter key press
+        const handleKeyPress = (event) => {
+            if (event.key === "Enter") {
+                if (copyOfSubcategoryNameRef.current?.trim() !== subcategory?.name?.trim()) {
+                    if (!isInitiallyActive) {
+                        sendRequestToChangeNameOfSubcategory({
+                            name: copyOfSubcategoryNameRef.current,
+                            subcategoryId: currentActive,
+                        });
+                    } else {
+                        createSubCategoryRequest({
+                            name: copyOfSubcategoryNameRef.current,
+                        });
+                    }
+                }
+                event.preventDefault();
+                setCurrentActive(0);
+            }
+        };
         // remove focus from textarea when clicked outside
         const handleClickOutside = (event) => {
             if (ref.current && !ref.current.contains(event.target)) {
@@ -57,9 +76,12 @@ export default function EachSubcategoryEditable({
         };
         if (currentActive !== 0 || isInitiallyActive) {
             document.addEventListener("mousedown", handleClickOutside);
+            document.addEventListener("keypress", handleKeyPress);
         }
+
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("keypress", handleKeyPress);
         };
     }, [currentActive, isInitiallyActive]);
 
@@ -135,14 +157,14 @@ export default function EachSubcategoryEditable({
     return (
         <div 
             ref={ref} 
-            className="rowGap10 min-h-[28px] cursor-pointer"
+            className="eachSubEditable"
             draggable={true}
             >
-            <DeleteIndicator 
-                onClick={onDeletedSubcategory} />
+            <DeleteIndicator onClick={isInitiallyActive ? onDeleteCreate : onDeletedSubcategory} />
             <TextareaAutosize
                 style={{
                     border: border,
+                    flex: "1",
                     cursor: currentActive === subcategory?.id ? "text" : "pointer",
                     userSelect: "none",
                     paddingLeft: isInitiallyActive || (currentActive === subcategory?.id) ? "16px" : "0",
@@ -169,7 +191,7 @@ export default function EachSubcategoryEditable({
 export function DeleteIndicator({
     onClick
 }){
-    return <div onClick={onClick} className="flex justify-center items-center w-[28px] min-w-[28px] min-h-[28px] h-[100%] rounded bg-bg-color cursor-pointer">
+    return <div onClick={onClick} className="removeFrame">
         <svg width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4.63916 7.5H12.1392" stroke="#FF3D00" stroke-linecap="round" stroke-linejoin="round" />
         </svg>

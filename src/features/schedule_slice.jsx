@@ -73,6 +73,7 @@ export const createSchedule = createAsyncThunk(
     autoAccept,
     limitCountUser,
     maxCount,
+    gymSubActives,
   }) => {
     try {
       const dataToSend = {
@@ -85,11 +86,16 @@ export const createSchedule = createAsyncThunk(
         canSignUp: true,
         limitCountUser: limitCountUser,
         maxCount: maxCount,
+        gymSubActives: gymSubActives,
       };
       const response = await axiosClient.post(
         `api/admin/gyms/${id}/lessons`,
         dataToSend
-      );
+      ).then((res) => {
+        if (res.status === 200) {
+          //toast.success("Занятие успешно создано");
+        }
+      });
     } catch (error) {
       toast(`createSchedule ${error}`);
     }

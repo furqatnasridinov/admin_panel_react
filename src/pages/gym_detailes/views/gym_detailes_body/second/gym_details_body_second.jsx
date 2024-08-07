@@ -539,6 +539,9 @@ export default function GymDetailesBodySecondContainer({
                               currentLessonType={selectedActivity}
                               gymId={gymId}
                               nextOrderNumber={subcategories.length + 1}
+                              onDeleteCreate={() => {
+                                setInheritance(null);
+                              }}
                               onDeletedSubcategory={() => {
                                 dispatch(removeSubcategoryFromList(subcategory));
                                 const cancelTimeOut = deleteSubRef.current.show(
@@ -639,8 +642,6 @@ export default function GymDetailesBodySecondContainer({
       }
 
 
-      
-
       {selectedActivity !== null &&
         <div className="blueBigCard">
             <div className="describtion_and_features_column">
@@ -682,7 +683,8 @@ export default function GymDetailesBodySecondContainer({
                       fontsize={"13px"}
                       lineheight={"16px"}
                       maxLength={250}
-                      textFieldsMinWidth={"300px"}
+                      textFieldsMinWidth={"400px"}
+                      width="600px"
                     />
               </div>
 
@@ -708,7 +710,7 @@ export default function GymDetailesBodySecondContainer({
                     onChanged={(e) => {dispatch(changeActivityPeculiarities(e.target.value))}}
                     peculiarities={activityPeculiarities}
                     isActive={isFeaturesEdittingEnabled}
-                    />
+                  />
               </div>
             </div>
 
@@ -797,7 +799,7 @@ export default function GymDetailesBodySecondContainer({
                       const extension = (selectedSubcategory?.inheritance === false || !itemTypeOfIsString)  ? item?.pictureUrl?.substring(lastDotIndex + 1) : item?.substring(lastDotIndex + 1);
                       const imageToCompressedFormat = `${nameWithoutExtension}_icon.${extension}`;
                         return (
-                          <div style={{cursor : isEdittingPhotosEnabled ? "grab" : "default"}} key={index} className="activity_each_photo_editting">
+                          <div style={{cursor : isEdittingPhotosEnabled ? "grab" : "pointer"}} key={index} className="activity_each_photo_editting">
                             <img
                               src={`${AppConstants.baseUrl}image/${imageToCompressedFormat}`}
                               alt=""
@@ -826,6 +828,12 @@ export default function GymDetailesBodySecondContainer({
                                   }else{
                                     handleDragEndPhoto();
                                   }
+                                }
+                              }}
+                              onClick={() => {
+                                if (!isEdittingPhotosEnabled) {
+                                  showPhotoInDialog(true);
+                                  setPhotoToBeShownInDialog(item);
                                 }
                               }}
                               onDragOver={(e) => {

@@ -90,14 +90,15 @@
 
 .sidebar_opened {
   width: 225px;
-  min-width: 100px;
-  transition: width 0.3s ease;
+  min-width: 225px;
+  /* min-width: 100px; */
+  transition: all 0.3s ease;
 }
 
 .sidebar_closed {
   width: 100px;
   min-width: 100px;
-  transition: width 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .active_sidebar_section_myfit {

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
-import { addSubcategoryToList, removeSubcategoryFromList } from '../../features/activities_slice';
+import { addSubcategoryToList, removeSelectedSubcategoryFromList } from '../../features/activities_slice';
 import { useSelector, useDispatch } from 'react-redux'
 import CustomDropdown from '../../components/dropdown/custom_dropdown';
 
@@ -16,7 +16,7 @@ export default function Subcategories({
     const isAnySelected = selectedSubcategories.length > 0;
 
     function removeSubcategory(subcategory) {
-        dispatch(removeSubcategoryFromList(subcategory));
+        dispatch(removeSelectedSubcategoryFromList(subcategory));
         // add it back to the list in dropdown
         setSubcategoriesParams([...subcategoriesParams, subcategory]);
     }
@@ -34,7 +34,9 @@ export default function Subcategories({
         <span className='label2bPlus'>Подгруппы (Не обязательно):</span>
         <div className=" h-fit flex flex-wrap gap-[10px] items-center transition-all">
             {isAnySelected && selectedSubcategories.map((subcategory) => {
-                return <SelectedSubBlock onRemove={()=>removeSubcategory(subcategory)} title={subcategory?.name} key={subcategory?.id} />
+                return <SelectedSubBlock 
+                            onRemove={()=>removeSubcategory(subcategory)} 
+                            title={subcategory?.name} key={subcategory?.id} />
             })}
             {canAddSubcategory && !showDropdown && <PlusButton onClick={()=>setShowDropdown(true)} />}
             {showDropdown && 

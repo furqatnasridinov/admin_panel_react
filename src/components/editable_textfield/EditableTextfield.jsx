@@ -17,7 +17,7 @@ export function EditableTextfield({
     textFieldsMinWidth,
     isActive,
     minHeight,
-    isBackgroundBlue,
+    width = "100%",
   }) {
     const inputRef = useRef(null);
     // for autofocus calls when component first renders
@@ -60,7 +60,7 @@ export function EditableTextfield({
                 fontSize: fontsize,
                 lineHeight: lineheight,
                 transition : "all 0.3s",
-                width: "100%",
+                width: width,
                 padding: padding,
                 borderRadius: "8px",
                 outline: "none",

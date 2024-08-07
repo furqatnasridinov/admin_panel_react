@@ -16,14 +16,17 @@ import {setAddress,
     checkMissingFieldsPassportData, 
     resertPassportInfos,
     updateClient,
+    pushDoc,
 } 
 from '../../../features/crm/CrmClients'
 import { getBirthdayFormatted } from '../../../config/apphelpers'
 import { toast } from 'react-toastify'
+import axiosClient from '../../../config/axios_client'
 
 
 export default function PassportDatas({
-    id
+    id,
+    isCreating = false,
 }) {
     const dispatch = useDispatch();
     const state = useSelector((state) => state.crmClients);
@@ -58,7 +61,24 @@ export default function PassportDatas({
 
     function handleFileUpload(e) {
         const file = e.target.files[0];
-        setFile(file);
+        if (file) {
+            dispatch(pushDoc(file.name));
+            try {
+                var formData = new FormData();
+                formData.append("file", file);
+                axiosClient.post(`api/crm/client/${id}/addDoc`, formData)
+                .then((res) => {
+                    if (res.status === 200) {
+                        toast.success("Файл успешно загружен на сервер");
+                    }
+                })
+                .catch((error) => {
+                    toast.error("Ошибка при загрузке файла" + error);
+                });
+            } catch (error) {
+                toast.error("Ошибка при загрузке файла" + error);
+            }
+        }
     } 
 
     function handleDelete() {
@@ -255,28 +275,31 @@ export default function PassportDatas({
         <div className="colGap10">
             <span className='label2bPlus'>Копия договора и другие документы</span>
               <div className="rowGap14">
-                    {file &&
-                      <div className="relative" onMouseLeave={handleMouseLeave}>
-                          <div
-                              className="fileCard"
-                              onMouseEnter={handleMouseEnter}>
-                              <div className="rowGap10">
-                                  <DocSvg />
-                                  <div className='twoLineTextWithEllipsis'>
-                                    {file?.name || "Неизвестное название файла"}
-                                 </div>
+                  {state.docs && state.docs.map((doc, index) => {
+                      return (
+                          <div className="relative" onMouseLeave={handleMouseLeave}>
+                              <div
+                                  className="fileCard"
+                                  onMouseEnter={handleMouseEnter}>
+                                  <div className="rowGap10">
+                                      <DocSvg />
+                                      <div className='twoLineTextWithEllipsis'>
+                                          {doc || "Неизвестное название файла"}
+                                      </div>
+                                  </div>
                               </div>
+                              {showFileTooltip &&
+                                  <DocsToolTip
+                                      onDelete={tmpDeleteFile}
+                                      onDownload={handleDownloadFile}
+                                      onView={handleViewDocument}
+                                      canDelete={canEdit}
+                                  />
+                              }
                           </div>
-                          {showFileTooltip &&
-                              <DocsToolTip 
-                                onDelete={tmpDeleteFile}
-                                onDownload={handleDownloadFile} 
-                                onView={handleViewDocument}
-                                canDelete={canEdit}
-                              />
-                          }
-                      </div>
-                    }
+                      );
+                  })}
+                      
                   <>
                       <img
                           className='cursor-pointer'

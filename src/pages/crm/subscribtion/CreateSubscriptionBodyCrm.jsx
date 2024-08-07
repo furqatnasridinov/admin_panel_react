@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState , useEffect, Fragment} from 'react';
 import Accordion from './Accordion';
 import VerticalSpace from '../../../components/VerticalSpace';
 import SelectAndRemoveDropDown from './SelectAndRemoveDropDown';
@@ -13,7 +13,8 @@ import CreateSubscriptionHeaderCrm from './CreateSubscriptionHeaderCrm';
 import { useSelector } from 'react-redux';
 import axiosClient from '../../../config/axios_client';
 import { toast } from 'react-toastify';
-import { getApiLikeWeekDays } from '../../../config/apphelpers';
+import { getApiLikeWeekDays, getWeekdaysIds } from '../../../config/apphelpers';
+import { EachWeekdayCrm } from './EachWeekdayCrm';
 
 export default function CreateSubscriptionBodyCrm() {
     const [isOpened1, setIsOpened1] = useState(true);
@@ -30,16 +31,18 @@ export default function CreateSubscriptionBodyCrm() {
     const [currenFocus, setCurrenFocus] = useState('');
     const [toolTipShown, setToolTipShown] = useState(false);
     const [selectedWeekDays, setSelectedWeekDays] = useState([]);
-    const [startTimeHour, setStartTimeHour] = useState('18');
+    const [startTimeHour, setStartTimeHour] = useState('00');
     const [startTimeMinute, setStartTimeMinute] = useState('00');
     const [isStartTimeDropDownOpened, openStartTimeDropDown] = useState(false);
     const [isEndTimeDropDownOpened, openEndTimeDropDown] = useState(false);
-    const [endTimeHour, setEndTimeHour] = useState('19');
+    const [endTimeHour, setEndTimeHour] = useState('00');
     const [endTimeMinute, setEndTimeMinute] = useState('00');
     const [currentOpenedDropDownGyms, setCurrentOpenedDropDownGyms] = useState(null);
     const [currentOpenedDropDownActivities, setCurrentOpenedDropDownActivities] = useState(null);
     const [currentOpenedDropDownSubcategories, setCurrentOpenedDropDownSubcategories] = useState(null);
     const [missingInfos, setMissingInfos] = useState([]);
+    const [isInAllWeekDays, setIsInAllWeekDays] = useState(false);
+    const [isInAllWorkTime, setIsInAllWorkTime] = useState(false);
     const [dropDownsGyms, setDropDownsGyms] = useState([
         // [{id: 1, isOpened: bool, gym: {}}, ...]
     ]);
@@ -47,7 +50,7 @@ export default function CreateSubscriptionBodyCrm() {
         // [{id: 1, isOpened: bool, gymAndLessonType : {gym : GYMDATA, lessonType : "Бокс"}}, ...]
     ]);
     const [dropDownsSubcategories, setDropDownsSubcategories] = useState([
-        // [{id: 1, isOpened: bool, subcategoryName, subcategoryId }, ...]
+        // [{id: 1,  isOpened: bool, subcategoryName, subcategoryId }, ...]
     ]);
     const [gymAndLessonTypes, setGymAndLessonTypes] = useState([
         //{gym : GYMDATA, lessonTypes : ["Бассейн","Бокс"]},
@@ -57,7 +60,8 @@ export default function CreateSubscriptionBodyCrm() {
     ]);
 
     const firstSectionError = missingInfos.includes("gym") || missingInfos.includes("activities") || missingInfos.includes("price");
-    const firstSectionShowDone = dropDownsGyms.length > 0 && dropDownsGyms.every(dropDown => dropDown.gym) && dropDownsActivities.length > 0 && dropDownsActivities.every(dropDown => dropDown.gymAndLessonType) && price !== '';
+    const firstSectionShowDone = dropDownsGyms.filter(dropDown => dropDown.gym.id).map(dropDown => dropDown.gym.id).length > 0 && 
+        dropDownsActivities.filter(dropDown => dropDown.gymAndLessonType?.lessonType).map(dropDown => (dropDown.gymAndLessonType?.lessonType)).length > 0 && price !== '';
     const secondSectionError = missingInfos.includes("type") || missingInfos.includes("weekdays");
     const secondSectionShowDone = type !== '' && selectedWeekDays.length > 0;
     const thirdSectionError = missingInfos.includes("name") || missingInfos.includes("description");
@@ -68,7 +72,12 @@ export default function CreateSubscriptionBodyCrm() {
     const showAddButtonGyms = !allGyms.length || dropDownsGyms.length < allGyms.length;
     const showAddButtonActivities = !allActivities.length || dropDownsActivities.length < allActivities.length || true;
     const showAddButtonSubcategories = !subcategories?.length || dropDownsSubcategories.length < subcategories.length || true;
-    
+    const showCheckBoxWeekdays = selectedWeekDays.length > 0 && dropDownsGyms.filter(dropDown => dropDown.gym.id).length > 0;
+    const showCheckBoxWorkTime = (startTimeHour !== '00' || startTimeMinute !== '00' || endTimeHour !== '00' || endTimeMinute !== '00') && 
+            dropDownsGyms.filter(dropDown => dropDown.gym.id).length > 0;
+    const weekdaysChecBoxClass = isInAllWeekDays ? 'crmCheckBoxChecked' : 'crmCheckBox';
+    const workTimeChecBoxClass = isInAllWorkTime ? 'crmCheckBoxChecked' : 'crmCheckBox';
+    const tireChaColor = isInAllWorkTime ? "rgba(176, 176, 176, 1)" : "black";
 
     function toggle1() {
         setIsOpened1(!isOpened1);
@@ -93,6 +102,7 @@ export default function CreateSubscriptionBodyCrm() {
         let updatedDropdown = false;
         let oldGymId = null;
         const copyDropDowns = [...dropDownsGyms];
+        //configureTimes(item);
         const changedDropDown = copyDropDowns.find(dropDown => dropDown.id === id);
         if (changedDropDown?.gym?.id) {
             updatedDropdown = true;
@@ -204,7 +214,7 @@ export default function CreateSubscriptionBodyCrm() {
             toast.error('Выберите сперва заведение');                           
         } else {
             const newId = dropDownsActivities.length > 0 ? dropDownsActivities[dropDownsActivities.length - 1].id + 1 : 1;
-            setDropDownsActivities([...dropDownsActivities, { id: newId, isOpened: false, gymAndLessonType : {}}]);
+            setDropDownsActivities([...dropDownsActivities, { id: newId, gymId : 0, isOpened: false, gymAndLessonType : {}}]);
         }
     }
 
@@ -242,7 +252,6 @@ export default function CreateSubscriptionBodyCrm() {
         }
     }
 
-
     //
     function handleChangePrice(e) {
         // Only numbers are allowed
@@ -260,10 +269,12 @@ export default function CreateSubscriptionBodyCrm() {
     function checkAllRequiredFields() {
       // Check if all required fields are filled
         const missing = [];
-        if (dropDownsGyms.length === 0 || dropDownsGyms.some(dropDown => !dropDown.gym?.id)) {
+        const selectedGymsId = dropDownsGyms.filter(dropDown => dropDown.gym.id).map(dropDown => dropDown.gym.id);
+        const selectedActivities = dropDownsActivities.filter(dropDown => dropDown.gymAndLessonType?.lessonType).map(dropDown => (dropDown.gymAndLessonType?.lessonType));
+        if (selectedGymsId.length === 0) {
             missing.push("gym");
         }
-        if (dropDownsActivities.length === 0 || dropDownsActivities.some(dropDown => !dropDown.gymAndLessonType?.gym?.id || !dropDown.gymAndLessonType?.lessonType)) {
+        if (selectedActivities.length === 0) {
             missing.push("activities");
         }
         if (price === '') {
@@ -290,15 +301,12 @@ export default function CreateSubscriptionBodyCrm() {
 
     function createMembershipRequest() {
         // gyms = [{id: 1}, {id: 2}],
-        const selectedGymsId = dropDownsGyms.map(dropDown => dropDown.gym.id);
+        const selectedGymsId = dropDownsGyms.filter(dropDown => dropDown.gym.id).map(dropDown => dropDown.gym.id);
         const gyms = selectedGymsId.map(item => ({ id: item }));
-        const activities = dropDownsActivities.map(dropDown => dropDown.gymAndLessonType?.lessonType);
-        const subcategories = dropDownsSubcategories
-            .filter(dropDown => dropDown.subcategoryId)
-            .map(dropDown => ({ id: dropDown.subcategoryId }));
+        const activities = dropDownsActivities.filter(dropDown => dropDown.gymAndLessonType?.lessonType).map(dropDown => (dropDown.gymAndLessonType?.lessonType));
+        const subcategories = dropDownsSubcategories.filter(dropDown => dropDown.subcategoryId).map(dropDown => ({ id: dropDown.subcategoryId }));
         const _type = type === 'Месячный' ? 'MONTH' : 'YEAR';
-        const data = 
-        {
+        const data = {
             daysOfWeek: getApiLikeWeekDays(selectedWeekDays),
             description: description,
             startTime: `${startTimeHour}:${startTimeMinute}`,
@@ -395,21 +403,6 @@ export default function CreateSubscriptionBodyCrm() {
         }}
     }, [currenFocus]);
 
-
-    useEffect(() => {
-      // set end time to be 1 hour after start time
-        const startHour = parseInt(startTimeHour);
-        const startMinute = parseInt(startTimeMinute);
-        let endHour = startHour + 1;
-        let endMinute = startMinute;
-        if (endHour > 23) {
-            endHour = 23;
-            endMinute = 59; 
-        }
-        setEndTimeHour(endHour.toString());
-        setEndTimeMinute(endMinute < 10 ? '0' + endMinute.toString() : endMinute.toString());
-    }, [startTimeHour, startTimeMinute])
-
     function closeDoneSections(currentSection) {
         const sections = [
           { showDone: firstSectionShowDone, openCloseFunc: setIsOpened1, isOpened: isOpened1 },
@@ -448,18 +441,83 @@ export default function CreateSubscriptionBodyCrm() {
             setIsOpened4(false);
         }
     }
+
+    function configureTimes(gym) {
+        if (gym?.startTime) {
+            const [startHour, startMinute] = gym.startTime.split(':');
+            setStartTimeHour(startHour);
+            setStartTimeMinute(startMinute);
+        }
+        if (gym?.endTime) {
+            const [endHour, endMinute] = gym.endTime.split(':');
+            setEndTimeHour(endHour);
+            setEndTimeMinute(endMinute);
+        }
+        if (gym?.daysOfWeek) {
+            const formattedToIds = getWeekdaysIds(gym.daysOfWeek);
+            setSelectedWeekDays(formattedToIds);
+            if (missingInfos.includes("weekdays")) {
+                const newMissingInfos = missingInfos.filter(info => info !== "weekdays");
+                setMissingInfos(newMissingInfos);
+            }
+        }
+    }
+
+    function toggleIsInAllWeekDays() {
+        if (!isInAllWeekDays) {
+            const atLeastOneGymSelected = dropDownsGyms.filter(dropDown => dropDown.gym.id).length > 0;
+            if (atLeastOneGymSelected) {
+                const firstDropDown = dropDownsGyms.find(dropDown => dropDown.gym.id);
+                configureTimes(firstDropDown.gym);
+                setIsInAllWeekDays(true);
+            }
+        }else{
+            setIsInAllWeekDays(false);
+        }
+    }
+
+    function toggleIsInAllWorkTime() {
+        if (!isInAllWorkTime) {
+            const atLeastOneGymSelected = dropDownsGyms.filter(dropDown => dropDown.gym.id).length > 0;
+            if (atLeastOneGymSelected) {
+                const firstDropDown = dropDownsGyms.find(dropDown => dropDown.gym.id);
+                configureTimes(firstDropDown.gym);
+                setIsInAllWorkTime(true);
+            }
+        }else{
+            setIsInAllWorkTime(false);
+        }
+    }
+
+    useEffect(() => {
+        const atLeastOneGymSelected = dropDownsGyms.filter(dropDown => dropDown.gym.id).length > 0;
+        const hasEmptyDropDowns = dropDownsGyms.length > 0 && dropDownsGyms.some(dropDown => !dropDown.gym.id);
+        if (atLeastOneGymSelected) {
+            const firstDropDown = dropDownsGyms.find(dropDown => dropDown.gym.id);
+            configureTimes(firstDropDown.gym);
+            //console.log("firstSelectedGym  " + JSON.stringify(firstDropDown.gym));
+        }else{
+            setSelectedWeekDays([]);
+            setStartTimeHour('00');
+            setStartTimeMinute('00');
+            setEndTimeHour('00');
+            setEndTimeMinute('00');
+        }
+        //console.log("atLeastOneGymSelected  " + atLeastOneGymSelected);
+        //console.log("hasEmptyDropDowns  " + hasEmptyDropDowns);
+    }, [dropDownsGyms]);
     
 
     return (
         <div className="colGap10 mr-[10px]">
             <CreateSubscriptionHeaderCrm onClick={resetAllFields} />
-
             <Accordion 
                 isOpened={isOpened1} 
                 isErorr ={firstSectionError} 
                 toggle={toggle1} 
                 showDone={firstSectionShowDone}
                 //onMouseLeave={firstAccordionMouseLeave}
+                heightResize={dropDownsGyms.length + dropDownsActivities.length + dropDownsSubcategories.length} 
                 title="1. Основные параметры абонемента">
                 {firstSectionError && <VerticalSpace height="16px" />}
                 <EachSection addPaddTop = {false} isRed={missingInfos.includes("gym")}>
@@ -564,6 +622,7 @@ export default function CreateSubscriptionBodyCrm() {
                 isOpened={isOpened2}
                 isErorr={secondSectionError}
                 showDone={secondSectionShowDone}
+                heightResize={showCheckBoxWeekdays || showCheckBoxWorkTime}
                 //onMouseLeave={secondAccordionMouseLeave}
             >
                 <EachSection addPaddTop = {false} isRed={missingInfos.includes("type")}>
@@ -591,14 +650,29 @@ export default function CreateSubscriptionBodyCrm() {
                     <VerticalSpace height="10px" />
                     <div className="rowGap5">
                     {WEEK_DAYS.map((day, index) => {
-                        return <EachWeekday 
+                        return <EachWeekdayCrm
                             key={index}
                             isSelected={selectedWeekDays.includes(day.id)}
                             text={day.name}
-                            onClick={()=>handleTapWeekday(day.id)}
+                            cursor={!isInAllWeekDays ? 'pointer' : 'default'}
+                            onClick={()=>{if (!isInAllWeekDays) handleTapWeekday(day.id)}}
+                            isDisabled={isInAllWeekDays}
                         />
                     })}
                     </div>
+                    {showCheckBoxWeekdays &&
+                        <Fragment>
+                            <VerticalSpace height="10px" />
+                            <div className="rowGap10">
+                                <div onClick={()=>toggleIsInAllWeekDays()} className={weekdaysChecBoxClass}>
+                                    <svg width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1 6.5L5 10.5L15 0.5" stroke="white" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <span className='label2'>В любые рабочие дни заведения</span>
+                            </div>
+                        </Fragment>
+                    }
                 </EachSection>
                 
                 <EachSection>
@@ -617,8 +691,9 @@ export default function CreateSubscriptionBodyCrm() {
                             selectedHour={startTimeHour}
                             selectedMinute={startTimeMinute}
                             closeOntapOutside={() => openStartTimeDropDown(false)}
+                            isDisabled={isInAllWorkTime}
                         />
-                        <span>-</span>
+                        <span style={{color : tireChaColor}}>-</span>
                         <CrmDropdownHours 
                             text={`${endTimeHour}:${endTimeMinute}`}
                             isDropDownOpened={isEndTimeDropDownOpened}
@@ -631,8 +706,22 @@ export default function CreateSubscriptionBodyCrm() {
                             selectedHour={endTimeHour}
                             selectedMinute={endTimeMinute}
                             closeOntapOutside={() => openEndTimeDropDown(false)}
+                            isDisabled={isInAllWorkTime}
                         />
                     </div>
+                    {showCheckBoxWorkTime &&
+                        <Fragment>
+                            <VerticalSpace height="10px" />
+                            <div className="rowGap10">
+                                <div onClick={()=>toggleIsInAllWorkTime()} className={workTimeChecBoxClass}>
+                                    <svg width="16" height="11" viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1 6.5L5 10.5L15 0.5" stroke="white" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <span className='label2'>В любое рабочее время заведения</span>
+                            </div>
+                        </Fragment>
+                    }
                 </EachSection>
             </Accordion>
 
@@ -828,25 +917,3 @@ function ToolTipBody(){
     </div>
 }
 
-export function EachWeekday({
-    isSelected,
-    onClick,
-    text,
-    cursor = 'pointer'
-}){
-    const backgroundColor = isSelected ? 'rgba(94, 220, 145, 1)' : 'white';
-    const textColor = isSelected ? 'white' : 'rgba(58, 185, 109, 1)';
-    return (
-        <div 
-            style={{
-                border : '1px solid rgba(58, 185, 109, 1)',
-                backgroundColor : backgroundColor,
-                transition : 'background-color 0.3s ease',
-                cursor : cursor
-            }}
-            onClick={onClick}
-            className="w-[33px] h-[33px] rounded-[50%]  flex items-center justify-center">
-            <span style={{color : textColor, transition : "color 0.3s ease"}} className='label3 select-none'>{text}</span>
-        </div>
-    )
-}
