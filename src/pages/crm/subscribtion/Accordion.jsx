@@ -9,6 +9,7 @@ export default function Accordion({
     showDone = false,
     isErorr = false,
     onMouseLeave,
+    heightResize,
 }) {
     const contentRef = useRef(null);
     const [height, setHeight] = useState('95px');
@@ -21,7 +22,7 @@ export default function Accordion({
                 setHeight('95px');
             }
         }
-    }, [isOpened,isErorr]);
+    }, [isOpened,isErorr,heightResize]);
 
     return (
         <div 

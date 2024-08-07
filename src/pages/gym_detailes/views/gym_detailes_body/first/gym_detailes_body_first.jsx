@@ -47,6 +47,8 @@ import {
 import ReactInputMask from "react-input-mask";
 import { toast } from "react-toastify";
 import AppConstants from "../../../../../config/app_constants";
+import { getApiLikeWeekDays, getWeekdaysIds } from "../../../../../config/apphelpers";
+import axiosClient from "../../../../../config/axios_client";
 
 export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const dispatch = useDispatch();
@@ -70,15 +72,15 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
   const [describtionIsNotValidated, setDescribtionIsNotValidated] = useState(false);
   const [adressChangesOccured, setAdressChangesOccured] = useState(false);
   const [isStartTimeDropDownOpened, openStartTimeDropDown] = useState(false);
-  const [startTimeHour, setStartTimeHour] = useState('08');
+  const [startTimeHour, setStartTimeHour] = useState('00');
   const [startTimeMinute, setStartTimeMinute] = useState('00');
   const [isEndTimeDropDownOpened, openEndTimeDropDown] = useState(false);
-  const [endTimeHour, setEndTimeHour] = useState('20');
+  const [endTimeHour, setEndTimeHour] = useState('00');
   const [endTimeMinute, setEndTimeMinute] = useState('00');
   const [startTimeCopy, setStartTimeCopy] = useState(`${startTimeHour}:${startTimeMinute}`);
   const [endTimeCopy, setEndTimeCopy] = useState(`${endTimeHour}:${endTimeMinute}`);
   const [workTimeChangesOccured, setWorkTimeChangesOccured] = useState(false);
-  const [selectedWeekdays, setSelectedWeekdays] = useState([1,3,5]);
+  const [selectedWeekdays, setSelectedWeekdays] = useState([]);
   const [selectedWeekdaysCopy, setSelectedWeekdaysCopy] = useState(selectedWeekdays);
 
   // use refs
@@ -187,6 +189,26 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
     }
   };
 
+  const handleUpdateWorktime = () => {
+    const data = {
+      id : currentGym.id,
+      daysOfWeek : getApiLikeWeekDays(selectedWeekdays),
+      startTime : `${startTimeHour}:${startTimeMinute}`,
+      endTime : `${endTimeHour}:${endTimeMinute}`,
+    };
+    axiosClient.patch(`api/admin/gyms/`, data)
+    .then((res) => {
+      if (res.status === 200) {
+        //dispatch(getCurrentGym(currentGym.id));
+        setWorkTimeChangesOccured(false);
+        toast.success("График работы успешно обновлен");
+      }
+    })
+    .catch((err) => {
+      toast.error("Ошибка при обновлении графика работы" + err);
+    });
+  };
+
   //  при отмене удалении фото
   const undoDeletePhoto = useCallback(() => {
     dispatch(cancelRemoveMainPic());
@@ -232,6 +254,33 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
       setWorkTimeChangesOccured(true);
     }
   }, [startTimeHour, startTimeMinute, endTimeHour, endTimeMinute, selectedWeekdays]);
+
+  useEffect(() => {
+    if (currentGymState.currentGym) {
+      setSelectedWeekdays(getWeekdaysIds(currentGymState.currentGym.daysOfWeek));
+      setSelectedWeekdaysCopy(getWeekdaysIds(currentGymState.currentGym.daysOfWeek));
+      const startTime = currentGymState.currentGym.startTime; // 10:00 
+      const endTime = currentGymState.currentGym.endTime; // 22:00
+      if (startTime) {
+        setStartTimeHour(startTime.split(":")[0]);
+        setStartTimeMinute(startTime.split(":")[1]);
+        setStartTimeCopy(`${startTime.split(":")[0]}:${startTime.split(":")[1]}`);
+      }else{
+        setStartTimeHour('00');
+        setStartTimeMinute('00');
+        setStartTimeCopy('00:00');
+      }
+      if (endTime) {
+        setEndTimeHour(endTime.split(":")[0]);
+        setEndTimeMinute(endTime.split(":")[1]);
+        setEndTimeCopy(`${endTime.split(":")[0]}:${endTime.split(":")[1]}`);
+      }else{
+        setEndTimeHour('00');
+        setEndTimeMinute('00');
+        setEndTimeCopy('00:00');
+      }
+    }
+  }, [currentGymState.currentGym]);
 
 
   return (
@@ -761,7 +810,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   }}
                   onClick={() => {
                     if (workTimeChangesOccured) {
-                      // send request
+                      handleUpdateWorktime();
                     }
                   }}
                   className="label3 select-none">Сохранить

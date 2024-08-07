@@ -75,7 +75,7 @@ export function FeaturesTextField({
     const lineHeight = 14;
 
   return (
-    <div className="flex flex-row justify-between gap-[10px] items-start">
+    <div className="flex flex-row gap-[10px] items-start">
       <textarea
         ref={inputRef}
         value={peculiarities}
@@ -94,7 +94,7 @@ export function FeaturesTextField({
           resize: "none",
           fontSize: "13px",
           lineHeight: `${lineHeight}px`,
-          width: "300px",
+          width: "400px",
           fontFamily: "Inter, sans-serif",
           backgroundColor: "transparent",
           overflow: isActive ?  'auto' : 'hidden',

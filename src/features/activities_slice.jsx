@@ -303,7 +303,7 @@ const activitiesSlice = createSlice({
       }
     },
 
-    removeSubcategoryFromList: (state, action) => {
+    removeSelectedSubcategoryFromList: (state, action) => {
       state.selectedSubcategories = state.selectedSubcategories.filter(
         (sub) => sub.id !== action.payload?.id
       );
@@ -311,10 +311,6 @@ const activitiesSlice = createSlice({
 
     selectSubcategory: (state, action) => {
       state.selectedSubcategory = action.payload;
-    },
-
-    removeSelectedActivity: (state) => {
-      state.selectedActivity = "";
     },
 
     removePhotoFromSelectedActivityPhotos: (state, action) => {
@@ -352,6 +348,10 @@ const activitiesSlice = createSlice({
         (sub) => sub.id !== action.payload.id
       );
       state.deletedSubcategories.push(action.payload);
+    },
+
+    removeSelectedSubcategory: (state, action) => {
+      state.selectedSubcategories = state.selectedSubcategories
     },
 
     returnDeletedSubcategory: (state) => {
@@ -561,6 +561,7 @@ export const {
   unsetFirstItemAsActive,
   addSubcategoryToList,
   removeSubcategoryFromList,
+  removeSelectedSubcategoryFromList,
   returnDeletedSubcategory,
 } = activitiesSlice.actions;
 export default activitiesSlice.reducer;

@@ -1,0 +1,22 @@
+.eachSubEditable{
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 10px;
+    min-height: 28px;
+    cursor: pointer;
+    padding-left: 2px;
+}
+
+.removeFrame{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 28px;
+    min-width: 28px;
+    min-height: 28px;
+   
+    border-radius: 4px;
+    background-color: rgba(245, 249, 255, 1);
+    cursor: pointer;
+}

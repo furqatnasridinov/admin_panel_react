@@ -7,10 +7,10 @@ import CustomDialog from '../../../components/dialog/dialog';
 import AddMembershipDialog from './AddMembershipDialog';
 import { useSelector } from 'react-redux';
 import { WEEK_DAYS } from '../../../dummy_data/dymmy_data';
-import { EachWeekday } from '../subscribtion/CreateSubscriptionBodyCrm';
 import { getMembershipTypeTranslated, getWeekdaysIds } from '../../../config/apphelpers';
+import { EachWeekdayCrm } from '../subscribtion/EachWeekdayCrm';
 
-export default function Memberships({id}) {
+export default function Memberships({id,isCreating = false}) {
     const [showTooltip, setShowTooltip] = useState(false);
     const [modal, setModal] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -154,7 +154,7 @@ export function MembershipCard({
                     <span className='label2'>с {`${startTime} - ${endTime}`}</span>
                     <div className="rowGap5">
                         {WEEK_DAYS.map((day, index) => {
-                            return <EachWeekday
+                            return <EachWeekdayCrm
                                 key={index}
                                 isSelected={selectedWeekdays.includes(day.id)}
                                 text={day.name}

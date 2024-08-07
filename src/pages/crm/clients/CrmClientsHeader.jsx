@@ -6,26 +6,14 @@ import GreenButton from "../../../components/crm/GreenButton";
 export default function CrmClientsHeader() {
   const navigate = useNavigate();
   const handleNavigation = () => {
-    ///window.open("https://docs.google.com/viewerng/viewer?url=https://myfit-russia.ru/doc/test.docx", "_blank");
+    navigate(`/clientsPageCrm/clientCard/new`);
   };
 
   return (
     <div className="pl-[35px] pr-[32px] py-[18px] bg-white flex flex-row rounded-[16px] items-center justify-between ">
-      <span className="text-[14px] font-medium leading-[16px]"
-      >
+      <span className="text-[14px] font-medium leading-[16px]">
         Работа с клиентами
       </span>
-
-      {/* <GreenButton 
-        text="Новый клиент"
-        onClick={handleNavigation}
-        showShadow={true}
-        addPlus={true}
-        padLeft="64px"
-        padRight="64px"
-        height="46px"
-      /> */}
-
       <div className="greenButton" onClick={handleNavigation}>
         <span className="text-[14px] font-medium leading-[16px] text-white">Новый клиент</span>
         <svg width="30" height="30" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">

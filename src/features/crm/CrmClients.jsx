@@ -91,6 +91,33 @@ const crmClientsSlice = createSlice({
   },
 
   reducers: {   
+
+    resetUserInfos(state) {
+        state.clientGotById = null;
+        state.currentClientId = null;
+        state.name = "";
+        state.surname = "";
+        state.patronymic = "";
+        state.email = "";
+        state.avatar = "";
+        state.phone = "";
+        state.note = "";
+        state.birth = "";
+        state.gender = "";
+        // passport data
+        state.serie = "";
+        state.number = "";
+        state.address = "";
+        state.date = "";
+        state.code = "";
+        state.docs = [];
+        state.membership = null; // {}
+        state.changesOccuredPersonalData = false;
+        state.changesOccuredPassportData = false;
+        state.missingFieldsPersonalData = [];
+        state.missingFieldsPassportData = [];
+
+},
     setListOfUsers(state, action) {
       state.listOfUsers = action.payload;
     },
@@ -163,6 +190,10 @@ const crmClientsSlice = createSlice({
         }
     },
 
+    pushDoc(state, action) {
+        state.docs.push(action.payload);
+    },
+
     setAddress(state, action) {
         state.address = action.payload;
         if (state.changesOccuredPassportData === false) {
@@ -198,6 +229,46 @@ const crmClientsSlice = createSlice({
         }).map(([field]) => field);
         state.missingFieldsPersonalData = missingFields;
     },
+
+    createClientRequest(state) {
+        let missingInfos = [];
+        const fieldsWithMinLength = {
+            name: 2,
+            surname: 2,
+            patronymic: 2,
+            gender: 1,
+            birth: 10, // Пример для даты в формате YYYY-MM-DD
+            phone: 11,
+        };
+        const missingFields = Object.entries(fieldsWithMinLength).filter(([field, minLength]) => {
+            return !state[field] || state[field].length < minLength;
+        }).map(([field]) => field);
+        missingInfos = missingFields;
+        if (missingInfos.length === 0) {
+            // request to create client
+            const requestBody = {
+                firstName: state.name,
+                lastName: state.surname,
+                patronymic: state.patronymic,
+                contactPhone: state.phone,
+                note: state.note,
+                birthdayDate: state.birth,
+                gender : state.gender,
+            };
+            console.log("log");
+            axiosClient.post(`api/crm/client/add`, requestBody)
+            .then((response) => {
+                if (response.status === 200) {
+                    toast.success("Клиент успешно добавлен");
+                }
+            })
+            .catch((error) => {
+                console.log(`createClientRequest ${error}`);
+            });
+        }else{
+            state.missingFieldsPersonalData = missingInfos;
+        }
+},
 
     checkMissingFieldsPassportData(state) {
         const fieldsWithMinLength = {
@@ -236,6 +307,7 @@ const crmClientsSlice = createSlice({
             state.gender = getGenderTranslated(state.clientGotById?.gender);
         }
         state.changesOccuredPersonalData = false;
+        state.missingFieldsPersonalData = [];
     },
 
     resertPassportInfos(state) {
@@ -255,6 +327,7 @@ const crmClientsSlice = createSlice({
             state.code = state.clientGotById?.departmentCode;
         }
         state.changesOccuredPassportData = false;
+        state.missingFieldsPassportData = [];
     },
   },
 
@@ -293,7 +366,10 @@ const crmClientsSlice = createSlice({
         state.code = client?.departmentCode || "";
         state.membership = client?.pass || null;
         // file also
+        state.docs = client?.docs || [];
         state.clientGotById = client;
+        state.missingFieldsPassportData = [];
+        state.missingFieldsPersonalData = [];
       }
     });
 
@@ -369,7 +445,10 @@ export const {
     checkMissingFieldsPassportData,
     setCurrentClientId,
     resetPersonalInfos,
-    resertPassportInfos
+    resertPassportInfos,
+    resetUserInfos,
+    createClientRequest,
+    pushDoc,
 } = crmClientsSlice.actions;
 
 export default crmClientsSlice.reducer;

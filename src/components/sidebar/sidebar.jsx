@@ -147,9 +147,6 @@ const Sidebar = () => {
     const isMyfit = appState.appType === "MYFIT";
     if (isMyfit) {
       switch (currentPath) {
-        case "/clientsPageCrm":
-          navigate("/clientsPageMyfit")
-          break;
         case "/todayEventsPageCrm":
           navigate("/todayEventsPageMyfit")
           break;
@@ -167,6 +164,14 @@ const Sidebar = () => {
           break;
         default:
           break;
+      }
+      if (currentPath === "/subscribtionsPageCrm" ||
+        currentPath.includes("/subscribtionsPageCrm/createSub")) {
+        navigate("/myGymsPageMyfit");
+      }
+      if (currentPath === "/clientsPageCrm" ||
+        currentPath.includes("/clientsPageCrm/clientCard")) {
+        navigate("/clientsPageMyfit");
       }
     }else{
       switch (currentPath) {

@@ -24,11 +24,13 @@ import { setName,
     setGender,
     checkMissingFieldsPersonalData,
     updateClient,
+    createClientRequest,
  } from '../../../features/crm/CrmClients'
 import AppConstants from '../../../config/app_constants'
 
 export default function PersonalDatas({
     id,
+    isCreating = false,
 }) {
     const dispatch = useDispatch();
     const [currenFocus, setCurrenFocus] = useState('') // ['name', 'surname', 'patronymic', 'birthday'...
@@ -61,32 +63,44 @@ export default function PersonalDatas({
     // functions 
     const handleNameChange = (e) => {
         dispatch(setName(e.target.value));
-        dispatch(checkMissingFieldsPersonalData());
+        if (!isCreating) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
     }
 
     const handleSurnameChange = (e) => {
         dispatch(setSurname(e.target.value));
-        dispatch(checkMissingFieldsPersonalData());
+        if (!isCreating) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
     }
 
     const handlePatronymicChange = (e) => {
         dispatch(setPatronymic(e.target.value));
-        dispatch(checkMissingFieldsPersonalData());
+        if (!isCreating) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
     }
 
     const handlePhoneChange = (e) => {
         dispatch(setPhone(e.target.value));
-        dispatch(checkMissingFieldsPersonalData());
+        if (!isCreating) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
     }
 
     const handleGenderChange = (value) => {
         dispatch(setGender(value));
-        dispatch(checkMissingFieldsPersonalData());
+        if (!isCreating) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
     }
 
     const handleBirthChange = (e) => {
         dispatch(setBirth(e.target.value));
-        dispatch(checkMissingFieldsPersonalData());
+        if (!isCreating) {
+            dispatch(checkMissingFieldsPersonalData());
+        }
     }
 
     const toggleGenderDropDown = () => {
@@ -109,6 +123,7 @@ export default function PersonalDatas({
     }
 
     async function updateClientFunc() {
+        dispatch(checkMissingFieldsPersonalData());
         const canSend = state.missingFieldsPersonalData.length === 0;
         if (canSend) {
             const formattedDate = getBirthdayFormatted(state.birth);
@@ -123,9 +138,9 @@ export default function PersonalDatas({
                 "gender" : translatedGender,
                 "note": state.note,
             }
-            await dispatch(updateClient(body));
-            dispatch(resetPersonalInfos());
             console.log(`Отправлено: ${JSON.stringify(body)}`);
+            /* await dispatch(updateClient(body));
+            dispatch(resetPersonalInfos()); */
         }else{
             toast.error("Заполните все обязательные поля")
         }
@@ -435,7 +450,11 @@ export default function PersonalDatas({
                       <GreenButton
                           text='Сохранить'
                           onClick={() => {
-                              updateClientFunc();
+                              if (isCreating) {
+                                //dispatch(createClientRequest());
+                              } else {
+                                  updateClientFunc();
+                              }
                           }} />
                   </div>
                     {showError &&

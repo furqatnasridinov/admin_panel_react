@@ -4,7 +4,7 @@ import PersonalDatas from './PersonalDatas'
 import PassportDatas from './PassportDatas'
 import { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getClientById, getMemberShips } from '../../../features/crm/CrmClients'
+import { getClientById, getMemberShips, resetUserInfos} from '../../../features/crm/CrmClients'
 import { useParams } from "react-router-dom";
 import Memberships from './Memberships'
 
@@ -13,7 +13,7 @@ export default function ClientCard() {
   const blockRef = useRef(null);
   const dispatch = useDispatch();
   const clientIdFromState = useSelector((state) => state.crmClients.currentClientId);
-  const clientId = clientIdFromState || clientIdParam;
+  const clientId = clientIdParam ||clientIdFromState;
 
   function handleScrollBottom() {
     // with animation
@@ -21,11 +21,14 @@ export default function ClientCard() {
   }
 
   useEffect(() => {
-    if (clientId) {
+    if (clientId && clientId !== 'new') {
       // fetch client data by id
       dispatch(getClientById(clientId));
       // get all memberships to show in the dialog
       dispatch(getMemberShips());
+    }
+    if (clientId === 'new') {
+      dispatch(resetUserInfos());
     }
   }, []);
 
@@ -34,9 +37,9 @@ export default function ClientCard() {
   return (
     <div ref={blockRef} className="flex flex-col flex-1 pl-[10px] gap-[10px] h-[97vh] overflow-y-auto">
       <ClientCardHeader />
-      <PersonalDatas id={clientId} />
-      <Memberships id={clientId} />
-      <PassportDatas id={clientId} />
+      <PersonalDatas id={clientId} isCreating = {clientId === "new"} />
+      {clientId === 'new' ? null : <Memberships id={clientId} />}
+      {clientId === 'new' ? null : <PassportDatas id={clientId} isCreating = {clientId === "new"} />}
     </div>
   )
 }

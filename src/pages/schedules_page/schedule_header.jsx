@@ -536,6 +536,7 @@ export default function ScheduleHeader() {
               <div className="flex flex-row gap-[5px]">
                 {WEEK_DAYS.map((weekday) => (
                   <div
+                    style={{transition : "all 0.3s"}}
                     key={weekday.id}
                     className={scheduleState.selectedWeekdays.includes(weekday.id)
                       ? "roundedWeekdaysSelected cursor-pointer" : "roundedWeekdays cursor-pointer"}
@@ -574,9 +575,7 @@ export default function ScheduleHeader() {
                     if (scheduleState.selectedDay === "") {
                       setDateNotSelected(true);
                     }
-                    if (scheduleState.description !== "" &&
-                      scheduleState.selectedDay !== "" &&!scheduleState.endTimeIsBeforeStartTime
-                    ) {
+                    if (scheduleState.description !== "" && scheduleState.selectedDay !== "" && !scheduleState.endTimeIsBeforeStartTime && !loading) {
                       // post lesson
                       const request = {
                         id: gymState.currentGym.id,
@@ -588,10 +587,11 @@ export default function ScheduleHeader() {
                         autoAccept: checkboxAutoAcceptEnabled,
                         limitCountUser: checkboxLimitEnabled,
                         maxCount: checkboxLimitEnabled ? limit : null,
+                        gymSubActives : activitiesState.selectedSubcategories.length > 0 ? activitiesState.selectedSubcategories.map((item) => ({id : item.id})) : [],
                       };
-                      setLoading(true);
-                      await dispatch(createSchedule(request));
                       console.log("createSchedule request ==>", request);
+                       setLoading(true);
+                      await dispatch(createSchedule(request));
                       //resetdatas
                       await dispatch(getSchedules(gymState.currentGym.id));
                       setLoading(false);

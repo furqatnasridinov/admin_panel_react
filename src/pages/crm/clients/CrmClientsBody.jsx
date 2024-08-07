@@ -15,7 +15,7 @@ export default function CrmClientsBody() {
     const [sortByGyms, setSortByGyms] = useState(null);
     const [sortByNotes, setSortByNotes] = useState(null);
     const [sortByIndicators, setSortByIndicators] = useState(null);
-    const clients = useSelector((state) => state.crmClients.listOfUsers);
+    const clients = useSelector((state) => state.crmClients.listOfUsers) || [];
     //const loading = useSelector((state) => state.crmClients.listOfUsersLoading);
 
     // functions
@@ -207,7 +207,7 @@ export default function CrmClientsBody() {
 
         {
             [...clients]
-            .sort((a, b) => (
+            ?.sort((a, b) => (
                 sortByName === "desc" ? a.firstName?.localeCompare(b.firstName) :
                 sortByName === "asc" ? b.firstName?.localeCompare(a.firstName) :
                 sortBySurname === "desc" ? a.lastName?.localeCompare(b.lastName) :
@@ -223,7 +223,7 @@ export default function CrmClientsBody() {
                 sortByIndicators === "desc" ? b.green - a.green :
                 sortByIndicators === "asc" ? a.green - b.green : 0
             ))
-            .map((client, index) => {
+            ?.map((client, index) => {
                 return <EachCrmClient 
                 key={index} 
                 activities={client.lessonTypes ?? []} 
