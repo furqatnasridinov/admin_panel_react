@@ -9,6 +9,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import ReactInputMask from 'react-input-mask'
 import arrowDownSvg from "../../../assets/svg/arrow_down.svg"
 import DatePicker from "react-datepicker";
+import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import CustomDialog from '../../../components/dialog/dialog';
 import { getBirthdayFormatted, removeHours, translateGender } from '../../../config/apphelpers'
@@ -25,6 +26,8 @@ import { setName,
     checkMissingFieldsPersonalData,
     updateClient,
     createClientRequest,
+    afterNavigatingToNewClient,
+    createClient,
  } from '../../../features/crm/CrmClients'
 import AppConstants from '../../../config/app_constants'
 
@@ -33,6 +36,7 @@ export default function PersonalDatas({
     isCreating = false,
 }) {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [currenFocus, setCurrenFocus] = useState('') // ['name', 'surname', 'patronymic', 'birthday'...
     const [isPhoneError, setIsPhoneError] = useState(false);
     const [isBirthError, setIsBirthError] = useState(false);
@@ -58,25 +62,27 @@ export default function PersonalDatas({
     const showDoneButton = state.phone?.replace(/\+/g, '').length === 11 && state.phone.replace(/\+/g, '') === 
         state.clientGotById?.contactPhone.replace(/\+/g, '');
     const avatarUrlPath = `${AppConstants.baseUrl}image/${state.avatar}`;
+    const canSendToCreate = state.name?.length > 1 && state.surname?.length > 2 && state.patronymic?.length > 2 &&
+    state.phone?.length === 11 && state.birth?.length === 10 && state.gender?.length > 0;
 
 
     // functions 
-    const handleNameChange = (e) => {
-        dispatch(setName(e.target.value));
+    const handleNameChange = (val) => {
+        dispatch(setName(val));
         if (!isCreating) {
             dispatch(checkMissingFieldsPersonalData());
         }
     }
 
-    const handleSurnameChange = (e) => {
-        dispatch(setSurname(e.target.value));
+    const handleSurnameChange = (val) => {
+        dispatch(setSurname(val));
         if (!isCreating) {
             dispatch(checkMissingFieldsPersonalData());
         }
     }
 
-    const handlePatronymicChange = (e) => {
-        dispatch(setPatronymic(e.target.value));
+    const handlePatronymicChange = (val) => {
+        dispatch(setPatronymic(val));
         if (!isCreating) {
             dispatch(checkMissingFieldsPersonalData());
         }
@@ -139,8 +145,8 @@ export default function PersonalDatas({
                 "note": state.note,
             }
             console.log(`Отправлено: ${JSON.stringify(body)}`);
-            /* await dispatch(updateClient(body));
-            dispatch(resetPersonalInfos()); */
+            await dispatch(updateClient(body));
+            dispatch(resetPersonalInfos());
         }else{
             toast.error("Заполните все обязательные поля")
         }
@@ -154,6 +160,23 @@ export default function PersonalDatas({
         dispatch(updateClient(body));
         console.log(`Отправлено: ${JSON.stringify(body)}`);
     }
+
+    function handleCreateClient() {
+        dispatch(checkMissingFieldsPersonalData());
+        if (canSendToCreate) {
+            const requestBody = {
+                firstName: state.name,
+                lastName: state.surname,
+                patronymic: state.patronymic,
+                contactPhone: state.phone,
+                note: state.note,
+                birthdayDate: getBirthdayFormatted(state.birth),
+                gender: translateGender(state.gender),
+            };
+            console.log(`Отправлено: ${JSON.stringify(requestBody)}`);
+            dispatch(createClient(requestBody));
+        }
+    };
 
 
   // Обработчик события вставки
@@ -183,6 +206,17 @@ export default function PersonalDatas({
     setIsBirthError(arr?.includes('birth'));
     setIsGenderError(arr?.includes("gender"));
   }, [state.missingFieldsPersonalData]);
+
+  useEffect(() => {
+      if (state.newClientCreated) {
+          if (state.newCreatedClientId) {
+              navigate(`/clientsPageCrm/clientCard/${state.newCreatedClientId}`, { replace: true });
+              dispatch(afterNavigatingToNewClient());
+              dispatch(resetPersonalInfos());
+              setCurrenFocus('');
+          }
+      }
+  }, [state.newClientCreated]);
   
   return (
     <div className='customCard'>
@@ -237,8 +271,15 @@ export default function PersonalDatas({
                                   onFocus={() => setCurrenFocus('surname')}
                                   onBlur={() => setCurrenFocus('')}
                                   label='Фамилия'
+                                  maxLength={30}
                                   isError={isSurnameError}
-                                  onChange={handleSurnameChange} />
+                                  onChange={(e) => {
+                                      let inputValue = e.target.value;
+                                      if (inputValue.length > 30) {
+                                          inputValue = inputValue.substring(0, 30);
+                                      }
+                                      handleSurnameChange(inputValue);
+                                  }} />
 
                               <CrmTextField
                                   value={state.name}
@@ -247,17 +288,31 @@ export default function PersonalDatas({
                                   onBlur={() => setCurrenFocus('')}
                                   label='Имя'
                                   width='205px'
+                                  maxLength={30}
                                   isError={isNameError}
-                                  onChange={handleNameChange} />
+                                  onChange={(e)=>{
+                                        let inputValue = e.target.value;
+                                        if (inputValue.length > 30) {
+                                            inputValue = inputValue.substring(0, 30);
+                                        }
+                                        handleNameChange(inputValue);
+                                  }} />
 
                               <CrmTextField
                                   hasFocus={currenFocus === 'patronymic'}
                                   onFocus={() => setCurrenFocus('patronymic')}
                                   onBlur={() => setCurrenFocus('')}
                                   label='Отчество'
+                                  maxLength={40}
                                   value={state.patronymic}
                                   isError={isPatronymicError}
-                                  onChange={handlePatronymicChange}
+                                  onChange={(e)=>{
+                                        let inputValue = e.target.value;
+                                        if (inputValue.length > 40) {
+                                            inputValue = inputValue.substring(0, 40);
+                                        }
+                                        handlePatronymicChange(inputValue);
+                                  }}
                               />
                           </div>
                       </div>
@@ -367,7 +422,7 @@ export default function PersonalDatas({
                                       }}
                                   />
                               </div>
-                              {currenFocus === 'birth' &&
+                              {/* {currenFocus === 'birth' &&
                                   <CrmDatePicker
                                       isShown={true}
                                       selectedDate={state.birth}
@@ -384,7 +439,7 @@ export default function PersonalDatas({
                                       }}
                                       onClose={() => setCurrenFocus('')}
                                   />
-                              }
+                              } */}
 
                           </div>
 
@@ -451,7 +506,7 @@ export default function PersonalDatas({
                           text='Сохранить'
                           onClick={() => {
                               if (isCreating) {
-                                //dispatch(createClientRequest());
+                                    handleCreateClient();
                               } else {
                                   updateClientFunc();
                               }

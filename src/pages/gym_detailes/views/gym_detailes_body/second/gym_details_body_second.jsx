@@ -33,7 +33,9 @@ import {
   selectSubcategory,
   unsetFirstItemAsActive,
   setPhotosOfSelectedActivity,
-  removeSubcategoryFromList, returnDeletedSubcategory
+  removeSubcategoryFromList, returnDeletedSubcategory,
+  patchDescriptionOfSelectedActivity,
+  patchPeculiaritiesOfSelectedActivity,
 } from "../../../../../features/activities_slice";
 import DropDownSmaller from "../../../../../components/dropdown/dropdown_smaller";
 import CustomSnackbar from "../../../../../components/snackbar/custom_snackbar";
@@ -214,92 +216,105 @@ export default function GymDetailesBodySecondContainer({
   }
 
   function patchDescribtion(){
-    const newJson = {
-      id: selectedSubcategory?.id,
-      inheritance: selectedSubcategory?.inheritance,
-      name: selectedSubcategory?.name,
-      orderNumber: selectedSubcategory?.orderNumber,
-      peculiarities: selectedSubcategory?.peculiarities,
-      typeDescription: selectedSubcategory?.inheritance ? selectedSubcategory?.typeDescription : activityDescribtion,
-    };
-    // remove old subcategory from the list and add new one
-    const newList = subcategories.map((item) =>
-      item.id === newJson?.id ? newJson : item
-    );
-    const data = {
-      gymSubActiveInfo: newList,
-      lessonType: selectedActivity,
-    };
-    if (selectedSubcategory?.inheritance) {
-      data.typeDescription = activityDescribtion;
-    }
-    console.log(JSON.stringify(data));
-    axiosClient.patch(`api/admin/gyms/${gymId}`, data)
-    .then((response) => {
-      if (response.status === 200) {
-        toast.success("Описание успешно изменено");
-        if (selectedSubcategory?.inheritance) {
+    if (selectedSubcategory) {
+      const newJson = {
+        id: selectedSubcategory?.id,
+        inheritance: false,
+        name: selectedSubcategory?.name,
+        orderNumber: selectedSubcategory?.orderNumber,
+        peculiarities: selectedSubcategory?.peculiarities,
+        typeDescription: activityDescribtion,
+      };
+      // remove old subcategory from the list and add new one
+      const newList = subcategories.map((item) =>
+        item.id === newJson?.id ? newJson : item
+      );
+      const data = {
+        gymSubActiveInfo: newList,
+        lessonType: selectedActivity,
+      };
+      console.log(JSON.stringify(data));
+      axiosClient.patch(`api/admin/gyms/${gymId}`, data)
+      .then((response) => {
+        if (response.status === 200) {
+          toast.success("Описание успешно изменено");
           dispatch(getInfoForType(gymId));
-        }else{
           dispatch(unsetFirstItemAsActive());
           dispatch(getListOfActivities(gymId));
+          setDescribtionEditting(false);
+          dispatch(resetChanges());
+          setActivityDescribtionNotValidated(false);
         }
+      })
+      .catch((error) => {
+        toast.error("Ошибка при изменении описания" + error);
+      });
+    }else{
+      const data = {
+        id: gymId,
+        lessonType: selectedActivity,
+        typeDescription: activityDescribtion
+      };
+        dispatch(patchDescriptionOfSelectedActivity(data));
         setDescribtionEditting(false);
         dispatch(resetChanges());
         setActivityDescribtionNotValidated(false);
-      }
-    })
-    .catch((error) => {
-      toast.error("Ошибка при изменении описания" + error);
-    });
-    
+    }
   }
 
   function pathcPeculiarities(){
-    if (
-      activityPeculiarities === "1" ||
-      activityPeculiarities === "1." ||
-      activityPeculiarities === "1. "
-    ) {
-      activityPeculiarities = "";
-    }
-    const newJson = {
-      id: selectedSubcategory?.id,
-      inheritance: selectedSubcategory?.inheritance,
-      name: selectedSubcategory?.name,
-      orderNumber: selectedSubcategory?.orderNumber,
-      peculiarities: selectedSubcategory?.inheritance ? selectedSubcategory?.peculiarities : activityPeculiarities,
-      typeDescription: selectedSubcategory?.typeDescription,
-    };
-    // remove old subcategory from the list and add new one
-    const newList = subcategories.map((item) =>
-      item.id === newJson?.id ? newJson : item
-    );
-    const data = {
-      gymSubActiveInfo: newList,
-      lessonType: selectedActivity,
-    };
-    if (selectedSubcategory?.inheritance) {
-      data.peculiarities = activityPeculiarities;
-    };
-    console.log(JSON.stringify(data));
-    axiosClient.patch(`api/admin/gyms/${gymId}`, data)
-    .then((response) => {
-      if (response.status === 200) {
-        toast.success("Описание успешно изменено");
-        if (selectedSubcategory?.inheritance) {
+    if (selectedSubcategory) {
+      if (
+        activityPeculiarities === "1" ||
+        activityPeculiarities === "1." ||
+        activityPeculiarities === "1. "
+      ) {
+        activityPeculiarities = "";
+      }
+      const newJson = {
+        id: selectedSubcategory?.id,
+        inheritance: false, //selectedSubcategory?.inheritance,
+        name: selectedSubcategory?.name,
+        orderNumber: selectedSubcategory?.orderNumber,
+        peculiarities: activityPeculiarities,  //selectedSubcategory?.inheritance ? selectedSubcategory?.peculiarities : activityPeculiarities,
+        typeDescription: selectedSubcategory?.typeDescription,
+      };
+      // remove old subcategory from the list and add new one
+      const newList = subcategories.map((item) =>
+        item.id === newJson?.id ? newJson : item
+      );
+      const data = {
+        gymSubActiveInfo: newList,
+        lessonType: selectedActivity,
+      };
+      /* if (selectedSubcategory?.inheritance) {
+        data.peculiarities = activityPeculiarities;
+      }; */
+      console.log(JSON.stringify(data));
+      axiosClient.patch(`api/admin/gyms/${gymId}`, data)
+      .then((response) => {
+        if (response.status === 200) {
+          toast.success("Описание успешно изменено");
           dispatch(getInfoForType(gymId));
-        }else{
           dispatch(unsetFirstItemAsActive());
           dispatch(getListOfActivities(gymId));
+          setFeaturesEditting(false);
+          dispatch(resetChanges());
         }
-        setFeaturesEditting(false);
-        dispatch(resetChanges());
-      }
-    })
-    .catch((error) => {
-      toast.error("Ошибка при изменении описания" + error);
-    });
+      })
+      .catch((error) => {
+        toast.error("Ошибка при изменении описания" + error);
+      });
+    }else{
+      const data = {
+        id: gymId,
+        lessonType: selectedActivity,
+        peculiarities: activityPeculiarities
+      };
+      dispatch(patchPeculiaritiesOfSelectedActivity(data));
+      setFeaturesEditting(false);
+      dispatch(resetChanges());
+    }
   }
 
   async function addPhoto({files}){
@@ -308,7 +323,7 @@ export default function GymDetailesBodySecondContainer({
       id: gymId,
       files: files,
       type: selectedActivity,
-      isInherited : isInherited,
+      isInherited : false, //isInherited,
       subCategoryId: selectedSubcategory?.id
     };
     await dispatch(addPhotoToSelectedActivity(body));

@@ -11,10 +11,10 @@ import { getMembershipTypeTranslated, getWeekdaysIds } from '../../../config/app
 import { EachWeekdayCrm } from '../subscribtion/EachWeekdayCrm';
 
 export default function Memberships({id,isCreating = false}) {
-    const [showTooltip, setShowTooltip] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(0);
     const [modal, setModal] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
-    const membership = useSelector((state) => state.crmClients.membership);
+    const [isExpanded, setIsExpanded] = useState(0);
+    const memberships = useSelector((state) => state.crmClients.clientMemberships);
 
   return (
     <div className='customCard'>
@@ -26,30 +26,36 @@ export default function Memberships({id,isCreating = false}) {
             <CrmWhiteButton text='Добавить абонемент' onClick={()=>setModal(true)}/>
         </div>
 
-          {membership &&
-              <Fragment>
-                  <VerticalSpace height='32px' />
-                  <MembershipCard
-                      showTooltip={showTooltip}
-                      setShowTooltip={setShowTooltip}
-                      gyms={membership.gyms?.map((item) => item?.name)}
-                      lessonTypes={membership.lessonTypes}
-                      description={membership.description}
-                      name={membership.name}
-                      price={membership.price}
-                      oldPrice={null}
-                      subcategories={membership.lessonSubTypes?.map((item) => item?.name) ?? null}
-                      selectedWeekdays={getWeekdaysIds(membership.daysOfWeek)}
-                      privileges={membership.privileges || "Пусто"}
-                      restrictions={membership.restrictions || "Пусто"}
-                      freezingCancellation={membership.freezingCancellation || "Пусто"}
-                      isExpanded={isExpanded}
-                      onExpand={() => {
-                        setIsExpanded(!isExpanded);
-                        setShowTooltip(false);
-                      }}
-                  />
-              </Fragment>
+          {memberships && memberships?.length > 0 &&
+              memberships.map((membership) => {
+                return <Fragment key={membership.id}>
+                <VerticalSpace height='32px' />
+                <MembershipCard
+                    showTooltip={showTooltip === membership.id}
+                    closeTooltip={() => setShowTooltip(0)}
+                    setShowTooltip={()=>setShowTooltip(membership.id)}
+                    gyms={membership.gyms?.map((item) => item?.name)}
+                    lessonTypes={membership.lessonTypes}
+                    description={membership.description}
+                    name={membership.name}
+                    price={membership.price}
+                    oldPrice={null}
+                    subcategories={membership.lessonSubTypes?.map((item) => item?.name) ?? null}
+                    selectedWeekdays={getWeekdaysIds(membership.daysOfWeek)}
+                    privileges={membership.privileges || "Пусто"}
+                    restrictions={membership.restrictions || "Пусто"}
+                    freezingCancellation={membership.freezingCancellation || "Пусто"}
+                    isExpanded={isExpanded === membership.id}
+                    startTime={membership.startTime}
+                    endTime={membership.endTime}
+                    onExpand={() => {
+                      setIsExpanded(isExpanded === membership.id ? 0 : membership.id);
+                      setShowTooltip(0);
+                    }}
+                    onCloseExpand={() => setIsExpanded(0)}
+                />
+            </Fragment>
+              })
             }
 
           {modal &&
@@ -69,6 +75,7 @@ export default function Memberships({id,isCreating = false}) {
 export function MembershipCard({
     greenBorder = "1px solid rgba(58, 185, 109, 1)",
     showTooltip = false,
+    closeTooltip = ()=>{},
     setShowTooltip = ()=>{},
     gyms = ["Ленинград"],
     lessonTypes = ['Бокс', 'Айкидо'],
@@ -92,10 +99,31 @@ export function MembershipCard({
     restrictions,
     freezingCancellation,
     onExpand = () => { },
+    onCloseExpand = () => { },
     hideAddButton = false,
 }) {
     const typeFormatted = getMembershipTypeTranslated(type);
-    return <div style={{border: greenBorder}}
+    const mainRef = useRef(null);
+    const tooltipRef = useRef(null);
+
+    useEffect(() => {
+        // close ontap outside when isExpanded
+        if (isExpanded) {
+            const handleClickOutside = (event) => {
+                if (mainRef.current && !mainRef.current.contains(event.target)) {
+                    onExpand();
+                }
+            };
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }
+    }, [isExpanded]);
+
+
+
+    return <div ref={mainRef}  style={{border: greenBorder}}
         className="greenContaner">
         <div className="rowSpaceBetween">
             <ListGymsActivitiesSubcategories
@@ -132,7 +160,7 @@ export function MembershipCard({
                             </div>
                             {showTooltip &&
                                 <ThreeDotsTooltip
-                                    closeFunction={() => setShowTooltip(false)}
+                                    closeFunction={() => closeTooltip()}
                                     onClick={onExpand}
                                 />
                             }
@@ -193,7 +221,7 @@ export function MembershipCard({
                 <div className="ml-[45%]">
                     <CrmWhiteButton
                         text='Свернуть'
-                        onClick={onExpand}
+                        onClick={onCloseExpand}
                         width='fit-content'
                         padLeft='24px'
                         padRight='24px'
@@ -284,7 +312,7 @@ function ThreeDotsTooltip({
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [closeFunction]);
+    }, []);
 
 
     return <div ref={menuRef} className="tooltipCrm w-[285px] h-fit absolute left-[-285px]">

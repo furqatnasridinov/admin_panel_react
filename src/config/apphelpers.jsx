@@ -342,11 +342,11 @@ export function getApiLikeWeekDays(weekdays){
 
 export function getWeekdaysIds(weekdays){
     // from [MONDAY, TUESDAY, WEDNESDAY, THURSDAY] to [1, 2, 3, 4]
-    if (weekdays.length === 0) {
+    if (weekdays?.length === 0) {
         return [];
     }
     const days = [];
-    weekdays.forEach(day => {
+    weekdays?.forEach(day => {
         switch (day) {
             case "MONDAY":
                 days.push(1);

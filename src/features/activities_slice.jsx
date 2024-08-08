@@ -72,9 +72,9 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
   }
 );
 
-/* export const patchDescriptionOfSelectedActivity = createAsyncThunk(
+export const patchDescriptionOfSelectedActivity = createAsyncThunk(
   "activitiesSlice/changeDescriptionOfSelectedActivity",
-  async ({ id, lessonType, typeDescription, subCategory }) => {
+  async ({ id, lessonType, typeDescription }) => {
     try {
       const dataToSend = {
         lessonType: lessonType,
@@ -88,9 +88,9 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
       toast(`changeDescriptionOfSelectedActivity ${error["response"]["data"]["operationInfo"]}`);
     }
   }
-); */
+);
 
-/* export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
+export const patchPeculiaritiesOfSelectedActivity = createAsyncThunk(
   "activitiesSlice/changePeculiaritiesOfSelectedActivity",
   async ({ id, lessonType, peculiarities }) => {
     try {
@@ -113,7 +113,7 @@ export const addPhotoToSelectedActivity = createAsyncThunk(
       toast(`changePeculiaritiesOfSelectedActivity ${error}`);
     }
   }
-); */
+);
 
 export const deleteActivityPhoto = createAsyncThunk(
   "activitiesSlice/deleteActivityPhoto",
@@ -310,7 +310,12 @@ const activitiesSlice = createSlice({
     },
 
     selectSubcategory: (state, action) => {
-      state.selectedSubcategory = action.payload;
+      if (action.payload.id === state.selectedSubcategory?.id) {
+        state.selectedSubcategory = null;
+      }else{
+        state.selectedSubcategory = action.payload;
+      }
+      
     },
 
     removePhotoFromSelectedActivityPhotos: (state, action) => {

@@ -43,6 +43,8 @@ export default function CreateSubscriptionBodyCrm() {
     const [missingInfos, setMissingInfos] = useState([]);
     const [isInAllWeekDays, setIsInAllWeekDays] = useState(false);
     const [isInAllWorkTime, setIsInAllWorkTime] = useState(false);
+    const [lessonTypesLength, setLessonTypesLength] = useState(0);
+    const [subcategoriesLength, setSubcategoriesLength] = useState(0);
     const [dropDownsGyms, setDropDownsGyms] = useState([
         // [{id: 1, isOpened: bool, gym: {}}, ...]
     ]);
@@ -50,7 +52,7 @@ export default function CreateSubscriptionBodyCrm() {
         // [{id: 1, isOpened: bool, gymAndLessonType : {gym : GYMDATA, lessonType : "Бокс"}}, ...]
     ]);
     const [dropDownsSubcategories, setDropDownsSubcategories] = useState([
-        // [{id: 1,  isOpened: bool, subcategoryName, subcategoryId }, ...]
+        // [{id: 1, gymId : 13,  isOpened: bool, subcategoryName, subcategoryId }, ...]
     ]);
     const [gymAndLessonTypes, setGymAndLessonTypes] = useState([
         //{gym : GYMDATA, lessonTypes : ["Бассейн","Бокс"]},
@@ -70,8 +72,8 @@ export default function CreateSubscriptionBodyCrm() {
     const allGyms = useSelector(state => state.currentGym.listOfGyms);
     const allActivities = useSelector(state => state.activities.listOfActivities);
     const showAddButtonGyms = !allGyms.length || dropDownsGyms.length < allGyms.length;
-    const showAddButtonActivities = !allActivities.length || dropDownsActivities.length < allActivities.length || true;
-    const showAddButtonSubcategories = !subcategories?.length || dropDownsSubcategories.length < subcategories.length || true;
+    const showAddButtonActivities = lessonTypesLength > 0 ? lessonTypesLength > dropDownsActivities.length : true;
+    const showAddButtonSubcategories = subcategoriesLength > 0 ? subcategoriesLength > dropDownsSubcategories.length : true;
     const showCheckBoxWeekdays = selectedWeekDays.length > 0 && dropDownsGyms.filter(dropDown => dropDown.gym.id).length > 0;
     const showCheckBoxWorkTime = (startTimeHour !== '00' || startTimeMinute !== '00' || endTimeHour !== '00' || endTimeMinute !== '00') && 
             dropDownsGyms.filter(dropDown => dropDown.gym.id).length > 0;
@@ -92,6 +94,13 @@ export default function CreateSubscriptionBodyCrm() {
         setIsOpened4(!isOpened4);
     }
 
+    function removeDeletedGymsInfos(gymId) {
+        const updatedDropDownsActivities = dropDownsActivities.filter(dropDown => {
+            return dropDown.gymAndLessonType?.gym?.id !== gymId;
+        });
+        setDropDownsActivities(updatedDropDownsActivities);
+    }
+
     // for gyms
     function toggleDropDown(id) {
         setCurrentOpenedDropDownGyms(currentOpenedDropDownGyms === id ? null : id);
@@ -102,7 +111,6 @@ export default function CreateSubscriptionBodyCrm() {
         let updatedDropdown = false;
         let oldGymId = null;
         const copyDropDowns = [...dropDownsGyms];
-        //configureTimes(item);
         const changedDropDown = copyDropDowns.find(dropDown => dropDown.id === id);
         if (changedDropDown?.gym?.id) {
             updatedDropdown = true;
@@ -123,6 +131,7 @@ export default function CreateSubscriptionBodyCrm() {
                         const updatedGymAndLessonTypes = [...gymAndLessonTypes];
                         updatedGymAndLessonTypes.splice(index, 1, json);
                         setGymAndLessonTypes(updatedGymAndLessonTypes);
+                        removeDeletedGymsInfos(oldGymId);
                     }
                 } else {
                     setGymAndLessonTypes([...gymAndLessonTypes, json]);
@@ -155,9 +164,15 @@ export default function CreateSubscriptionBodyCrm() {
     }
 
     function addDropDown() {
-        closeDoneSections(1);
-        const newId = dropDownsGyms.length > 0 ? dropDownsGyms[dropDownsGyms.length - 1].id + 1 : 1;
-        setDropDownsGyms([...dropDownsGyms, { id: newId, isOpened: false, gym: {}}]);
+        const isLastNotSelected = dropDownsGyms.length > 0 && !dropDownsGyms[dropDownsGyms.length - 1].gym.id;
+        if (isLastNotSelected) {
+            toast.error('Заполните сперва предыдущий выбор заведения');
+        } else {
+            closeDoneSections(1);
+            const newId = dropDownsGyms.length > 0 ? dropDownsGyms[dropDownsGyms.length - 1].id + 1 : 1;
+            setDropDownsGyms([...dropDownsGyms, { id: newId, isOpened: false, gym: {} }]);
+            setCurrentOpenedDropDownGyms(newId);
+        }
     }
 
     function deleteGymDropDown(dropDownId, gymID) {
@@ -168,6 +183,7 @@ export default function CreateSubscriptionBodyCrm() {
             gymAndLessonTypesCopy.splice(index, 1);
             setGymAndLessonTypes(gymAndLessonTypesCopy);
         }  
+        removeDeletedGymsInfos(gymID);
     }
 
     // for activities
@@ -209,12 +225,18 @@ export default function CreateSubscriptionBodyCrm() {
     }
 
     function addDropDownActivities() {
-        closeDoneSections(1);
-        if (gymAndLessonTypes.length === 0) {
-            toast.error('Выберите сперва заведение');                           
+        const isLastNotSelected = dropDownsActivities.length > 0 && !dropDownsActivities[dropDownsActivities.length - 1].gymAndLessonType?.lessonType;
+        if (isLastNotSelected) {
+            toast.error('Заполните сперва предыдущий выбор активности');
         } else {
-            const newId = dropDownsActivities.length > 0 ? dropDownsActivities[dropDownsActivities.length - 1].id + 1 : 1;
-            setDropDownsActivities([...dropDownsActivities, { id: newId, gymId : 0, isOpened: false, gymAndLessonType : {}}]);
+            closeDoneSections(1);
+            if (gymAndLessonTypes.length === 0) {
+                toast.error('Выберите сперва заведение');
+            } else {
+                const newId = dropDownsActivities.length > 0 ? dropDownsActivities[dropDownsActivities.length - 1].id + 1 : 1;
+                setDropDownsActivities([...dropDownsActivities, { id: newId, gymId: 0, isOpened: false, gymAndLessonType: {} }]);
+                setCurrentOpenedDropDownActivities(newId);
+            }
         }
     }
 
@@ -243,13 +265,22 @@ export default function CreateSubscriptionBodyCrm() {
     }
 
     function addDropDownSubcategories() {
-        closeDoneSections(1);
-        if (gymAndLessonTypes.length === 0) {
-            toast.error('Выберите сперва заведение');                           
-        }else{
-            const newId = dropDownsSubcategories.length > 0 ? dropDownsSubcategories[dropDownsSubcategories.length - 1].id + 1 : 1;
-            setDropDownsSubcategories([...dropDownsSubcategories, { id: newId, isOpened: false, subcategoryName: '', subcategoryId: null}]);
+        const isLastNotSelected = dropDownsSubcategories.length > 0 && !dropDownsSubcategories[dropDownsSubcategories.length - 1].subcategoryId;
+        if (isLastNotSelected) {
+            toast.error('Заполните сперва предыдущий выбор подкатегории');
+        } else {
+            closeDoneSections(1);
+            if (gymAndLessonTypes.length === 0) {
+                toast.error('Выберите сперва заведение');
+            } else if (dropDownsActivities.length === 0) {
+                toast.error('Выберите сперва активность');
+            }else {
+                const newId = dropDownsSubcategories.length > 0 ? dropDownsSubcategories[dropDownsSubcategories.length - 1].id + 1 : 1;
+                setDropDownsSubcategories([...dropDownsSubcategories, { id: newId, gymId : 0, isOpened: false, subcategoryName: '', subcategoryId: null }]);
+                setCurrentOpenedDropDownSubcategories(newId);
+            }
         }
+
     }
 
     //
@@ -391,17 +422,6 @@ export default function CreateSubscriptionBodyCrm() {
         setIsOpened4(true);
     }
     
-    useEffect(() => {
-        if (currenFocus !== "price") {
-            if (price !== '' && !price.includes('₽')) {
-                setPrice(price + '₽');
-            }
-        }else if(currenFocus === "price"){ {
-            if (price !== '' && price.includes('₽')) {
-                setPrice(price.replace('₽', ''));
-            }
-        }}
-    }, [currenFocus]);
 
     function closeDoneSections(currentSection) {
         const sections = [
@@ -506,6 +526,38 @@ export default function CreateSubscriptionBodyCrm() {
         //console.log("atLeastOneGymSelected  " + atLeastOneGymSelected);
         //console.log("hasEmptyDropDowns  " + hasEmptyDropDowns);
     }, [dropDownsGyms]);
+
+    useEffect(() => {
+        if (currenFocus !== "price") {
+            if (price !== '' && !price.includes('₽')) {
+                setPrice(price + '₽');
+            }
+        }else if(currenFocus === "price"){ {
+            if (price !== '' && price.includes('₽')) {
+                setPrice(price.replace('₽', ''));
+            }
+        }}
+    }, [currenFocus]);
+
+    useEffect(() => {
+        if (gymAndLessonTypes && gymAndLessonTypes?.length > 0) {
+            let counter = 0;
+            gymAndLessonTypes.forEach(item => {
+                counter += item.lessonTypes.length;
+            });
+            setLessonTypesLength(counter);
+        }
+    }, [gymAndLessonTypes]);
+
+    useEffect(() => {
+        if (subcategories && subcategories?.length > 0) {
+            let counter = 0;
+            subcategories.forEach(item => {
+                counter += item.subs.length;
+            });
+            setSubcategoriesLength(counter);
+        }
+    }, [subcategories]);
     
 
     return (
@@ -731,16 +783,21 @@ export default function CreateSubscriptionBodyCrm() {
                 isOpened={isOpened3} 
                 isErorr={thirdSectionError}
                 showDone={thirdSectionShowDone}
+                heightResize={name || description }
                 //onMouseLeave={thirdAccordionMouseLeave}
             >
                 {thirdSectionError && <VerticalSpace height="16px" />}
                 <EachSection isRed={missingInfos.includes("name")} addPaddTop = {false}>
                     <span className='label2'>Название абонемента:</span>
                     <VerticalSpace height="10px" />
-                    <CustomCrmTextArea
+                    <CrmTextField
                         value={name}
                         onChange={(e) => {
-                            setName(e.target.value);
+                            let inputValue = e.target.value;
+                            if (inputValue.length > 100) {
+                                inputValue = inputValue.substring(0, 100);
+                            }
+                            setName(inputValue);
                             if (e.target.value && missingInfos.includes("name")) {
                                 const newMissingInfos = missingInfos.filter(info => info !== "name");
                                 setMissingInfos(newMissingInfos);
@@ -754,8 +811,9 @@ export default function CreateSubscriptionBodyCrm() {
                         onBlur={() => setCurrenFocus('')}
                         currenFocus={currenFocus === 'name'}
                         placeHolder='Вечерний ринг'
+                        width={"800px"}
                         height='40px'
-                        width={"350px"}
+                        showLabel={false}
                     />
                 </EachSection>
                 {missingInfos.includes("name") && missingInfos.includes("description") && <VerticalSpace height="16px" />}
@@ -765,7 +823,11 @@ export default function CreateSubscriptionBodyCrm() {
                     <CrmTextField
                         value={description}
                         onChange={(e) => {
-                            setDescription(e.target.value);
+                            let inputValue = e.target.value;
+                            if (inputValue.length > 500) {
+                                inputValue = inputValue.substring(0, 500);
+                            }
+                            setDescription(inputValue);
                             if (e.target.value && missingInfos.includes("description")) {
                                 const newMissingInfos = missingInfos.filter(info => info !== "description");
                                 setMissingInfos(newMissingInfos);
@@ -776,11 +838,11 @@ export default function CreateSubscriptionBodyCrm() {
                             closeDoneSections(3);
                         }}
                         onBlur={() => setCurrenFocus('')}
-                        maxLength={1000}
                         currenFocus={currenFocus === 'description'}
                         placeHolder='Включает информацию о задействованных услугах, ограничениях и дополнительных возможностях'
                         height='120px'
                         width={"100%"}
+                        maxLength={500}
                         showLabel={false}
                     />
                 </EachSection>
@@ -791,22 +853,29 @@ export default function CreateSubscriptionBodyCrm() {
                 title="4. Дополнительно (Не обязательный блок)" 
                 toggle={toggle4} isOpened={isOpened4}
                 showDone={fourthSectionShowDone}
+                //heightResize={benefits || limitations || conditionForFreezing}
                 //onMouseLeave={fourthAccordionMouseLeave}
                 >
                 <span className='label2'>Информация о доступных льготах и скидках:</span>
                 <VerticalSpace height="10px" />
                 <CrmTextField
                     value={benefits}
-                    onChange={(e) => {setBenefits(e.target.value)}}
+                    onChange={(e) => {
+                        let inputValue = e.target.value;
+                        if (inputValue.length > 500) {
+                            inputValue = inputValue.substring(0, 500);
+                        }
+                        setBenefits(inputValue);
+                    }}
                     onFocus={() => {
                         setCurrenFocus('benefits');
                         closeDoneSections(4);
                     }}
                     onBlur={() => setCurrenFocus('')}
-                    maxLength={1000}
+                    maxLength={500}
                     currenFocus={currenFocus === 'benefits'}
                     placeHolder='Скидка пенсионерам и студентам'
-                    height='120px'
+                    height='90px'
                     width={"100%"}
                     showLabel={false}
                 />
@@ -815,13 +884,19 @@ export default function CreateSubscriptionBodyCrm() {
                 <span className='label2'>Ограничения:</span>
                 <CrmTextField
                     value={limitations}
-                    onChange={(e) => {setLimitations(e.target.value)}}
+                    onChange={(e) => {
+                        let inputValue = e.target.value;
+                        if (inputValue.length > 500) {
+                            inputValue = inputValue.substring(0, 500);
+                        }
+                        setLimitations(inputValue)}
+                    }
                     onFocus={() => {
                         setCurrenFocus('limitations');
                         closeDoneSections(4);
                     }}
                     onBlur={() => setCurrenFocus('')}
-                    maxLength={800}
+                    maxLength={500}
                     currenFocus={currenFocus === 'limitations'}
                     placeHolder='Строго 18+'
                     height='80px'
@@ -833,13 +908,19 @@ export default function CreateSubscriptionBodyCrm() {
                 <span className='label2'>Условия отмены и заморозки абонемента:</span>
                 <CrmTextField
                     value={conditionForFreezing}
-                    onChange={(e) => { setConditionForFreezing(e.target.value) }}
+                    onChange={(e) => { 
+                        let inputValue = e.target.value;
+                        if (inputValue.length > 500) {
+                            inputValue = inputValue.substring(0, 500);
+                        }
+                        setConditionForFreezing(inputValue) 
+                    }}
                     onFocus={() => {
                         setCurrenFocus('conditionForFreezing');
                         closeDoneSections(4);
                     }}
                     onBlur={() => setCurrenFocus('')}
-                    maxLength={800}
+                    maxLength={500}
                     currenFocus={currenFocus === 'conditionForFreezing'}
                     placeHolder='Отменить абонемент можно в любой момент, вернём деньги за неиспользованные походы. Заморозка абонемента возможна сроком до одного месяца'
                     height='80px'

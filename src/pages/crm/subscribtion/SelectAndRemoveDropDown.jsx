@@ -27,19 +27,6 @@ export default function SelectAndRemoveDropDown({
     const ref = useRef(null);
     
     const border = isError ? '1px solid rgba(255, 61, 0, 1)' : isOpened ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
-
-/*     useEffect(() => {
-      // close dropdown when click outside
-        function handleClickOutside(event) {
-            if (ref.current && !ref.current.contains(event.target)) {
-                closeDropDown()
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []) */
     
     return (
             <div className="flex flex-col relative" ref={ref}>
@@ -63,6 +50,7 @@ export default function SelectAndRemoveDropDown({
                     <div style={{
                         zIndex : zIndex2, 
                         maxHeight : maxHeight,
+                        minHeight : '50px',
                         overflowY : isScrollable ? "scroll" : "hidden",
                         scrollbarColor: 'rgba(220, 220, 220, 1)',
                         minWidth: '100%',
@@ -87,7 +75,7 @@ export default function SelectAndRemoveDropDown({
                         // dropDowns ==>  [{id: 1, isOpened: bool, subcategoryName, subcategoryId }, ...]
                         <>
                             {value && <DeleteButton onClick={onDelete} />}
-                            {
+                            {list && list.length > 0 &&
                                 list?.map((item) => {
                                     const filteredLessonTypes = isLessonType ? item?.lessonTypes
                                         .filter(lessonType => !dropDowns.some(dropDown =>
@@ -120,6 +108,7 @@ export default function SelectAndRemoveDropDown({
                                     return null; // Не рендерим зал, если нет активностей после фильтрации
                                 })
                             }
+                            {list && list.length === 0 && <span className='label2b mt-[5px]'>Список пуст</span>}
                         </>
                     }
                     </div>
