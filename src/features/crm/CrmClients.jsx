@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 import axiosClient from "../../config/axios_client";
-import { getBirthdayFormatted2, getGenderTranslated } from "../../config/apphelpers";
+import { getBirthdayFormatted, getBirthdayFormatted2, getGenderTranslated, translateGender } from "../../config/apphelpers";
 import { toast } from "react-toastify";
 
 export const getClients = createAsyncThunk(
@@ -32,7 +32,7 @@ export const getClientById = createAsyncThunk(
 );
 
 export const updateClient = createAsyncThunk(
-    "crmClients/createClient",
+    "crmClients/updateClient",
     async (requestBody) => {
         try {
             const response = await axiosClient.patch(`api/crm/client/update`, requestBody);
@@ -41,6 +41,20 @@ export const updateClient = createAsyncThunk(
             }
         } catch (error) {
             console.log(`crmClients/createClient ${error}`);
+        }
+    },
+);
+
+export const createClient = createAsyncThunk(
+    "crmClients/createClient",
+    async (requestBody) => {
+        try {
+            const response = await axiosClient.post(`api/crm/client/add`, requestBody);
+            if (response.status === 200) {
+                return response.data["object"];
+            }
+        } catch (error) {
+            toast.error("Ошибка при создании клиента" + error);
         }
     },
 );
@@ -83,11 +97,15 @@ const crmClientsSlice = createSlice({
     address : "",
     date : "",
     code : "",
-    membership : null, // {}
+    clientMemberships : [], 
+    docs : [],
+    removedDocs : [],
     changesOccuredPersonalData: false,
     changesOccuredPassportData: false,
     missingFieldsPersonalData: [],
     missingFieldsPassportData: [],
+    newClientCreated : false,
+    newCreatedClientId : null,
   },
 
   reducers: {   
@@ -111,12 +129,11 @@ const crmClientsSlice = createSlice({
         state.date = "";
         state.code = "";
         state.docs = [];
-        state.membership = null; // {}
+        state.clientMemberships = null; // {}
         state.changesOccuredPersonalData = false;
         state.changesOccuredPassportData = false;
         state.missingFieldsPersonalData = [];
         state.missingFieldsPassportData = [];
-
 },
     setListOfUsers(state, action) {
       state.listOfUsers = action.payload;
@@ -192,6 +209,19 @@ const crmClientsSlice = createSlice({
 
     pushDoc(state, action) {
         state.docs.push(action.payload);
+        //state.changesOccuredPassportData = true;
+    },
+
+    removeDocTmp(state, action) {
+        const index = state.docs.findIndex((doc) => doc === action.payload);
+        state.docs.splice(index, 1);
+        state.changesOccuredPassportData = true;
+        state.removedDocs.push(action.payload);
+    },
+
+    cancelRemoveDoc(state) {
+        const doc = state.removedDocs.pop();
+        state.docs.push(doc);
     },
 
     setAddress(state, action) {
@@ -230,45 +260,11 @@ const crmClientsSlice = createSlice({
         state.missingFieldsPersonalData = missingFields;
     },
 
-    createClientRequest(state) {
-        let missingInfos = [];
-        const fieldsWithMinLength = {
-            name: 2,
-            surname: 2,
-            patronymic: 2,
-            gender: 1,
-            birth: 10, // Пример для даты в формате YYYY-MM-DD
-            phone: 11,
-        };
-        const missingFields = Object.entries(fieldsWithMinLength).filter(([field, minLength]) => {
-            return !state[field] || state[field].length < minLength;
-        }).map(([field]) => field);
-        missingInfos = missingFields;
-        if (missingInfos.length === 0) {
-            // request to create client
-            const requestBody = {
-                firstName: state.name,
-                lastName: state.surname,
-                patronymic: state.patronymic,
-                contactPhone: state.phone,
-                note: state.note,
-                birthdayDate: state.birth,
-                gender : state.gender,
-            };
-            console.log("log");
-            axiosClient.post(`api/crm/client/add`, requestBody)
-            .then((response) => {
-                if (response.status === 200) {
-                    toast.success("Клиент успешно добавлен");
-                }
-            })
-            .catch((error) => {
-                console.log(`createClientRequest ${error}`);
-            });
-        }else{
-            state.missingFieldsPersonalData = missingInfos;
-        }
-},
+
+    afterNavigatingToNewClient(state) {
+        state.newClientCreated = false;
+        state.newCreatedClientId = null;
+    },
 
     checkMissingFieldsPassportData(state) {
         const fieldsWithMinLength = {
@@ -364,7 +360,7 @@ const crmClientsSlice = createSlice({
         state.address = client?.issuedBy || "";
         state.date =  getBirthdayFormatted2(client?.dateOfIssue) || "";
         state.code = client?.departmentCode || "";
-        state.membership = client?.pass || null;
+        state.clientMemberships = client?.pass || null;
         // file also
         state.docs = client?.docs || [];
         state.clientGotById = client;
@@ -422,6 +418,16 @@ const crmClientsSlice = createSlice({
     builder.addCase(getMemberShips.rejected, (state) => {
         //
     });
+
+    // create client
+    builder.addCase(createClient.fulfilled, (state, action) => {
+        const newClient = action.payload;
+        state.clientGotById = newClient;
+        state.newClientCreated = true;
+        state.newCreatedClientId = newClient.id;
+        state.currentClientId = newClient.id;
+        toast.success("Клиент успешно добавлен");
+    });
   },
 
 });
@@ -449,6 +455,9 @@ export const {
     resetUserInfos,
     createClientRequest,
     pushDoc,
+    afterNavigatingToNewClient,
+    removeDocTmp,
+    cancelRemoveDoc,
 } = crmClientsSlice.actions;
 
 export default crmClientsSlice.reducer;

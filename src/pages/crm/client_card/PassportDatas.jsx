@@ -17,6 +17,8 @@ import {setAddress,
     resertPassportInfos,
     updateClient,
     pushDoc,
+    removeDocTmp,
+    cancelRemoveDoc,
 } 
 from '../../../features/crm/CrmClients'
 import { getBirthdayFormatted } from '../../../config/apphelpers'
@@ -42,41 +44,44 @@ export default function PassportDatas({
     const [file, setFile] = useState(null);
     const [fileCopy, setFileCopy] = useState(null);
     const [cancelDeleteTimeoutFile, setCancelDeleteTimeoutFile] = useState(null);
-    const [showFileTooltip, setShowFileTooltip] = useState(false);
+    const [showFileTooltip, setShowFileTooltip] = useState(-1);
     const fileInputRef = useRef(null);
     const deleteFileRef = useRef(null);
     const dateInputBorder = isDateError ? "1px solid rgba(255, 61, 0, 1)" : currentFocus === 'date' ? '1px solid rgba(58, 185, 109, 1)' : '1px solid rgba(226, 226, 226, 1)';
     
-    function handleMouseEnter() {
-        if (!showFileTooltip) {
-            setShowFileTooltip(true);
+    function handleMouseEnter(index) {
+        if (showFileTooltip !== index) {
+            setShowFileTooltip(index);
         }
     }
 
     function handleMouseLeave() {
-        if (showFileTooltip) {
-            setShowFileTooltip(false);
-        }
+        setShowFileTooltip(-1);
     }
 
     function handleFileUpload(e) {
-        const file = e.target.files[0];
-        if (file) {
-            dispatch(pushDoc(file.name));
-            try {
-                var formData = new FormData();
-                formData.append("file", file);
-                axiosClient.post(`api/crm/client/${id}/addDoc`, formData)
-                .then((res) => {
-                    if (res.status === 200) {
-                        toast.success("Файл успешно загружен на сервер");
-                    }
-                })
-                .catch((error) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                try {
+                    const file = files[i];
+                    var formData = new FormData();
+                    formData.append("files", file);
+                    axiosClient.post(`api/crm/client/${id}/addDoc`, formData)
+                        .then((res) => {
+                            if (res.status === 200) {
+                                toast.success("Файл успешно загружен на сервер");
+                                dispatch(pushDoc(file));
+                            }
+                        })
+                        .catch((error) => {
+                            toast.error("Ошибка при загрузке файла" + error);
+                        });
+                } catch (error) {
                     toast.error("Ошибка при загрузке файла" + error);
-                });
-            } catch (error) {
-                toast.error("Ошибка при загрузке файла" + error);
+                }
+                /* const file = files[i];
+                dispatch(pushDoc(file)); */
             }
         }
     } 
@@ -85,12 +90,12 @@ export default function PassportDatas({
         setFile(null); 
     }
 
-    function tmpDeleteFile() {
-        setFileCopy(file);
-        setFile(null); 
+    function tmpDeleteFile(doc) {
+        dispatch(removeDocTmp(doc));
+        setShowFileTooltip(-1);
         deleteFileRef.current.showSnackbars();
         const cancelTimeout = deleteFileRef.current.show(
-            "Вы удалили документ : " + file?.name,
+            "Вы удалили документ : " + doc?.name,
             () => {
                 // function when onTime Ended
                 /* const { gymId } = { gymId: currentGym.id };
@@ -100,8 +105,8 @@ export default function PassportDatas({
         setCancelDeleteTimeoutFile(() => cancelTimeout)
     }
 
-    function handleDownloadFile(){
-        const url = URL.createObjectURL(file);
+    function handleDownloadFile(doc){
+        const url = URL.createObjectURL(doc);
         const a = document.createElement('a');
         a.href = url;
         a.download = file.name;
@@ -144,7 +149,7 @@ export default function PassportDatas({
 
 
     const undoDeleteFile = useCallback(() => {
-        setFile(fileCopy);
+        dispatch(cancelRemoveDoc());
         if (cancelDeleteTimeoutFile) {
             cancelDeleteTimeoutFile();
         }
@@ -163,7 +168,7 @@ export default function PassportDatas({
     }, [state.missingFieldsPassportData]);
 
     async function updateClientFunc() {
-        const canSend = state.missingFieldsPassportData.length === 0;
+        const canSend = state.missingFieldsPassportData?.length === 0;
         if (canSend) {
             const formattedDate = getBirthdayFormatted(state.date);
             const body = {
@@ -205,6 +210,7 @@ export default function PassportDatas({
                           isError={isSeriesError}
                           width='75px'
                           mask='99 99'
+                          showMaxLength={false}
                           showInputMask={true}
                       />
                       <CrmTextField
@@ -217,6 +223,7 @@ export default function PassportDatas({
                           isError={isNumberError}
                           width='90px'
                           showInputMask={true}
+                          showMaxLength={false}
                           mask='999999'
                       />
                       <CrmTextField
@@ -229,6 +236,7 @@ export default function PassportDatas({
                           isError={isDateError}
                           width='130px'
                           showInputMask={true}
+                          showMaxLength={false}
                           mask='99.99.9999'
                       />
                       <CrmTextField
@@ -239,6 +247,7 @@ export default function PassportDatas({
                           onBlur={() => setCurrentFocus("")}
                           hasFocus={currentFocus === "code"}
                           isError={isCodeError}
+                          showMaxLength={false}
                           width='170px'
                           mask='999-999'
                           showInputMask={true}
@@ -252,6 +261,7 @@ export default function PassportDatas({
                           hasFocus={currentFocus === "address"}
                           isError={isAddressError}
                           width='350px'
+                          maxLength={100}
                       />
                   </div>
               </div>
@@ -275,24 +285,26 @@ export default function PassportDatas({
         <div className="colGap10">
             <span className='label2bPlus'>Копия договора и другие документы</span>
               <div className="rowGap14">
-                  {state.docs && state.docs.map((doc, index) => {
+                  {state.docs && state.docs
+                  .filter((doc) => !state.removedDocs.includes(doc))
+                  .map((doc, index) => {
                       return (
-                          <div className="relative" onMouseLeave={handleMouseLeave}>
+                          <div key={index} className="relative" onMouseLeave={handleMouseLeave}>
                               <div
                                   className="fileCard"
-                                  onMouseEnter={handleMouseEnter}>
+                                  onMouseEnter={()=>handleMouseEnter(index)}>
                                   <div className="rowGap10">
                                       <DocSvg />
                                       <div className='twoLineTextWithEllipsis'>
-                                          {doc || "Неизвестное название файла"}
+                                          {doc?.name || "Неизвестное название файла"}
                                       </div>
                                   </div>
                               </div>
-                              {showFileTooltip &&
+                              {showFileTooltip === index &&
                                   <DocsToolTip
-                                      onDelete={tmpDeleteFile}
-                                      onDownload={handleDownloadFile}
-                                      onView={handleViewDocument}
+                                      onDelete={()=>tmpDeleteFile(doc)}
+                                      onDownload={()=>handleDownloadFile(doc)}
+                                      onView={()=>handleViewDocument(doc)}
                                       canDelete={canEdit}
                                   />
                               }
@@ -309,6 +321,7 @@ export default function PassportDatas({
                       <input
                           type="file"
                           ref={fileInputRef}
+                          multiple={true}
                           accept='.doc, .docx, .pdf'
                           style={{ display: "none" }}
                           onChange={handleFileUpload}

@@ -51,7 +51,9 @@ export default function AddMembershipDialog({
                 <span className='label2'>Выберите из существующих абонементов тот, который был оплачен клиентом</span>
             </div>
 
-            {list.map((item) => {
+            {list && list?.length > 0 && [...list]
+            .sort((a, b) => a.gym?.name.localeCompare(b.gym?.name))
+            .map((item) => {
                 return <AccordionGyms 
                     key={item?.gym?.id}
                     isOpened={openedGymId === item.gym?.id} 
