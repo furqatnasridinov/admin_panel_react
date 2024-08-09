@@ -175,14 +175,11 @@ export default function EachSubcategoryEditable({
                         setCurrentActive(subcategory?.id);
                     }
                 }}
-                unselectable='on'
-                autoFocus={isInitiallyActive}
+                //autoFocus={!subcategory}
                 readOnly={!isInitiallyActive && (currentActive !== subcategory?.id)}
                 value={copyOfSubcategoryName}
                 onChange={(e) => setCopyOfSubcategoryName(e.target.value)}
                 className='areaAutoSize' />
-
-            
         </div>
     )
 }

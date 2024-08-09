@@ -58,7 +58,7 @@ export default function CreateSubscriptionBodyCrm() {
         //{gym : GYMDATA, lessonTypes : ["Бассейн","Бокс"]},
     ]);
     const [subcategories, setSubcategories] = useState([
-        // {lessonType : "Бассейн", isShown : false, subs : [{id: 1, name: "Техника"}, ...]}
+        // {lessonType : "Бассейн", gymId : 13, isShown : false, subs : [{id: 1, name: "Техника"}, ...]}
     ]);
 
     const firstSectionError = missingInfos.includes("gym") || missingInfos.includes("activities") || missingInfos.includes("price");
@@ -98,7 +98,11 @@ export default function CreateSubscriptionBodyCrm() {
         const updatedDropDownsActivities = dropDownsActivities.filter(dropDown => {
             return dropDown.gymAndLessonType?.gym?.id !== gymId;
         });
+        const updatedDropDownsSubcategories = dropDownsSubcategories.filter(dropDown => {
+            return dropDown.gymId !== gymId;
+        });
         setDropDownsActivities(updatedDropDownsActivities);
+        setDropDownsSubcategories(updatedDropDownsSubcategories);
     }
 
     // for gyms
@@ -142,11 +146,11 @@ export default function CreateSubscriptionBodyCrm() {
                 arrayOfKeys.forEach(key => {
                     let eachArray = result[key];
                     eachArray.forEach(subcategory => {
-                        const existingLessonType = _subcategories.find(item => item.lessonType === key);
+                        const existingLessonType = _subcategories.find(item => item.lessonType === key && item.gymId === item?.id);
                         if (existingLessonType) {
                             existingLessonType.subs.push(subcategory);
                         }else{
-                            _subcategories.push({ lessonType: key, isShown : false, subs: [subcategory] });
+                            _subcategories.push({ lessonType: key, gymId : item?.id, isShown : false, subs: [subcategory] });
                         }
                     });
                 });
@@ -258,8 +262,10 @@ export default function CreateSubscriptionBodyCrm() {
     }
 
     function onSelectDropDownItemSubcategories(index, item) {
+        const subId = item?.id;
+        const gymId = subcategories.find(sub => sub.subs.some(sub => sub.id === subId))?.gymId;
         const newDropDowns = [...dropDownsSubcategories];
-        newDropDowns[index] = { ...newDropDowns[index], isOpened: false, subcategoryName: item?.name, subcategoryId: item?.id };
+        newDropDowns[index] = { ...newDropDowns[index], isOpened: false, gymId : gymId, subcategoryName: item?.name, subcategoryId: subId };
         setDropDownsSubcategories(newDropDowns);
         setCurrentOpenedDropDownSubcategories(null); // Close the dropdown after selection
     }
@@ -553,7 +559,9 @@ export default function CreateSubscriptionBodyCrm() {
         if (subcategories && subcategories?.length > 0) {
             let counter = 0;
             subcategories.forEach(item => {
-                counter += item.subs.length;
+                if (item.isShown) {
+                    counter += item.subs.length;
+                }
             });
             setSubcategoriesLength(counter);
         }

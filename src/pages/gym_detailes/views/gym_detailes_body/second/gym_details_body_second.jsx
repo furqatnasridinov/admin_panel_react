@@ -336,13 +336,7 @@ export default function GymDetailesBodySecondContainer({
   }
 
   function deleteSubcategoryRequest(id) {
-    const newList = subcategories.filter((item) => item.id !== id);
-    const data = {
-      gymSubActiveInfo: newList,
-      lessonType: selectedActivity,
-    };
-    console.log(JSON.stringify(data));
-    axiosClient.patch(`api/admin/gyms/${gymId}`, data)
+    axiosClient.delete(`api/admin/gyms/${gymId}/subactive/${id}`)
       .then((response) => {
         if (response.status === 200) {
           toast.success("Подгруппа успешно удалена");
@@ -595,7 +589,10 @@ export default function GymDetailesBodySecondContainer({
                 height={"40px"}
                 width={"100%"}
                 title={"Закончить редактирование"}
-                onСlick={() => openActivitiesModal(false)}
+                onСlick={() => {
+                  openActivitiesModal(false);
+                  setInheritance(null);
+                }}
                 fontSize={"14px"}
                 showShadow={false}
               />

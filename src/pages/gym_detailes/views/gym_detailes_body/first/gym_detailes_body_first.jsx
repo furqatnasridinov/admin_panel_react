@@ -489,7 +489,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                     } else {
                       const { id, name } = {
                         id: currentGym.id,
-                        name: currentGym.name,
+                        name: currentGym.name.trim(),
                       };
                       await dispatch(patchGymName({ id, name }));
                       dispatch(getCurrentGym(currentGym.id));
@@ -804,12 +804,12 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                 <span className="label2bPlus">График работы заведения</span>
                 <span
                   style={{
-                    color: workTimeChangesOccured ? "rgba(62, 134, 245, 1)" : "transparent",
+                    color: (workTimeChangesOccured && canEdit) ? "rgba(62, 134, 245, 1)" : "transparent",
                     transition: "color 0.3s",
-                    cursor: workTimeChangesOccured ? "pointer" : "default"
+                    cursor: (workTimeChangesOccured && canEdit)  ? "pointer" : "default"
                   }}
                   onClick={() => {
-                    if (workTimeChangesOccured) {
+                    if (workTimeChangesOccured && canEdit) {
                       handleUpdateWorktime();
                     }
                   }}
@@ -828,8 +828,9 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   selectedHour={startTimeHour}
                   selectedMinute={startTimeMinute}
                   closeOntapOutside={() => openStartTimeDropDown(false)}
+                  isDisabled={!canEdit}
                 />
-                <span>-</span>
+                <span style={{color : canEdit ? "black" : "rgba(176, 176, 176, 1)"}}>-</span>
                 <DropdownForHours
                   text={`${endTimeHour}:${endTimeMinute}`}
                   isDropDownOpened={isEndTimeDropDownOpened}
@@ -841,6 +842,7 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                   selectedHour={endTimeHour}
                   selectedMinute={endTimeMinute}
                   closeOntapOutside={() => openEndTimeDropDown(false)}
+                  isDisabled={!canEdit}
                 />
               </div>
             </div>
@@ -851,11 +853,15 @@ export default function GymDetailesBodyFirstContainer({ currentGym }) {
                 <div
                 style={{
                   transition : "all 0.3s",
+                  backgroundColor : (selectedWeekdays.includes(weekday.id) && canEdit) ? 'rgba(119, 170, 249, 1)' : (selectedWeekdays.includes(weekday.id) && !canEdit) ? "rgba(220, 220, 220, 1)" :  'white',
+                  color : (selectedWeekdays.includes(weekday.id) && canEdit) ? 'white' : !canEdit ? "rgba(176, 176, 176, 1)" : 'black',
+                  border : !canEdit ? '1px solid rgba(226, 226, 226, 1)' : '1px solid rgba(119, 170, 249, 1)',
+                  cursor : canEdit ? "pointer" : "default"
                 }}
                   key={weekday.id}
                   className={selectedWeekdays.includes(weekday.id)
                     ? "roundedWeekdaysSelected cursor-pointer" : "roundedWeekdays cursor-pointer"}
-                  onClick={() => handleWeekdayClick(weekday.id)}
+                  onClick={() => canEdit ? handleWeekdayClick(weekday.id) : null}
                 >
                   {weekday.name}
                 </div>

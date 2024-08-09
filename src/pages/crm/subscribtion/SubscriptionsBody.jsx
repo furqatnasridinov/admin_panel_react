@@ -28,6 +28,7 @@ export default function SubscriptionsBody() {
                     showRadio={false}
                     showButtons={true}
                     hideAddButton={true}
+                    memberShipCardSliceIndex={10}
                     memberShips={item?.memberships}/>
             })
         }

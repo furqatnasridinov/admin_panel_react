@@ -44,6 +44,10 @@
   background-color: #08a13d !important; 
 }
 
+.Toastify__toast--success-position {
+  bottom: 10%;
+}
+
 .Toastify__toast--success div {
   color: white;
   font-size: 14px;

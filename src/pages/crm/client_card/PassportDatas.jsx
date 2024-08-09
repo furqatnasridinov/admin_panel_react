@@ -19,11 +19,13 @@ import {setAddress,
     pushDoc,
     removeDocTmp,
     cancelRemoveDoc,
+    setDocs
 } 
 from '../../../features/crm/CrmClients'
-import { getBirthdayFormatted } from '../../../config/apphelpers'
+import { getBirthdayFormatted, getDocName } from '../../../config/apphelpers'
 import { toast } from 'react-toastify'
 import axiosClient from '../../../config/axios_client'
+import AppConstants from '../../../config/app_constants'
 
 
 export default function PassportDatas({
@@ -66,12 +68,17 @@ export default function PassportDatas({
                 try {
                     const file = files[i];
                     var formData = new FormData();
-                    formData.append("files", file);
-                    axiosClient.post(`api/crm/client/${id}/addDoc`, formData)
+                    formData.append("file", file);
+                    axiosClient.post(`api/crm/client/${id}/addDoc`, formData,{
+                        headers: {
+                          "Content-Type": "multipart/form-data",
+                        },
+                      })
                         .then((res) => {
                             if (res.status === 200) {
                                 toast.success("Файл успешно загружен на сервер");
-                                dispatch(pushDoc(file));
+                                getUpdatedDocsFromServer();
+                                //dispatch(pushDoc(file));
                             }
                         })
                         .catch((error) => {
@@ -95,7 +102,7 @@ export default function PassportDatas({
         setShowFileTooltip(-1);
         deleteFileRef.current.showSnackbars();
         const cancelTimeout = deleteFileRef.current.show(
-            "Вы удалили документ : " + doc?.name,
+            `Вы удалили документ : ${getDocName(doc)}`,
             () => {
                 // function when onTime Ended
                 /* const { gymId } = { gymId: currentGym.id };
@@ -105,13 +112,23 @@ export default function PassportDatas({
         setCancelDeleteTimeoutFile(() => cancelTimeout)
     }
 
-    function handleDownloadFile(doc){
-        const url = URL.createObjectURL(doc);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = file.name;
-        a.click();
-        URL.revokeObjectURL(url);
+    function handleDownloadFile(doc) {
+        try {
+            const fileName = getDocName(doc);
+            const link = document.createElement('a');
+            link.href = `${AppConstants.baseUrl}/image/${doc}`;
+            link.setAttribute('download', fileName);
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            toast(`handleDownload ${error}`);
+        }
+    }
+
+    function handleViewDocument(doc) {
+        window.open(`https://docs.google.com/viewerng/viewer?url=${AppConstants.baseUrl}/image/${doc}`, '_blank');
     }
 
     function handleSeriesChange(e) {
@@ -143,8 +160,18 @@ export default function PassportDatas({
         dispatch(checkMissingFieldsPassportData());
     }
 
-    function handleViewDocument() {
-        window.open("https://docs.google.com/viewerng/viewer?url=https://myfit-russia.ru/doc/test.docx");
+    function getUpdatedDocsFromServer(){
+        // отправляем запрос на гет юзер, и берем только документы
+        axiosClient.get(`api/crm/client/${id}`)
+        .then((res) => {
+            if (res.status === 200) {
+                const docs = res.data["object"]["docs"];
+                dispatch(setDocs(docs));
+            }
+        })
+        .catch((error) => {
+            console.log("getUpdatedDocsFromServer " + error);
+        });
     }
 
 
@@ -288,6 +315,7 @@ export default function PassportDatas({
                   {state.docs && state.docs
                   .filter((doc) => !state.removedDocs.includes(doc))
                   .map((doc, index) => {
+                    const name = typeof doc === 'string' ? getDocName(doc) : doc?.name;
                       return (
                           <div key={index} className="relative" onMouseLeave={handleMouseLeave}>
                               <div
@@ -296,7 +324,7 @@ export default function PassportDatas({
                                   <div className="rowGap10">
                                       <DocSvg />
                                       <div className='twoLineTextWithEllipsis'>
-                                          {doc?.name || "Неизвестное название файла"}
+                                          {name|| "Неизвестное название файла"}
                                       </div>
                                   </div>
                               </div>

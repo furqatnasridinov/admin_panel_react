@@ -129,7 +129,7 @@ export default function Employees({ listOfEmployees, gymId }) {
           onclick={() => listOfEmployees?.length === 0 ? {} : openRefEmployeesDialog(true)}
           showText2={canEdit}
         />
-        {listOfEmployees?.length !== 0 && isRefEmployeesDialogOpened && (
+        {listOfEmployees && listOfEmployees?.length > 0 && isRefEmployeesDialogOpened && (
           <CustomDialog
             isOpened={isRefEmployeesDialogOpened}
             closeOnTapOutside={() => {openRefEmployeesDialog(false)}}
@@ -366,7 +366,7 @@ export default function Employees({ listOfEmployees, gymId }) {
           </CustomDialog>
         )}
         <div className="employees_list">
-          {listOfEmployees
+          {listOfEmployees && listOfEmployees?.length > 0 && listOfEmployees
             ?.filter((employee) =>!employeesSlice.deletedEmployess.some(
                   (deletedEmployee) => deletedEmployee.id === employee.id))
             .map((employee) => {
@@ -382,7 +382,7 @@ export default function Employees({ listOfEmployees, gymId }) {
               );
             })}
           {/* Add button */}
-          <div
+          {canEdit && <div
             style={{
               borderRadius: "16px",
             }}
@@ -396,7 +396,7 @@ export default function Employees({ listOfEmployees, gymId }) {
           >
             <img src={addSvg} alt="" />
             <div className="">Добавить</div>
-          </div>
+          </div>}
           <CustomSnackbar
             ref={deleteEmployeeSnackRef}
             undoAction={() => {

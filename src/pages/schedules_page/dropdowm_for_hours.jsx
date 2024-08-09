@@ -15,10 +15,13 @@ export default function DropdownForHours({
   selectedHour,
   backgroundColor,
   closeOntapOutside,
+  isDisabled = false,
 }) {
   const hoursContainerRef = useRef(null);
   const minutesContainerRef = useRef(null);
   const headerRef = useRef(null);
+  const border = isDisabled ? "1px solid rgba(226, 226, 226, 1)" : "1px solid #77aaf9";
+  const textColor = isDisabled ? "rgba(176, 176, 176, 1)" : "black";
 
   useEffect(() => {
     if (isDropDownOpened) {
@@ -69,13 +72,15 @@ export default function DropdownForHours({
     <div className="column" style={{ zIndex: zIndex }}>
       <button
         ref={headerRef}
-        style={{ backgroundColor: backgroundColor }}
+        style={{ backgroundColor: backgroundColor, border : border }}
         className={isDropDownOpened ? "dropdownHeaderOpenedForHours" : "dropdownHeaderForHours"}
-        onClick={openCloseDropDown}
+        onClick={isDisabled ? null : openCloseDropDown}
       >
-        <div className="text-[14px] font-medium">{text}</div>
+        <div style={{color :textColor}} className="text-[14px] font-medium">{text}</div>
         <div className={isDropDownOpened ? "rotate-icon" : "arrow-icon"}>
-          <img src={arrowDownSvg} alt="" />
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 9L12 14L17 9" stroke={textColor} stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
         </div>
       </button>
 

@@ -37,6 +37,7 @@ export default function GymDetailesHeader({
     openCloseDropDown();
   }
   const handleDownload = () => {
+    //toast.success("QR код успешно скачан", {position : "bottom-right"});
     try {
       const fileName = `qrcode_${gym.name}.jpg`
       const link = document.createElement('a');

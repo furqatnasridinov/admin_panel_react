@@ -18,6 +18,7 @@ export default function AccordionGyms({
     showRadio = true,
     showButtons = false,
     hideAddButton = false,
+    memberShipCardSliceIndex = 5,
 }) {
     const [shownTooltipId, setShownTooltipId] = useState(false);
     const [isExpandedId, setIsExpandedId] = useState(false);
@@ -83,7 +84,7 @@ export default function AccordionGyms({
                             subcategories={item.lessonSubTypes.map(subType => subType.name) ?? null}
                             lessonTypes={item.lessonTypes || []}
                             oldPrice={item.oldPrice || null}
-                            sliceIndex={7}
+                            sliceIndex={memberShipCardSliceIndex}
                             selectedWeekdays={getWeekdaysIds(item.daysOfWeek)}
                             privileges={item.privileges || "Пусто"}
                             restrictions={item.restrictions || "Пусто"}

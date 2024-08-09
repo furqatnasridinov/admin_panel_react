@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 
-const DocumentViewer = ({ fileUrl }) => {
+/* const DocumentViewer = ({ fileUrl }) => {
   const googleDocsViewerUrl = `https://docs.google.com/gview?url=${fileUrl}&embedded=true`;
 
   return (
@@ -11,7 +11,7 @@ const DocumentViewer = ({ fileUrl }) => {
       frameBorder="0"
     ></iframe>
   );
-};
+}; */
 
 export default function MyGymsPageCrm() {
  
@@ -19,7 +19,7 @@ export default function MyGymsPageCrm() {
 
   return (
     <div>
-      <DocumentViewer fileUrl={fileUrl} />
+      {/* <DocumentViewer fileUrl={fileUrl} /> */}
     </div>
   );
 }
