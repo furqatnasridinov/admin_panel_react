@@ -212,6 +212,10 @@ const crmClientsSlice = createSlice({
         //state.changesOccuredPassportData = true;
     },
 
+    setDocs(state, action) {
+        state.docs = action.payload;
+    },
+
     removeDocTmp(state, action) {
         const index = state.docs.findIndex((doc) => doc === action.payload);
         state.docs.splice(index, 1);
@@ -458,6 +462,7 @@ export const {
     afterNavigatingToNewClient,
     removeDocTmp,
     cancelRemoveDoc,
+    setDocs,
 } = crmClientsSlice.actions;
 
 export default crmClientsSlice.reducer;

@@ -17,7 +17,9 @@ export default function Accordion({
     useEffect(() => {
         if (contentRef.current) {
             if (isOpened) {
-                setHeight(`${contentRef.current.scrollHeight}px`);
+                setTimeout(() => {
+                    setHeight(`${contentRef.current.scrollHeight}px`);
+                }, 300);
             } else {
                 setHeight('95px');
             }

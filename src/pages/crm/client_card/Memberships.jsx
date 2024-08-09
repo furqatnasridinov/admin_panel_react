@@ -47,6 +47,7 @@ export default function Memberships({id,isCreating = false}) {
                     freezingCancellation={membership.freezingCancellation || "Пусто"}
                     isExpanded={isExpanded === membership.id}
                     startTime={membership.startTime}
+                    sliceIndex={10}
                     endTime={membership.endTime}
                     onExpand={() => {
                       setIsExpanded(isExpanded === membership.id ? 0 : membership.id);

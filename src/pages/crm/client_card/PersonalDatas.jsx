@@ -405,10 +405,10 @@ export default function PersonalDatas({
                                       onFocus={() => setCurrenFocus('birth')}
                                       onBlur={() => {
                                           // если кликаем пикер - не убирать фокус
-                                          if (currenFocus !== 'birth') {
+                                          /* if (currenFocus !== 'birth') {
                                               setCurrenFocus('');
-                                          }
-
+                                          } */
+                                              setCurrenFocus('');
                                       }}
                                       style={{
                                           width: "200px",

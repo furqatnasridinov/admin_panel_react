@@ -29,6 +29,7 @@ export default function ClientCard() {
     }
     if (clientId === 'new') {
       dispatch(resetUserInfos());
+      dispatch(getMemberShips());
     }
   }, []);
 

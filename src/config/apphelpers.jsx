@@ -308,6 +308,16 @@ export function removeHours(date){
     return newDate;
 }
 
+export function getDocName(doc){
+    // from CLIENTS/2/docs/09_08_2024_08_59_12_488.pdf to 09_08_2024_08_59_12_488.pdf
+    const parts = doc.split('/docs/');
+    if (parts && parts.length === 2) {
+        return parts[1];
+    }else{
+        return doc;
+    }
+}
+
 
 export function getApiLikeWeekDays(weekdays){
     // from [1, 2, 3, 4] to [MONDAY, TUESDAY, WEDNESDAY, THURSDAY]

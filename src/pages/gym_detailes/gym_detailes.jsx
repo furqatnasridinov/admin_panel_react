@@ -31,6 +31,8 @@ export default function GymDetails() {
   const activitiesSlice = useSelector((state) => state.activities);
   const clientsSlice = useSelector((state) => state.clients);
   const gymId = gymState.currentGym?.id || JSON.parse(sessionStorage.getItem("currentGym"))?.id || gymIdParam;
+  const canEdit = useSelector((state) => state.login.canEdit);
+  const listOfEmployees = employeesSlice.employees;
 
   // this useeffect will trigger only once at the beginning
   useEffect(() => {
@@ -126,13 +128,13 @@ export default function GymDetails() {
               selectAnotherGym={selectAnotherGym}
             />
 
-            {(localStorage.getItem(AppConstants.keyRoleId) === "1"
-              || localStorage.getItem(AppConstants.keyRoleId) === "3") &&
+            {listOfEmployees && listOfEmployees.length > 0 &&
               <Employees
-                listOfEmployees={employeesSlice.employees}
+                listOfEmployees={listOfEmployees}
                 gymId={gymState.currentGym.id}
-              />}
-
+              />
+            }
+              
             <GymDetailesBodyFirstContainer currentGym={gymState.currentGym} />
 
             <GymDetailesBodySecondContainer
